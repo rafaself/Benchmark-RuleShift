@@ -32,18 +32,139 @@ __all__ = [
     "SPEC_VERSION",
     "GENERATOR_VERSION",
     "TEMPLATE_SET_VERSION",
+    "DIFFICULTY_VERSION",
     "EpisodeItem",
     "ProbeMetadata",
     "Episode",
 ]
 
 SPEC_VERSION: Final[str] = "v1"
-GENERATOR_VERSION: Final[str] = "R2"
+GENERATOR_VERSION: Final[str] = "R3"
 TEMPLATE_SET_VERSION: Final[str] = "v1"
+DIFFICULTY_VERSION: Final[str] = "R3"
+
+_PROBE_LABEL_ORDER: Final[tuple[InteractionLabel, ...]] = (
+    InteractionLabel.ATTRACT,
+    InteractionLabel.REPEL,
+)
+_PROBE_SIGN_PATTERN_ORDER: Final[tuple[str, ...]] = ("++", "--", "+-", "-+")
 
 
 def _is_plain_int(value: object) -> bool:
     return isinstance(value, int) and not isinstance(value, bool)
+
+
+def _probe_sign_pattern(q1: int, q2: int) -> str:
+    if q1 > 0 and q2 > 0:
+        return "++"
+    if q1 < 0 and q2 < 0:
+        return "--"
+    if q1 > 0 and q2 < 0:
+        return "+-"
+    return "-+"
+
+
+def _build_probe_label_counts(
+    probe_targets: tuple[InteractionLabel, ...],
+) -> tuple[tuple[InteractionLabel, int], ...]:
+    return tuple(
+        (target_label, probe_targets.count(target_label))
+        for target_label in _PROBE_LABEL_ORDER
+    )
+
+
+def _build_probe_sign_pattern_counts(
+    probe_items: tuple["EpisodeItem", ...],
+) -> tuple[tuple[str, int], ...]:
+    return tuple(
+        (
+            pattern,
+            sum(_probe_sign_pattern(item.q1, item.q2) == pattern for item in probe_items),
+        )
+        for pattern in _PROBE_SIGN_PATTERN_ORDER
+    )
+
+
+def _build_contradiction_count_post(
+    labeled_items: tuple["EpisodeItem", ...],
+    pre_count: int,
+    rule_a: RuleName,
+    rule_b: RuleName,
+) -> int:
+    return sum(
+        label(rule_a, item.q1, item.q2) != label(rule_b, item.q1, item.q2)
+        for item in labeled_items[pre_count:]
+    )
+
+
+def _has_both_probe_labels(probe_targets: tuple[InteractionLabel, ...]) -> bool:
+    return len(set(probe_targets)) >= 2
+
+
+def _derive_difficulty(
+    template_id: TemplateId,
+    contradiction_count_post: int,
+    probe_targets: tuple[InteractionLabel, ...],
+) -> Difficulty:
+    if (
+        template_id is TemplateId.T1
+        and contradiction_count_post >= 1
+        and _has_both_probe_labels(probe_targets)
+    ):
+        return Difficulty.EASY
+    return Difficulty.MEDIUM
+
+
+def _normalize_probe_label_counts(
+    probe_label_counts: tuple[tuple[InteractionLabel, int], ...],
+) -> tuple[tuple[InteractionLabel, int], ...]:
+    normalized_probe_label_counts = tuple(probe_label_counts)
+    if len(normalized_probe_label_counts) != len(_PROBE_LABEL_ORDER):
+        raise ValueError("probe_label_counts must contain canonical attract/repel counts")
+
+    normalized_pairs: list[tuple[InteractionLabel, int]] = []
+    expected_labels = _PROBE_LABEL_ORDER
+    for index, expected_label in enumerate(expected_labels):
+        pair = normalized_probe_label_counts[index]
+        if not isinstance(pair, tuple) or len(pair) != 2:
+            raise TypeError("probe_label_counts entries must be (label, count) pairs")
+        label_value, count = pair
+        resolved_label = parse_label(label_value)
+        if resolved_label is not expected_label:
+            raise ValueError("probe_label_counts must use canonical attract/repel order")
+        if not _is_plain_int(count):
+            raise TypeError("probe_label_counts counts must be ints")
+        normalized_pairs.append((resolved_label, count))
+
+    return tuple(normalized_pairs)
+
+
+def _normalize_probe_sign_pattern_counts(
+    probe_sign_pattern_counts: tuple[tuple[str, int], ...],
+) -> tuple[tuple[str, int], ...]:
+    normalized_probe_sign_pattern_counts = tuple(probe_sign_pattern_counts)
+    if len(normalized_probe_sign_pattern_counts) != len(_PROBE_SIGN_PATTERN_ORDER):
+        raise ValueError(
+            "probe_sign_pattern_counts must contain canonical sign-pattern counts"
+        )
+
+    normalized_pairs: list[tuple[str, int]] = []
+    for index, expected_pattern in enumerate(_PROBE_SIGN_PATTERN_ORDER):
+        pair = normalized_probe_sign_pattern_counts[index]
+        if not isinstance(pair, tuple) or len(pair) != 2:
+            raise TypeError(
+                "probe_sign_pattern_counts entries must be (pattern, count) pairs"
+            )
+        pattern, count = pair
+        if pattern != expected_pattern:
+            raise ValueError(
+                "probe_sign_pattern_counts must use canonical ++/--/+-/-+ order"
+            )
+        if not _is_plain_int(count):
+            raise TypeError("probe_sign_pattern_counts counts must be ints")
+        normalized_pairs.append((pattern, count))
+
+    return tuple(normalized_pairs)
 
 
 @dataclass(frozen=True, slots=True)
@@ -118,9 +239,13 @@ class Episode:
     pre_count: int
     post_labeled_count: int
     shift_after_position: int
+    contradiction_count_post: int
     items: tuple[EpisodeItem, ...]
     probe_targets: tuple[InteractionLabel, ...]
+    probe_label_counts: tuple[tuple[InteractionLabel, int], ...]
+    probe_sign_pattern_counts: tuple[tuple[str, int], ...]
     probe_metadata: tuple[ProbeMetadata, ...]
+    difficulty_version: str = DIFFICULTY_VERSION
     spec_version: str = SPEC_VERSION
     generator_version: str = GENERATOR_VERSION
     template_set_version: str = TEMPLATE_SET_VERSION
@@ -141,7 +266,12 @@ class Episode:
         if self.transition is not Transition.from_rules(self.rule_A, self.rule_B):
             raise ValueError("transition must match rule_A and rule_B")
 
-        for field_name in ("pre_count", "post_labeled_count", "shift_after_position"):
+        for field_name in (
+            "pre_count",
+            "post_labeled_count",
+            "shift_after_position",
+            "contradiction_count_post",
+        ):
             value = getattr(self, field_name)
             if not _is_plain_int(value):
                 raise TypeError(f"{field_name} must be an int")
@@ -197,10 +327,24 @@ class Episode:
         if len(set(pairs)) != len(pairs):
             raise ValueError("items must not repeat a (q1, q2) pair")
 
-        normalized_probe_targets = tuple(parse_label(label) for label in self.probe_targets)
+        normalized_probe_targets = tuple(
+            parse_label(target) for target in self.probe_targets
+        )
         if len(normalized_probe_targets) != PROBE_COUNT:
             raise ValueError(f"probe_targets must contain exactly {PROBE_COUNT} entries")
         object.__setattr__(self, "probe_targets", normalized_probe_targets)
+
+        normalized_probe_label_counts = _normalize_probe_label_counts(
+            self.probe_label_counts
+        )
+        object.__setattr__(self, "probe_label_counts", normalized_probe_label_counts)
+
+        normalized_probe_sign_pattern_counts = _normalize_probe_sign_pattern_counts(
+            self.probe_sign_pattern_counts
+        )
+        object.__setattr__(
+            self, "probe_sign_pattern_counts", normalized_probe_sign_pattern_counts
+        )
 
         normalized_probe_metadata = tuple(self.probe_metadata)
         if len(normalized_probe_metadata) != PROBE_COUNT:
@@ -219,7 +363,7 @@ class Episode:
         )
         if normalized_probe_targets != expected_probe_targets:
             raise ValueError("probe_targets must match rule_B labels for probe items")
-        if len(set(normalized_probe_targets)) < 2:
+        if not _has_both_probe_labels(normalized_probe_targets):
             raise ValueError("probe_targets must contain at least two distinct labels")
 
         expected_probe_metadata = tuple(
@@ -241,6 +385,43 @@ class Episode:
         ):
             raise ValueError("probe_targets must match probe_metadata new_rule_label values")
 
+        expected_contradiction_count_post = _build_contradiction_count_post(
+            labeled_items,
+            self.pre_count,
+            self.rule_A,
+            self.rule_B,
+        )
+        if self.contradiction_count_post != expected_contradiction_count_post:
+            raise ValueError(
+                "contradiction_count_post must match derived post-shift contradictions"
+            )
+        if self.contradiction_count_post < 1:
+            raise ValueError("contradiction_count_post must be at least 1")
+
+        expected_probe_label_counts = _build_probe_label_counts(normalized_probe_targets)
+        if normalized_probe_label_counts != expected_probe_label_counts:
+            raise ValueError(
+                "probe_label_counts must match canonical label counts for probe_targets"
+            )
+
+        expected_probe_sign_pattern_counts = _build_probe_sign_pattern_counts(probe_items)
+        if normalized_probe_sign_pattern_counts != expected_probe_sign_pattern_counts:
+            raise ValueError(
+                "probe_sign_pattern_counts must match canonical sign-pattern counts for probe items"
+            )
+
+        expected_difficulty = _derive_difficulty(
+            self.template_id,
+            self.contradiction_count_post,
+            normalized_probe_targets,
+        )
+        if self.difficulty is not expected_difficulty:
+            raise ValueError("difficulty must match the derived R3 difficulty rules")
+
+        if self.difficulty_version != DIFFICULTY_VERSION:
+            raise ValueError(
+                f"difficulty_version must equal {DIFFICULTY_VERSION}"
+            )
         if self.spec_version != SPEC_VERSION:
             raise ValueError(f"spec_version must equal {SPEC_VERSION}")
         if self.generator_version != GENERATOR_VERSION:
