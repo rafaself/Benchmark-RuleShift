@@ -35,8 +35,8 @@ class RulesTestCase(unittest.TestCase):
 
     def test_swap_invariance(self):
         for rule in RuleName:
-            for q1 in CHARGES:
-                for q2 in CHARGES:
+            for i, q1 in enumerate(CHARGES):
+                for q2 in CHARGES[i:]:
                     with self.subTest(rule=rule, q1=q1, q2=q2):
                         self.assertEqual(label(rule, q1, q2), label(rule, q2, q1))
 
