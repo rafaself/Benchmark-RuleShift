@@ -484,7 +484,7 @@ Uniformly sample `attract` or `repel` for each probe with fixed RNG seed.
 
 ## 12. Validation Checks
 
-The generator pipeline must run validation before dataset freeze.
+The generator pipeline must run validation before dataset freeze. Validation must include deterministic replay checks, property tests, and regression tests against frozen reference fixtures.
 
 ## 12.1 Per-episode checks
 
@@ -498,7 +498,9 @@ For every episode, verify:
 - at least 1 post-shift labeled item contradicts `rule_A`;
 - no duplicate `(q1, q2)` pair within episode;
 - probe target list length is 4;
-- probe metadata length is 4.
+- probe metadata length is 4;
+- difficulty tier is present and reproducible from stored metadata;
+- deterministic regeneration from the same seed reproduces the exact serialized episode.
 
 ## 12.2 Dataset-level checks
 
@@ -509,10 +511,19 @@ For every split, verify:
 - difficulty tiers match intended proportions;
 - probe labels are near-balanced;
 - sign categories have coverage;
+- no duplicated episodes exist across splits;
 - baseline performance pattern is sensible;
 - public/private generation logic is identical except for seed bank.
 
-## 12.3 Anti-shortcut acceptance criteria
+## 12.3 Property and regression checks
+
+The codebase must include:
+
+- property tests for rule invariance, parser determinism, metric determinism, and seed replay;
+- regression tests against a small frozen reference fixture dataset;
+- schema drift checks so field names and serialized structures cannot silently change.
+
+## 12.4 Anti-shortcut acceptance criteria
 
 The benchmark is not accepted unless:
 
@@ -584,6 +595,8 @@ iron_find_electric/
     dev.csv
     public.csv
     private.csv
+    fixtures/
+      reference_dev_fixture.csv
   notebooks/
     benchmark.ipynb
     diagnostics.ipynb
@@ -593,6 +606,7 @@ iron_find_electric/
     test_metrics.py
     test_parser.py
     test_validation.py
+    test_regression.py
 ```
 
 ---
@@ -774,13 +788,13 @@ Phase-level recovery and lag claims remain out of scope unless the protocol is e
 Implement in this exact order:
 
 ### Step 1
-Build `rules.py` and unit tests.
+Build `rules.py` and invariance-focused unit tests.
 
 ### Step 2
-Build `generator.py` with template-aware per-episode constraints.
+Build `generator.py` with template-aware per-episode constraints and deterministic difficulty assignment.
 
 ### Step 3
-Build `schema.py` and serialize sample episodes.
+Build `schema.py` and freeze the canonical serialized episode format, metadata fields, and version tags.
 
 ### Step 4
 Build `render.py` for Binary and Narrative prompt formats.
@@ -792,16 +806,16 @@ Build `parser.py` and invalid-output handling.
 Build `metrics.py` with primary and secondary scores.
 
 ### Step 7
-Build `baselines.py` and run first sanity checks.
+Build `baselines.py` and run first sanity checks, including shortcut slices.
 
 ### Step 8
-Build `validate.py` and dataset freeze pipeline.
+Build `validate.py`, property tests, and regression checks against frozen reference fixtures.
 
 ### Step 9
-Generate dev/public/private splits with balanced template usage.
+Generate and freeze dev/public/private splits with separate seed banks and frozen version identifiers for generator, template set, parser, metric, and difficulty logic.
 
 ### Step 10
-Wrap everything in the Kaggle benchmark notebook.
+Wrap everything in the Kaggle benchmark notebook and benchmark card only after the local prototype is stable.
 
 ---
 
@@ -811,6 +825,18 @@ The first concrete deliverable is not the full Kaggle notebook.
 
 It is:
 
-> a deterministic local prototype that generates valid episodes, renders Binary and Narrative prompts, parses 4-label outputs, and computes Post-shift Probe Accuracy against frozen targets.
+> a deterministic local prototype that generates valid episodes, assigns deterministic difficulty tiers, renders Binary and Narrative prompts, parses 4-label outputs, computes Post-shift Probe Accuracy against frozen targets, and runs baseline sanity checks.
 
 That prototype should be completed before any benchmark packaging work.
+
+## 21.1 Definition of done for the next milestone
+
+The next milestone is complete only when all of the following are true:
+
+1. generator outputs valid frozen-format episodes;
+2. deterministic difficulty assignment is attached to every episode;
+3. renderer and parser work end-to-end;
+4. metric computation is stable;
+5. baseline behaviors are measurable;
+6. at least one hard slice clearly defeats shortcut baselines;
+7. validation, property tests, and regression tests pass from frozen seeds.

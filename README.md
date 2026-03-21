@@ -4,6 +4,8 @@ This repository defines **Iron Find Electric**, a documentation-first benchmark 
 
 Current status: this repo contains specifications and design notes only. No benchmark implementation or dataset artifacts are included yet.
 
+Current next milestone: build a deterministic local prototype that generates valid episodes, assigns deterministic difficulty tiers, renders Binary and Narrative prompts, parses outputs, computes `Post-shift Probe Accuracy`, runs shortcut baselines, and validates frozen schema and seed/version contracts before split freeze.
+
 The v1 benchmark package is defined as:
 
 - **Adaptive Rule Updating — Binary**: the only leaderboard-primary task

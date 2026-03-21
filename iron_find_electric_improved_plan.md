@@ -457,16 +457,21 @@ Deliverables:
 - deterministic generator;
 - deterministic labeler;
 - frozen `T1` / `T2` episode template family;
+- deterministic difficulty assignment implemented in generator logic;
+- canonical frozen schema and metadata fields;
 - `Post-shift Probe Accuracy` primary metric;
 - Binary task;
 - Narrative companion task;
 - baseline suite;
 - adversarial evaluation slices;
-- reproducible public/dev split logic.
+- validation scripts plus property/regression tests;
+- frozen split seed banks and version metadata;
+- reproducible dev/public/private split logic.
 
 Exit condition:
 
-- a high score is not plausibly explained by standard-prior, majority-label, never-update, or end-counting shortcuts.
+- a high score is not plausibly explained by standard-prior, majority-label, never-update, end-counting, or other simple template heuristics;
+- deterministic regeneration, validation, and regression checks pass before split freeze.
 
 ## Phase 2 — Add deeper diagnostics
 
@@ -529,3 +534,64 @@ Iron Find Electric evaluates whether a model can revise an inferred binary inter
 ### Scope statement
 
 This is a targeted benchmark of cognitive flexibility within the challenge framework, not a standalone measure of AGI progress or a direct measure of item-level recovery dynamics.
+
+---
+
+## 20. Immediate Execution Order
+
+Implement the first executable version in this order:
+
+1. `rules.py`
+   - encode the two-rule family;
+   - add invariance and unit tests;
+   - verify label consistency.
+
+2. `generator.py`
+   - generate episodes deterministically from seed;
+   - enforce `T1` / `T2` template constraints;
+   - assign deterministic difficulty tiers from explicit metadata;
+   - ensure pre-shift and post-shift structure is valid.
+
+3. `schema.py`
+   - define the canonical episode format;
+   - freeze field names, metadata, and version tags.
+
+4. `render.py`
+   - render Binary task prompts;
+   - render Narrative robustness prompts.
+
+5. `parser.py`
+   - parse model outputs safely;
+   - handle malformed answers deterministically.
+
+6. `metrics.py`
+   - compute `Post-shift Probe Accuracy`;
+   - compute subset and diagnostic metrics.
+
+7. `baselines.py`
+   - implement never-update, always-update / last-evidence, physics-prior, template-position heuristic, and random baselines;
+   - verify shortcut baselines fail on intended hard slices.
+
+8. `validate.py` and tests
+   - check no invalid episodes, no schema drift, no leakage, no split duplication, and balanced metadata distributions;
+   - add property/regression tests and a frozen reference fixture so refactors cannot silently change behavior.
+
+9. `splits.py`
+   - freeze dev, public, and private splits;
+   - freeze separate seed banks and version identifiers for generator, templates, metrics, parser, and difficulty logic.
+
+10. Kaggle packaging
+   - prepare the benchmark notebook and benchmark card only after the local prototype is stable.
+
+### Definition of done for the next milestone
+
+The next milestone is complete when:
+
+- generator outputs valid frozen-format episodes;
+- deterministic difficulty assignment is attached to every episode;
+- renderer and parser work end-to-end;
+- metric computation is stable;
+- baseline behaviors are measurable;
+- at least one hard slice clearly defeats shortcut baselines;
+- validation, property tests, and regression tests pass from frozen seeds.
+
