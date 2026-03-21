@@ -21,10 +21,6 @@ def label(rule: str, q1: int, q2: int) -> str:
     return "attract" if rule == "R_std" else "repel"
 
 
-def is_disagreement(q1: int, q2: int) -> bool:
-    return label("R_std", q1, q2) != label("R_inv", q1, q2)
-
-
 def _validate_charge(charge: int) -> None:
     if charge not in CHARGES:
         raise ValueError(f"unsupported charge: {charge}")

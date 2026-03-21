@@ -52,6 +52,12 @@ class RulesTestCase(unittest.TestCase):
                 labels = {label(rule, q1, q2) for q1, q2 in examples}
                 self.assertEqual(len(labels), 1)
 
+    def test_rules_always_disagree_for_allowed_charge_pairs(self):
+        for q1 in CHARGES:
+            for q2 in CHARGES:
+                with self.subTest(q1=q1, q2=q2):
+                    self.assertNotEqual(label("R_std", q1, q2), label("R_inv", q1, q2))
+
     def test_invalid_rule_name_fails_cleanly(self):
         with self.assertRaisesRegex(ValueError, "unknown rule"):
             label("R_bad", 1, -1)
