@@ -150,7 +150,7 @@ Or run the script dispatcher directly:
 .venv/bin/python scripts/evidence_pass.py
 ```
 
-To run the first real Gemini panel and write `reports/gemini_first_panel_report.md`:
+To run the first real Gemini panel, which writes the canonical latest report under `reports/live/gemini-first-panel/binary-only/latest/report.md`:
 
 ```bash
 export GEMINI_API_KEY=your_api_key_here
@@ -158,6 +158,22 @@ export GEMINI_API_KEY=your_api_key_here
 ```
 
 Or place `GEMINI_API_KEY=...` in a repo-root `.env` file and run the same command.
+
+## Reports Layout
+
+Generated and archived evidence under `reports/` is grouped by context and target instead of using a flat directory.
+
+Preferred pattern for new report writers:
+
+- `reports/<context>/<target>/latest/<stable-name>.<ext>` for the current canonical file.
+- `reports/<context>/<target>/history/<stable-name>__<YYYYMMDD_HHMMSS>.<ext>` for immutable snapshots.
+- `reports/<context>/<target>/samples/` for raw provider captures or other diagnostic-only artifacts.
+
+Current examples:
+
+- `reports/live/gemini-first-panel/binary-only/`
+- `reports/live/gemini-first-panel/binary-vs-narrative/`
+- `reports/audit/evidence-pass/`
 
 If you want stable shell commands, install the repo in editable mode from a venv
 that includes the standard packaging backend (`setuptools`):

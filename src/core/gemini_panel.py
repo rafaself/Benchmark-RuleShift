@@ -21,7 +21,11 @@ from core.model_runner import (
 )
 from core.parser import ParseStatus
 from core.providers.gemini import GeminiAdapter
-from core.report_outputs import current_report_timestamp, write_text_with_timestamped_snapshot
+from core.report_outputs import (
+    build_latest_report_path,
+    current_report_timestamp,
+    write_text_with_timestamped_snapshot,
+)
 from core.splits import PARTITIONS, load_frozen_split
 from tasks.iron_find_electric.baselines import (
     last_evidence_baseline,
@@ -32,14 +36,18 @@ from tasks.iron_find_electric.schema import Episode
 __all__ = [
     "DEFAULT_GEMINI_MODEL",
     "DEFAULT_GEMINI_FIRST_PANEL_REPORT_PATH",
+    "default_gemini_first_panel_report_path",
     "GeminiFirstPanelArtifacts",
     "run_gemini_first_panel",
     "render_gemini_first_panel_markdown",
 ]
 
 DEFAULT_GEMINI_MODEL = "gemini-2.5-flash"
-DEFAULT_GEMINI_FIRST_PANEL_REPORT_PATH = (
-    Path(__file__).resolve().parents[2] / "reports" / "gemini_first_panel_report.md"
+DEFAULT_GEMINI_FIRST_PANEL_REPORT_PATH = build_latest_report_path(
+    "live",
+    "gemini-first-panel",
+    "binary-only",
+    filename="report.md",
 )
 _DEFAULT_PANEL_MODES: tuple[ModelMode, ...] = (ModelMode.BINARY,)
 _DEFAULT_PANEL_CONFIG = ModelRunConfig(
@@ -165,6 +173,16 @@ def run_gemini_first_panel(
         artifact_path=resolved_artifact_path,
         snapshot_report_path=snapshot_report_path,
         snapshot_artifact_path=snapshot_artifact_path,
+    )
+
+
+def default_gemini_first_panel_report_path(*, include_narrative: bool) -> Path:
+    target = "binary-vs-narrative" if include_narrative else "binary-only"
+    return build_latest_report_path(
+        "live",
+        "gemini-first-panel",
+        target,
+        filename="report.md",
     )
 
 
@@ -416,6 +434,8 @@ def _pick_primary_summary(
 
 
 def _artifact_path_for_report(report_path: Path) -> Path:
+    if report_path.name == "report.md" and report_path.parent.name == "latest":
+        return report_path.with_name("artifact.json")
     return report_path.with_suffix(".json")
 
 

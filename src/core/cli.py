@@ -9,8 +9,8 @@ from typing import Any
 
 from core.audit import run_release_r15_reaudit, serialize_release_r15_reaudit_report
 from core.gemini_panel import (
-    DEFAULT_GEMINI_FIRST_PANEL_REPORT_PATH,
     DEFAULT_GEMINI_MODEL,
+    default_gemini_first_panel_report_path,
     run_gemini_first_panel,
 )
 from core.kaggle import validate_kaggle_staging_manifest
@@ -94,8 +94,8 @@ def build_parser() -> argparse.ArgumentParser:
     gemini_panel_parser.add_argument(
         "--report-path",
         type=Path,
-        default=DEFAULT_GEMINI_FIRST_PANEL_REPORT_PATH,
-        help="Markdown report output path.",
+        default=None,
+        help="Markdown report output path. Defaults to the canonical latest path under reports/live/gemini-first-panel/.",
     )
     gemini_panel_parser.add_argument(
         "--include-narrative",
@@ -208,9 +208,16 @@ def _command_gemini_first_panel(args: argparse.Namespace) -> int:
         else (ModelMode.BINARY,)
     )
     try:
+        report_path = (
+            args.report_path
+            if args.report_path is not None
+            else default_gemini_first_panel_report_path(
+                include_narrative=args.include_narrative
+            )
+        )
         artifacts = run_gemini_first_panel(
             model_name=args.model,
-            report_path=args.report_path,
+            report_path=report_path,
             modes=modes,
         )
     except GeminiConfigurationError as exc:

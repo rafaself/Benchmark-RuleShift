@@ -4,7 +4,10 @@ import json
 from dataclasses import dataclass
 from types import SimpleNamespace
 
-from core.gemini_panel import run_gemini_first_panel
+from core.gemini_panel import (
+    default_gemini_first_panel_report_path,
+    run_gemini_first_panel,
+)
 from core.model_execution import ModelMode, ModelRawResult, ModelRequest, ModelRunConfig
 from generator import generate_episode
 from protocol import InteractionLabel, Split
@@ -162,3 +165,15 @@ def test_run_gemini_first_panel_writes_paired_artifact_and_report(
     assert "Provider/runtime failures were observed in the live run." in artifacts.report_markdown
     assert "Binary-only headline metric: fake-model Binary =" in artifacts.report_markdown
     assert "Binary vs Narrative comparison is unavailable" not in artifacts.report_markdown
+
+
+def test_default_gemini_first_panel_report_paths_are_grouped_by_target():
+    binary_path = default_gemini_first_panel_report_path(include_narrative=False)
+    paired_path = default_gemini_first_panel_report_path(include_narrative=True)
+
+    assert binary_path.as_posix().endswith(
+        "reports/live/gemini-first-panel/binary-only/latest/report.md"
+    )
+    assert paired_path.as_posix().endswith(
+        "reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md"
+    )

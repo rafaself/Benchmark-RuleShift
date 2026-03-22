@@ -5,25 +5,33 @@ from pathlib import Path
 
 __all__ = [
     "build_timestamped_snapshot_path",
+    "build_latest_report_path",
     "current_report_timestamp",
     "write_text_with_timestamped_snapshot",
 ]
 
 _TIMESTAMP_FORMAT = "%Y%m%d_%H%M%S"
+_LATEST_DIRNAME = "latest"
+_HISTORY_DIRNAME = "history"
 
 
 def current_report_timestamp() -> str:
     return datetime.now().astimezone().strftime(_TIMESTAMP_FORMAT)
 
 
+def build_latest_report_path(*segments: str, filename: str) -> Path:
+    return _reports_root().joinpath(*segments, _LATEST_DIRNAME, filename)
+
+
 def build_timestamped_snapshot_path(path: Path, *, timestamp: str) -> Path:
-    snapshot_path = path.with_name(f"{path.stem}__{timestamp}{path.suffix}")
+    history_dir = _snapshot_directory_for(path)
+    snapshot_path = history_dir / f"{path.stem}__{timestamp}{path.suffix}"
     if not snapshot_path.exists():
         return snapshot_path
 
     counter = 1
     while True:
-        candidate = path.with_name(
+        candidate = history_dir / (
             f"{path.stem}__{timestamp}_{counter:02d}{path.suffix}"
         )
         if not candidate.exists():
@@ -42,5 +50,16 @@ def write_text_with_timestamped_snapshot(
     path.write_text(text, encoding="utf-8")
 
     snapshot_path = build_timestamped_snapshot_path(path, timestamp=resolved_timestamp)
+    snapshot_path.parent.mkdir(parents=True, exist_ok=True)
     snapshot_path.write_text(text, encoding="utf-8")
     return path, snapshot_path
+
+
+def _snapshot_directory_for(path: Path) -> Path:
+    if path.parent.name == _LATEST_DIRNAME:
+        return path.parent.parent / _HISTORY_DIRNAME
+    return path.parent
+
+
+def _reports_root() -> Path:
+    return Path(__file__).resolve().parents[2] / "reports"
