@@ -15,11 +15,11 @@ from splits import (
     load_frozen_split,
     load_split_manifest,
 )
-from validate import _normalize_episode_payload
+from validate import normalize_episode_payload
 
 
 def _payload_fingerprint(record: FrozenSplitEpisode) -> str:
-    payload = _normalize_episode_payload(record.episode)
+    payload = normalize_episode_payload(record.episode)
     payload = {
         key: value
         for key, value in payload.items()

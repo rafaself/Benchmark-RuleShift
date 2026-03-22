@@ -25,7 +25,7 @@ from validate import (
     EpisodeValidationResult,
     RegenerationCheck,
     ValidationIssue,
-    _normalize_episode_payload,
+    normalize_episode_payload,
     validate_dataset,
     validate_episode,
 )
@@ -229,7 +229,7 @@ def test_regression_fixture_blocks_schema_field_drift():
     fixture = _load_fixture()
 
     for episode_fixture in fixture["episodes"]:
-        payload = _normalize_episode_payload(generate_episode(episode_fixture["seed"]))
+        payload = normalize_episode_payload(generate_episode(episode_fixture["seed"]))
         assert list(payload.keys()) == list(episode_fixture["payload"].keys())
         assert payload == episode_fixture["payload"]
 

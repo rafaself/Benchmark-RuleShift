@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-import generator
+import tasks.iron_find_electric.generator as ife_generator
 from generator import generate_episode
 from protocol import (
     LABELED_ITEM_COUNT,
@@ -166,7 +166,7 @@ def test_invalid_candidates_are_rejected_by_deterministic_resampling():
     )
 
     with patch.object(
-        generator,
+        ife_generator,
         "_sample_pairs",
         side_effect=(invalid_candidate, valid_candidate),
     ) as sample_pairs:
