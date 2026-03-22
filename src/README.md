@@ -31,6 +31,12 @@ This directory contains the implemented benchmark code for Iron Find Electric v1
 - `frozen_splits/public_leaderboard.json`: frozen public leaderboard partition.
 - `frozen_splits/private_leaderboard.json`: frozen private leaderboard partition.
 
+## Local Entry Points
+
+- `core.cli`: thin CLI wrapper around the existing benchmark functions.
+- `scripts/ife.py`: repo-local dispatcher that works without installing the project.
+- `Makefile`: shortcut targets for test, validity, re-audit, integrity, and evidence pass.
+
 ## Current Notes
 
 - `hard` is still part of the protocol vocabulary but is reserved and not emitted by the current generator.

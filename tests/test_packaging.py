@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import tomllib
 
 from kaggle import load_kaggle_staging_manifest, validate_kaggle_staging_manifest
 from schema import DIFFICULTY_VERSION, GENERATOR_VERSION, SPEC_VERSION, TEMPLATE_SET_VERSION
@@ -9,6 +10,7 @@ from splits import MANIFEST_VERSION, PARTITIONS, load_split_manifest
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 _KAGGLE_DIR = _REPO_ROOT / "packaging" / "kaggle"
+_PYPROJECT_PATH = _REPO_ROOT / "pyproject.toml"
 _NOTEBOOK_PATH = _KAGGLE_DIR / "iron_find_electric_v1_kaggle_staging.ipynb"
 _CARD_PATH = _KAGGLE_DIR / "BENCHMARK_CARD.md"
 _USAGE_PATH = _KAGGLE_DIR / "README.md"
@@ -21,6 +23,10 @@ def _read_notebook_sources() -> str:
         "".join(cell.get("source", ()))
         for cell in notebook["cells"]
     )
+
+
+def _load_pyproject() -> dict[str, object]:
+    return tomllib.loads(_PYPROJECT_PATH.read_text(encoding="utf-8"))
 
 
 def test_kaggle_staging_manifest_resolves_current_frozen_artifacts():
@@ -55,6 +61,20 @@ def test_kaggle_staging_manifest_resolves_current_frozen_artifacts():
         assert artifact["manifest_version"] == split_manifest.manifest_version
         assert artifact["seed_bank_version"] == split_manifest.seed_bank_version
         assert artifact["episode_split"] == split_manifest.episode_split.value
+
+
+def test_pyproject_exposes_local_console_entrypoints():
+    pyproject = _load_pyproject()
+
+    assert pyproject["project"]["name"] == "iron-find-electric"
+    assert pyproject["project"]["scripts"] == {
+        "ife": "core.cli:entrypoint",
+        "ife-test": "core.cli:test_entrypoint",
+        "ife-validity": "core.cli:validity_entrypoint",
+        "ife-reaudit": "core.cli:reaudit_entrypoint",
+        "ife-integrity": "core.cli:integrity_entrypoint",
+        "ife-evidence-pass": "core.cli:evidence_pass_entrypoint",
+    }
 
 
 def test_kaggle_staging_notebook_points_at_frozen_bundle_artifacts():

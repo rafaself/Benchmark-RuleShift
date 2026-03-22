@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "iron-find-electric"
+version = "0.0.0"
+description = "Local benchmark tooling for Iron Find Electric."
+requires-python = ">=3.12"
+
+[project.scripts]
+ife = "core.cli:entrypoint"
+ife-test = "core.cli:test_entrypoint"
+ife-validity = "core.cli:validity_entrypoint"
+ife-reaudit = "core.cli:reaudit_entrypoint"
+ife-integrity = "core.cli:integrity_entrypoint"
+ife-evidence-pass = "core.cli:evidence_pass_entrypoint"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+py-modules = [
+  "audit",
+  "baselines",
+  "generator",
+  "kaggle",
+  "metrics",
+  "parser",
+  "protocol",
+  "render",
+  "rules",
+  "schema",
+  "splits",
+  "validate",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["core*", "tasks*"]

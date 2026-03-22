@@ -114,6 +114,46 @@ Run the test suite:
 python3 -m pytest
 ```
 
+## Convenience Commands
+
+For local use, the repository now includes thin command wrappers over the existing
+benchmark functions.
+
+Without installing the project:
+
+```bash
+make test
+make validity
+make reaudit
+make integrity
+make evidence-pass
+```
+
+Or run the script dispatcher directly:
+
+```bash
+.venv/bin/python scripts/ife.py validity
+.venv/bin/python scripts/ife.py reaudit
+.venv/bin/python scripts/evidence_pass.py
+```
+
+If you want stable shell commands, install the repo in editable mode from a venv
+that includes the standard packaging backend (`setuptools`):
+
+```bash
+python3 -m pip install -e .
+```
+
+Then use:
+
+```bash
+ife-test
+ife-validity
+ife-reaudit
+ife-integrity
+ife-evidence-pass
+```
+
 ## Source of Truth
 
 The source of truth for the current project state is the implemented local benchmark stack in [`src/`](./src/), the frozen assets in [`src/frozen_splits/`](./src/frozen_splits/), and the local validation, audit, and test suite results. Supporting documents should describe that implemented state honestly; they are not a substitute for the code, frozen assets, and local validity checks.
