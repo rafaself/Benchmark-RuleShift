@@ -23,6 +23,7 @@ from tasks.iron_find_electric.schema import (
 
 __all__ = [
     "PARTITIONS",
+    "MANIFEST_VERSION",
     "FrozenSplitManifest",
     "FrozenSplitEpisode",
     "SplitDistributionSummary",
