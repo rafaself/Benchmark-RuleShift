@@ -12,7 +12,7 @@
   "entry_points": {
     "notebook": {
       "path": "packaging/kaggle/iron_find_electric_v1_kaggle_staging.ipynb",
-      "sha256": "3d869fdaebe66ac286b52b3e4e872f4a68893df6b3b2ed081903a37e604548f6"
+      "sha256": "0d3c67c77296dafa550e12d649b3d1ee63e93f7f633a273d7c03679497125603"
     },
     "benchmark_card": {
       "path": "packaging/kaggle/BENCHMARK_CARD.md",
@@ -20,7 +20,7 @@
     },
     "usage": {
       "path": "packaging/kaggle/README.md",
-      "sha256": "961cafdc72203ab394a314f6067af69faf8c6c78f489604ce6345f641fdc9eba"
+      "sha256": "0d255a4cdce1f0db51415e97ea12458c80c44544dc8fb7d904037a7db7128d49"
     },
     "packaging_note": {
       "path": "packaging/kaggle/PACKAGING_NOTE.md",

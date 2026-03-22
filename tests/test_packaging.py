@@ -86,6 +86,13 @@ def test_kaggle_staging_notebook_points_at_frozen_bundle_artifacts():
     assert "empirical_reaudit_r15" in sources
     assert "validate_kaggle_staging_manifest" in sources
     assert "load_split_manifest" in sources
+    assert "load_frozen_split" in sources
+    assert "run_model_benchmark" in sources
+    assert "ModelMode.BINARY" in sources
+    assert "ModelMode.NARRATIVE" in sources
+    assert "same_probe_targets" in sources
+    assert "Binary-only headline metric" in sources
+    assert "Narrative does not change the headline score" in sources
 
 
 def test_benchmark_card_matches_current_implementation_state():

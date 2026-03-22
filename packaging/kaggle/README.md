@@ -13,9 +13,10 @@ This directory packages the repaired benchmark for Kaggle staging without redefi
 
 1. Upload the repository contents needed by the notebook, keeping `src/`, `tests/fixtures/`, and `packaging/kaggle/` together.
 2. Open `iron_find_electric_v1_kaggle_staging.ipynb`.
-3. Run the notebook cells that validate the frozen artifact manifest, inspect the benchmark card, and load the frozen split manifests.
-4. Use Binary as the leaderboard-primary path and treat Narrative as the robustness companion.
-5. Keep Binary and Narrative on the same frozen episodes and probe targets; only the Binary score is headline, and only the final four labels are scored in Narrative.
+3. Run the notebook cells that validate the frozen artifact manifest, inspect the packaged benchmark resources, and load the frozen split manifests.
+4. Run the notebook staging dry run over the packaged frozen episodes in both Binary and Narrative modes.
+5. Keep Binary as the sole leaderboard-primary path and treat Narrative as the required robustness companion on the same episode order and probe targets.
+6. Confirm that parsing, scoring, and report rendering complete end to end, with Binary-only Post-shift Probe Accuracy as the headline metric.
 
 ## Reproducibility Notes
 
@@ -28,4 +29,4 @@ This directory packages the repaired benchmark for Kaggle staging without redefi
 
 - The notebook only requires Python and the files bundled in this repository.
 - No production dependency installation is needed for the staging notebook itself.
-- The repository does not bundle provider-specific model runs. Kaggle staging here validates assets and benchmark metadata; it does not supply external model inference.
+- The repository does not bundle provider-specific model runs. The notebook dry run validates packaged assets, parsing, scoring, and reporting without live external inference.
