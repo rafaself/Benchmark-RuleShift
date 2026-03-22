@@ -1,9 +1,15 @@
+import json
+from pathlib import Path
+
 from audit import (
     AuditSliceSummary,
     AuditSource,
     HeuristicAlignmentSummary,
+    MatchedModeComparisonSummary,
     ModeComparisonSummary,
     run_audit,
+    run_release_r15_reaudit,
+    serialize_release_r15_reaudit_report,
 )
 from baselines import (
     last_evidence_baseline,
@@ -28,6 +34,10 @@ from protocol import (
 )
 from rules import label
 from schema import DIFFICULTY_VERSION, Episode, EpisodeItem, ProbeMetadata
+
+_R15_REAUDIT_FIXTURE_PATH = (
+    Path(__file__).resolve().parent / "fixtures" / "release_r15_reaudit_report.json"
+)
 
 
 def _probe_sign_pattern(q1: int, q2: int) -> str:
@@ -175,9 +185,15 @@ def _episodes() -> tuple[Episode, ...]:
     )
 
 
-def _binary_source(episodes: tuple[Episode, ...]) -> AuditSource:
+def _binary_source(
+    episodes: tuple[Episode, ...],
+    *,
+    name: str = "binary_model",
+    source_family: str | None = None,
+    is_real_model: bool = False,
+) -> AuditSource:
     return AuditSource.from_parsed_predictions(
-        "binary_model",
+        name,
         (
             ParsedPrediction(
                 labels=template_position_baseline(episodes[0]),
@@ -189,12 +205,20 @@ def _binary_source(episodes: tuple[Episode, ...]) -> AuditSource:
             ),
         ),
         task_mode="Binary",
+        source_family=source_family,
+        is_real_model=is_real_model,
     )
 
 
-def _narrative_source(episodes: tuple[Episode, ...]) -> AuditSource:
+def _narrative_source(
+    episodes: tuple[Episode, ...],
+    *,
+    name: str = "narrative_model",
+    source_family: str | None = None,
+    is_real_model: bool = False,
+) -> AuditSource:
     return AuditSource.from_parsed_predictions(
-        "narrative_model",
+        name,
         (
             ParsedPrediction(
                 labels=episodes[0].probe_targets,
@@ -203,6 +227,8 @@ def _narrative_source(episodes: tuple[Episode, ...]) -> AuditSource:
             ParsedPrediction(labels=(), status=ParseStatus.INVALID),
         ),
         task_mode="Narrative",
+        source_family=source_family,
+        is_real_model=is_real_model,
     )
 
 
@@ -236,6 +262,10 @@ def _slice_map(summaries):
 
 def _failure_pattern_map(summary):
     return {pattern.pattern_name: pattern for pattern in summary.failure_patterns}
+
+
+def _load_release_r15_fixture():
+    return json.loads(_R15_REAUDIT_FIXTURE_PATH.read_text(encoding="utf-8"))
 
 
 def test_audit_results_are_deterministic_for_fixed_inputs():
@@ -414,3 +444,139 @@ def test_failure_pattern_summaries_are_computed_from_observable_prediction_agree
         pattern.pattern_name for pattern in source_summaries["last_evidence"].failure_patterns
     )
     assert "recency / last-evidence-like" not in last_evidence_patterns
+
+
+def test_release_r15_reaudit_matches_frozen_report_fixture():
+    report = run_release_r15_reaudit()
+
+    assert serialize_release_r15_reaudit_report(report) == _load_release_r15_fixture()
+
+
+def test_release_r15_reaudit_honestly_reports_absent_real_model_runs():
+    report = run_release_r15_reaudit(
+        episodes_by_split=(("dev", _episodes()),),
+    )
+
+    assert report.model_summaries == ()
+    assert report.matched_mode_comparisons == ()
+    assert report.difficulty_labels_present == ("easy", "medium")
+    assert report.difficulty_labels_missing == ("hard",)
+    assert report.limitations == (
+        "No emitted hard episodes in supplied set; hard slice omitted.",
+        "No structured model runs supplied; frozen R15 re-audit covers deterministic baselines only.",
+        "No matched Binary/Narrative model runs supplied; Binary vs Narrative comparison is unavailable.",
+        "Narrative remains a robustness companion and does not replace the primary Binary post-shift probe audit.",
+    )
+
+
+def test_release_r15_binary_vs_narrative_comparison_is_stable_on_matched_fixture_predictions():
+    episodes = _episodes()
+    report = run_release_r15_reaudit(
+        episodes_by_split=(("dev", episodes),),
+        model_sources_by_split=(
+            (
+                "dev",
+                (
+                    _binary_source(
+                        episodes,
+                        name="fixture_binary",
+                        source_family="fixture_pair",
+                    ),
+                    _narrative_source(
+                        episodes,
+                        name="fixture_narrative",
+                        source_family="fixture_pair",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+    assert report.matched_mode_comparisons == (
+        MatchedModeComparisonSummary(
+            source_family="fixture_pair",
+            binary_source_name="fixture_binary",
+            narrative_source_name="fixture_narrative",
+            covered_splits=("dev",),
+            overall=ModeComparisonSummary(
+                binary_accuracy=0.625,
+                narrative_accuracy=0.5,
+                accuracy_gap=0.125,
+                binary_parse_valid_rate=1.0,
+                narrative_parse_valid_rate=0.5,
+                parse_valid_rate_gap=0.5,
+            ),
+            by_template=(
+                (
+                    "T1",
+                    ModeComparisonSummary(
+                        binary_accuracy=0.25,
+                        narrative_accuracy=1.0,
+                        accuracy_gap=-0.75,
+                        binary_parse_valid_rate=1.0,
+                        narrative_parse_valid_rate=1.0,
+                        parse_valid_rate_gap=0.0,
+                    ),
+                ),
+                (
+                    "T2",
+                    ModeComparisonSummary(
+                        binary_accuracy=1.0,
+                        narrative_accuracy=0.0,
+                        accuracy_gap=1.0,
+                        binary_parse_valid_rate=1.0,
+                        narrative_parse_valid_rate=0.0,
+                        parse_valid_rate_gap=1.0,
+                    ),
+                ),
+            ),
+            by_difficulty=(
+                (
+                    "easy",
+                    ModeComparisonSummary(
+                        binary_accuracy=0.25,
+                        narrative_accuracy=1.0,
+                        accuracy_gap=-0.75,
+                        binary_parse_valid_rate=1.0,
+                        narrative_parse_valid_rate=1.0,
+                        parse_valid_rate_gap=0.0,
+                    ),
+                ),
+                (
+                    "medium",
+                    ModeComparisonSummary(
+                        binary_accuracy=1.0,
+                        narrative_accuracy=0.0,
+                        accuracy_gap=1.0,
+                        binary_parse_valid_rate=1.0,
+                        narrative_parse_valid_rate=0.0,
+                        parse_valid_rate_gap=1.0,
+                    ),
+                ),
+            ),
+        ),
+    )
+    assert report.model_summaries[0].by_difficulty == (
+        (
+            "easy",
+            AuditSliceSummary(
+                episode_count=1,
+                correct_probe_count=1,
+                total_probe_count=4,
+                accuracy=0.25,
+                valid_prediction_count=1,
+                parse_valid_rate=1.0,
+            ),
+        ),
+        (
+            "medium",
+            AuditSliceSummary(
+                episode_count=1,
+                correct_probe_count=4,
+                total_probe_count=4,
+                accuracy=1.0,
+                valid_prediction_count=1,
+                parse_valid_rate=1.0,
+            ),
+        ),
+    )
