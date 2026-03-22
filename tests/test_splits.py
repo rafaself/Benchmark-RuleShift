@@ -53,6 +53,8 @@ def test_frozen_split_records_preserve_manifest_metadata(partition: str):
     assert all(record.manifest_version == manifest.manifest_version for record in split_records)
     assert all(record.seed_bank_version == manifest.seed_bank_version for record in split_records)
     assert all(record.episode.split is manifest.episode_split for record in split_records)
+    assert manifest.manifest_version == "R14"
+    assert manifest.seed_bank_version.startswith("R14-")
 
 
 def test_partition_names_remain_external_to_episode_schema():
@@ -91,6 +93,20 @@ def test_audit_summaries_are_stable_across_repeated_runs():
     assert audit_result == audit_frozen_splits()
     assert audit_result.issues == ()
     assert tuple(partition for partition, _ in audit_result.per_partition) == PARTITIONS
+
+
+def test_split_audit_only_reports_emitted_difficulty_labels():
+    audit_result = audit_frozen_splits()
+
+    assert tuple(gap.label for gap in audit_result.cross_partition.difficulty) == (
+        "easy",
+        "medium",
+    )
+    for _, summary in audit_result.per_partition:
+        assert tuple(label for label, _ in summary.difficulty_counts) == (
+            "easy",
+            "medium",
+        )
 
 
 def test_overlap_seed_fails_with_clear_reason():

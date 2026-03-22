@@ -71,6 +71,11 @@ def _episode_from_payload(payload: dict[str, object]) -> Episode:
     return Episode(**normalized_payload)
 
 
+def _regenerate_fixture_episode(episode_fixture: dict[str, object]) -> Episode:
+    payload = episode_fixture["payload"]
+    return generate_episode(episode_fixture["seed"], split=payload["split"])
+
+
 def _parsed_payload(parsed_prediction: ParsedPrediction) -> dict[str, object]:
     return {
         "status": parsed_prediction.status.value,
@@ -332,7 +337,7 @@ def test_regression_fixture_blocks_schema_field_drift():
     fixture = _load_fixture()
 
     for episode_fixture in fixture["episodes"]:
-        payload = normalize_episode_payload(generate_episode(episode_fixture["seed"]))
+        payload = normalize_episode_payload(_regenerate_fixture_episode(episode_fixture))
         assert list(payload.keys()) == list(episode_fixture["payload"].keys())
         assert payload == episode_fixture["payload"]
 
@@ -341,7 +346,7 @@ def test_regression_fixture_blocks_render_drift():
     fixture = _load_fixture()
 
     for episode_fixture in fixture["episodes"]:
-        episode = generate_episode(episode_fixture["seed"])
+        episode = _regenerate_fixture_episode(episode_fixture)
         assert render_binary_prompt(episode) == episode_fixture["render"]["binary"]
         assert render_narrative_prompt(episode) == episode_fixture["render"]["narrative"]
 
@@ -365,7 +370,7 @@ def test_regression_fixture_blocks_metric_drift():
     narrative_predictions = []
     targets = []
     for episode_fixture in fixture["episodes"]:
-        episode = generate_episode(episode_fixture["seed"])
+        episode = _regenerate_fixture_episode(episode_fixture)
         binary_predictions.append(
             parse_binary_output(episode_fixture["parser"]["binary_text"])
         )
@@ -389,7 +394,7 @@ def test_regression_fixture_blocks_baseline_drift():
     random_seed = fixture["random_baseline_seed"]
 
     for episode_fixture in fixture["episodes"]:
-        episode = generate_episode(episode_fixture["seed"])
+        episode = _regenerate_fixture_episode(episode_fixture)
         assert [label.value for label in random_baseline(episode, seed=random_seed)] == episode_fixture["baselines"]["random"]
         assert [label.value for label in never_update_baseline(episode)] == episode_fixture["baselines"]["never_update"]
         assert [label.value for label in last_evidence_baseline(episode)] == episode_fixture["baselines"]["last_evidence"]

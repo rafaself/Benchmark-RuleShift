@@ -42,7 +42,7 @@ PARTITIONS: Final[tuple[str, ...]] = (
     "public_leaderboard",
     "private_leaderboard",
 )
-MANIFEST_VERSION: Final[str] = "R8"
+MANIFEST_VERSION: Final[str] = "R14"
 _MANIFEST_FIELD_ORDER: Final[tuple[str, ...]] = (
     "partition",
     "episode_split",
