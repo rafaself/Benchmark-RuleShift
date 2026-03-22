@@ -79,9 +79,18 @@ def test_run_gemini_first_panel_writes_paired_artifact_and_report(
                 mode=ModelMode.NARRATIVE,
             )
             if split_name == "dev" and index == 1:
-                response_text = "Reasoning without a valid final line."
+                responses[(ModelMode.NARRATIVE, narrative_prompt)] = (
+                    ModelRawResult.from_request(
+                        narrative_request,
+                        error_type="TimeoutError",
+                        error_message="timed out",
+                    )
+                )
+                continue
             elif split_name == "public_leaderboard" and index == 0:
                 response_text = _narrative_text(_wrong_labels(episode))
+            elif split_name == "private_leaderboard" and index == 1:
+                response_text = "Reasoning without a valid final line."
             else:
                 response_text = _narrative_text(episode.probe_targets)
             responses[(ModelMode.NARRATIVE, narrative_prompt)] = (
@@ -130,10 +139,16 @@ def test_run_gemini_first_panel_writes_paired_artifact_and_report(
         for row in payload["failure_taxonomy"]
         if row["scope"] == "overall" and row["mode"] == "Narrative"
     )
+    assert narrative_overall["runtime_error_rate"] > 0.0
     assert narrative_overall["parse_failure_rate"] > 0.0
     assert narrative_overall["adaptation_failure_rate"] > 0.0
 
+    first_dev_row = payload["splits"][0]["rows"][0]
+    assert first_dev_row["modes"]["binary"]["finish_reason"] is None
+
     assert "## Paired Robustness" in artifacts.report_markdown
     assert "## Failure Taxonomy" in artifacts.report_markdown
+    assert "| Scope | Mode | Provider/runtime error rate |" in artifacts.report_markdown
+    assert "Provider/runtime failures were observed in the live run." in artifacts.report_markdown
     assert "Binary-only headline metric: fake-model Binary =" in artifacts.report_markdown
     assert "Binary vs Narrative comparison is unavailable" not in artifacts.report_markdown

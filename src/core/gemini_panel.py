@@ -281,18 +281,20 @@ def render_gemini_first_panel_markdown(
                         "",
                         "## Failure Taxonomy",
                         "",
-                        "| Scope | Mode | Parse/format failure rate | Adaptation failure rate | Possible old-rule persistence rate | Possible recency overshoot rate |",
-                        "| --- | --- | ---: | ---: | ---: | ---: |",
+                        "| Scope | Mode | Provider/runtime error rate | Parse/format failure rate | Adaptation failure rate | Possible old-rule persistence rate | Possible recency overshoot rate |",
+                        "| --- | --- | ---: | ---: | ---: | ---: | ---: |",
                     ]
                 )
                 for row in taxonomy_rows:
                     if not isinstance(row, dict):
                         continue
                     lines.append(
-                        "| {scope} | {mode} | {parse_failure_rate:.6f} | {adaptation_failure_rate:.6f} | "
-                        "{possible_old_rule_persistence_rate:.6f} | {possible_recency_overshoot_rate:.6f} |".format(
+                        "| {scope} | {mode} | {runtime_error_rate:.6f} | {parse_failure_rate:.6f} | "
+                        "{adaptation_failure_rate:.6f} | {possible_old_rule_persistence_rate:.6f} | "
+                        "{possible_recency_overshoot_rate:.6f} |".format(
                             scope=row["scope"],
                             mode=row["mode"],
+                            runtime_error_rate=row["runtime_error_rate"],
                             parse_failure_rate=row["parse_failure_rate"],
                             adaptation_failure_rate=row["adaptation_failure_rate"],
                             possible_old_rule_persistence_rate=row[
@@ -309,6 +311,7 @@ def render_gemini_first_panel_markdown(
                         "Taxonomy rates are episode-level over scored outputs. Persistence and recency tags are diagnostic-only exact-match comparisons against `never_update` and `last_evidence`.",
                     ]
                 )
+            lines.extend(_build_live_execution_notes(artifact_payload))
     elif len(model_summaries) > 1:
         lines.extend(
             [
@@ -496,7 +499,10 @@ def _build_mode_row_payload(
 ) -> dict[str, object]:
     predicted_labels = tuple(row.parsed_prediction.labels)
     correct_probe_count = _count_correct_labels(row=row)
-    is_parse_failure = row.parsed_prediction.status is ParseStatus.INVALID
+    has_runtime_error = row.execution.raw_result.error_type is not None
+    is_parse_failure = (
+        not has_runtime_error and row.parsed_prediction.status is ParseStatus.INVALID
+    )
     is_adaptation_failure = (
         row.parsed_prediction.status is ParseStatus.VALID
         and correct_probe_count < len(episode.probe_targets)
@@ -507,7 +513,9 @@ def _build_mode_row_payload(
     possible_recency_overshoot = (
         is_adaptation_failure and predicted_labels == last_evidence_baseline(episode)
     )
-    if is_parse_failure:
+    if has_runtime_error:
+        failure_bucket = "runtime_error"
+    elif is_parse_failure:
         failure_bucket = "parse_failure"
     elif is_adaptation_failure:
         failure_bucket = "adaptation_failure"
@@ -524,6 +532,7 @@ def _build_mode_row_payload(
         "error_type": row.execution.raw_result.error_type,
         "error_message": row.execution.raw_result.error_message,
         "response_text": row.execution.raw_result.response_text,
+        "finish_reason": row.execution.raw_result.finish_reason,
     }
 
 
@@ -575,6 +584,9 @@ def _build_failure_taxonomy_for_scope(
         episode_count = len(mode_rows)
         if episode_count == 0:
             continue
+        runtime_error_count = sum(
+            mode_row["failure_bucket"] == "runtime_error" for mode_row in mode_rows
+        )
         parse_failure_count = sum(
             mode_row["failure_bucket"] == "parse_failure" for mode_row in mode_rows
         )
@@ -592,6 +604,7 @@ def _build_failure_taxonomy_for_scope(
                 "scope": scope_name,
                 "mode": mode_name,
                 "episode_count": episode_count,
+                "runtime_error_rate": runtime_error_count / episode_count,
                 "parse_failure_rate": parse_failure_count / episode_count,
                 "adaptation_failure_rate": adaptation_failure_count / episode_count,
                 "possible_old_rule_persistence_rate": (
@@ -603,6 +616,39 @@ def _build_failure_taxonomy_for_scope(
             }
         )
     return scope_rows
+
+
+def _build_live_execution_notes(artifact_payload: dict[str, object]) -> list[str]:
+    taxonomy_rows = tuple(artifact_payload.get("failure_taxonomy", ()))
+    if not taxonomy_rows:
+        return []
+
+    overall_rows = [
+        row
+        for row in taxonomy_rows
+        if isinstance(row, dict) and row.get("scope") == "overall"
+    ]
+    if not overall_rows:
+        return []
+
+    notes: list[str] = []
+    if any(float(row.get("runtime_error_rate", 0.0)) > 0.0 for row in overall_rows):
+        notes.extend(
+            [
+                "",
+                "## Live Execution Review",
+                "",
+            ]
+        )
+        if any(float(row.get("runtime_error_rate", 0.0)) >= 1.0 for row in overall_rows):
+            notes.append(
+                "All outputs in at least one prompt mode failed at the provider/runtime stage, so this run is not interpretable as a robustness finding and requires a rerun."
+            )
+        else:
+            notes.append(
+                "Provider/runtime failures were observed in the live run. Review them separately from true parse/format failures before drawing benchmark conclusions."
+            )
+    return notes
 
 
 def _pick_mode_summary(
