@@ -19,9 +19,10 @@ The repository currently implements:
 
 Current blockers and known limitations:
 
-- the recency shortcut baseline `last_evidence` is still too strong relative to the intended benchmark difficulty profile and remains the main current validity blocker;
+- the recency shortcut baseline `last_evidence` was materially reduced in the current re-audit surface, but private-leaderboard subset separation remains too weak for a clean validity pass;
 - `hard` remains a reserved difficulty label and is not currently emitted by the R3 generator;
-- Kaggle notebook packaging and benchmark-card publication belong after local validity repair rather than before it.
+- no real-model runs are bundled in-repo, so model-vs-heuristic separation remains unverified locally;
+- the Kaggle staging bundle under [`packaging/kaggle/`](./packaging/kaggle/) mirrors the repaired local benchmark state, but local validation remains the source of truth.
 
 ## Benchmark Shape
 
@@ -123,3 +124,5 @@ Supporting documents:
 - [`iron_find_electric_improved_plan.md`](./iron_find_electric_improved_plan.md): current repair roadmap and status notes.
 - [`src/README.md`](./src/README.md): source-tree overview and canonical package layout.
 - [`benchmark_design_section_cognitive_flexibility.md`](./benchmark_design_section_cognitive_flexibility.md): benchmark framing and explicit v1 limitations.
+- [`packaging/kaggle/BENCHMARK_CARD.md`](./packaging/kaggle/BENCHMARK_CARD.md): Kaggle-facing benchmark card tied to the current repaired implementation and bundled evidence.
+- [`packaging/kaggle/README.md`](./packaging/kaggle/README.md): concise Kaggle staging flow and reproducibility notes.

@@ -1,0 +1,74 @@
+{
+  "bundle_version": "R16",
+  "task_id": "iron_find_electric_v1",
+  "task_name": "Iron Find Electric v1",
+  "benchmark_versions": {
+    "manifest_version": "R14",
+    "spec_version": "v1",
+    "generator_version": "R12",
+    "template_set_version": "v1",
+    "difficulty_version": "R12"
+  },
+  "entry_points": {
+    "notebook": {
+      "path": "packaging/kaggle/iron_find_electric_v1_kaggle_staging.ipynb",
+      "sha256": "c7ad38ff68ad1cf8601f806ffda82b2961f6ee7cca634fb080572ff5ee8bd526"
+    },
+    "benchmark_card": {
+      "path": "packaging/kaggle/BENCHMARK_CARD.md",
+      "sha256": "f64b1baebf31630c8e71d72614247811fdd5efb798e7b184ae165f67684b9765"
+    },
+    "usage": {
+      "path": "packaging/kaggle/README.md",
+      "sha256": "dd0798541dc3808e04166ff827fc23bb84016ac468f6de95dbac1e44e368ba1b"
+    },
+    "packaging_note": {
+      "path": "packaging/kaggle/PACKAGING_NOTE.md",
+      "sha256": "131978f6f88f941c53384b17e262550ab076949fc4044850d25e86537601443e"
+    }
+  },
+  "frozen_split_manifests": {
+    "dev": {
+      "path": "src/frozen_splits/dev.json",
+      "sha256": "986f750f73549b42b9bcfc728d3d86f80d76ce57bc5013471740ec6e4773f403",
+      "manifest_version": "R14",
+      "seed_bank_version": "R14-dev-1",
+      "episode_split": "dev"
+    },
+    "public_leaderboard": {
+      "path": "src/frozen_splits/public_leaderboard.json",
+      "sha256": "6b884cbfd706db58d1b54925a21065f37daac32bfd128385bed729a816a1defb",
+      "manifest_version": "R14",
+      "seed_bank_version": "R14-public-1",
+      "episode_split": "public"
+    },
+    "private_leaderboard": {
+      "path": "src/frozen_splits/private_leaderboard.json",
+      "sha256": "30b7ec70b98075bd78b0ba7b4afd631c7735dab9fa40393fe1c9c8a9da6c7c56",
+      "manifest_version": "R14",
+      "seed_bank_version": "R14-private-1",
+      "episode_split": "private"
+    }
+  },
+  "evidence_reports": {
+    "anti_shortcut_validity_gate_r13": {
+      "path": "tests/fixtures/release_r13_validity_report.json",
+      "sha256": "f479de11d553d39af6cef1920fd92e09a2c45fde73defe6708bf8b583f96e804"
+    },
+    "empirical_reaudit_r15": {
+      "path": "tests/fixtures/release_r15_reaudit_report.json",
+      "sha256": "4e28518ce9f57de1cb58701a244504cb3f918ac9f2f750d2a395952c7d60f790"
+    }
+  },
+  "source_of_truth": [
+    "Local validation and audit outputs produced from the implemented code under src/ remain authoritative.",
+    "Kaggle staging replays frozen manifests and locally produced evidence; it does not redefine the benchmark."
+  ],
+  "current_emitted_difficulty_labels": [
+    "easy",
+    "medium"
+  ],
+  "reserved_difficulty_labels": [
+    "hard"
+  ]
+}
