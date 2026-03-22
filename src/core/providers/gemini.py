@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping
 import json
 import os
+from pathlib import Path
 import time
 
 from core.model_execution import (
@@ -86,12 +87,12 @@ class GeminiAdapter:
         client: object | None = None,
         client_factory: Callable[[str], object] | None = None,
     ) -> "GeminiAdapter":
-        normalized_env = dict(os.environ if env is None else env)
+        normalized_env = _build_env_mapping(env)
         api_key = normalized_env.get(GEMINI_API_KEY_ENV_VAR, "").strip()
         if not api_key:
             raise MissingGeminiApiKeyError(
-                f"{GEMINI_API_KEY_ENV_VAR} is not set. Export {GEMINI_API_KEY_ENV_VAR} "
-                "and rerun `ife gemini-first-panel`."
+                f"{GEMINI_API_KEY_ENV_VAR} is not set. Export {GEMINI_API_KEY_ENV_VAR} or add it "
+                "to the repo-root `.env`, then rerun `ife gemini-first-panel`."
             )
         return cls(
             api_key=api_key,
@@ -220,6 +221,48 @@ def _default_client_factory(api_key: str) -> object:
             "the Gemini benchmark panel."
         ) from exc
     return genai.Client(api_key=api_key)
+
+
+def _build_env_mapping(env: Mapping[str, str] | None) -> dict[str, str]:
+    normalized_env = _load_repo_root_dotenv()
+    normalized_env.update(os.environ)
+    if env is not None:
+        normalized_env.update(env)
+    return normalized_env
+
+
+def _load_repo_root_dotenv() -> dict[str, str]:
+    dotenv_path = _repo_root() / ".env"
+    if not dotenv_path.is_file():
+        return {}
+
+    parsed: dict[str, str] = {}
+    for raw_line in dotenv_path.read_text(encoding="utf-8").splitlines():
+        stripped = raw_line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        if stripped.startswith("export "):
+            stripped = stripped[len("export ") :].strip()
+        if "=" not in stripped:
+            continue
+
+        key, value = stripped.split("=", 1)
+        normalized_key = key.strip()
+        if not normalized_key:
+            continue
+        parsed[normalized_key] = _parse_dotenv_value(value)
+    return parsed
+
+
+def _parse_dotenv_value(value: str) -> str:
+    stripped = value.strip()
+    if len(stripped) >= 2 and stripped[0] == stripped[-1] and stripped[0] in {'"', "'"}:
+        return stripped[1:-1]
+    return stripped
+
+
+def _repo_root() -> Path:
+    return Path(__file__).resolve().parents[3]
 
 
 def _read_int_attr(value: object, attr_name: str) -> int | None:

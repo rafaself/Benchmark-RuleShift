@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sys
 import types
+from pathlib import Path
 
 import pytest
 
@@ -158,6 +159,67 @@ def test_gemini_adapter_reads_api_key_from_process_environment(
 
     assert result.succeeded is True
     assert len(models.calls) == 1
+
+
+def test_gemini_adapter_reads_api_key_from_repo_root_dotenv(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+):
+    models = _FakeModels(
+        response=_FakeResponse(parsed={"labels": ["attract", "repel", "repel", "attract"]})
+    )
+    _install_fake_google_genai(monkeypatch, models=models)
+    monkeypatch.delenv(GEMINI_API_KEY_ENV_VAR, raising=False)
+    (tmp_path / ".env").write_text(
+        "GEMINI_API_KEY=dotenv-key\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("core.providers.gemini._repo_root", lambda: tmp_path)
+
+    adapter = GeminiAdapter.from_env()
+    result = adapter.generate(
+        ModelRequest(
+            provider_name="gemini",
+            model_name="gemini-2.5-flash",
+            prompt_text="Benchmark prompt",
+            mode=ModelMode.BINARY,
+        ),
+        ModelRunConfig(),
+    )
+
+    assert result.succeeded is True
+    assert len(models.calls) == 1
+
+
+def test_process_environment_overrides_repo_root_dotenv(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+):
+    models = _FakeModels(
+        response=_FakeResponse(parsed={"labels": ["attract", "repel", "repel", "attract"]})
+    )
+    _install_fake_google_genai(monkeypatch, models=models)
+    (tmp_path / ".env").write_text(
+        "GEMINI_API_KEY=dotenv-key\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("core.providers.gemini._repo_root", lambda: tmp_path)
+    monkeypatch.setenv(GEMINI_API_KEY_ENV_VAR, "process-key")
+
+    adapter = GeminiAdapter.from_env()
+    result = adapter.generate(
+        ModelRequest(
+            provider_name="gemini",
+            model_name="gemini-2.5-flash",
+            prompt_text="Benchmark prompt",
+            mode=ModelMode.BINARY,
+        ),
+        ModelRunConfig(),
+    )
+
+    assert result.succeeded is True
+    assert len(models.calls) == 1
+    assert adapter._api_key == "process-key"
 
 
 def test_gemini_adapter_uses_json_text_fallback_for_binary_mapping(

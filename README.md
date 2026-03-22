@@ -24,7 +24,7 @@ Current blockers and known limitations:
 - no real-model runs are bundled in-repo, so model-vs-heuristic separation remains unverified locally;
 - the Kaggle staging bundle under [`packaging/kaggle/`](./packaging/kaggle/) mirrors the repaired local benchmark state, but local validation remains the source of truth.
 
-Optional real-model execution is available locally through the Gemini first-panel runner. It is not part of the deterministic main test gate and only runs when `GEMINI_API_KEY` is configured.
+Optional real-model execution is available locally through the Gemini first-panel runner. It is not part of the deterministic main test gate and only runs when `GEMINI_API_KEY` is configured, either in the shell environment or in a repo-root `.env` file.
 
 ## Benchmark Shape
 
@@ -146,6 +146,8 @@ To run the first real Gemini panel and write `reports/gemini_first_panel_report.
 export GEMINI_API_KEY=your_api_key_here
 .venv/bin/python scripts/ife.py gemini-first-panel
 ```
+
+Or place `GEMINI_API_KEY=...` in a repo-root `.env` file and run the same command.
 
 If you want stable shell commands, install the repo in editable mode from a venv
 that includes the standard packaging backend (`setuptools`):
