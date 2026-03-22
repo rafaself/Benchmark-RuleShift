@@ -1,6 +1,7 @@
 from generator import generate_episode
-from protocol import LABELED_ITEM_COUNT
+from protocol import LABELED_ITEM_COUNT, RuleName
 from render import render_binary_prompt, render_narrative_prompt
+from rules import label
 
 
 def _format_charge(charge: int) -> str:
@@ -123,8 +124,6 @@ def test_render_output_does_not_expose_hidden_metadata_or_target_labels():
 def test_binary_and_narrative_preserve_identical_probe_targets_from_the_source_episode():
     episode = make_valid_t2_episode()
 
-    assert tuple(metadata.new_rule_label for metadata in episode.probe_metadata) == episode.probe_targets
-
     binary_prompt = render_binary_prompt(episode)
     narrative_prompt = render_narrative_prompt(episode)
     for item in episode.items[LABELED_ITEM_COUNT:]:
@@ -136,6 +135,16 @@ def test_binary_and_narrative_preserve_identical_probe_targets_from_the_source_e
         assert binary_fragment in binary_prompt
         assert narrative_fragment in narrative_prompt
 
+    probe_items = episode.items[LABELED_ITEM_COUNT:]
+    global_rule_a_targets = tuple(
+        label(episode.rule_A, item.q1, item.q2) for item in probe_items
+    )
+    global_rule_b_targets = tuple(
+        label(episode.rule_B, item.q1, item.q2) for item in probe_items
+    )
+    assert episode.probe_targets != global_rule_a_targets
+    assert episode.probe_targets != global_rule_b_targets
+
 
 def test_output_instructions_explicitly_require_four_ordered_answers():
     episode = make_valid_t1_episode()
@@ -143,8 +152,7 @@ def test_output_instructions_explicitly_require_four_ordered_answers():
     narrative_prompt = render_narrative_prompt(episode)
 
     assert (
-        "Return exactly 4 labels in order, one per probe. "
-        "Use only attract or repel."
+        "Return exactly 4 labels in order, one per probe. Use only attract or repel."
     ) in binary_prompt
     assert (
         "Give brief reasoning, then write a final line in the form "

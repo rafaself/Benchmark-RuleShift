@@ -4,6 +4,7 @@ from unittest.mock import patch
 import pytest
 
 import tasks.iron_find_electric.generator as ife_generator
+from baselines import last_evidence_baseline
 from generator import generate_episode
 from protocol import (
     LABELED_ITEM_COUNT,
@@ -17,6 +18,16 @@ from protocol import (
 )
 from rules import label
 from schema import Episode
+
+
+def _probe_sign_pattern(q1: int, q2: int) -> str:
+    if q1 > 0 and q2 > 0:
+        return "++"
+    if q1 < 0 and q2 < 0:
+        return "--"
+    if q1 > 0 and q2 < 0:
+        return "+-"
+    return "-+"
 
 
 def test_same_seed_regenerates_the_same_episode():
@@ -104,11 +115,27 @@ def test_schema_fields_are_always_present():
 
 def test_generator_populates_canonical_row_metadata():
     episode = generate_episode(3)
+    probe_items = episode.items[LABELED_ITEM_COUNT:]
+    target_matches_new_rule = sum(
+        metadata.new_rule_label == target
+        for metadata, target in zip(episode.probe_metadata, episode.probe_targets)
+    )
+    target_matches_old_rule = sum(
+        metadata.old_rule_label == target
+        for metadata, target in zip(episode.probe_metadata, episode.probe_targets)
+    )
 
     assert episode.split is Split.DEV
     assert isinstance(episode.difficulty, Difficulty)
     assert episode.transition == Transition.from_rules(episode.rule_A, episode.rule_B)
-    assert tuple(metadata.new_rule_label for metadata in episode.probe_metadata) == episode.probe_targets
+    assert target_matches_new_rule == 2
+    assert target_matches_old_rule == 2
+    assert episode.probe_targets != tuple(
+        label(episode.rule_A, item.q1, item.q2) for item in probe_items
+    )
+    assert episode.probe_targets != tuple(
+        label(episode.rule_B, item.q1, item.q2) for item in probe_items
+    )
     assert episode.probe_label_counts == (
         (
             InteractionLabel.ATTRACT,
@@ -133,6 +160,44 @@ def test_valid_generated_episodes_have_post_shift_contradictions(seed):
     assert episode.contradiction_count_post >= 1
 
 
+@pytest.mark.parametrize("seed", range(64))
+def test_valid_generated_episodes_use_exactly_two_mixed_polarity_updated_sign_patterns(seed):
+    episode = generate_episode(seed)
+    updated_sign_patterns = {
+        _probe_sign_pattern(item.q1, item.q2)
+        for item in episode.items[episode.pre_count:LABELED_ITEM_COUNT]
+    }
+
+    assert len(updated_sign_patterns) == 2
+    assert any(pattern in {"++", "--"} for pattern in updated_sign_patterns)
+    assert any(pattern in {"+-", "-+"} for pattern in updated_sign_patterns)
+
+
+@pytest.mark.parametrize("seed", range(64))
+def test_valid_generated_episodes_cover_each_probe_sign_pattern_once(seed):
+    episode = generate_episode(seed)
+
+    assert episode.probe_sign_pattern_counts == (
+        ("++", 1),
+        ("--", 1),
+        ("+-", 1),
+        ("-+", 1),
+    )
+
+
+@pytest.mark.parametrize("seed", range(64))
+def test_valid_generated_episodes_are_not_global_rule_probe_blocks(seed):
+    episode = generate_episode(seed)
+    probe_items = episode.items[LABELED_ITEM_COUNT:]
+
+    assert episode.probe_targets != tuple(
+        label(episode.rule_A, item.q1, item.q2) for item in probe_items
+    )
+    assert episode.probe_targets != tuple(
+        label(episode.rule_B, item.q1, item.q2) for item in probe_items
+    )
+
+
 @pytest.mark.parametrize("seed", range(10))
 def test_labeled_items_use_the_active_rule_engine_label(seed):
     episode = generate_episode(seed)
@@ -144,38 +209,48 @@ def test_labeled_items_use_the_active_rule_engine_label(seed):
 def test_invalid_candidates_are_rejected_by_deterministic_resampling():
     invalid_candidate = (
         (1, 1),
-        (1, -1),
         (-1, 1),
         (-2, -2),
         (2, -2),
-        (3, 3),
-        (-3, -3),
-        (2, 2),
-        (-1, -1),
+        (1, 2),
+        (2, 3),
+        (-3, -2),
+        (3, -1),
+        (-2, 3),
     )
     valid_candidate = (
         (1, 1),
-        (1, -1),
         (-1, 1),
         (-2, -2),
         (2, -2),
-        (3, 3),
-        (3, -3),
-        (-3, 3),
-        (-1, -1),
+        (-1, -2),
+        (2, 3),
+        (-3, -2),
+        (3, -1),
+        (-2, 3),
     )
 
-    with patch.object(
-        ife_generator,
-        "_sample_pairs",
-        side_effect=(invalid_candidate, valid_candidate),
-    ) as sample_pairs:
-        episode = generate_episode(1)
+    with patch.object(ife_generator.random.Random, "choice") as random_choice:
+        random_choice.side_effect = (
+            ife_generator.RuleName.R_STD,
+            TemplateId.T1,
+        )
+        with patch.object(
+            ife_generator,
+            "_sample_pairs",
+            side_effect=(invalid_candidate, valid_candidate),
+        ) as sample_pairs:
+            episode = generate_episode(1)
 
     assert sample_pairs.call_count == 2
     assert tuple((item.q1, item.q2) for item in episode.items) == valid_candidate
     assert episode.contradiction_count_post >= 1
-    assert len(set(episode.probe_targets)) >= 2
+    assert episode.probe_sign_pattern_counts == (
+        ("++", 1),
+        ("--", 1),
+        ("+-", 1),
+        ("-+", 1),
+    )
 
 
 @pytest.mark.parametrize("seed", range(64))
@@ -221,4 +296,27 @@ def test_emitted_metadata_fields_are_consistent_with_episode_contents(seed):
         ),
     )
     assert episode.probe_sign_pattern_counts == expected_sign_pattern_counts
-    assert episode.difficulty_version == "R3"
+    assert episode.probe_sign_pattern_counts == (
+        ("++", 1),
+        ("--", 1),
+        ("+-", 1),
+        ("-+", 1),
+    )
+    assert episode.difficulty_version == "R12"
+
+
+def test_last_evidence_is_capped_on_representative_r12_sample():
+    exact_match_count = 0
+    total_probe_accuracy = 0.0
+
+    for seed in range(64):
+        episode = generate_episode(seed)
+        prediction = last_evidence_baseline(episode)
+        exact_match_count += int(prediction == episode.probe_targets)
+        total_probe_accuracy += sum(
+            label_value == target
+            for label_value, target in zip(prediction, episode.probe_targets)
+        ) / 4
+
+    assert exact_match_count == 0
+    assert total_probe_accuracy / 64 == 0.5

@@ -8,11 +8,13 @@ __all__ = ["render_binary_prompt", "render_narrative_prompt"]
 _BINARY_INTRO = (
     "You are given labeled interactions between two electric charges.\n"
     "Each labeled line shows q1, q2, and the observed result.\n"
-    "Infer the interaction pattern supported by the full sequence, then answer the final unlabeled cases."
+    "Use the full sequence to infer which sign combinations were revised by the later evidence, "
+    "then answer the final unlabeled cases."
 )
 _NARRATIVE_INTRO = (
     "Two electric charges were observed interacting in the following sequence.\n"
-    "Use the pattern best supported by the labeled observations to answer the unlabeled observations at the end."
+    "Use the full sequence to infer which sign combinations were revised by the later evidence, "
+    "then answer the unlabeled observations at the end."
 )
 _BINARY_OUTRO = (
     "Return exactly 4 labels in order, one per probe. "

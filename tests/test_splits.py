@@ -133,7 +133,7 @@ def test_overlap_payload_fails_with_clear_reason():
     public_record = all_splits["public_leaderboard"][0]
     duplicated_episode = replace(
         dev_record.episode,
-        episode_id="ife-r3-payload-copy",
+        episode_id="ife-r12-payload-copy",
         split=public_record.episode.split,
     )
     duplicated_public_record = replace(public_record, episode=duplicated_episode)

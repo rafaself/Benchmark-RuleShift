@@ -4,9 +4,9 @@
   "manifest_version": "R8",
   "seed_bank_version": "R8-public-1",
   "spec_version": "v1",
-  "generator_version": "R3",
+  "generator_version": "R12",
   "template_set_version": "v1",
-  "difficulty_version": "R3",
+  "difficulty_version": "R12",
   "seeds": [
     2059,
     2060,

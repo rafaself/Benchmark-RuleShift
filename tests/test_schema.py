@@ -31,23 +31,23 @@ def make_valid_t1_episode() -> Episode:
             kind=ItemKind.LABELED,
             q1=1,
             q2=2,
-            label=InteractionLabel.REPEL,
+            label=InteractionLabel.ATTRACT,
         ),
         EpisodeItem(
             position=2,
             phase=Phase.PRE,
             kind=ItemKind.LABELED,
             q1=-1,
-            q2=-2,
-            label=InteractionLabel.REPEL,
+            q2=1,
+            label=InteractionLabel.ATTRACT,
         ),
         EpisodeItem(
             position=3,
             phase=Phase.POST,
             kind=ItemKind.LABELED,
-            q1=1,
-            q2=-1,
-            label=InteractionLabel.REPEL,
+            q1=-2,
+            q2=-3,
+            label=InteractionLabel.ATTRACT,
         ),
         EpisodeItem(
             position=4,
@@ -61,41 +61,41 @@ def make_valid_t1_episode() -> Episode:
             position=5,
             phase=Phase.POST,
             kind=ItemKind.LABELED,
-            q1=-3,
-            q2=3,
-            label=InteractionLabel.REPEL,
+            q1=-1,
+            q2=-2,
+            label=InteractionLabel.ATTRACT,
         ),
         EpisodeItem(
             position=6,
-            phase=Phase.POST,
-            kind=ItemKind.PROBE,
-            q1=1,
-            q2=3,
-        ),
-        EpisodeItem(
-            position=7,
-            phase=Phase.POST,
-            kind=ItemKind.PROBE,
-            q1=-1,
-            q2=3,
-        ),
-        EpisodeItem(
-            position=8,
             phase=Phase.POST,
             kind=ItemKind.PROBE,
             q1=2,
             q2=3,
         ),
         EpisodeItem(
+            position=7,
+            phase=Phase.POST,
+            kind=ItemKind.PROBE,
+            q1=-3,
+            q2=-2,
+        ),
+        EpisodeItem(
+            position=8,
+            phase=Phase.POST,
+            kind=ItemKind.PROBE,
+            q1=3,
+            q2=-1,
+        ),
+        EpisodeItem(
             position=9,
             phase=Phase.POST,
             kind=ItemKind.PROBE,
             q1=-2,
-            q2=-3,
+            q2=3,
         ),
     )
     return Episode(
-        episode_id="ife-r3-schema-t1",
+        episode_id="ife-r12-schema-t1",
         split=Split.DEV,
         difficulty=Difficulty.EASY,
         template_id=TemplateId.T1,
@@ -108,19 +108,19 @@ def make_valid_t1_episode() -> Episode:
         contradiction_count_post=3,
         items=items,
         probe_targets=(
+            InteractionLabel.REPEL,
             InteractionLabel.ATTRACT,
             InteractionLabel.REPEL,
             InteractionLabel.ATTRACT,
-            InteractionLabel.ATTRACT,
         ),
         probe_label_counts=(
-            (InteractionLabel.ATTRACT, 3),
-            (InteractionLabel.REPEL, 1),
+            (InteractionLabel.ATTRACT, 2),
+            (InteractionLabel.REPEL, 2),
         ),
         probe_sign_pattern_counts=(
-            ("++", 2),
+            ("++", 1),
             ("--", 1),
-            ("+-", 0),
+            ("+-", 1),
             ("-+", 1),
         ),
         probe_metadata=(
@@ -133,20 +133,20 @@ def make_valid_t1_episode() -> Episode:
             ProbeMetadata(
                 position=7,
                 is_disagreement_probe=True,
-                old_rule_label=InteractionLabel.ATTRACT,
-                new_rule_label=InteractionLabel.REPEL,
+                old_rule_label=InteractionLabel.REPEL,
+                new_rule_label=InteractionLabel.ATTRACT,
             ),
             ProbeMetadata(
                 position=8,
                 is_disagreement_probe=True,
-                old_rule_label=InteractionLabel.REPEL,
-                new_rule_label=InteractionLabel.ATTRACT,
+                old_rule_label=InteractionLabel.ATTRACT,
+                new_rule_label=InteractionLabel.REPEL,
             ),
             ProbeMetadata(
                 position=9,
                 is_disagreement_probe=True,
-                old_rule_label=InteractionLabel.REPEL,
-                new_rule_label=InteractionLabel.ATTRACT,
+                old_rule_label=InteractionLabel.ATTRACT,
+                new_rule_label=InteractionLabel.REPEL,
             ),
         ),
         difficulty_version=DIFFICULTY_VERSION,
@@ -161,7 +161,7 @@ def make_valid_t2_episode() -> Episode:
             kind=ItemKind.LABELED,
             q1=1,
             q2=2,
-            label=InteractionLabel.REPEL,
+            label=InteractionLabel.ATTRACT,
         ),
         EpisodeItem(
             position=2,
@@ -169,7 +169,7 @@ def make_valid_t2_episode() -> Episode:
             kind=ItemKind.LABELED,
             q1=-1,
             q2=2,
-            label=InteractionLabel.ATTRACT,
+            label=InteractionLabel.REPEL,
         ),
         EpisodeItem(
             position=3,
@@ -177,23 +177,23 @@ def make_valid_t2_episode() -> Episode:
             kind=ItemKind.LABELED,
             q1=-2,
             q2=-3,
-            label=InteractionLabel.REPEL,
+            label=InteractionLabel.ATTRACT,
         ),
         EpisodeItem(
             position=4,
             phase=Phase.POST,
             kind=ItemKind.LABELED,
-            q1=1,
-            q2=-1,
+            q1=2,
+            q2=3,
             label=InteractionLabel.REPEL,
         ),
         EpisodeItem(
             position=5,
             phase=Phase.POST,
             kind=ItemKind.LABELED,
-            q1=2,
-            q2=-2,
-            label=InteractionLabel.REPEL,
+            q1=-2,
+            q2=1,
+            label=InteractionLabel.ATTRACT,
         ),
         EpisodeItem(
             position=6,
@@ -207,58 +207,58 @@ def make_valid_t2_episode() -> Episode:
             phase=Phase.POST,
             kind=ItemKind.PROBE,
             q1=-1,
-            q2=3,
+            q2=-3,
         ),
         EpisodeItem(
             position=8,
             phase=Phase.POST,
             kind=ItemKind.PROBE,
-            q1=-2,
+            q1=2,
             q2=-1,
         ),
         EpisodeItem(
             position=9,
             phase=Phase.POST,
             kind=ItemKind.PROBE,
-            q1=2,
-            q2=1,
+            q1=-3,
+            q2=2,
         ),
     )
     return Episode(
-        episode_id="ife-r3-schema-t2",
+        episode_id="ife-r12-schema-t2",
         split=Split.DEV,
         difficulty=Difficulty.MEDIUM,
         template_id=TemplateId.T2,
-        rule_A=RuleName.R_STD,
-        rule_B=RuleName.R_INV,
-        transition=Transition.R_STD_TO_R_INV,
+        rule_A=RuleName.R_INV,
+        rule_B=RuleName.R_STD,
+        transition=Transition.R_INV_TO_R_STD,
         pre_count=3,
         post_labeled_count=2,
         shift_after_position=3,
         contradiction_count_post=2,
         items=items,
         probe_targets=(
+            InteractionLabel.REPEL,
             InteractionLabel.ATTRACT,
             InteractionLabel.REPEL,
             InteractionLabel.ATTRACT,
-            InteractionLabel.ATTRACT,
         ),
         probe_label_counts=(
-            (InteractionLabel.ATTRACT, 3),
-            (InteractionLabel.REPEL, 1),
+            (InteractionLabel.ATTRACT, 2),
+            (InteractionLabel.REPEL, 2),
         ),
         probe_sign_pattern_counts=(
-            ("++", 2),
+            ("++", 1),
             ("--", 1),
-            ("+-", 0),
+            ("+-", 1),
             ("-+", 1),
         ),
         probe_metadata=(
             ProbeMetadata(
                 position=6,
                 is_disagreement_probe=True,
-                old_rule_label=InteractionLabel.REPEL,
-                new_rule_label=InteractionLabel.ATTRACT,
+                old_rule_label=InteractionLabel.ATTRACT,
+                new_rule_label=InteractionLabel.REPEL,
             ),
             ProbeMetadata(
                 position=7,
@@ -286,7 +286,7 @@ def make_valid_t2_episode() -> Episode:
 def test_schema_accepts_valid_t1_episode():
     episode = make_valid_t1_episode()
 
-    assert episode.episode_id == "ife-r3-schema-t1"
+    assert episode.episode_id == "ife-r12-schema-t1"
     assert len(episode.items) == 9
     assert episode.difficulty is Difficulty.EASY
 
@@ -294,7 +294,7 @@ def test_schema_accepts_valid_t1_episode():
 def test_schema_accepts_valid_t2_episode():
     episode = make_valid_t2_episode()
 
-    assert episode.episode_id == "ife-r3-schema-t2"
+    assert episode.episode_id == "ife-r12-schema-t2"
     assert len(episode.items) == 9
     assert episode.difficulty is Difficulty.MEDIUM
 
@@ -397,7 +397,7 @@ def test_schema_rejects_invalid_total_item_count():
 def test_schema_requires_probe_targets_to_match_probe_items():
     episode = make_valid_t1_episode()
 
-    with pytest.raises(ValueError, match="probe_targets must match rule_B labels"):
+    with pytest.raises(ValueError, match="probe_targets must match slice-local derived labels"):
         replace(
             episode,
             probe_targets=(
@@ -425,66 +425,9 @@ def test_schema_requires_probe_metadata_to_match_probe_items():
 
 def test_schema_rejects_homogeneous_probe_targets():
     episode = make_valid_t1_episode()
-    invalid_items = list(episode.items)
-    invalid_items[5] = EpisodeItem(
-        position=6,
-        phase=Phase.POST,
-        kind=ItemKind.PROBE,
-        q1=1,
-        q2=3,
-    )
-    invalid_items[6] = EpisodeItem(
-        position=7,
-        phase=Phase.POST,
-        kind=ItemKind.PROBE,
-        q1=2,
-        q2=3,
-    )
-    invalid_items[7] = EpisodeItem(
-        position=8,
-        phase=Phase.POST,
-        kind=ItemKind.PROBE,
-        q1=-1,
-        q2=-3,
-    )
-    invalid_items[8] = EpisodeItem(
-        position=9,
-        phase=Phase.POST,
-        kind=ItemKind.PROBE,
-        q1=-2,
-        q2=-3,
-    )
-    invalid_probe_metadata = (
-        ProbeMetadata(
-            position=6,
-            is_disagreement_probe=True,
-            old_rule_label=InteractionLabel.REPEL,
-            new_rule_label=InteractionLabel.ATTRACT,
-        ),
-        ProbeMetadata(
-            position=7,
-            is_disagreement_probe=True,
-            old_rule_label=InteractionLabel.REPEL,
-            new_rule_label=InteractionLabel.ATTRACT,
-        ),
-        ProbeMetadata(
-            position=8,
-            is_disagreement_probe=True,
-            old_rule_label=InteractionLabel.REPEL,
-            new_rule_label=InteractionLabel.ATTRACT,
-        ),
-        ProbeMetadata(
-            position=9,
-            is_disagreement_probe=True,
-            old_rule_label=InteractionLabel.REPEL,
-            new_rule_label=InteractionLabel.ATTRACT,
-        ),
-    )
-
-    with pytest.raises(ValueError, match="at least two distinct labels"):
+    with pytest.raises(ValueError, match="slice-local derived labels"):
         replace(
             episode,
-            items=tuple(invalid_items),
             probe_targets=(
                 InteractionLabel.ATTRACT,
                 InteractionLabel.ATTRACT,
@@ -495,7 +438,6 @@ def test_schema_rejects_homogeneous_probe_targets():
                 (InteractionLabel.ATTRACT, 4),
                 (InteractionLabel.REPEL, 0),
             ),
-            probe_metadata=invalid_probe_metadata,
         )
 
 
@@ -513,8 +455,8 @@ def test_schema_requires_canonical_probe_label_counts():
         replace(
             episode,
             probe_label_counts=(
-                (InteractionLabel.ATTRACT, 2),
-                (InteractionLabel.REPEL, 2),
+                (InteractionLabel.ATTRACT, 1),
+                (InteractionLabel.REPEL, 3),
             ),
         )
 
@@ -526,8 +468,8 @@ def test_schema_requires_canonical_probe_sign_pattern_counts():
         replace(
             episode,
             probe_sign_pattern_counts=(
-                ("++", 1),
-                ("--", 1),
+                ("++", 2),
+                ("--", 0),
                 ("+-", 1),
                 ("-+", 1),
             ),

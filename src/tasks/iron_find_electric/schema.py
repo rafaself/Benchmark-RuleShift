@@ -39,9 +39,9 @@ __all__ = [
 ]
 
 SPEC_VERSION: Final[str] = "v1"
-GENERATOR_VERSION: Final[str] = "R3"
+GENERATOR_VERSION: Final[str] = "R12"
 TEMPLATE_SET_VERSION: Final[str] = "v1"
-DIFFICULTY_VERSION: Final[str] = "R3"
+DIFFICULTY_VERSION: Final[str] = "R12"
 
 _PROBE_LABEL_ORDER: Final[tuple[InteractionLabel, ...]] = (
     InteractionLabel.ATTRACT,
@@ -62,6 +62,67 @@ def _probe_sign_pattern(q1: int, q2: int) -> str:
     if q1 > 0 and q2 < 0:
         return "+-"
     return "-+"
+
+
+def _is_same_sign_pattern(pattern: str) -> bool:
+    return pattern in {"++", "--"}
+
+
+def _build_updated_sign_patterns(
+    post_labeled_items: tuple["EpisodeItem", ...],
+) -> frozenset[str]:
+    return frozenset(_probe_sign_pattern(item.q1, item.q2) for item in post_labeled_items)
+
+
+def _has_mixed_polarity_sign_patterns(patterns: frozenset[str]) -> bool:
+    return (
+        len(patterns) == 2
+        and any(_is_same_sign_pattern(pattern) for pattern in patterns)
+        and any(not _is_same_sign_pattern(pattern) for pattern in patterns)
+    )
+
+
+def _effective_probe_label(
+    rule_a: RuleName,
+    rule_b: RuleName,
+    q1: int,
+    q2: int,
+    updated_sign_patterns: frozenset[str],
+) -> InteractionLabel:
+    active_rule = (
+        rule_b
+        if _probe_sign_pattern(q1, q2) in updated_sign_patterns
+        else rule_a
+    )
+    return label(active_rule, q1, q2)
+
+
+def _build_effective_probe_targets(
+    probe_items: tuple["EpisodeItem", ...],
+    rule_a: RuleName,
+    rule_b: RuleName,
+    updated_sign_patterns: frozenset[str],
+) -> tuple[InteractionLabel, ...]:
+    return tuple(
+        _effective_probe_label(
+            rule_a,
+            rule_b,
+            item.q1,
+            item.q2,
+            updated_sign_patterns,
+        )
+        for item in probe_items
+    )
+
+
+def _is_global_rule_probe_block(
+    probe_items: tuple["EpisodeItem", ...],
+    probe_targets: tuple[InteractionLabel, ...],
+    rule_name: RuleName,
+) -> bool:
+    return probe_targets == tuple(
+        label(rule_name, item.q1, item.q2) for item in probe_items
+    )
 
 
 def _build_probe_label_counts(
@@ -303,6 +364,7 @@ class Episode:
 
         labeled_items = normalized_items[:LABELED_ITEM_COUNT]
         probe_items = normalized_items[LABELED_ITEM_COUNT:]
+        post_labeled_items = labeled_items[self.pre_count :]
 
         if len(probe_items) != PROBE_COUNT:
             raise ValueError(f"items must contain exactly {PROBE_COUNT} probes")
@@ -322,6 +384,16 @@ class Episode:
 
         if any(item.phase is not Phase.POST for item in probe_items):
             raise ValueError("probe items must use the post phase")
+
+        updated_sign_patterns = _build_updated_sign_patterns(post_labeled_items)
+        if len(updated_sign_patterns) != 2:
+            raise ValueError(
+                "post-shift labeled items must cover exactly two distinct sign patterns"
+            )
+        if not _has_mixed_polarity_sign_patterns(updated_sign_patterns):
+            raise ValueError(
+                "post-shift labeled items must cover one same-sign and one opposite-sign pattern"
+            )
 
         pairs = tuple((item.q1, item.q2) for item in normalized_items)
         if len(set(pairs)) != len(pairs):
@@ -358,13 +430,26 @@ class Episode:
         if actual_probe_positions != expected_probe_positions:
             raise ValueError("probe_metadata positions must match probe item positions")
 
-        expected_probe_targets = tuple(
-            label(self.rule_B, item.q1, item.q2) for item in probe_items
+        expected_probe_targets = _build_effective_probe_targets(
+            probe_items,
+            self.rule_A,
+            self.rule_B,
+            updated_sign_patterns,
         )
         if normalized_probe_targets != expected_probe_targets:
-            raise ValueError("probe_targets must match rule_B labels for probe items")
+            raise ValueError(
+                "probe_targets must match slice-local derived labels for probe items"
+            )
         if not _has_both_probe_labels(normalized_probe_targets):
             raise ValueError("probe_targets must contain at least two distinct labels")
+        if _is_global_rule_probe_block(probe_items, normalized_probe_targets, self.rule_A):
+            raise ValueError(
+                "probe_targets must not collapse to the global rule_A probe block"
+            )
+        if _is_global_rule_probe_block(probe_items, normalized_probe_targets, self.rule_B):
+            raise ValueError(
+                "probe_targets must not collapse to the global rule_B probe block"
+            )
 
         expected_probe_metadata = tuple(
             ProbeMetadata(
@@ -380,10 +465,6 @@ class Episode:
             raise ValueError(
                 "probe_metadata must match the derived rule labels for probe items"
             )
-        if normalized_probe_targets != tuple(
-            metadata.new_rule_label for metadata in normalized_probe_metadata
-        ):
-            raise ValueError("probe_targets must match probe_metadata new_rule_label values")
 
         expected_contradiction_count_post = _build_contradiction_count_post(
             labeled_items,
@@ -409,6 +490,12 @@ class Episode:
             raise ValueError(
                 "probe_sign_pattern_counts must match canonical sign-pattern counts for probe items"
             )
+        if normalized_probe_sign_pattern_counts != tuple(
+            (pattern, 1) for pattern in _PROBE_SIGN_PATTERN_ORDER
+        ):
+            raise ValueError(
+                "probe_sign_pattern_counts must cover each sign pattern exactly once"
+            )
 
         expected_difficulty = _derive_difficulty(
             self.template_id,
@@ -416,7 +503,7 @@ class Episode:
             normalized_probe_targets,
         )
         if self.difficulty is not expected_difficulty:
-            raise ValueError("difficulty must match the derived R3 difficulty rules")
+            raise ValueError("difficulty must match the derived R12 difficulty rules")
 
         if self.difficulty_version != DIFFICULTY_VERSION:
             raise ValueError(

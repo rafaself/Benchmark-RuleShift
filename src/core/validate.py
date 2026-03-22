@@ -46,7 +46,7 @@ __all__ = [
     "validate_dataset",
 ]
 
-_EPISODE_ID_PATTERN = re.compile(r"^ife-r3-(\d+)$")
+_EPISODE_ID_PATTERN = re.compile(r"^ife-r12-(\d+)$")
 _TEMPLATE_ORDER = (TemplateId.T1.value, TemplateId.T2.value)
 _TRANSITION_ORDER = (
     Transition.R_STD_TO_R_INV.value,
@@ -241,6 +241,28 @@ def validate_episode(
                 "labeled/probe phases must respect pre/post boundaries",
             )
 
+    updated_sign_patterns = _derive_updated_sign_patterns(
+        labeled_items=labeled_items,
+        pre_count=pre_count,
+    )
+    if updated_sign_patterns is None:
+        if isinstance(pre_count, int) and len(items) >= LABELED_ITEM_COUNT:
+            add_issue(
+                "invalid_updated_sign_patterns",
+                "post-shift labeled items must use supported charge values",
+            )
+    else:
+        if len(updated_sign_patterns) != 2:
+            add_issue(
+                "invalid_updated_sign_patterns",
+                "post-shift labeled items must cover exactly two distinct sign patterns",
+            )
+        elif not _has_mixed_polarity_sign_patterns(updated_sign_patterns):
+            add_issue(
+                "invalid_updated_sign_patterns",
+                "post-shift labeled items must cover one same-sign and one opposite-sign pattern",
+            )
+
     pair_values = tuple(
         (getattr(item, "q1", None), getattr(item, "q2", None))
         for item in items
@@ -295,17 +317,50 @@ def validate_episode(
 
     if (
         normalized_probe_targets is not None
+        and rule_a is not None
         and rule_b is not None
+        and updated_sign_patterns is not None
         and len(probe_items) == PROBE_COUNT
     ):
         expected_probe_targets = tuple(
-            _safe_label(rule_b, getattr(item, "q1", None), getattr(item, "q2", None))
+            _safe_effective_probe_label(
+                rule_a,
+                rule_b,
+                getattr(item, "q1", None),
+                getattr(item, "q2", None),
+                updated_sign_patterns,
+            )
             for item in probe_items
         )
         if None in expected_probe_targets or normalized_probe_targets != expected_probe_targets:
             add_issue(
                 "invalid_probe_targets",
-                "probe_targets must match rule_B labels for the probe items",
+                "probe_targets must match slice-local derived labels for the probe items",
+            )
+
+        global_rule_a_targets = tuple(
+            _safe_label(rule_a, getattr(item, "q1", None), getattr(item, "q2", None))
+            for item in probe_items
+        )
+        global_rule_b_targets = tuple(
+            _safe_label(rule_b, getattr(item, "q1", None), getattr(item, "q2", None))
+            for item in probe_items
+        )
+        if (
+            None not in global_rule_a_targets
+            and normalized_probe_targets == global_rule_a_targets
+        ):
+            add_issue(
+                "persistence_collapsible_probe_block",
+                "probe_targets must not collapse to the global rule_A probe block",
+            )
+        if (
+            None not in global_rule_b_targets
+            and normalized_probe_targets == global_rule_b_targets
+        ):
+            add_issue(
+                "recency_collapsible_probe_block",
+                "probe_targets must not collapse to the global rule_B probe block",
             )
 
     normalized_probe_metadata = _normalize_probe_metadata(
@@ -327,13 +382,6 @@ def validate_episode(
             add_issue(
                 "invalid_probe_metadata",
                 "probe_metadata must match derived rule labels for the probe items",
-            )
-        elif normalized_probe_targets is not None and normalized_probe_targets != tuple(
-            metadata.new_rule_label for metadata in normalized_probe_metadata
-        ):
-            add_issue(
-                "invalid_probe_metadata",
-                "probe_metadata new_rule_label values must match probe_targets",
             )
 
     if rule_a is not None and rule_b is not None and isinstance(pre_count, int):
@@ -411,6 +459,15 @@ def validate_episode(
             "invalid_episode_metadata",
             "probe_sign_pattern_counts must match canonical counts for the probe items",
         )
+    if (
+        actual_sign_pattern_counts is not None
+        and actual_sign_pattern_counts
+        != tuple((pattern, 1) for pattern in _PROBE_SIGN_PATTERN_ORDER)
+    ):
+        add_issue(
+            "invalid_probe_sign_pattern_coverage",
+            "probe items must cover each sign pattern exactly once",
+        )
 
     if (
         difficulty is not None
@@ -426,7 +483,7 @@ def validate_episode(
         if difficulty is not expected_difficulty:
             add_issue(
                 "invalid_episode_metadata",
-                "difficulty must match the derived R3 difficulty rules",
+                "difficulty must match the derived R12 difficulty rules",
             )
 
     version_messages: list[str] = []
@@ -853,6 +910,58 @@ def _safe_label(
         return label(rule_name, q1, q2)
     except (TypeError, ValueError):
         return None
+
+
+def _is_same_sign_pattern(pattern: str) -> bool:
+    return pattern in {"++", "--"}
+
+
+def _has_mixed_polarity_sign_patterns(patterns: frozenset[str]) -> bool:
+    return (
+        len(patterns) == 2
+        and any(_is_same_sign_pattern(pattern) for pattern in patterns)
+        and any(not _is_same_sign_pattern(pattern) for pattern in patterns)
+    )
+
+
+def _derive_updated_sign_patterns(
+    *,
+    labeled_items: tuple[object, ...],
+    pre_count: object,
+) -> frozenset[str] | None:
+    if not isinstance(pre_count, int):
+        return None
+
+    patterns: set[str] = set()
+    for item in labeled_items[pre_count:]:
+        q1 = getattr(item, "q1", None)
+        q2 = getattr(item, "q2", None)
+        if not isinstance(q1, int) or isinstance(q1, bool):
+            return None
+        if not isinstance(q2, int) or isinstance(q2, bool):
+            return None
+        patterns.add(_probe_sign_pattern(q1, q2))
+    return frozenset(patterns)
+
+
+def _safe_effective_probe_label(
+    rule_a: RuleName,
+    rule_b: RuleName,
+    q1: object,
+    q2: object,
+    updated_sign_patterns: frozenset[str],
+) -> InteractionLabel | None:
+    if not isinstance(q1, int) or isinstance(q1, bool):
+        return None
+    if not isinstance(q2, int) or isinstance(q2, bool):
+        return None
+
+    active_rule = (
+        rule_b
+        if _probe_sign_pattern(q1, q2) in updated_sign_patterns
+        else rule_a
+    )
+    return _safe_label(active_rule, q1, q2)
 
 
 def _build_expected_probe_metadata(

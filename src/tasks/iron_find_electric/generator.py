@@ -21,6 +21,10 @@ from tasks.iron_find_electric.schema import (
     Episode,
     EpisodeItem,
     ProbeMetadata,
+    _build_effective_probe_targets,
+    _build_updated_sign_patterns,
+    _has_mixed_polarity_sign_patterns,
+    _is_global_rule_probe_block,
 )
 
 RULE_CHOICES: tuple[RuleName, ...] = (RuleName.R_STD, RuleName.R_INV)
@@ -92,9 +96,18 @@ def _build_items(
 
 def _build_probe_targets(
     items: tuple[EpisodeItem, ...],
+    pre_count: int,
+    rule_a: RuleName,
     rule_b: RuleName,
 ) -> tuple[InteractionLabel, ...]:
-    return tuple(label(rule_b, item.q1, item.q2) for item in items[LABELED_ITEM_COUNT:])
+    probe_items = items[LABELED_ITEM_COUNT:]
+    updated_sign_patterns = _build_updated_sign_patterns(items[pre_count:LABELED_ITEM_COUNT])
+    return _build_effective_probe_targets(
+        probe_items,
+        rule_a,
+        rule_b,
+        updated_sign_patterns,
+    )
 
 
 def _build_probe_metadata(
@@ -153,11 +166,31 @@ def _has_both_probe_labels(probe_targets: tuple[InteractionLabel, ...]) -> bool:
     return len(set(probe_targets)) >= 2
 
 
+def _has_full_probe_sign_pattern_coverage(items: tuple[EpisodeItem, ...]) -> bool:
+    probe_items = items[LABELED_ITEM_COUNT:]
+    return _build_probe_sign_pattern_counts(items) == tuple(
+        (pattern, 1) for pattern in _PROBE_SIGN_PATTERN_ORDER
+    )
+
+
 def _is_valid_candidate(
     contradiction_count_post: int,
+    items: tuple[EpisodeItem, ...],
+    pre_count: int,
+    rule_a: RuleName,
+    rule_b: RuleName,
     probe_targets: tuple[InteractionLabel, ...],
 ) -> bool:
-    return contradiction_count_post >= 1 and _has_both_probe_labels(probe_targets)
+    probe_items = items[LABELED_ITEM_COUNT:]
+    updated_sign_patterns = _build_updated_sign_patterns(items[pre_count:LABELED_ITEM_COUNT])
+    return (
+        contradiction_count_post >= 1
+        and _has_mixed_polarity_sign_patterns(updated_sign_patterns)
+        and _has_full_probe_sign_pattern_coverage(items)
+        and _has_both_probe_labels(probe_targets)
+        and not _is_global_rule_probe_block(probe_items, probe_targets, rule_a)
+        and not _is_global_rule_probe_block(probe_items, probe_targets, rule_b)
+    )
 
 
 def _assign_difficulty(
@@ -188,14 +221,21 @@ def generate_episode(seed: int, split: Split | str = Split.DEV) -> Episode:
     while True:
         sampled_pairs = _sample_pairs(rng, template.total_items)
         items = _build_items(sampled_pairs, template.pre_count, rule_a, rule_b)
-        probe_targets = _build_probe_targets(items, rule_b)
+        probe_targets = _build_probe_targets(items, template.pre_count, rule_a, rule_b)
         contradiction_count_post = _build_contradiction_count_post(
             items,
             template.pre_count,
             rule_a,
             rule_b,
         )
-        if _is_valid_candidate(contradiction_count_post, probe_targets):
+        if _is_valid_candidate(
+            contradiction_count_post,
+            items,
+            template.pre_count,
+            rule_a,
+            rule_b,
+            probe_targets,
+        ):
             break
 
     probe_label_counts = _build_probe_label_counts(probe_targets)
@@ -203,7 +243,7 @@ def generate_episode(seed: int, split: Split | str = Split.DEV) -> Episode:
     probe_metadata = _build_probe_metadata(items, rule_a, rule_b)
 
     return Episode(
-        episode_id=f"ife-r3-{seed}",
+        episode_id=f"ife-r12-{seed}",
         split=split,
         difficulty=_assign_difficulty(
             template_id,

@@ -16,8 +16,9 @@ from baselines import (
 from generator import generate_episode
 from metrics import MetricSummary, compute_metrics
 from parser import ParsedPrediction, ParseStatus, parse_binary_output, parse_narrative_output
-from protocol import InteractionLabel
+from protocol import LABELED_ITEM_COUNT, InteractionLabel
 from render import render_binary_prompt, render_narrative_prompt
+from rules import label
 from schema import Episode, EpisodeItem, ProbeMetadata
 from validate import (
     DatasetDistributionSummary,
@@ -194,15 +195,38 @@ def test_validate_dataset_returns_deterministic_distribution_summary():
         template_counts=(("T1", 1), ("T2", 1)),
         transition_counts=(("R_std_to_R_inv", 1), ("R_inv_to_R_std", 1)),
         probe_label_counts=(("attract", 4), ("repel", 4)),
-        sign_pattern_counts=(("++", 2), ("--", 2), ("+-", 3), ("-+", 1)),
+        sign_pattern_counts=(("++", 2), ("--", 2), ("+-", 2), ("-+", 2)),
         version_values=(
             ("spec_version", ("v1",)),
-            ("generator_version", ("R3",)),
+            ("generator_version", ("R12",)),
             ("template_set_version", ("v1",)),
-            ("difficulty_version", ("R3",)),
+            ("difficulty_version", ("R12",)),
         ),
     )
     assert result.summary == validate_dataset(episodes).summary
+
+
+def test_validate_episode_rejects_recency_and_persistence_collapsible_probe_blocks():
+    fixture = _load_fixture()
+    episode = _episode_from_payload(fixture["episodes"][0]["payload"])
+    probe_items = episode.items[LABELED_ITEM_COUNT:]
+
+    object.__setattr__(
+        episode,
+        "probe_targets",
+        tuple(label(episode.rule_A, item.q1, item.q2) for item in probe_items),
+    )
+    persistence_result = validate_episode(episode)
+
+    object.__setattr__(
+        episode,
+        "probe_targets",
+        tuple(label(episode.rule_B, item.q1, item.q2) for item in probe_items),
+    )
+    recency_result = validate_episode(episode)
+
+    assert "persistence_collapsible_probe_block" in _issue_codes(persistence_result)
+    assert "recency_collapsible_probe_block" in _issue_codes(recency_result)
 
 
 def test_validate_dataset_checks_regeneration_for_canonical_ids_and_skips_noncanonical_ids():
@@ -298,7 +322,7 @@ def test_validation_result_objects_are_stable_dataclasses():
     issue = ValidationIssue(code="duplicate_episode_id", message="duplicate")
     regeneration = RegenerationCheck(checked=True, passed=True, expected_seed=0)
     episode_result = EpisodeValidationResult(
-        episode_id="ife-r3-0",
+        episode_id="ife-r12-0",
         ok=True,
         issues=(issue,),
         regeneration=regeneration,
@@ -325,7 +349,7 @@ def test_validation_result_objects_are_stable_dataclasses():
     assert issue == ValidationIssue(code="duplicate_episode_id", message="duplicate")
     assert regeneration == RegenerationCheck(checked=True, passed=True, expected_seed=0)
     assert episode_result == EpisodeValidationResult(
-        episode_id="ife-r3-0",
+        episode_id="ife-r12-0",
         ok=True,
         issues=(issue,),
         regeneration=regeneration,

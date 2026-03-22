@@ -40,6 +40,27 @@ def _probe_sign_pattern(q1: int, q2: int) -> str:
     return "-+"
 
 
+def _effective_probe_targets(
+    *,
+    probe_items: tuple[EpisodeItem, ...],
+    labeled_items: tuple[EpisodeItem, ...],
+    pre_count: int,
+    rule_a: RuleName,
+    rule_b: RuleName,
+) -> tuple[InteractionLabel, ...]:
+    updated_sign_patterns = frozenset(
+        _probe_sign_pattern(item.q1, item.q2) for item in labeled_items[pre_count:]
+    )
+    return tuple(
+        label(
+            rule_b if _probe_sign_pattern(item.q1, item.q2) in updated_sign_patterns else rule_a,
+            item.q1,
+            item.q2,
+        )
+        for item in probe_items
+    )
+
+
 def _difficulty_for(
     template_id: TemplateId,
     probe_targets: tuple[InteractionLabel, ...],
@@ -76,8 +97,15 @@ def _build_episode(
         )
 
     item_rows = tuple(items)
+    labeled_items = item_rows[:LABELED_ITEM_COUNT]
     probe_items = item_rows[LABELED_ITEM_COUNT:]
-    probe_targets = tuple(label(rule_b, item.q1, item.q2) for item in probe_items)
+    probe_targets = _effective_probe_targets(
+        probe_items=probe_items,
+        labeled_items=labeled_items,
+        pre_count=template.pre_count,
+        rule_a=rule_a,
+        rule_b=rule_b,
+    )
     probe_metadata = tuple(
         ProbeMetadata(
             position=item.position,
@@ -134,15 +162,15 @@ def _episodes() -> tuple[Episode, ...]:
             episode_id="fixture-t1",
             template_id=TemplateId.T1,
             rule_a=RuleName.R_STD,
-            labeled_pairs=((1, 1), (1, -1), (-1, -1), (-2, 2), (3, 3)),
-            probe_pairs=((2, 2), (-2, -3), (2, -3), (-3, 2)),
+            labeled_pairs=((1, 1), (-1, 1), (-2, -3), (2, -2), (-1, -2)),
+            probe_pairs=((2, 3), (-3, -2), (3, -1), (-2, 3)),
         ),
         _build_episode(
             episode_id="fixture-t2",
             template_id=TemplateId.T2,
             rule_a=RuleName.R_INV,
-            labeled_pairs=((1, 1), (1, -1), (-2, -2), (-2, 3), (2, 2)),
-            probe_pairs=((-3, -1), (3, -3), (-1, 3), (3, 1)),
+            labeled_pairs=((1, 2), (-1, 2), (-2, -3), (2, 3), (-2, 1)),
+            probe_pairs=((1, 3), (-1, -3), (2, -1), (-3, 2)),
         ),
     )
 
@@ -282,14 +310,14 @@ def test_baseline_comparison_summary_is_stable():
     report = _report()
 
     assert report.baseline_comparison.accuracy_ranking == (
-        ("last_evidence", 1.0),
+        ("template_position", 0.625),
+        ("last_evidence", 0.5),
+        ("never_update", 0.5),
         ("physics_prior", 0.5),
-        ("random", 0.5),
-        ("template_position", 0.375),
-        ("never_update", 0.0),
+        ("random", 0.25),
     )
-    assert report.baseline_comparison.best_baseline_name == "last_evidence"
-    assert report.baseline_comparison.best_baseline_accuracy == 1.0
+    assert report.baseline_comparison.best_baseline_name == "template_position"
+    assert report.baseline_comparison.best_baseline_accuracy == 0.625
 
 
 def test_audit_handles_current_absence_of_emitted_hard_episodes_cleanly():
@@ -345,35 +373,35 @@ def test_failure_pattern_summaries_are_computed_from_observable_prediction_agree
     assert binary_patterns["template-position"] == HeuristicAlignmentSummary(
         pattern_name="template-position",
         reference_source_name="template_position",
-        matching_probe_count=6,
+        matching_probe_count=8,
         total_probe_count=8,
-        probe_agreement_rate=0.75,
+        probe_agreement_rate=1.0,
         matching_error_probe_count=3,
         total_error_probes=3,
         error_agreement_rate=1.0,
-        matching_episode_count=1,
+        matching_episode_count=2,
         episode_count=2,
-        episode_agreement_rate=0.5,
+        episode_agreement_rate=1.0,
     )
     assert binary_patterns["recency / last-evidence-like"] == HeuristicAlignmentSummary(
         pattern_name="recency / last-evidence-like",
         reference_source_name="last_evidence",
-        matching_probe_count=5,
+        matching_probe_count=3,
         total_probe_count=8,
-        probe_agreement_rate=0.625,
-        matching_error_probe_count=0,
+        probe_agreement_rate=0.375,
+        matching_error_probe_count=1,
         total_error_probes=3,
-        error_agreement_rate=0.0,
-        matching_episode_count=1,
+        error_agreement_rate=1 / 3,
+        matching_episode_count=0,
         episode_count=2,
-        episode_agreement_rate=0.5,
+        episode_agreement_rate=0.0,
     )
     assert narrative_patterns["persistence-like"] == HeuristicAlignmentSummary(
         pattern_name="persistence-like",
         reference_source_name="never_update",
-        matching_probe_count=0,
+        matching_probe_count=2,
         total_probe_count=8,
-        probe_agreement_rate=0.0,
+        probe_agreement_rate=0.25,
         matching_error_probe_count=0,
         total_error_probes=4,
         error_agreement_rate=0.0,
