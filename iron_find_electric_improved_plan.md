@@ -536,10 +536,11 @@ The implemented local benchmark stack is already present in the repository:
 
 ### Current blocker summary
 
-Infrastructure is in place locally. The remaining blockers are:
+Infrastructure is in place locally. Current status:
 
+- the R13 anti-shortcut validity gate now passes and `last_evidence` is bounded at 0.500000 on leaderboard splits;
+- M1 live Gemini panel evidence confirms model-vs-heuristic separation (Binary = 0.781250 vs best baseline = 0.546875);
 - keep deterministic generation and frozen-format stability;
 - keep validation, property tests, and regression tests green from frozen seeds;
-- reduce the strength of the recency shortcut baseline `last_evidence`;
 - keep `hard` reserved and not emitted unless a later release can do so without weakening benchmark validity;
 - stage Kaggle packaging only after the local validity-repair sequence is complete.

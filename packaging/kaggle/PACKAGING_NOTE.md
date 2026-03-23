@@ -5,4 +5,5 @@
 - The package currently claims a reproducible Iron Find Electric v1 Binary benchmark with Narrative as required non-leaderboard robustness evidence over the same frozen episodes and probe targets.
 - The sole headline metric is Binary-only Post-shift Probe Accuracy; Narrative does not change the headline score, and only the final four labels are scored.
 - The package explicitly does not claim physics skill, broad executive-function coverage, broad AGI capability, switch cost measurement, recovery length, immediate post-shift drop, online change-detection latency, or emitted `hard` slices.
-- Remaining limitations before final submission are now narrower: the local R13 anti-shortcut gate passes, but no real-model runs are bundled in-repo and `hard` remains reserved rather than emitted.
+- M1 live Gemini panel evidence now exists in the reports tree (Binary accuracy = 0.781250, Narrative accuracy = 0.458333, delta = 0.322917). The Kaggle staging package itself validates packaged assets and does not perform live inference.
+- `hard` remains reserved and is not emitted.

@@ -40,5 +40,5 @@ This directory contains the implemented benchmark code for Iron Find Electric v1
 ## Current Notes
 
 - `hard` is still part of the protocol vocabulary but is reserved and not emitted by the current generator.
-- The `last_evidence` heuristic remains stronger than desired and is still a live benchmark-quality blocker.
+- The R13 anti-shortcut validity gate now passes; `last_evidence` is bounded at 0.500000 on leaderboard splits. M1 live Gemini evidence confirms model-vs-heuristic separation.
 - Compatibility wrappers are intentionally kept to avoid breaking existing imports while the canonical package paths settle.

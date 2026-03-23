@@ -4,7 +4,7 @@ Iron Find Electric is benchmark infrastructure for the Iron Find Electric v1 tas
 
 Iron Find Electric v1 is a narrow Executive Functions benchmark for cognitive flexibility. It uses electrostatics only as a controlled substrate for evaluating final post-shift rule application after sparse contradictory evidence.
 
-A high v1 score is evidence that a model correctly applied the post-shift rule to the final probes after sparse contradictory evidence in the frozen episodes. It is not evidence of physics skill, broad adaptation ability, or general reasoning ability.
+A high v1 Binary score is evidence that a model correctly applied the post-shift rule to the final probes after sparse contradictory evidence in the frozen episodes. It is not evidence of physics skill, broad adaptation ability, or general reasoning ability.
 
 ## Current State
 
@@ -24,8 +24,8 @@ The repository currently implements:
 Current blockers and known limitations:
 
 - the current frozen benchmark now clears the local R13 anti-shortcut validity gate and keeps the recency shortcut materially bounded in the current R15 re-audit surface;
-- `hard` remains a reserved difficulty label and is not currently emitted by the R3 generator;
-- no real-model runs are bundled in-repo, so model-vs-heuristic separation remains unverified locally;
+- `hard` remains a reserved difficulty label and is not currently emitted by the R3 generator. No packaging claim depends on emitted `hard` slices;
+- M1 live Gemini panel evidence now confirms model-vs-heuristic separation (Binary accuracy = 0.781250 vs best baseline = 0.546875). Model predictions are not committed as repo artifacts;
 - the Kaggle staging bundle under [`packaging/kaggle/`](./packaging/kaggle/) mirrors the repaired local benchmark state, but local validation remains the source of truth.
 
 Task and metric boundaries:
@@ -34,7 +34,15 @@ Task and metric boundaries:
 - Narrative is required non-leaderboard robustness evidence. It uses the same frozen episodes and probe targets as Binary, and only the final four labels are scored.
 - The primary metric is Binary-only Post-shift Probe Accuracy.
 
-Optional real-model execution is available locally through the Gemini first-panel runner. It is not part of the deterministic main test gate and only runs when `GEMINI_API_KEY` is configured, either in the shell environment or in a repo-root `.env` file.
+Current evidence status:
+
+- **M1 (live Gemini panel)**: Binary accuracy = 0.781250, Narrative accuracy = 0.458333 (delta = 0.322917), Binary parse-valid = 1.000000, Narrative parse-valid = 0.937500. Binary substantially exceeds all heuristic baselines. Narrative is meaningfully lower than Binary on the same frozen episodes, indicating a real surface-form robustness gap. A small Narrative provider/runtime contamination note (overall rate = 0.041667) must be disclosed separately from parse/format and adaptation outcomes.
+- **M2 (staging dry-run readiness)**: Packaged frozen artifacts load, manifest validation passes, and the staging notebook runs end to end in both Binary and Narrative modes. M2 is packaging-validation evidence only, not live model-evaluation evidence.
+- **M3**: Not started.
+
+This benchmark does not claim to measure physics skill, broad AGI capability, broad executive-function coverage, switch cost, recovery length, immediate post-shift drop, or online change-detection latency.
+
+Optional real-model execution is available locally through the Gemini first-panel runner. It is not part of the deterministic main test gate and only runs when `GEMINI_API_KEY` is configured, either in the shell environment or in a repo-root `.env` file. The current M1 evidence was produced via this runner.
 
 ## Benchmark Shape
 
@@ -150,7 +158,7 @@ Or run the script dispatcher directly:
 .venv/bin/python scripts/evidence_pass.py
 ```
 
-To run the first real Gemini panel, which writes the canonical latest report under `reports/live/gemini-first-panel/binary-only/latest/report.md`:
+To run the Gemini first panel (paired Binary and Narrative), which writes the canonical latest report under `reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md`:
 
 ```bash
 export GEMINI_API_KEY=your_api_key_here
@@ -171,8 +179,9 @@ Preferred pattern for new report writers:
 
 Current examples:
 
-- `reports/live/gemini-first-panel/binary-only/`
-- `reports/live/gemini-first-panel/binary-vs-narrative/`
+- `reports/live/gemini-first-panel/binary-only/` (historical Binary-only evidence)
+- `reports/live/gemini-first-panel/binary-vs-narrative/` (current paired evidence)
+- `reports/m1_binary_vs_narrative_robustness_report.md` (current M1 evidence reference)
 - `reports/audit/evidence-pass/`
 
 If you want stable shell commands, install the repo in editable mode from a venv

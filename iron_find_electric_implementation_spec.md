@@ -2,7 +2,7 @@
 
 ## Concrete Implementation Spec
 
-> Status note: the repository already implements the local benchmark infrastructure for the Iron Find Electric v1 task described here. Remaining issues are benchmark-validity blockers rather than missing infrastructure: the recency shortcut baseline `last_evidence` is still too strong, `hard` remains part of the protocol vocabulary but is not emitted by the current generator, and Kaggle staging should follow local validity repair rather than precede it.
+> Status note: the repository already implements the local benchmark infrastructure for the Iron Find Electric v1 task described here. The R13 anti-shortcut validity gate now passes and the recency shortcut baseline `last_evidence` is bounded. `hard` remains part of the protocol vocabulary but is not emitted by the current generator. M1 live Gemini panel evidence exists (Binary accuracy = 0.781250, Narrative accuracy = 0.458333). M3 has not started. Kaggle staging should follow local validity repair rather than precede it.
 
 ## 1. Objective
 

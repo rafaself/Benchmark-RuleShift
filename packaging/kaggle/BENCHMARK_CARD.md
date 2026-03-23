@@ -4,7 +4,7 @@
 
 Iron Find Electric v1 is a narrow Executive Functions benchmark for cognitive flexibility. It uses electrostatics only as a controlled substrate for evaluating final post-shift rule application after sparse contradictory evidence.
 
-A high v1 score is evidence that a model correctly applied the post-shift rule to the final probes after sparse contradictory evidence in the frozen episodes. It is not evidence of physics skill, broad adaptation ability, or general reasoning ability.
+A high v1 Binary score is evidence that a model correctly applied the post-shift rule to the final probes after sparse contradictory evidence in the frozen episodes. It is not evidence of physics skill, broad adaptation ability, or general reasoning ability.
 
 This package is for Kaggle staging only. The implemented local benchmark under `src/`, the frozen split manifests under `src/frozen_splits/`, and the locally produced validation and audit evidence remain the source of truth.
 
@@ -97,12 +97,28 @@ The packaged empirical re-audit is the local `R15` report over the refreshed `R1
 
 The same re-audit also says the benchmark is still limited by:
 
-- no bundled real-model runs in-repo
 - `hard` remaining reserved and un-emitted
+
+### M1 live Gemini panel evidence
+
+The current M1 live Gemini panel (gemini-2.5-flash, R18) provides the first real-model evidence:
+
+- Binary accuracy: 0.781250 (vs best baseline random = 0.546875)
+- Narrative accuracy: 0.458333
+- Binary → Narrative delta: 0.322917
+- Binary parse-valid: 1.000000
+- Narrative parse-valid: 0.937500
+
+Binary substantially exceeds all heuristic baselines. Narrative is meaningfully lower than Binary on the same frozen episodes, indicating a real surface-form robustness gap. A small Narrative provider/runtime contamination note (overall rate = 0.041667) was observed in the live run and must be disclosed separately from parse/format and adaptation outcomes.
+
+### M2 staging dry-run readiness
+
+M2 confirms that packaged frozen artifacts load, manifest validation passes, and the staging notebook completes end to end in both Binary and Narrative modes. M2 is packaging-validation evidence only, not live model-evaluation evidence.
 
 ## Limitations
 
 - The package does not bundle model predictions or Kaggle submission outputs.
+- M1 live Gemini panel evidence exists in the reports tree but is not part of the Kaggle staging package itself.
 - Narrative is not a primary leaderboard task, and only the final four labels are scored.
 - No claim should depend on explanation quality or formatting compliance.
 - No claim here upgrades the local evidence beyond the bundled R13 and R15 reports.
