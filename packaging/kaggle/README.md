@@ -15,8 +15,8 @@ No other notebook or local runtime path is an official Kaggle leaderboard submis
 
 ## Official Packaged Evidence Anchor
 
-- Official packaged readiness anchor: the committed paired Gemini report preserving the requested model label `gemini-2.5-flash`
-- Supporting alias for that anchor: `reports/m1_binary_vs_narrative_robustness_report.md`
+- Official packaged readiness anchor: `reports/m1_binary_vs_narrative_robustness_report.md`
+- Source report behind that anchor: the committed paired Gemini report preserving the requested model label `gemini-2.5-flash` at `reports/live/gemini-first-panel/binary-vs-narrative/history/report__20260323_120000.md`
 - Supporting comparison-only material: `reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md` and `reports/live/gemini-first-panel/comparison/latest/report.md`
 
 The supporting comparison material is preserved for history and inspection. It is not a second active readiness anchor and it is not part of the Kaggle submission path.

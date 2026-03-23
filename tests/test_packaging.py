@@ -177,12 +177,25 @@ def test_active_docs_identify_one_official_packaged_readiness_anchor():
     )
     joined = "\n".join(texts)
     lowered = joined.lower()
+    anchor_path = "reports/m1_binary_vs_narrative_robustness_report.md"
+    source_report_path = (
+        "reports/live/gemini-first-panel/binary-vs-narrative/history/"
+        "report__20260323_120000.md"
+    )
+    latest_report_path = "reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md"
+    comparison_report_path = "reports/live/gemini-first-panel/comparison/latest/report.md"
 
     assert "gemini-2.5-flash" in joined
-    assert "reports/m1_binary_vs_narrative_robustness_report.md" in joined
+    assert joined.count(anchor_path) >= 3
+    assert joined.count(source_report_path) >= 3
+    assert joined.count(latest_report_path) >= 1
+    assert joined.count(comparison_report_path) >= 1
+    assert "single current packaged readiness anchor" in lowered
     assert "not a second active readiness anchor" in lowered
+    assert "supporting comparison material" in lowered
     assert "current paired Gemini Flash-Lite run is canonical".lower() not in lowered
     assert "direct Flash vs Flash-Lite comparison is canonical".lower() not in lowered
+    assert f"current Gemini evidence anchor: `{latest_report_path}`".lower() not in lowered
 
 
 def test_packaging_docs_do_not_claim_unsupported_features():

@@ -32,7 +32,7 @@ Current implementation notes:
 
 - the current frozen benchmark clears the local R13 anti-shortcut validity gate and keeps the recency shortcut materially bounded in the current R15 re-audit surface;
 - `hard` remains a reserved difficulty label and is not currently emitted by the generator. No benchmark claim depends on emitted `hard` slices;
-- the repo already contains live Gemini evidence under [`reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md`](./reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md), plus the synced convenience alias `reports/m1_binary_vs_narrative_robustness_report.md`;
+- the repo already contains the single packaged Gemini readiness anchor at [`reports/m1_binary_vs_narrative_robustness_report.md`](./reports/m1_binary_vs_narrative_robustness_report.md), plus supporting live Gemini report material under [`reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md`](./reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md);
 - the Kaggle packaging bundle under [`packaging/kaggle/`](./packaging/kaggle/) mirrors the current local benchmark state, but it is downstream of the local benchmark and does not redefine benchmark governance.
 
 Task and metric boundaries:
@@ -45,8 +45,7 @@ Task and metric boundaries:
 Current v1 readiness status:
 
 - the active v1 readiness evidence path is Gemini;
-- the current anchor evidence is the committed paired Gemini report for requested model label `gemini-2.5-flash` at `reports/live/gemini-first-panel/binary-vs-narrative/history/report__20260323_120000.md`;
-- the packaged supporting convenience alias for that anchor evidence is `reports/m1_binary_vs_narrative_robustness_report.md`;
+- the single current packaged readiness anchor is `reports/m1_binary_vs_narrative_robustness_report.md`, synced to the committed paired Gemini report for requested model label `gemini-2.5-flash` at `reports/live/gemini-first-panel/binary-vs-narrative/history/report__20260323_120000.md`;
 - the paired Gemini Flash-Lite `latest/` run and the direct Flash vs Flash-Lite comparison remain supporting comparison material, not the active readiness anchor or an official Kaggle submission path;
 - Anthropic and OpenAI integrations already exist locally, but they are outside the current v1 readiness gate and are not required for current v1 readiness;
 - current v1 readiness does not require cross-provider evidence.
@@ -235,8 +234,8 @@ Preferred pattern for new report writers:
 Current examples:
 
 - `reports/live/gemini-first-panel/binary-only/` (historical Binary-only evidence)
-- `reports/live/gemini-first-panel/binary-vs-narrative/` (current paired Gemini evidence and current readiness anchor path)
-- `reports/m1_binary_vs_narrative_robustness_report.md` (synced convenience alias to the canonical paired M1 report)
+- `reports/live/gemini-first-panel/binary-vs-narrative/` (current paired Gemini evidence history and supporting `latest/` material)
+- `reports/m1_binary_vs_narrative_robustness_report.md` (single packaged readiness anchor, synced to the committed paired M1 report)
 - `reports/audit/evidence-pass/`
 
 If you want stable shell commands, install the repo in editable mode from a venv that includes the standard packaging backend (`setuptools`):

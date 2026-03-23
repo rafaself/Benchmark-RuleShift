@@ -64,7 +64,7 @@ This Kaggle package references frozen local artifacts rather than regenerating a
 - split manifests: `src/frozen_splits/dev.json`, `src/frozen_splits/public_leaderboard.json`, `src/frozen_splits/private_leaderboard.json`
 - anti-shortcut gate evidence: `tests/fixtures/release_r13_validity_report.json`
 - empirical re-audit evidence: `tests/fixtures/release_r15_reaudit_report.json`
-- current Gemini evidence anchor: `reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md`
+- single packaged Gemini readiness anchor: `reports/m1_binary_vs_narrative_robustness_report.md`
 - bundle index and integrity hashes: `packaging/kaggle/frozen_artifacts_manifest.json`
 
 Version metadata currently frozen by the package:
@@ -105,8 +105,8 @@ The benchmark explicitly does **not** claim:
 ## Current Readiness Status
 
 - the active v1 readiness evidence path is Gemini;
-- the current anchor evidence is the committed paired report preserving the requested model label `gemini-2.5-flash`;
-- the supporting alias for that anchor is `reports/m1_binary_vs_narrative_robustness_report.md`;
+- the single current packaged readiness anchor is `reports/m1_binary_vs_narrative_robustness_report.md`;
+- that anchor is synced to the committed paired report preserving the requested model label `gemini-2.5-flash` at `reports/live/gemini-first-panel/binary-vs-narrative/history/report__20260323_120000.md`;
 - the paired Gemini Flash-Lite `latest/` run and the direct Flash vs Flash-Lite comparison are preserved as supporting comparison material, not as a second active readiness anchor;
 - Anthropic and OpenAI integrations already exist locally, but they are outside the current v1 readiness gate;
 - current v1 readiness does not require cross-provider evidence.
@@ -136,7 +136,7 @@ The same re-audit also says the benchmark is still limited by:
 
 ### M1 live Gemini evidence
 
-The current anchor evidence is the committed M1 Gemini panel report for requested model label `gemini-2.5-flash`. This committed report was resynced in M6 from the original legacy capture; current local runners now require pinned model IDs, but the legacy capture did not record provider-served model-version, token-usage, or duration fields.
+The single current packaged readiness anchor is `reports/m1_binary_vs_narrative_robustness_report.md`, synced to the committed M1 Gemini panel report for requested model label `gemini-2.5-flash` at `reports/live/gemini-first-panel/binary-vs-narrative/history/report__20260323_120000.md`. This committed report was resynced in M6 from the original legacy capture; current local runners now require pinned model IDs, but the legacy capture did not record provider-served model-version, token-usage, or duration fields.
 
 - Binary accuracy: 0.781250
 - Narrative accuracy: 0.458333
