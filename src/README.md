@@ -1,5 +1,9 @@
 # `src` Overview
 
+> **Status: SUPPORTING IMPLEMENTATION MAP**
+> This file describes the source tree only.
+> It does not define benchmark contract terms or Kaggle operating procedure.
+
 This directory contains the implemented benchmark code for Iron Find Electric v1.
 
 ## Canonical Layout
@@ -37,6 +41,7 @@ These exact split names are part of the benchmark-facing contract.
 
 ## Local Entry Points
 
+- Official runtime implementation path: `src/` is the runtime source of truth for benchmark behavior.
 - `core.cli`: thin CLI wrapper around the implemented benchmark functions.
 - `scripts/ife.py`: repo-local dispatcher that works without installing the project.
 - `Makefile`: shortcut targets for test, validity, re-audit, integrity, and evidence pass.

@@ -1,4 +1,8 @@
-# V1 Readiness Checklist
+# V1 Readiness Checklist (ARCHIVE SNAPSHOT)
+
+> **Status: ARCHIVE READINESS RECORD**
+> This file preserves a dated readiness assessment.
+> It is not an authoritative benchmark contract, Kaggle runbook, or source-of-truth implementation guide.
 
 Date assessed: 2026-03-23
 
@@ -28,11 +32,11 @@ This gate judges v1 readiness against the implemented repository surface only. I
 | Current Gemini Flash-Lite run present and canonical | PASS | The current Flash-Lite paired run is the canonical `latest/` run at `reports/live/gemini-first-panel/binary-vs-narrative/latest/` with report, artifact, metadata, and sample capture. |
 | Flash vs Flash-Lite comparison present and directly comparable | PASS | `reports/live/gemini-first-panel/comparison/latest/report.md` and `metadata.json` exist and explicitly verify matching schema, generator, template-family, parser, metric, difficulty, and artifact-schema versions plus shared split hashes. |
 | Heuristic baselines and anti-shortcut checks documented | PASS | The canonical reports compare model Binary accuracy against `random`, `never_update`, `last_evidence`, `physics_prior`, and `template_position`. `README.md` and `packaging/kaggle/BENCHMARK_CARD.md` also preserve the R13 anti-shortcut gate and R15 re-audit context. |
-| Benchmark-facing docs synchronized | PASS | `README.md`, `iron_find_electric_improved_plan.md`, `src/README.md`, `reports/README.md`, `packaging/kaggle/BENCHMARK_CARD.md`, and `packaging/kaggle/PACKAGING_NOTE.md` now describe the implemented Gemini-only gate as current Flash anchor plus current Flash-Lite canonical latest run plus direct comparison output. |
-| Deferred-work boundary explicit and non-blocking | PASS | `README.md`, `iron_find_electric_improved_plan.md`, and `packaging/kaggle/BENCHMARK_CARD.md` now separate current Gemini-only readiness from deferred post-v1 empirical expansion and longer-term scientific-validity strengthening. Anthropic and OpenAI remain preserved local-only integrations outside the active readiness gate. |
+| Benchmark-facing docs synchronized | PASS | `README.md`, `src/README.md`, `reports/README.md`, `packaging/kaggle/BENCHMARK_CARD.md`, and `packaging/kaggle/PACKAGING_NOTE.md` describe the implemented Gemini-only gate as current Flash anchor plus current Flash-Lite canonical latest run plus direct comparison output. |
+| Deferred-work boundary explicit and non-blocking | PASS | `README.md` and `packaging/kaggle/BENCHMARK_CARD.md` separate current Gemini-only readiness from deferred post-v1 empirical expansion and longer-term scientific-validity strengthening. Anthropic and OpenAI remain preserved local-only integrations outside the active readiness gate. |
 | `packaging/kaggle/` path present and aligned to frozen assets | PASS | `packaging/kaggle/` contains the staging notebook, benchmark card, README, packaging note, and frozen-artifact manifest. Those surfaces explicitly point back to `src/frozen_splits/` and preserve local code and reports as source of truth. |
 | Packaging manifest present and validated if supported | PASS | `packaging/kaggle/frozen_artifacts_manifest.json` exists, and the repo implements `validate_kaggle_staging_manifest()` in `src/core/kaggle.py`. `tests/test_packaging.py` exercises the validation path against current artifacts. |
-| Anthropic/OpenAI explicitly marked as available local-only integrations outside the current v1 gate | PASS | `README.md`, `src/README.md`, `iron_find_electric_improved_plan.md`, `reports/README.md`, and `packaging/kaggle/BENCHMARK_CARD.md` explicitly state that Anthropic and OpenAI integrations exist locally but are outside the active Gemini-only v1 readiness gate. |
+| Anthropic/OpenAI explicitly marked as available local-only integrations outside the current v1 gate | PASS | `README.md`, `src/README.md`, `reports/README.md`, and `packaging/kaggle/BENCHMARK_CARD.md` explicitly state that Anthropic and OpenAI integrations exist locally but are outside the active Gemini-only v1 readiness gate. |
 
 ## Readiness Decision
 

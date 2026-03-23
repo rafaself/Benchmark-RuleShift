@@ -1,5 +1,10 @@
 # Iron Find Electric
 
+> **Status: SUPPORTING OVERVIEW**
+> This README is a project guide, not a normative benchmark specification.
+> For binding benchmark rules, use [`KAGGLE_BENCHMARK_CONTRACT.md`](./KAGGLE_BENCHMARK_CONTRACT.md).
+> For Kaggle submission and staging steps, use [`packaging/kaggle/README.md`](./packaging/kaggle/README.md).
+
 Iron Find Electric is benchmark infrastructure for the implemented Iron Find Electric v1 task in the Executive Functions track of the Measuring Progress Toward AGI challenge. The repository already contains the local benchmark code, frozen split assets, Kaggle staging layer, reports tree, and current Gemini evidence for this narrow cognitive-flexibility benchmark.
 
 Iron Find Electric v1 is a targeted Executive Functions benchmark for cognitive flexibility. It uses electrostatics only as a controlled substrate for evaluating final post-shift rule application after sparse contradictory evidence.
@@ -28,7 +33,7 @@ Current implementation notes:
 - the current frozen benchmark clears the local R13 anti-shortcut validity gate and keeps the recency shortcut materially bounded in the current R15 re-audit surface;
 - `hard` remains a reserved difficulty label and is not currently emitted by the generator. No benchmark claim depends on emitted `hard` slices;
 - the repo already contains live Gemini evidence under [`reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md`](./reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md), plus the synced convenience alias `reports/m1_binary_vs_narrative_robustness_report.md`;
-- the Kaggle staging bundle under [`packaging/kaggle/`](./packaging/kaggle/) mirrors the current local benchmark state, but local code, frozen assets, and local validation/audit outputs remain the source of truth.
+- the Kaggle packaging bundle under [`packaging/kaggle/`](./packaging/kaggle/) mirrors the current local benchmark state, but it is downstream of the local benchmark and does not redefine benchmark governance.
 
 Task and metric boundaries:
 
@@ -252,11 +257,20 @@ ife-evidence-pass
 
 ## Source of Truth
 
-The source of truth for the current project state is the implemented local benchmark stack in [`src/`](./src/), the frozen assets in [`src/frozen_splits/`](./src/frozen_splits/), the Kaggle staging layer in [`packaging/kaggle/`](./packaging/kaggle/), and the local validation, audit, and live-evidence outputs in [`reports/`](./reports/). Supporting documents describe that implemented state; they do not replace the code, frozen assets, and local validity checks.
+The repository governance model is:
 
-Supporting documents:
+- benchmark contract: [`KAGGLE_BENCHMARK_CONTRACT.md`](./KAGGLE_BENCHMARK_CONTRACT.md) is the single authoritative contract for benchmark identity, metric, splits, scoring, prompt invariants, and claim boundaries;
+- runtime implementation: [`src/`](./src/) and the frozen manifests under [`src/frozen_splits/`](./src/frozen_splits/) are the single executable source of truth for benchmark behavior;
+- Kaggle runbook: [`packaging/kaggle/README.md`](./packaging/kaggle/README.md) is the single authoritative operational path description for Kaggle packaging, staging, and submission;
+- Kaggle leaderboard entry point: [`packaging/kaggle/iron_find_electric_v1_kbench.ipynb`](./packaging/kaggle/iron_find_electric_v1_kbench.ipynb) is the single official Kaggle leaderboard notebook, wired by [`packaging/kaggle/kernel-metadata.json`](./packaging/kaggle/kernel-metadata.json);
+- Kaggle staging materials: the rest of [`packaging/kaggle/`](./packaging/kaggle/) is packaging support only and does not redefine benchmark semantics or runtime behavior;
+- evidence and audits: [`reports/`](./reports/) and the bundled validation/audit fixtures record evidence about the implemented benchmark, but they do not override the contract or runtime.
+
+Supporting documents describe that implemented state; they do not replace the contract, code, frozen assets, or local validity checks.
+
+Key documents:
 
 - [`KAGGLE_BENCHMARK_CONTRACT.md`](./KAGGLE_BENCHMARK_CONTRACT.md): authoritative benchmark contract — single source of truth for benchmark identity, metric, splits, scoring, prompt invariants, and claim boundaries.
 - [`src/README.md`](./src/README.md): source-tree overview and canonical package layout.
 - [`packaging/kaggle/BENCHMARK_CARD.md`](./packaging/kaggle/BENCHMARK_CARD.md): Kaggle-facing benchmark card tied to the current implemented benchmark and bundled evidence.
-- [`packaging/kaggle/README.md`](./packaging/kaggle/README.md): concise Kaggle staging flow and reproducibility notes.
+- [`packaging/kaggle/README.md`](./packaging/kaggle/README.md): Kaggle packaging governance, official leaderboard notebook, and staging-only path labels.

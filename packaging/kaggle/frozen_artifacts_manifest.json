@@ -10,10 +10,6 @@
     "difficulty_version": "R12"
   },
   "entry_points": {
-    "notebook": {
-      "path": "packaging/kaggle/iron_find_electric_v1_kaggle_staging.ipynb",
-      "sha256": "0d3c67c77296dafa550e12d649b3d1ee63e93f7f633a273d7c03679497125603"
-    },
     "kbench_notebook": {
       "path": "packaging/kaggle/iron_find_electric_v1_kbench.ipynb",
       "sha256": "d8cfe1ad58b3283bd87bf7bb342c0ee6698641cc00cd7ac9323342ec28dad4e6"
@@ -24,11 +20,11 @@
     },
     "benchmark_card": {
       "path": "packaging/kaggle/BENCHMARK_CARD.md",
-      "sha256": "d0a7c04de6844925396ff626231a198101416e1441b886e9861f4929c6b9f546"
+      "sha256": "1debe69a4aa7ec0751f014c23501c0d5fb8ff9a1c21585459584b39e14bd24af"
     },
     "usage": {
       "path": "packaging/kaggle/README.md",
-      "sha256": "ece0d1c3d0e6ddefe4d1bddf49579c599c14a59c996c02593cd143b2b649397d"
+      "sha256": "81082ea091c4c6178b2a6c982391c3b1d654bf29e11daaa6ed80b7e23f41d34f"
     },
     "packaging_note": {
       "path": "packaging/kaggle/PACKAGING_NOTE.md",

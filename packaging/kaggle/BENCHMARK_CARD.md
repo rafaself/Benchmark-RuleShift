@@ -1,12 +1,17 @@
 # Iron Find Electric v1 Benchmark Card
 
+> **Status: SUPPORTING SUMMARY**
+> This benchmark card is descriptive only.
+> For binding benchmark terms, use [`../../KAGGLE_BENCHMARK_CONTRACT.md`](../../KAGGLE_BENCHMARK_CONTRACT.md).
+> For Kaggle submission and staging steps, use [`README.md`](./README.md).
+
 ## Summary
 
 Iron Find Electric v1 is a narrow Executive Functions benchmark for cognitive flexibility. It uses electrostatics only as a controlled substrate for evaluating final post-shift rule application after sparse contradictory evidence.
 
 A high v1 Binary score is evidence that a model correctly applied the post-shift rule to the final probes after sparse contradictory evidence in the frozen episodes. It is not evidence of physics skill, broad adaptation ability, broad AGI capability, or general reasoning ability.
 
-This package is for Kaggle staging only. The implemented local benchmark under `src/`, the frozen split manifests under `src/frozen_splits/`, the reports tree under `reports/`, and the locally produced validation and audit evidence remain the source of truth.
+This package is a Kaggle packaging layer over the implemented local benchmark. The authoritative contract is `KAGGLE_BENCHMARK_CONTRACT.md` at the repository root. The implemented local benchmark under `src/` and the frozen split manifests under `src/frozen_splits/` remain the runtime source of truth. The single official Kaggle leaderboard notebook is `packaging/kaggle/iron_find_electric_v1_kbench.ipynb`; `packaging/kaggle/iron_find_electric_v1_kaggle_staging.ipynb` is staging-only.
 
 ## Task Paths
 

@@ -272,11 +272,14 @@ Local code and frozen splits remain authoritative if any downstream notebook pro
 
 ---
 
-## 11. Source of Truth Hierarchy
+## 11. Source of Truth Model
 
-1. **Primary:** Local code under `src/`, frozen assets in `src/frozen_splits/`, local validation/audit outputs in `reports/`.
-2. **Secondary:** Kaggle staging layer under `packaging/kaggle/`.
-3. **Reference:** Supporting documentation describes implemented state; it does not replace code, frozen assets, or validity checks.
+| Concern | Authoritative source | Role |
+|---|---|---|
+| Benchmark definition | This file (`KAGGLE_BENCHMARK_CONTRACT.md`) | Freezes identity, metric, splits, scoring, prompt invariants, and claim boundaries. All other docs defer to this file on contract matters. |
+| Runtime behavior | Source package implementation (`src/`) | The code under `src/` and frozen assets under `src/frozen_splits/` are the executable truth. If any document (including this contract) diverges from implemented behavior, the code is authoritative for what the benchmark *does*; the contract is authoritative for what it *should* do — and the divergence is a bug to be resolved. |
+| Kaggle execution entry point | Official leaderboard notebook only | The `@kbench.task` notebook in `packaging/kaggle/` is the sole Kaggle execution surface. Staging notebooks, local panel runners, and audit scripts are development tools, not leaderboard entry points. |
+| Supporting exposition | `BENCHMARK_CARD.md` and `README.md` | These describe the benchmark for human readers. They must not introduce, modify, or contradict any contract term. If they diverge from this contract, this contract governs. |
 
 ---
 

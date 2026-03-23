@@ -1,4 +1,8 @@
-# R17 Packaging Note (Phase 3 — Kaggle Execution Hardening)
+# R17 Packaging Note (ARCHIVE)
+
+> **Status: ARCHIVE RELEASE NOTE**
+> This file records packaging changes by release.
+> It is not an authoritative benchmark contract or an operational runbook.
 
 - Rewrote `iron_find_electric_v1_kbench.ipynb` with the correct `kaggle_benchmarks` API:
   - `@kbench.task` functions now take `(llm, prompt_binary, probe_targets)` / `(llm, prompt_narrative, probe_targets)` — matching `eval_df` column names, with `llm` injected by kbench at evaluation time.

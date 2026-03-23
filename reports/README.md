@@ -1,5 +1,9 @@
 # Reports Layout
 
+> **Status: SUPPORTING EVIDENCE INDEX**
+> Report markdown captures evidence about the benchmark.
+> It does not define benchmark rules or Kaggle operating procedure.
+
 `reports/` is the implemented evidence surface for benchmark audits and live provider evidence. It is organized by context and target.
 
 Canonical pattern:
@@ -9,6 +13,12 @@ Canonical pattern:
 - `reports/<context>/<target>/history/<stable-name>__<YYYYMMDD_HHMMSS>.<ext>`
 - `reports/<context>/<target>/history/metadata__<YYYYMMDD_HHMMSS>.json` for immutable provenance snapshots
 - `reports/<context>/<target>/samples/`
+
+Interpretation rules:
+
+- files under `latest/` are the current canonical evidence surfaces for that report family;
+- files under `history/` are archive snapshots;
+- flat top-level report aliases such as `reports/m1_binary_vs_narrative_robustness_report.md` are supporting convenience mirrors only and are not independent authority.
 
 Current top-level groupings:
 
