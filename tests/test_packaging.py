@@ -66,6 +66,7 @@ def test_kaggle_staging_manifest_resolves_current_frozen_artifacts():
     }
 
     assert tuple(manifest["frozen_split_manifests"]) == PARTITIONS
+    assert tuple(manifest["entry_points"]) == ("kbench_notebook", "kernel_metadata")
     assert manifest["current_emitted_difficulty_labels"] == ["easy", "medium"]
     assert manifest["reserved_difficulty_labels"] == ["hard"]
 
@@ -134,6 +135,34 @@ def test_kaggle_directory_layout_separates_active_staging_and_archive_files():
     assert _STAGING_NOTEBOOK_PATH.is_file()
     assert _PACKAGING_NOTE_PATH.is_file()
     assert _ARCHIVE_CONTRACT_PATH.is_file()
+
+
+def test_kaggle_runbook_documents_the_minimum_runtime_subset():
+    usage_text = _USAGE_PATH.read_text(encoding="utf-8")
+
+    required_runtime_paths = (
+        "packaging/kaggle/iron_find_electric_v1_kbench.ipynb",
+        "packaging/kaggle/kernel-metadata.json",
+        "packaging/kaggle/frozen_artifacts_manifest.json",
+        "src/",
+        "src/frozen_splits/dev.json",
+        "src/frozen_splits/public_leaderboard.json",
+        "src/frozen_splits/private_leaderboard.json",
+    )
+    non_runtime_paths = (
+        "BENCHMARK_CARD.md",
+        "this runbook",
+        "staging notebooks",
+        "archive files",
+        "reports/",
+        "tests/fixtures/",
+    )
+
+    assert "minimum packaged subset" in usage_text.lower()
+    for path in required_runtime_paths:
+        assert path in usage_text
+    for path in non_runtime_paths:
+        assert path in usage_text
 
 
 def test_pyproject_exposes_local_console_entrypoints():
@@ -278,6 +307,11 @@ def test_official_kbench_notebook_imports_package_owned_benchmark_logic():
     sources = _read_notebook_sources(_KBENCH_NOTEBOOK_PATH)
 
     assert "from kaggle import BinaryResponse, normalize_binary_response, normalize_narrative_response, score_episode" in sources
+    assert "load_kaggle_staging_manifest" not in sources
+    assert "validate_kaggle_staging_manifest" not in sources
+    assert "resolve_kaggle_artifact_path" not in sources
+    assert "release_r13_validity_report.json" not in sources
+    assert "release_r15_reaudit_report.json" not in sources
     assert "def normalize_binary_response(" not in sources
     assert "def normalize_narrative_response(" not in sources
     assert "def score_binary_episode(" not in sources

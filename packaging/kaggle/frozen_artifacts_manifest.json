@@ -17,18 +17,6 @@
     "kernel_metadata": {
       "path": "packaging/kaggle/kernel-metadata.json",
       "sha256": "7bd231b91ae062dac2e298b7e98eccaf6d07ec640d248fe6acd0b96a92ab38b6"
-    },
-    "benchmark_card": {
-      "path": "packaging/kaggle/BENCHMARK_CARD.md",
-      "sha256": "1cc774f245745f6f3c00dcd54c892728bef67a4c472b5c09e04c7e41053bd874"
-    },
-    "usage": {
-      "path": "packaging/kaggle/README.md",
-      "sha256": "8be16c90e5ed1a68fa131c01746b7aa5144bebfea9bfefe2d99b17c9705327f1"
-    },
-    "packaging_note": {
-      "path": "packaging/kaggle/archive/PACKAGING_NOTE.md",
-      "sha256": "f4e38570c4599b9eea31271feb922af5a0661a5d90f0c4d9771ea02f33fb3683"
     }
   },
   "frozen_split_manifests": {
@@ -52,16 +40,6 @@
       "manifest_version": "R14",
       "seed_bank_version": "R14-private-2",
       "episode_split": "private"
-    }
-  },
-  "evidence_reports": {
-    "anti_shortcut_validity_gate_r13": {
-      "path": "tests/fixtures/release_r13_validity_report.json",
-      "sha256": "3fe18c65cdea63a4121f319a625bb51eabe7c6ce94f391251a5df008c691ef16"
-    },
-    "empirical_reaudit_r15": {
-      "path": "tests/fixtures/release_r15_reaudit_report.json",
-      "sha256": "51bfd8f650765e9bee22548fe7843a93691b7f5ab6f81d820f02d99fe775eef0"
     }
   },
   "source_of_truth": [

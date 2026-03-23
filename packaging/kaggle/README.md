@@ -8,6 +8,20 @@ This directory packages the implemented benchmark for Kaggle. It does not create
 
 Top-level `packaging/kaggle/` is the active operational surface only. Staging-only and archive-only files live under `staging/` and `archive/`.
 
+## Minimum Kaggle Runtime Package
+
+The official Kaggle notebook runs with this minimum packaged subset:
+
+- `packaging/kaggle/iron_find_electric_v1_kbench.ipynb`
+- `packaging/kaggle/kernel-metadata.json`
+- `packaging/kaggle/frozen_artifacts_manifest.json`
+- `src/` runtime modules, including `src/kaggle.py` and the imported `src/core/` and `src/tasks/iron_find_electric/` modules
+- `src/frozen_splits/dev.json`
+- `src/frozen_splits/public_leaderboard.json`
+- `src/frozen_splits/private_leaderboard.json`
+
+The active runtime contract does not require `BENCHMARK_CARD.md`, this runbook, staging notebooks, archive files, `reports/`, or `tests/fixtures/`.
+
 ## Official Kaggle Entry Point
 
 - Official leaderboard notebook: `iron_find_electric_v1_kbench.ipynb`
