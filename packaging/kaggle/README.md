@@ -62,7 +62,7 @@ Non-Kaggle execution surfaces:
 
 ## Intended Kaggle Flow
 
-1. Upload the repository contents needed by the official notebook, keeping `src/`, `tests/fixtures/`, `reports/`, and `packaging/kaggle/` together.
+1. Upload the minimum runtime package needed by the official notebook: `src/`, `src/frozen_splits/`, and `packaging/kaggle/`.
 2. Submit `iron_find_electric_v1_kbench.ipynb` via `kernel-metadata.json`.
 3. Optionally use `staging/iron_find_electric_v1_kaggle_staging.ipynb` before submission to validate the frozen artifact manifest, inspect packaged resources, and run a dry run over the packaged frozen episodes.
 4. Keep Binary as the only leaderboard-primary path and treat Narrative as the required same-episode robustness companion on the same episode order and probe targets.

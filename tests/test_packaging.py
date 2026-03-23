@@ -160,10 +160,12 @@ def test_kaggle_runbook_documents_the_minimum_runtime_subset():
 
     assert "minimum packaged subset" in usage_text.lower()
     assert "kaggle runtime-contract manifest" in usage_text.lower()
+    assert "upload the minimum runtime package needed by the official notebook" in usage_text.lower()
     for path in required_runtime_paths:
         assert path in usage_text
     for path in non_runtime_paths:
         assert path in usage_text
+    assert "keeping `src/`, `tests/fixtures/`, `reports/`, and `packaging/kaggle/` together" not in usage_text
 
 
 def test_active_docs_label_frozen_artifacts_manifest_by_runtime_role():
