@@ -46,6 +46,13 @@ Current v1 readiness status:
 - Anthropic and OpenAI integrations already exist locally, but they are outside the current v1 readiness gate and are not required for current v1 readiness;
 - current v1 readiness does not require cross-provider evidence.
 
+Deferred-work boundary:
+
+- current v1 readiness remains the Gemini-only gate above and is not blocked by deferred empirical or scientific-validity work;
+- Anthropic and OpenAI integrations are preserved local-only assets for later empirical expansion, not dead ends and not part of the active readiness gate;
+- post-v1 empirical expansion is deferred: Anthropic live evidence, OpenAI live evidence, cross-provider comparison, and broader run-store expansion beyond the current provenance contract;
+- longer-term scientific-validity strengthening is deferred: human pilot, independent rerun, and protocol extensions needed for adaptation-lag or recovery claims.
+
 Current evidence status:
 
 - **M1 (live Gemini panel)**: Binary accuracy = 0.781250, Narrative accuracy = 0.458333 (delta = 0.322917), Binary parse-valid = 1.000000, Narrative parse-valid = 0.937500. Binary substantially exceeds all heuristic baselines. Narrative is meaningfully lower than Binary on the same frozen episodes, indicating a real surface-form robustness gap. A small Narrative provider/runtime contamination note (overall rate = 0.041667) must be disclosed separately from parse/format and adaptation outcomes. The committed M1 report preserves the original requested model label `gemini-2.5-flash`.

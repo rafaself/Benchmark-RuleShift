@@ -106,6 +106,15 @@ The benchmark explicitly does **not** claim:
 - Anthropic and OpenAI integrations already exist locally, but they are outside the current v1 readiness gate;
 - current v1 readiness does not require cross-provider evidence.
 
+## Deferred Work Boundary
+
+Current v1 readiness remains the Gemini-only gate above. The following work is preserved but deferred beyond the current v1 readiness decision and beyond the current Kaggle staging claim:
+
+- post-v1 empirical expansion: Anthropic live evidence, OpenAI live evidence, cross-provider comparison, and broader run-store expansion beyond the current provenance contract
+- longer-term scientific-validity strengthening: human pilot, independent rerun, and protocol extensions needed for adaptation-lag or recovery claims
+
+Anthropic and OpenAI integrations remain available as local-only in-repo execution surfaces. They are preserved assets for later empirical expansion, not blockers for the current v1 package.
+
 ## Current Evidence
 
 ### R13 anti-shortcut validity gate

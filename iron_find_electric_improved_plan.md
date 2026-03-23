@@ -222,6 +222,15 @@ The benchmark is implemented. The active plan is consolidation, evidence progres
    - preserve report organization under `reports/<context>/<target>/latest|history|samples`;
    - avoid changing benchmark semantics, scoring logic, or split composition unless explicitly requested.
 
+### Phase 6 closeout: deferred-work boundary
+
+Current v1 readiness remains the implemented Gemini-only gate described above. The following work is explicitly deferred beyond the current v1 readiness decision:
+
+- **Post-v1 empirical expansion**: Anthropic live evidence, OpenAI live evidence, cross-provider comparison, and broader run-store expansion beyond the current provenance contract.
+- **Longer-term scientific-validity strengthening**: human pilot, independent rerun, and protocol extensions needed for adaptation-lag or recovery claims.
+
+Anthropic and OpenAI local runners remain available local-only integrations in the repository. They are preserved assets for later empirical work, not mistakes, and they do not block the current v1 readiness decision or the current Kaggle staging path.
+
 ---
 
 ## 12. Non-goals
