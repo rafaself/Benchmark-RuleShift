@@ -79,6 +79,12 @@ def test_pyproject_exposes_local_console_entrypoints():
     assert pyproject["project"]["optional-dependencies"]["gemini"] == [
         "google-genai>=1,<2",
     ]
+    assert pyproject["project"]["optional-dependencies"]["anthropic"] == [
+        "anthropic>=0.40,<1",
+    ]
+    assert pyproject["project"]["optional-dependencies"]["openai"] == [
+        "openai>=1.0,<2",
+    ]
 
 
 def test_kaggle_staging_notebook_points_at_frozen_bundle_artifacts():
@@ -172,3 +178,12 @@ def test_kaggle_packaging_text_keeps_optional_provider_sdks_out_of_base_path():
 
     assert "optional local-only provider sdks" in text
     assert "no production dependency installation is needed" in text
+
+
+def test_kaggle_staging_path_does_not_depend_on_openai_runtime():
+    notebook_text = _read_notebook_sources().lower()
+    usage_text = _USAGE_PATH.read_text(encoding="utf-8").lower()
+
+    assert "openai_api_key" not in notebook_text
+    assert "ife openai-panel" not in notebook_text
+    assert "openai_api_key" not in usage_text

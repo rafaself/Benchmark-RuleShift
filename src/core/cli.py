@@ -18,10 +18,16 @@ from core.gemini_panel import (
     default_gemini_first_panel_report_path,
     run_gemini_first_panel,
 )
+from core.openai_panel import (
+    DEFAULT_OPENAI_MODEL,
+    default_openai_panel_report_path,
+    run_openai_panel,
+)
 from core.kaggle import validate_kaggle_staging_manifest
 from core.model_execution import ModelMode
 from core.providers.anthropic import AnthropicConfigurationError
 from core.providers.gemini import GeminiConfigurationError
+from core.providers.openai import OpenAIConfigurationError
 from core.providers.registry import ProviderSelectionError
 from core.report_outputs import write_text_with_timestamped_snapshot
 from core.splits import (
@@ -132,6 +138,28 @@ def build_parser() -> argparse.ArgumentParser:
         help="Also run the Narrative prompt mode.",
     )
     anthropic_panel_parser.set_defaults(func=_command_anthropic_panel)
+
+    openai_panel_parser = subparsers.add_parser(
+        "openai-panel",
+        help="Run the OpenAI evaluation panel and write a markdown report.",
+    )
+    openai_panel_parser.add_argument(
+        "--model",
+        default=DEFAULT_OPENAI_MODEL,
+        help="OpenAI model name to run.",
+    )
+    openai_panel_parser.add_argument(
+        "--report-path",
+        type=Path,
+        default=None,
+        help="Markdown report output path. Defaults to the canonical latest path under reports/live/openai-panel/.",
+    )
+    openai_panel_parser.add_argument(
+        "--include-narrative",
+        action="store_true",
+        help="Also run the Narrative prompt mode.",
+    )
+    openai_panel_parser.set_defaults(func=_command_openai_panel)
 
     return parser
 
@@ -299,6 +327,55 @@ def _command_anthropic_panel(args: argparse.Namespace) -> int:
             modes=modes,
         )
     except (AnthropicConfigurationError, ProviderSelectionError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+
+    payload = {
+        "release_id": artifacts.release_report.release_id,
+        "provider_name": artifacts.provider_name,
+        "model_name": artifacts.model_name,
+        "prompt_modes": [mode.value for mode in artifacts.prompt_modes],
+        "report_path": str(artifacts.report_path),
+        "artifact_path": (
+            str(artifacts.artifact_path)
+            if artifacts.artifact_path is not None
+            else None
+        ),
+        "snapshot_report_path": (
+            str(artifacts.snapshot_report_path)
+            if artifacts.snapshot_report_path is not None
+            else None
+        ),
+        "snapshot_artifact_path": (
+            str(artifacts.snapshot_artifact_path)
+            if artifacts.snapshot_artifact_path is not None
+            else None
+        ),
+    }
+    print(json.dumps(payload, indent=2))
+    return 0
+
+
+def _command_openai_panel(args: argparse.Namespace) -> int:
+    modes = (
+        (ModelMode.BINARY, ModelMode.NARRATIVE)
+        if args.include_narrative
+        else (ModelMode.BINARY,)
+    )
+    try:
+        report_path = (
+            args.report_path
+            if args.report_path is not None
+            else default_openai_panel_report_path(
+                include_narrative=args.include_narrative
+            )
+        )
+        artifacts = run_openai_panel(
+            model_name=args.model,
+            report_path=report_path,
+            modes=modes,
+        )
+    except (OpenAIConfigurationError, ProviderSelectionError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
 

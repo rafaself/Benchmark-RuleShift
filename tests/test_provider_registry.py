@@ -59,6 +59,17 @@ def test_registered_anthropic_provider_exposes_expected_metadata():
     assert spec.sdk_extra == "anthropic"
 
 
+def test_registered_openai_provider_exposes_expected_metadata():
+    spec = get_provider_spec("openai")
+
+    assert spec.provider_name == "openai"
+    assert spec.kaggle_supported is False
+    assert spec.local_only is True
+    assert spec.default_benchmark_model == "gpt-5-mini-2025-08-07"
+    assert spec.capabilities.supports_json_schema_structured_output is True
+    assert spec.sdk_extra == "openai"
+
+
 def test_pinned_model_validation_rejects_floating_anthropic_aliases():
     spec = get_provider_spec("anthropic")
 
@@ -81,6 +92,30 @@ def test_resolve_anthropic_model_name_rejects_floating_aliases():
             "anthropic",
             surface=ProviderExecutionSurface.LOCAL_BENCHMARK,
             model_name="claude-3-5-haiku-latest",
+        )
+
+
+def test_pinned_model_validation_rejects_floating_openai_aliases():
+    spec = get_provider_spec("openai")
+
+    assert is_pinned_benchmark_model_id(spec, "gpt-5-mini-2025-08-07") is True
+    assert is_pinned_benchmark_model_id(spec, "gpt-5-mini") is False
+
+
+def test_resolve_openai_model_name_uses_pinned_default():
+    assert resolve_provider_model_name(
+        "openai",
+        surface=ProviderExecutionSurface.LOCAL_BENCHMARK,
+        model_name=None,
+    ) == "gpt-5-mini-2025-08-07"
+
+
+def test_resolve_openai_model_name_rejects_floating_aliases():
+    with pytest.raises(ProviderSelectionError):
+        resolve_provider_model_name(
+            "openai",
+            surface=ProviderExecutionSurface.LOCAL_BENCHMARK,
+            model_name="gpt-5-mini",
         )
 
 

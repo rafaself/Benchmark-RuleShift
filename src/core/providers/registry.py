@@ -95,6 +95,15 @@ _REGISTERED_PROVIDERS: Final[dict[str, ProviderSpec]] = {
         pinned_model_pattern=r"^claude-[a-z0-9.-]+-\d{8}$",
         sdk_extra="anthropic",
     ),
+    "openai": build_provider_spec(
+        provider_name="openai",
+        kaggle_supported=False,
+        local_only=True,
+        default_benchmark_model="gpt-5-mini-2025-08-07",
+        supports_json_schema_structured_output=True,
+        pinned_model_pattern=r"^gpt-[a-z0-9.-]+-\d{4}-\d{2}-\d{2}$",
+        sdk_extra="openai",
+    ),
 }
 
 

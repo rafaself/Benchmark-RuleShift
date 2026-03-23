@@ -11,6 +11,7 @@ from core import cli
 from core.anthropic_panel import AnthropicPanelArtifacts
 from core.gemini_panel import GeminiFirstPanelArtifacts
 from core.model_execution import ModelMode
+from core.openai_panel import OpenAIPanelArtifacts
 
 
 def test_validity_command_emits_current_gate_report(capsys: pytest.CaptureFixture[str]):
@@ -323,6 +324,81 @@ def test_anthropic_panel_command_rejects_unpinned_model_ids(
     capsys: pytest.CaptureFixture[str],
 ):
     exit_code = cli.main(["anthropic-panel", "--model", "claude-3-5-haiku-latest"])
+
+    captured = capsys.readouterr()
+
+    assert exit_code == 2
+    assert "pinned model ID" in captured.err
+
+
+def test_openai_panel_command_fails_clearly_without_api_key(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    tmp_path: Path,
+):
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.setattr("core.providers.openai._repo_root", lambda: tmp_path)
+
+    exit_code = cli.main(["openai-panel"])
+
+    captured = capsys.readouterr()
+
+    assert exit_code == 2
+    assert "OPENAI_API_KEY" in captured.err
+
+
+def test_openai_panel_command_emits_report_metadata(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    tmp_path: Path,
+):
+    class _StubReport:
+        release_id = "R18"
+
+    report_path = tmp_path / "openai_panel_report.md"
+    monkeypatch.setattr(
+        cli,
+        "run_openai_panel",
+        lambda **_: OpenAIPanelArtifacts(
+            provider_name="openai",
+            model_name="gpt-5-mini-2025-08-07",
+            prompt_modes=(ModelMode.BINARY,),
+            release_report=_StubReport(),
+            report_markdown="# report\n",
+            report_path=report_path,
+            artifact_payload={"prompt_modes": ["binary"]},
+            artifact_path=report_path.with_suffix(".json"),
+            snapshot_report_path=tmp_path / "openai_panel_report__20260322_220000.md",
+            snapshot_artifact_path=tmp_path / "openai_panel_report__20260322_220000.json",
+        ),
+    )
+
+    exit_code = cli.main(["openai-panel", "--report-path", str(report_path)])
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+
+    assert exit_code == 0
+    assert payload == {
+        "release_id": "R18",
+        "provider_name": "openai",
+        "model_name": "gpt-5-mini-2025-08-07",
+        "prompt_modes": ["binary"],
+        "report_path": str(report_path),
+        "artifact_path": str(report_path.with_suffix(".json")),
+        "snapshot_report_path": str(
+            tmp_path / "openai_panel_report__20260322_220000.md"
+        ),
+        "snapshot_artifact_path": str(
+            tmp_path / "openai_panel_report__20260322_220000.json"
+        ),
+    }
+
+
+def test_openai_panel_command_rejects_unpinned_model_ids(
+    capsys: pytest.CaptureFixture[str],
+):
+    exit_code = cli.main(["openai-panel", "--model", "gpt-5-mini"])
 
     captured = capsys.readouterr()
 

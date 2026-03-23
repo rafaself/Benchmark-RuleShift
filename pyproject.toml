@@ -17,6 +17,9 @@ gemini = [
 anthropic = [
   "anthropic>=0.40,<1",
 ]
+openai = [
+  "openai>=1.0,<2",
+]
 
 [project.scripts]
 ife = "core.cli:entrypoint"

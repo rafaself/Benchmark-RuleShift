@@ -128,10 +128,12 @@ source .venv/bin/activate
 python3 -m pip install -r requirements-dev.txt
 ```
 
-If you want to run the optional local Gemini benchmark panel, install the provider extra as well:
+If you want to run an optional local provider benchmark panel, install the relevant provider extra as well:
 
 ```bash
 python3 -m pip install -e ".[gemini]"
+python3 -m pip install -e ".[anthropic]"
+python3 -m pip install -e ".[openai]"
 ```
 
 Run the test suite:
@@ -172,6 +174,15 @@ export GEMINI_API_KEY=your_api_key_here
 ```
 
 Or place `GEMINI_API_KEY=...` in a repo-root `.env` file and run the same command.
+
+OpenAI local-only runs follow the same paired Binary/Narrative reporting surface and require the pinned snapshot model:
+
+```bash
+export OPENAI_API_KEY=your_api_key_here
+.venv/bin/python scripts/ife.py openai-panel --include-narrative --model gpt-5-mini-2025-08-07
+```
+
+OpenAI support is optional local-only execution. It is not part of the Kaggle staging path.
 
 ## Reports Layout
 
