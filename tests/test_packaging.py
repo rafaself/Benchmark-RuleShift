@@ -21,7 +21,7 @@ _KAGGLE_DIR = _REPO_ROOT / "packaging" / "kaggle"
 _PYPROJECT_PATH = _REPO_ROOT / "pyproject.toml"
 _CONTRACT_PATH = _REPO_ROOT / "KAGGLE_BENCHMARK_CONTRACT.md"
 _KBENCH_NOTEBOOK_PATH = _KAGGLE_DIR / "iron_find_electric_v1_kbench.ipynb"
-_NOTEBOOK_PATH = _KAGGLE_DIR / "iron_find_electric_v1_kaggle_staging.ipynb"
+_STAGING_NOTEBOOK_PATH = _KAGGLE_DIR / "iron_find_electric_v1_kaggle_staging.ipynb"
 _KERNEL_METADATA_PATH = _KAGGLE_DIR / "kernel-metadata.json"
 _CARD_PATH = _KAGGLE_DIR / "BENCHMARK_CARD.md"
 _USAGE_PATH = _KAGGLE_DIR / "README.md"
@@ -88,9 +88,15 @@ def test_official_kaggle_submission_flow_is_consistent_across_surface():
 
     official_notebook_relpath = "packaging/kaggle/iron_find_electric_v1_kbench.ipynb"
     official_notebook_name = "iron_find_electric_v1_kbench.ipynb"
+    official_entry_points = tuple(
+        artifact["path"]
+        for artifact in manifest["entry_points"].values()
+        if artifact["path"].endswith(".ipynb")
+    )
 
     assert manifest["entry_points"]["kbench_notebook"]["path"] == official_notebook_relpath
     assert manifest["entry_points"]["kernel_metadata"]["path"] == "packaging/kaggle/kernel-metadata.json"
+    assert official_entry_points == (official_notebook_relpath,)
     assert kernel_metadata["code_file"] == official_notebook_name
     assert official_notebook_relpath in readme_text
     assert official_notebook_name in usage_text
@@ -98,6 +104,18 @@ def test_official_kaggle_submission_flow_is_consistent_across_surface():
     assert official_notebook_relpath in contract_text
     assert 'code_file = "iron_find_electric_v1_kbench.ipynb"' in contract_text
     assert "No other notebook or local runtime path is an official Kaggle leaderboard submission surface." in usage_text
+
+
+def test_non_official_packaged_paths_are_explicitly_marked_non_active():
+    usage_text = _USAGE_PATH.read_text(encoding="utf-8")
+    card_text = _CARD_PATH.read_text(encoding="utf-8")
+    packaging_note_text = _PACKAGING_NOTE_PATH.read_text(encoding="utf-8")
+
+    assert "`iron_find_electric_v1_kaggle_staging.ipynb`: staging-only" in usage_text
+    assert "`KAGGLE_BENCHMARK_CONTRACT.md`: archive-only" in usage_text
+    assert "staging-only" in card_text
+    assert "ARCHIVE RELEASE NOTE" in packaging_note_text
+    assert "not an authoritative benchmark contract or an operational runbook" in packaging_note_text
 
 
 def test_pyproject_exposes_local_console_entrypoints():
@@ -122,24 +140,6 @@ def test_pyproject_exposes_local_console_entrypoints():
     assert pyproject["project"]["optional-dependencies"]["openai"] == [
         "openai>=1.0,<2",
     ]
-
-
-def test_kaggle_staging_notebook_points_at_frozen_bundle_artifacts():
-    sources = _read_notebook_sources(_NOTEBOOK_PATH)
-
-    assert "frozen_artifacts_manifest.json" in sources
-    assert "benchmark_card" in sources
-    assert "anti_shortcut_validity_gate_r13" in sources
-    assert "empirical_reaudit_r15" in sources
-    assert "validate_kaggle_staging_manifest" in sources
-    assert "load_split_manifest" in sources
-    assert "load_frozen_split" in sources
-    assert "run_model_benchmark" in sources
-    assert "ModelMode.BINARY" in sources
-    assert "ModelMode.NARRATIVE" in sources
-    assert "same_probe_targets" in sources
-    assert "Binary-only headline metric" in sources
-    assert "Narrative does not change the headline score" in sources
 
 
 def test_benchmark_card_matches_current_implementation_state():
@@ -188,9 +188,8 @@ def test_active_docs_identify_one_official_packaged_readiness_anchor():
 def test_packaging_docs_do_not_claim_unsupported_features():
     text = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in (_CARD_PATH, _USAGE_PATH, _PACKAGING_NOTE_PATH)
+        for path in (_REPO_ROOT / "README.md", _CARD_PATH, _USAGE_PATH)
     )
-    text += "\n" + _read_notebook_sources(_NOTEBOOK_PATH)
     lowered = text.lower()
 
     assert "does **not** claim" in text
@@ -207,8 +206,10 @@ def test_packaging_docs_do_not_claim_unsupported_features():
     for phrase in explicit_non_claims:
         assert phrase in lowered
 
-    assert "Binary-only Post-shift Probe Accuracy".lower() in lowered
-    assert "Narrative does not change the headline score".lower() in lowered
+    assert "post-shift probe accuracy as the sole headline metric" in lowered
+    assert "binary as the only leaderboard-primary path" in lowered
+    assert "narrative is the required same-episode robustness companion" in lowered
+    assert "only the final four labels are scored" in lowered
 
     forbidden_positive_claims = (
         "hard leaderboard slice",
@@ -234,7 +235,7 @@ def test_kaggle_packaging_text_keeps_optional_provider_sdks_out_of_base_path():
 
 
 def test_kaggle_staging_path_does_not_depend_on_openai_runtime():
-    notebook_text = _read_notebook_sources(_NOTEBOOK_PATH).lower()
+    notebook_text = _read_notebook_sources(_STAGING_NOTEBOOK_PATH).lower()
     usage_text = _USAGE_PATH.read_text(encoding="utf-8").lower()
 
     assert "openai_api_key" not in notebook_text

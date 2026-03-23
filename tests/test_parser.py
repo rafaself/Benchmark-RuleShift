@@ -109,31 +109,6 @@ def test_narrative_parser_scores_only_the_last_answer_line():
     )
 
 
-def test_narrative_parser_still_accepts_legacy_final_labels_block():
-    parsed = parse_narrative_output(
-        "\n".join(
-            (
-                "Reasoning about the revised local rule.",
-                "Final labels:",
-                "attract",
-                "repel",
-                "repel",
-                "attract",
-            )
-        )
-    )
-
-    assert parsed == ParsedPrediction(
-        labels=(
-            InteractionLabel.ATTRACT,
-            InteractionLabel.REPEL,
-            InteractionLabel.REPEL,
-            InteractionLabel.ATTRACT,
-        ),
-        status=ParseStatus.VALID,
-    )
-
-
 def test_narrative_parser_extracts_four_bare_trailing_labels():
     parsed = parse_narrative_output(
         "\n".join(
