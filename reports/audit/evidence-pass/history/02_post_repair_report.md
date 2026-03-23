@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-After the private split repair, the local Iron Find Electric benchmark is code-healthy, reproducible, and now clears the local benchmark-validity surface. The repaired private split passes the R13 anti-shortcut validity gate, the R15 deterministic re-audit no longer reports weak private slice separation as a blocker, and frozen artifact integrity remains clean. `hard` is still reserved and not emitted, and no real-model runs are bundled in-repo.
+After the private split repair, the local RuleShift Benchmark is code-healthy, reproducible, and now clears the local benchmark-validity surface. The repaired private split passes the R13 anti-shortcut validity gate, the R15 deterministic re-audit no longer reports weak private slice separation as a blocker, and frozen artifact integrity remains clean. `hard` is still reserved and not emitted, and no real-model runs are bundled in-repo.
 
 ## Evidence Pass
 

@@ -6,13 +6,13 @@ import random
 from typing import TypeAlias
 
 from core.parser import ParsedPrediction, ParseStatus
-from tasks.iron_find_electric.protocol import (
+from tasks.ruleshift_benchmark.protocol import (
     LABELED_ITEM_COUNT,
     InteractionLabel,
     RuleName,
 )
-from tasks.iron_find_electric.rules import label
-from tasks.iron_find_electric.schema import Episode, EpisodeItem
+from tasks.ruleshift_benchmark.rules import label
+from tasks.ruleshift_benchmark.schema import Episode, EpisodeItem
 
 __all__ = [
     "BaselinePrediction",

@@ -31,7 +31,7 @@ from core.report_outputs import (
     write_canonical_run_outputs,
 )
 from core.splits import PARTITIONS, load_frozen_split
-from tasks.iron_find_electric.schema import Episode
+from tasks.ruleshift_benchmark.schema import Episode
 
 __all__ = [
     "DEFAULT_ANTHROPIC_MODEL",

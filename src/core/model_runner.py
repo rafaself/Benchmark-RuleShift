@@ -14,9 +14,9 @@ from core.model_execution import (
     ModelRunConfig,
 )
 from core.parser import ParsedPrediction, parse_binary_output, parse_narrative_output
-from tasks.iron_find_electric.protocol import InteractionLabel
-from tasks.iron_find_electric.render import render_binary_prompt, render_narrative_prompt
-from tasks.iron_find_electric.schema import Episode
+from tasks.ruleshift_benchmark.protocol import InteractionLabel
+from tasks.ruleshift_benchmark.render import render_binary_prompt, render_narrative_prompt
+from tasks.ruleshift_benchmark.schema import Episode
 
 __all__ = [
     "BenchmarkModeRunRow",

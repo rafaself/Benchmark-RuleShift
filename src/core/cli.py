@@ -46,8 +46,8 @@ from core.validate import (
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="ife",
-        description="Run local Iron Find Electric benchmark utilities.",
+        prog="ruleshift-benchmark",
+        description="Run local RuleShift Benchmark utilities.",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 

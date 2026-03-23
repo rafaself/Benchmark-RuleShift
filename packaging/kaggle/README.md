@@ -12,10 +12,10 @@ Top-level `packaging/kaggle/` is the active operational surface only. Staging-on
 
 The official Kaggle notebook runs with this minimum packaged subset:
 
-- `packaging/kaggle/iron_find_electric_v1_kbench.ipynb`
+- `packaging/kaggle/ruleshift_benchmark_v1_kbench.ipynb`
 - `packaging/kaggle/kernel-metadata.json`
 - `packaging/kaggle/frozen_artifacts_manifest.json` as the Kaggle runtime-contract manifest
-- `src/` runtime modules, including `src/kaggle.py` and the imported `src/core/` and `src/tasks/iron_find_electric/` modules
+- `src/` runtime modules, including `src/kaggle.py` and the imported `src/core/` and `src/tasks/ruleshift_benchmark/` modules
 - `src/frozen_splits/dev.json`
 - `src/frozen_splits/public_leaderboard.json`
 - `src/frozen_splits/private_leaderboard.json`
@@ -24,8 +24,8 @@ The active runtime contract does not require `BENCHMARK_CARD.md`, this runbook, 
 
 ## Official Kaggle Entry Point
 
-- Official leaderboard notebook: `iron_find_electric_v1_kbench.ipynb`
-- Official Kaggle submission path: `packaging/kaggle/kernel-metadata.json` with `"code_file": "iron_find_electric_v1_kbench.ipynb"`
+- Official leaderboard notebook: `ruleshift_benchmark_v1_kbench.ipynb`
+- Official Kaggle submission path: `packaging/kaggle/kernel-metadata.json` with `"code_file": "ruleshift_benchmark_v1_kbench.ipynb"`
 
 No other notebook or local runtime path is an official Kaggle leaderboard submission surface.
 
@@ -41,7 +41,7 @@ The supporting comparison material is preserved for history and inspection. It i
 
 Top-level active operational surface:
 
-- `iron_find_electric_v1_kbench.ipynb`: runtime artifact; official leaderboard notebook
+- `ruleshift_benchmark_v1_kbench.ipynb`: runtime artifact; official leaderboard notebook
 - `kernel-metadata.json`: metadata; official Kaggle submission manifest pointing to the leaderboard notebook
 - `frozen_artifacts_manifest.json`: metadata; Kaggle runtime-contract manifest for the official notebook and frozen split inputs
 - `README.md`: active operational doc; Kaggle packaging governance and flow
@@ -49,7 +49,7 @@ Top-level active operational surface:
 
 Staging-only:
 
-- `staging/iron_find_electric_v1_kaggle_staging.ipynb`: optional package-validation and dry-run notebook
+- `staging/ruleshift_benchmark_v1_kaggle_staging.ipynb`: optional package-validation and dry-run notebook
 
 Archive/obsolete:
 
@@ -63,8 +63,8 @@ Non-Kaggle execution surfaces:
 ## Intended Kaggle Flow
 
 1. Upload the minimum runtime package needed by the official notebook: `src/`, `src/frozen_splits/`, and `packaging/kaggle/`.
-2. Submit `iron_find_electric_v1_kbench.ipynb` via `kernel-metadata.json`.
-3. Optionally use `staging/iron_find_electric_v1_kaggle_staging.ipynb` before submission to validate the frozen artifact manifest, inspect packaged resources, and run a dry run over the packaged frozen episodes.
+2. Submit `ruleshift_benchmark_v1_kbench.ipynb` via `kernel-metadata.json`.
+3. Optionally use `staging/ruleshift_benchmark_v1_kaggle_staging.ipynb` before submission to validate the frozen artifact manifest, inspect packaged resources, and run a dry run over the packaged frozen episodes.
 4. Keep Binary as the only leaderboard-primary path and treat Narrative as the required same-episode robustness companion on the same episode order and probe targets.
 5. Confirm that parsing, scoring, and report rendering complete end to end, with Post-shift Probe Accuracy as the headline metric.
 
@@ -75,7 +75,7 @@ Non-Kaggle execution surfaces:
 - The runtime-contract manifest records integrity hashes for the official notebook and frozen split manifests.
 - The benchmark contract at the repository root is the source of truth for benchmark definition.
 - The runtime implementation under `src/` and the frozen manifests under `src/frozen_splits/` are the source of truth for executable benchmark behavior.
-- The official Kaggle submission surface is only `iron_find_electric_v1_kbench.ipynb` through `kernel-metadata.json`.
+- The official Kaggle submission surface is only `ruleshift_benchmark_v1_kbench.ipynb` through `kernel-metadata.json`.
 - Kaggle staging is a clean replay layer over those frozen artifacts and local evidence; it is not an independent benchmark definition.
 - Current live readiness evidence remains Gemini-only and is preserved under `reports/`. Kaggle staging does not rerun or reinterpret that live evidence.
 

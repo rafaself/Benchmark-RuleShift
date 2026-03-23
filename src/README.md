@@ -4,12 +4,12 @@
 > This file describes the source tree only.
 > It does not define benchmark contract terms or Kaggle operating procedure.
 
-This directory contains the implemented benchmark code for Iron Find Electric v1.
+This directory contains the implemented benchmark code for RuleShift Benchmark v1.
 
 ## Canonical Layout
 
 - `core/`: generic benchmark infrastructure used by this repository, including metrics, validation, audits, split handling, providers, and panel runners.
-- `tasks/iron_find_electric/`: task-specific protocol, schema, generation, rendering, and baseline logic.
+- `tasks/ruleshift_benchmark/`: task-specific protocol, schema, generation, rendering, and baseline logic.
 - top-level `*.py` modules: compatibility wrappers that re-export the canonical package modules.
 
 ## Core Infrastructure
@@ -24,12 +24,12 @@ This directory contains the implemented benchmark code for Iron Find Electric v1
 
 ## Task Logic
 
-- `tasks/iron_find_electric/protocol.py`: shared task vocabulary, enums, template metadata, and parsing helpers.
-- `tasks/iron_find_electric/rules.py`: charge-sign rule engine for `R_std` and `R_inv`.
-- `tasks/iron_find_electric/schema.py`: canonical episode dataclasses and invariants.
-- `tasks/iron_find_electric/generator.py`: deterministic seed-based episode generation.
-- `tasks/iron_find_electric/render.py`: Binary and Narrative prompt renderers over the same frozen episodes.
-- `tasks/iron_find_electric/baselines.py`: heuristic baselines and baseline-run helpers.
+- `tasks/ruleshift_benchmark/protocol.py`: shared task vocabulary, enums, template metadata, and parsing helpers.
+- `tasks/ruleshift_benchmark/rules.py`: charge-sign rule engine for `R_std` and `R_inv`.
+- `tasks/ruleshift_benchmark/schema.py`: canonical episode dataclasses and invariants.
+- `tasks/ruleshift_benchmark/generator.py`: deterministic seed-based episode generation.
+- `tasks/ruleshift_benchmark/render.py`: Binary and Narrative prompt renderers over the same frozen episodes.
+- `tasks/ruleshift_benchmark/baselines.py`: heuristic baselines and baseline-run helpers.
 
 ## Frozen Assets
 
@@ -43,7 +43,7 @@ These exact split names are part of the benchmark-facing contract.
 
 - Official runtime implementation path: `src/` is the runtime source of truth for benchmark behavior.
 - `core.cli`: thin CLI wrapper around the implemented benchmark functions.
-- `scripts/ife.py`: repo-local dispatcher that works without installing the project.
+- `scripts/ruleshift_benchmark.py`: repo-local dispatcher that works without installing the project.
 - `Makefile`: shortcut targets for test, validity, re-audit, integrity, and evidence pass.
 
 ## Current Notes

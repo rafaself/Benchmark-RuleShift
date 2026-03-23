@@ -1,4 +1,4 @@
-# Iron Find Electric v1 Benchmark Card
+# RuleShift Benchmark v1 Benchmark Card
 
 > **Status: SUPPORTING SUMMARY**
 > This benchmark card is descriptive only.
@@ -7,11 +7,11 @@
 
 ## Summary
 
-Iron Find Electric v1 is a narrow Executive Functions benchmark for cognitive flexibility. It uses electrostatics only as a controlled substrate for evaluating final post-shift rule application after sparse contradictory evidence.
+RuleShift Benchmark v1 is a narrow Executive Functions benchmark for cognitive flexibility. It uses electrostatics only as a controlled substrate for evaluating final post-shift rule application after sparse contradictory evidence.
 
 A high v1 Binary score is evidence that a model correctly applied the post-shift rule to the final probes after sparse contradictory evidence in the frozen episodes. It is not evidence of physics skill, broad adaptation ability, broad AGI capability, or general reasoning ability.
 
-This package is a Kaggle packaging layer over the implemented local benchmark. The authoritative contract is `KAGGLE_BENCHMARK_CONTRACT.md` at the repository root. The implemented local benchmark under `src/` and the frozen split manifests under `src/frozen_splits/` remain the runtime source of truth. The single official Kaggle leaderboard notebook is `packaging/kaggle/iron_find_electric_v1_kbench.ipynb`; `packaging/kaggle/staging/iron_find_electric_v1_kaggle_staging.ipynb` is staging-only.
+This package is a Kaggle packaging layer over the implemented local benchmark. The authoritative contract is `KAGGLE_BENCHMARK_CONTRACT.md` at the repository root. The implemented local benchmark under `src/` and the frozen split manifests under `src/frozen_splits/` remain the runtime source of truth. The single official Kaggle leaderboard notebook is `packaging/kaggle/ruleshift_benchmark_v1_kbench.ipynb`; `packaging/kaggle/staging/ruleshift_benchmark_v1_kaggle_staging.ipynb` is staging-only.
 
 ## Task Paths
 

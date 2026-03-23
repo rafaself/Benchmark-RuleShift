@@ -1,13 +1,13 @@
-# Iron Find Electric
+# RuleShift Benchmark
 
 > **Status: SUPPORTING OVERVIEW**
 > This README is a project guide, not a normative benchmark specification.
 > For binding benchmark rules, use [`KAGGLE_BENCHMARK_CONTRACT.md`](./KAGGLE_BENCHMARK_CONTRACT.md).
 > For Kaggle submission and staging steps, use [`packaging/kaggle/README.md`](./packaging/kaggle/README.md).
 
-Iron Find Electric is benchmark infrastructure for the implemented Iron Find Electric v1 task in the Executive Functions track of the Measuring Progress Toward AGI challenge. The repository already contains the local benchmark code, frozen split assets, Kaggle staging layer, reports tree, and current Gemini evidence for this narrow cognitive-flexibility benchmark.
+RuleShift Benchmark is benchmark infrastructure for the implemented RuleShift Benchmark v1 task in the Executive Functions track of the Measuring Progress Toward AGI challenge. The repository already contains the local benchmark code, frozen split assets, Kaggle staging layer, reports tree, and current Gemini evidence for this narrow cognitive-flexibility benchmark.
 
-Iron Find Electric v1 is a targeted Executive Functions benchmark for cognitive flexibility. It uses electrostatics only as a controlled substrate for evaluating final post-shift rule application after sparse contradictory evidence.
+RuleShift Benchmark v1 is a targeted Executive Functions benchmark for cognitive flexibility. It uses electrostatics only as a controlled substrate for evaluating final post-shift rule application after sparse contradictory evidence.
 
 A high v1 Binary score is evidence that a model correctly applied the post-shift rule to the final probes after sparse contradictory evidence in the frozen episodes. It is not evidence of physics skill, broad adaptation ability, broad AGI capability, or general reasoning ability.
 
@@ -91,7 +91,7 @@ Labels depend only on charge sign, not magnitude, and pair order must not affect
 Canonical code lives in two package areas:
 
 - [`src/core/`](./src/core): benchmark infrastructure shared across parsing, metrics, validation, audits, providers, panel runners, and split management.
-- [`src/tasks/iron_find_electric/`](./src/tasks/iron_find_electric): Iron Find Electric task logic, including protocol, schema, generation, rendering, and baselines.
+- [`src/tasks/ruleshift_benchmark/`](./src/tasks/ruleshift_benchmark): RuleShift Benchmark task logic, including protocol, schema, generation, rendering, and baselines.
 
 Compatibility wrapper modules remain at the top level under [`src/`](./src/) so existing imports like `from generator import generate_episode` still work during the transition.
 
@@ -108,7 +108,7 @@ src/
 │   └── validate.py
 ├── frozen_splits/
 ├── tasks/
-│   └── iron_find_electric/
+│   └── ruleshift_benchmark/
 │       ├── baselines.py
 │       ├── generator.py
 │       ├── protocol.py
@@ -122,11 +122,11 @@ src/
 
 Primary task-facing interfaces:
 
-- [`src/tasks/iron_find_electric/protocol.py`](./src/tasks/iron_find_electric/protocol.py): benchmark vocabulary, enums, and template metadata.
-- [`src/tasks/iron_find_electric/schema.py`](./src/tasks/iron_find_electric/schema.py): `EpisodeItem`, `ProbeMetadata`, and `Episode`.
-- [`src/tasks/iron_find_electric/generator.py`](./src/tasks/iron_find_electric/generator.py): `generate_episode`.
-- [`src/tasks/iron_find_electric/render.py`](./src/tasks/iron_find_electric/render.py): Binary and Narrative renderers.
-- [`src/tasks/iron_find_electric/baselines.py`](./src/tasks/iron_find_electric/baselines.py): heuristic baselines and baseline-run results.
+- [`src/tasks/ruleshift_benchmark/protocol.py`](./src/tasks/ruleshift_benchmark/protocol.py): benchmark vocabulary, enums, and template metadata.
+- [`src/tasks/ruleshift_benchmark/schema.py`](./src/tasks/ruleshift_benchmark/schema.py): `EpisodeItem`, `ProbeMetadata`, and `Episode`.
+- [`src/tasks/ruleshift_benchmark/generator.py`](./src/tasks/ruleshift_benchmark/generator.py): `generate_episode`.
+- [`src/tasks/ruleshift_benchmark/render.py`](./src/tasks/ruleshift_benchmark/render.py): Binary and Narrative renderers.
+- [`src/tasks/ruleshift_benchmark/baselines.py`](./src/tasks/ruleshift_benchmark/baselines.py): heuristic baselines and baseline-run results.
 
 Primary benchmark-infrastructure interfaces:
 
@@ -189,9 +189,9 @@ make evidence-pass
 Or run the script dispatcher directly:
 
 ```bash
-.venv/bin/python scripts/ife.py validity
-.venv/bin/python scripts/ife.py reaudit
-.venv/bin/python scripts/ife.py gemini-first-panel
+.venv/bin/python scripts/ruleshift_benchmark.py validity
+.venv/bin/python scripts/ruleshift_benchmark.py reaudit
+.venv/bin/python scripts/ruleshift_benchmark.py gemini-first-panel
 .venv/bin/python scripts/evidence_pass.py
 ```
 
@@ -199,7 +199,7 @@ To run the current Gemini readiness path (paired Binary and Narrative), which wr
 
 ```bash
 export GEMINI_API_KEY=your_api_key_here
-.venv/bin/python scripts/ife.py gemini-first-panel
+.venv/bin/python scripts/ruleshift_benchmark.py gemini-first-panel
 ```
 
 Or place the local provider keys you need in a repo-root `.env` file:
@@ -216,7 +216,7 @@ OpenAI local-only runs follow the same paired Binary/Narrative reporting surface
 
 ```bash
 export OPENAI_API_KEY=your_api_key_here
-.venv/bin/python scripts/ife.py openai-panel --include-narrative --model gpt-5-mini-2025-08-07
+.venv/bin/python scripts/ruleshift_benchmark.py openai-panel --include-narrative --model gpt-5-mini-2025-08-07
 ```
 
 Anthropic and OpenAI support are optional local-only execution surfaces. They are not part of the current v1 readiness gate.
@@ -247,11 +247,11 @@ python3 -m pip install -e .
 Then use:
 
 ```bash
-ife-test
-ife-validity
-ife-reaudit
-ife-integrity
-ife-evidence-pass
+ruleshift-benchmark-test
+ruleshift-benchmark-validity
+ruleshift-benchmark-reaudit
+ruleshift-benchmark-integrity
+ruleshift-benchmark-evidence-pass
 ```
 
 ## Source of Truth
@@ -261,7 +261,7 @@ The repository governance model is:
 - benchmark contract: [`KAGGLE_BENCHMARK_CONTRACT.md`](./KAGGLE_BENCHMARK_CONTRACT.md) is the single authoritative contract for benchmark identity, metric, splits, scoring, prompt invariants, and claim boundaries;
 - runtime implementation: [`src/`](./src/) and the frozen manifests under [`src/frozen_splits/`](./src/frozen_splits/) are the single executable source of truth for benchmark behavior;
 - Kaggle runbook: [`packaging/kaggle/README.md`](./packaging/kaggle/README.md) is the single authoritative operational path description for Kaggle packaging, staging, and submission;
-- Kaggle leaderboard entry point: [`packaging/kaggle/iron_find_electric_v1_kbench.ipynb`](./packaging/kaggle/iron_find_electric_v1_kbench.ipynb) is the single official Kaggle leaderboard notebook, wired by [`packaging/kaggle/kernel-metadata.json`](./packaging/kaggle/kernel-metadata.json);
+- Kaggle leaderboard entry point: [`packaging/kaggle/ruleshift_benchmark_v1_kbench.ipynb`](./packaging/kaggle/ruleshift_benchmark_v1_kbench.ipynb) is the single official Kaggle leaderboard notebook, wired by [`packaging/kaggle/kernel-metadata.json`](./packaging/kaggle/kernel-metadata.json);
 - minimum Kaggle runtime package: the official notebook, [`packaging/kaggle/kernel-metadata.json`](./packaging/kaggle/kernel-metadata.json), [`packaging/kaggle/frozen_artifacts_manifest.json`](./packaging/kaggle/frozen_artifacts_manifest.json) as the Kaggle runtime-contract manifest, [`src/`](./src/), and [`src/frozen_splits/`](./src/frozen_splits/);
 - Kaggle staging materials: the rest of [`packaging/kaggle/`](./packaging/kaggle/) is packaging support only and does not redefine benchmark semantics or runtime behavior;
 - evidence and audits: [`reports/`](./reports/) and the bundled validation/audit fixtures record evidence about the implemented benchmark, but they do not override the contract or runtime.

@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-The current local Iron Find Electric benchmark is code-healthy and reproducible, but it is still blocked on benchmark-validity evidence. The full local automated suite passed (`629 passed, 0 failed, 0 skipped`), all frozen manifests and regression fixtures loaded cleanly, and the current R15 deterministic re-audit reproduced the bundled evidence exactly. The current R13 anti-shortcut gate still fails on one criterion: private-leaderboard subset separation remains too weak. `hard` is still reserved and not emitted.
+The current local RuleShift Benchmark is code-healthy and reproducible, but it is still blocked on benchmark-validity evidence. The full local automated suite passed (`629 passed, 0 failed, 0 skipped`), all frozen manifests and regression fixtures loaded cleanly, and the current R15 deterministic re-audit reproduced the bundled evidence exactly. The current R13 anti-shortcut gate still fails on one criterion: private-leaderboard subset separation remains too weak. `hard` is still reserved and not emitted.
 
 ## Scope and Execution
 

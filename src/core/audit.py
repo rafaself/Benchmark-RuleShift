@@ -4,9 +4,9 @@ from dataclasses import dataclass
 from typing import Final, Iterable, Literal, Mapping
 
 from core.parser import ParseStatus, ParsedPrediction
-from tasks.iron_find_electric.baselines import BaselineRunResult
-from tasks.iron_find_electric.protocol import PROBE_COUNT
-from tasks.iron_find_electric.schema import Episode
+from tasks.ruleshift_benchmark.baselines import BaselineRunResult
+from tasks.ruleshift_benchmark.protocol import PROBE_COUNT
+from tasks.ruleshift_benchmark.schema import Episode
 
 __all__ = [
     "AuditSource",
@@ -747,7 +747,7 @@ def _build_release_baseline_sources_by_split(
     *,
     random_baseline_seed: int,
 ) -> dict[str, dict[str, AuditSource]]:
-    from tasks.iron_find_electric.baselines import (
+    from tasks.ruleshift_benchmark.baselines import (
         last_evidence_baseline,
         never_update_baseline,
         physics_prior_baseline,

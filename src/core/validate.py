@@ -7,7 +7,7 @@ import re
 from typing import Final, Iterable, Mapping
 
 from core.audit import AuditSource, AuditSourceSummary, run_audit
-from tasks.iron_find_electric.baselines import (
+from tasks.ruleshift_benchmark.baselines import (
     BaselineFn,
     last_evidence_baseline,
     never_update_baseline,
@@ -17,8 +17,8 @@ from tasks.iron_find_electric.baselines import (
     template_position_baseline,
 )
 
-from tasks.iron_find_electric.generator import generate_episode
-from tasks.iron_find_electric.protocol import (
+from tasks.ruleshift_benchmark.generator import generate_episode
+from tasks.ruleshift_benchmark.protocol import (
     EPISODE_LENGTH,
     LABELED_ITEM_COUNT,
     PROBE_COUNT,
@@ -36,8 +36,8 @@ from tasks.iron_find_electric.protocol import (
     parse_template_id,
     parse_transition,
 )
-from tasks.iron_find_electric.rules import label
-from tasks.iron_find_electric.schema import (
+from tasks.ruleshift_benchmark.rules import label
+from tasks.ruleshift_benchmark.schema import (
     DIFFICULTY_VERSION,
     GENERATOR_VERSION,
     SPEC_VERSION,

@@ -1,5 +1,5 @@
 PYTHON ?= .venv/bin/python
-CLI := $(PYTHON) scripts/ife.py
+CLI := $(PYTHON) scripts/ruleshift_benchmark.py
 
 .PHONY: help test validity reaudit integrity evidence-pass
 

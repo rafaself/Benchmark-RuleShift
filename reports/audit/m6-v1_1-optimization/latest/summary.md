@@ -1,6 +1,6 @@
 # M6 v1.1 Optimization Summary
 
-M6 is a non-breaking v1.1 cleanup pass over the current Iron Find Electric benchmark surface.
+M6 is a non-breaking v1.1 cleanup pass over the current RuleShift Benchmark surface.
 
 Completed scope:
 

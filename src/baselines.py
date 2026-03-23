@@ -1,1 +1,1 @@
-from tasks.iron_find_electric.baselines import *  # noqa: F401,F403
+from tasks.ruleshift_benchmark.baselines import *  # noqa: F401,F403

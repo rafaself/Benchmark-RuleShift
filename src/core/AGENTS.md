@@ -11,7 +11,7 @@
 
 ## Boundaries
 
-- Put Iron Find Electric semantics in `src/tasks/iron_find_electric/`.
+- Put RuleShift Benchmark semantics in `src/tasks/ruleshift_benchmark/`.
 - If a change needs task vocabulary, rule logic, or episode-specific invariants, prefer changing the task package and only thread the minimal interface through `core/`.
 - Top-level modules in `src/*.py` are compatibility wrappers; keep canonical logic in `src/core/` and `src/tasks/`.
 

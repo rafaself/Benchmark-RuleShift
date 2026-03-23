@@ -9,8 +9,8 @@ from typing import Final
 
 from core.parser import ParseStatus, parse_binary_output, parse_narrative_output
 from core.splits import MANIFEST_VERSION, PARTITIONS, load_split_manifest
-from tasks.iron_find_electric.protocol import PROBE_COUNT, InteractionLabel, parse_label
-from tasks.iron_find_electric.schema import (
+from tasks.ruleshift_benchmark.protocol import PROBE_COUNT, InteractionLabel, parse_label
+from tasks.ruleshift_benchmark.schema import (
     DIFFICULTY_VERSION,
     GENERATOR_VERSION,
     SPEC_VERSION,
@@ -103,10 +103,10 @@ def validate_kaggle_staging_manifest(
 
     if manifest.get("bundle_version") != "R16":
         raise ValueError("bundle_version must equal R16")
-    if manifest.get("task_id") != "iron_find_electric_v1":
-        raise ValueError("task_id must equal iron_find_electric_v1")
-    if manifest.get("task_name") != "Iron Find Electric v1":
-        raise ValueError("task_name must equal Iron Find Electric v1")
+    if manifest.get("task_id") != "ruleshift_benchmark_v1":
+        raise ValueError("task_id must equal ruleshift_benchmark_v1")
+    if manifest.get("task_name") != "RuleShift Benchmark v1":
+        raise ValueError("task_name must equal RuleShift Benchmark v1")
 
     benchmark_versions = manifest.get("benchmark_versions")
     if benchmark_versions != _EXPECTED_BENCHMARK_VERSIONS:

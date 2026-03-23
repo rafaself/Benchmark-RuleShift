@@ -1,4 +1,4 @@
-from tasks.iron_find_electric.protocol import (
+from tasks.ruleshift_benchmark.protocol import (
     CHARGES,
     InteractionLabel,
     RuleName,

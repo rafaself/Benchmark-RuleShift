@@ -1,10 +1,10 @@
-# Iron Find Electric Task Guidance
+# RuleShift Benchmark Task Guidance
 
-`src/tasks/iron_find_electric/` owns task-specific logic for Iron Find Electric v1: protocol, schema, rules, generation, rendering, and baselines.
+`src/tasks/ruleshift_benchmark/` owns task-specific logic for RuleShift Benchmark v1: protocol, schema, rules, generation, rendering, and baselines.
 
 ## Current State
 
-- This task is the implemented local benchmark for Iron Find Electric v1.
+- This task is the implemented local benchmark for RuleShift Benchmark v1.
 - Keep the benchmark deterministic and replayable from seeds.
 - `hard` remains part of the vocabulary but is currently reserved and not emitted.
 

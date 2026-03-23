@@ -17,11 +17,11 @@ from core.model_runner import BenchmarkModeRunRow, BenchmarkRunResult
 from core.parser import PARSER_VERSION, ParseStatus
 from core.report_outputs import CANONICAL_RUN_METADATA_SCHEMA_VERSION
 from core.splits import load_split_manifest
-from tasks.iron_find_electric.baselines import (
+from tasks.ruleshift_benchmark.baselines import (
     last_evidence_baseline,
     never_update_baseline,
 )
-from tasks.iron_find_electric.schema import (
+from tasks.ruleshift_benchmark.schema import (
     DIFFICULTY_VERSION,
     GENERATOR_VERSION,
     SPEC_VERSION,

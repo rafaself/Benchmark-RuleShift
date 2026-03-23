@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Iterable
 
 from core.parser import ParseStatus, ParsedPrediction
-from tasks.iron_find_electric.protocol import (
+from tasks.ruleshift_benchmark.protocol import (
     PROBE_COUNT,
     InteractionLabel,
     parse_label,

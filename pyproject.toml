@@ -3,9 +3,9 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "iron-find-electric"
+name = "ruleshift-benchmark"
 version = "0.0.0"
-description = "Local benchmark tooling for Iron Find Electric."
+description = "Local benchmark tooling for RuleShift Benchmark."
 requires-python = ">=3.12"
 dependencies = [
 ]
@@ -22,12 +22,12 @@ openai = [
 ]
 
 [project.scripts]
-ife = "core.cli:entrypoint"
-ife-test = "core.cli:test_entrypoint"
-ife-validity = "core.cli:validity_entrypoint"
-ife-reaudit = "core.cli:reaudit_entrypoint"
-ife-integrity = "core.cli:integrity_entrypoint"
-ife-evidence-pass = "core.cli:evidence_pass_entrypoint"
+ruleshift-benchmark = "core.cli:entrypoint"
+ruleshift-benchmark-test = "core.cli:test_entrypoint"
+ruleshift-benchmark-validity = "core.cli:validity_entrypoint"
+ruleshift-benchmark-reaudit = "core.cli:reaudit_entrypoint"
+ruleshift-benchmark-integrity = "core.cli:integrity_entrypoint"
+ruleshift-benchmark-evidence-pass = "core.cli:evidence_pass_entrypoint"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

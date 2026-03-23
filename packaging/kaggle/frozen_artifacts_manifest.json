@@ -1,7 +1,7 @@
 {
   "bundle_version": "R16",
-  "task_id": "iron_find_electric_v1",
-  "task_name": "Iron Find Electric v1",
+  "task_id": "ruleshift_benchmark_v1",
+  "task_name": "RuleShift Benchmark v1",
   "benchmark_versions": {
     "manifest_version": "R14",
     "spec_version": "v1",
@@ -11,12 +11,12 @@
   },
   "entry_points": {
     "kbench_notebook": {
-      "path": "packaging/kaggle/iron_find_electric_v1_kbench.ipynb",
-      "sha256": "6b9b80fc7d6d0a0d9df3dc21f3603454685c2f2cf843f7e712c9148fe7bd9f1c"
+      "path": "packaging/kaggle/ruleshift_benchmark_v1_kbench.ipynb",
+      "sha256": "5c238a4273f0b63a37551ef47e88a29638f6cea8fc1322f561797f7c8fcc4c78"
     },
     "kernel_metadata": {
       "path": "packaging/kaggle/kernel-metadata.json",
-      "sha256": "7bd231b91ae062dac2e298b7e98eccaf6d07ec640d248fe6acd0b96a92ab38b6"
+      "sha256": "d91c2d9a02a2565e58c5ee6d8cc73e6974a34930cc1f069b82b601cbc4d5ddc2"
     }
   },
   "frozen_split_manifests": {

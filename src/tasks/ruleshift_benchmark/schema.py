@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Final
 
-from tasks.iron_find_electric.protocol import (
+from tasks.ruleshift_benchmark.protocol import (
     CHARGES,
     Difficulty,
     EPISODE_LENGTH,
@@ -26,7 +26,7 @@ from tasks.iron_find_electric.protocol import (
     parse_template_id,
     parse_transition,
 )
-from tasks.iron_find_electric.rules import label
+from tasks.ruleshift_benchmark.rules import label
 
 __all__ = [
     "SPEC_VERSION",

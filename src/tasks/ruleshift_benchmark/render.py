@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from tasks.iron_find_electric.protocol import LABELED_ITEM_COUNT
-from tasks.iron_find_electric.schema import Episode, EpisodeItem
+from tasks.ruleshift_benchmark.protocol import LABELED_ITEM_COUNT
+from tasks.ruleshift_benchmark.schema import Episode, EpisodeItem
 
 __all__ = ["render_binary_prompt", "render_narrative_prompt"]
 

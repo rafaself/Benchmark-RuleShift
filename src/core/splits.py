@@ -11,9 +11,9 @@ from core.validate import (
     normalize_episode_payload,
     validate_dataset,
 )
-from tasks.iron_find_electric.generator import generate_episode
-from tasks.iron_find_electric.protocol import Split, parse_split
-from tasks.iron_find_electric.schema import (
+from tasks.ruleshift_benchmark.generator import generate_episode
+from tasks.ruleshift_benchmark.protocol import Split, parse_split
+from tasks.ruleshift_benchmark.schema import (
     DIFFICULTY_VERSION,
     GENERATOR_VERSION,
     SPEC_VERSION,

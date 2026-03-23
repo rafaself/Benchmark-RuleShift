@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-import tasks.iron_find_electric.generator as ife_generator
+import tasks.ruleshift_benchmark.generator as rsb_generator
 from baselines import last_evidence_baseline
 from generator import generate_episode
 from protocol import (
@@ -230,13 +230,13 @@ def test_invalid_candidates_are_rejected_by_deterministic_resampling():
         (-2, 3),
     )
 
-    with patch.object(ife_generator.random.Random, "choice") as random_choice:
+    with patch.object(rsb_generator.random.Random, "choice") as random_choice:
         random_choice.side_effect = (
-            ife_generator.RuleName.R_STD,
+            rsb_generator.RuleName.R_STD,
             TemplateId.T1,
         )
         with patch.object(
-            ife_generator,
+            rsb_generator,
             "_sample_pairs",
             side_effect=(invalid_candidate, valid_candidate),
         ) as sample_pairs:

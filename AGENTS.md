@@ -1,6 +1,6 @@
 # Repository Guidance
 
-This repo is benchmark infrastructure for Iron Find Electric v1. Keep instructions and changes aligned with the implemented local benchmark, not aspirational designs.
+This repo is benchmark infrastructure for RuleShift Benchmark v1. Keep instructions and changes aligned with the implemented local benchmark, not aspirational designs.
 
 ## Source of Truth
 
@@ -16,7 +16,7 @@ This repo is benchmark infrastructure for Iron Find Electric v1. Keep instructio
 - `make integrity`
 - `make evidence-pass`
 
-Direct entry point if needed: `.venv/bin/python scripts/ife.py <command>`.
+Direct entry point if needed: `.venv/bin/python scripts/ruleshift_benchmark.py <command>`.
 
 ## Change Rules
 

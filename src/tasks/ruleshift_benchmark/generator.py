@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import random
 
-from tasks.iron_find_electric.protocol import (
+from tasks.ruleshift_benchmark.protocol import (
     CASE_SPACE,
     LABELED_ITEM_COUNT,
     Difficulty,
@@ -15,8 +15,8 @@ from tasks.iron_find_electric.protocol import (
     TEMPLATES,
     Transition,
 )
-from tasks.iron_find_electric.rules import label
-from tasks.iron_find_electric.schema import (
+from tasks.ruleshift_benchmark.rules import label
+from tasks.ruleshift_benchmark.schema import (
     DIFFICULTY_VERSION,
     Episode,
     EpisodeItem,

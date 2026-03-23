@@ -20,10 +20,10 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 _KAGGLE_DIR = _REPO_ROOT / "packaging" / "kaggle"
 _PYPROJECT_PATH = _REPO_ROOT / "pyproject.toml"
 _CONTRACT_PATH = _REPO_ROOT / "KAGGLE_BENCHMARK_CONTRACT.md"
-_KBENCH_NOTEBOOK_PATH = _KAGGLE_DIR / "iron_find_electric_v1_kbench.ipynb"
+_KBENCH_NOTEBOOK_PATH = _KAGGLE_DIR / "ruleshift_benchmark_v1_kbench.ipynb"
 _STAGING_DIR = _KAGGLE_DIR / "staging"
 _ARCHIVE_DIR = _KAGGLE_DIR / "archive"
-_STAGING_NOTEBOOK_PATH = _STAGING_DIR / "iron_find_electric_v1_kaggle_staging.ipynb"
+_STAGING_NOTEBOOK_PATH = _STAGING_DIR / "ruleshift_benchmark_v1_kaggle_staging.ipynb"
 _KERNEL_METADATA_PATH = _KAGGLE_DIR / "kernel-metadata.json"
 _CARD_PATH = _KAGGLE_DIR / "BENCHMARK_CARD.md"
 _USAGE_PATH = _KAGGLE_DIR / "README.md"
@@ -53,8 +53,8 @@ def test_kaggle_staging_manifest_resolves_current_frozen_artifacts():
     validate_kaggle_staging_manifest()
 
     assert manifest["bundle_version"] == "R16"
-    assert manifest["task_id"] == "iron_find_electric_v1"
-    assert manifest["task_name"] == "Iron Find Electric v1"
+    assert manifest["task_id"] == "ruleshift_benchmark_v1"
+    assert manifest["task_name"] == "RuleShift Benchmark v1"
 
     benchmark_versions = manifest["benchmark_versions"]
     assert benchmark_versions == {
@@ -90,8 +90,8 @@ def test_official_kaggle_submission_flow_is_consistent_across_surface():
     usage_text = _USAGE_PATH.read_text(encoding="utf-8")
     card_text = _CARD_PATH.read_text(encoding="utf-8")
 
-    official_notebook_relpath = "packaging/kaggle/iron_find_electric_v1_kbench.ipynb"
-    official_notebook_name = "iron_find_electric_v1_kbench.ipynb"
+    official_notebook_relpath = "packaging/kaggle/ruleshift_benchmark_v1_kbench.ipynb"
+    official_notebook_name = "ruleshift_benchmark_v1_kbench.ipynb"
     official_entry_points = tuple(
         artifact["path"]
         for artifact in manifest["entry_points"].values()
@@ -106,7 +106,7 @@ def test_official_kaggle_submission_flow_is_consistent_across_surface():
     assert official_notebook_name in usage_text
     assert official_notebook_relpath in card_text
     assert official_notebook_relpath in contract_text
-    assert 'code_file = "iron_find_electric_v1_kbench.ipynb"' in contract_text
+    assert 'code_file = "ruleshift_benchmark_v1_kbench.ipynb"' in contract_text
     assert "No other notebook or local runtime path is an official Kaggle leaderboard submission surface." in usage_text
 
 
@@ -115,7 +115,7 @@ def test_non_official_packaged_paths_are_explicitly_marked_non_active():
     card_text = _CARD_PATH.read_text(encoding="utf-8")
     packaging_note_text = _PACKAGING_NOTE_PATH.read_text(encoding="utf-8")
 
-    assert "`staging/iron_find_electric_v1_kaggle_staging.ipynb`: optional package-validation and dry-run notebook" in usage_text
+    assert "`staging/ruleshift_benchmark_v1_kaggle_staging.ipynb`: optional package-validation and dry-run notebook" in usage_text
     assert "`archive/KAGGLE_BENCHMARK_CONTRACT.md`: obsolete Phase 2 contract copy retained only for history" in usage_text
     assert "staging-only" in card_text
     assert "ARCHIVE RELEASE NOTE" in packaging_note_text
@@ -129,8 +129,8 @@ def test_kaggle_directory_layout_separates_active_staging_and_archive_files():
         "BENCHMARK_CARD.md",
         "README.md",
         "frozen_artifacts_manifest.json",
-        "iron_find_electric_v1_kbench.ipynb",
         "kernel-metadata.json",
+        "ruleshift_benchmark_v1_kbench.ipynb",
     ]
     assert _STAGING_NOTEBOOK_PATH.is_file()
     assert _PACKAGING_NOTE_PATH.is_file()
@@ -141,7 +141,7 @@ def test_kaggle_runbook_documents_the_minimum_runtime_subset():
     usage_text = _USAGE_PATH.read_text(encoding="utf-8")
 
     required_runtime_paths = (
-        "packaging/kaggle/iron_find_electric_v1_kbench.ipynb",
+        "packaging/kaggle/ruleshift_benchmark_v1_kbench.ipynb",
         "packaging/kaggle/kernel-metadata.json",
         "packaging/kaggle/frozen_artifacts_manifest.json",
         "src/",
@@ -184,14 +184,14 @@ def test_active_docs_label_frozen_artifacts_manifest_by_runtime_role():
 def test_pyproject_exposes_local_console_entrypoints():
     pyproject = _load_pyproject()
 
-    assert pyproject["project"]["name"] == "iron-find-electric"
+    assert pyproject["project"]["name"] == "ruleshift-benchmark"
     assert pyproject["project"]["scripts"] == {
-        "ife": "core.cli:entrypoint",
-        "ife-test": "core.cli:test_entrypoint",
-        "ife-validity": "core.cli:validity_entrypoint",
-        "ife-reaudit": "core.cli:reaudit_entrypoint",
-        "ife-integrity": "core.cli:integrity_entrypoint",
-        "ife-evidence-pass": "core.cli:evidence_pass_entrypoint",
+        "ruleshift-benchmark": "core.cli:entrypoint",
+        "ruleshift-benchmark-test": "core.cli:test_entrypoint",
+        "ruleshift-benchmark-validity": "core.cli:validity_entrypoint",
+        "ruleshift-benchmark-reaudit": "core.cli:reaudit_entrypoint",
+        "ruleshift-benchmark-integrity": "core.cli:integrity_entrypoint",
+        "ruleshift-benchmark-evidence-pass": "core.cli:evidence_pass_entrypoint",
     }
     assert pyproject["project"]["dependencies"] == []
     assert pyproject["project"]["optional-dependencies"]["gemini"] == [
@@ -208,7 +208,7 @@ def test_pyproject_exposes_local_console_entrypoints():
 def test_benchmark_card_matches_current_implementation_state():
     text = _CARD_PATH.read_text(encoding="utf-8")
 
-    assert "Iron Find Electric v1" in text
+    assert "RuleShift Benchmark v1" in text
     assert "narrow Executive Functions benchmark for cognitive flexibility" in text
     assert "controlled substrate" in text
     assert "frozen episodes" in text

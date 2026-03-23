@@ -1,4 +1,4 @@
-# Iron Find Electric v1 — Benchmark Contract
+# RuleShift Benchmark v1 — Benchmark Contract
 
 **Version:** v1
 **Status:** Frozen
@@ -278,7 +278,7 @@ Local code and frozen splits remain authoritative if any downstream notebook pro
 |---|---|---|
 | Benchmark definition | This file (`KAGGLE_BENCHMARK_CONTRACT.md`) | Freezes identity, metric, splits, scoring, prompt invariants, and claim boundaries. All other docs defer to this file on contract matters. |
 | Runtime behavior | Source package implementation (`src/`) | The code under `src/` and frozen assets under `src/frozen_splits/` are the executable truth. If any document (including this contract) diverges from implemented behavior, the code is authoritative for what the benchmark *does*; the contract is authoritative for what it *should* do — and the divergence is a bug to be resolved. |
-| Kaggle execution entry point | Official leaderboard notebook only | `packaging/kaggle/iron_find_electric_v1_kbench.ipynb`, wired by `packaging/kaggle/kernel-metadata.json` with `code_file = "iron_find_electric_v1_kbench.ipynb"`, is the sole Kaggle execution surface. Staging notebooks, local panel runners, and audit scripts are development tools, not leaderboard entry points. |
+| Kaggle execution entry point | Official leaderboard notebook only | `packaging/kaggle/ruleshift_benchmark_v1_kbench.ipynb`, wired by `packaging/kaggle/kernel-metadata.json` with `code_file = "ruleshift_benchmark_v1_kbench.ipynb"`, is the sole Kaggle execution surface. Staging notebooks, local panel runners, and audit scripts are development tools, not leaderboard entry points. |
 | Supporting exposition | `BENCHMARK_CARD.md` and `README.md` | These describe the benchmark for human readers. They must not introduce, modify, or contradict any contract term. If they diverge from this contract, this contract governs. |
 
 ---

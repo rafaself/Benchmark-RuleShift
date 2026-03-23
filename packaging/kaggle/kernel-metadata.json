@@ -1,7 +1,7 @@
 {
   "id": "iron-find-electric-v1",
-  "title": "Iron Find Electric v1 — Cognitive Flexibility Benchmark",
-  "code_file": "iron_find_electric_v1_kbench.ipynb",
+  "title": "RuleShift Benchmark v1 — Cognitive Flexibility Benchmark",
+  "code_file": "ruleshift_benchmark_v1_kbench.ipynb",
   "language": "python",
   "kernel_type": "notebook",
   "is_private": true,

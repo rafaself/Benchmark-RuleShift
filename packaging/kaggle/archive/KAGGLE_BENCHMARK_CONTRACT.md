@@ -1,4 +1,4 @@
-# Iron Find Electric v1 — Kaggle Benchmark Contract (OBSOLETE)
+# RuleShift Benchmark v1 — Kaggle Benchmark Contract (OBSOLETE)
 
 > **Status: OBSOLETE — Phase 2 archive.**
 > The authoritative benchmark contract is now [`/KAGGLE_BENCHMARK_CONTRACT.md`](../../../KAGGLE_BENCHMARK_CONTRACT.md) at the repository root.
@@ -15,7 +15,7 @@
 
 | Field | Value |
 |---|---|
-| Benchmark name | Iron Find Electric |
+| Benchmark name | RuleShift Benchmark |
 | Version | v1 |
 | Track | Executive Functions |
 | Construct | Cognitive flexibility — post-shift rule application after sparse contradictory evidence |
@@ -243,7 +243,7 @@ A correct Phase 2 implementation must:
 
 1. Load frozen episode data from the split manifests under `src/frozen_splits/`.
 2. Reconstruct episodes deterministically using the frozen seeds and the local generator (`GENERATOR_VERSION = R12`).
-3. Render each episode as a Binary prompt using the canonical Binary format (Section 8.1 of `iron_find_electric_implementation_spec.md`).
+3. Render each episode as a Binary prompt using the canonical Binary format (Section 8.1 of `ruleshift_benchmark_implementation_spec.md`).
 4. Call the model and collect the raw text output.
 5. Parse the output with the v1 Binary parser (`parse_binary_output`).
 6. Compute `(num_correct, 4)` per episode using `probe_targets` from the frozen episode.
