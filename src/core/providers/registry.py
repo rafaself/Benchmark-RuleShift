@@ -83,7 +83,7 @@ _REGISTERED_PROVIDERS: Final[dict[str, ProviderSpec]] = {
         local_only=False,
         default_benchmark_model="gemini-2.5-flash-001",
         supports_json_schema_structured_output=True,
-        pinned_model_pattern=r"^gemini-[a-z0-9.-]+-\d{3}$",
+        pinned_model_pattern=r"^gemini-[a-z0-9.-]+(-\d{3})?$",
         sdk_extra="gemini",
     ),
     "anthropic": build_provider_spec(

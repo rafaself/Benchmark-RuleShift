@@ -1,0 +1,2647 @@
+{
+  "artifact_schema_version": "v1.1",
+  "release_id": "R18",
+  "provider_name": "gemini",
+  "model_name": "gemini-2.5-flash",
+  "prompt_modes": [
+    "binary"
+  ],
+  "splits": [
+    {
+      "split_name": "dev",
+      "episode_count": 16,
+      "pairing_checks": {
+        "same_episode_order": true,
+        "same_probe_targets": true
+      },
+      "rows": [
+        {
+          "episode_id": "ife-r12-1036",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "attract",
+                "repel"
+              ],
+              "correct_probe_count": 2,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 2,
+              "old_rule_error_probe_count": 1,
+              "recency_overshoot_error_probe_count": 1,
+              "disagreement_profile": "mixed",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1037",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "repel",
+                "attract"
+              ],
+              "correct_probe_count": 2,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 2,
+              "old_rule_error_probe_count": 1,
+              "recency_overshoot_error_probe_count": 1,
+              "disagreement_profile": "mixed",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1038",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "repel",
+            "repel",
+            "attract",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "repel",
+                "attract",
+                "attract"
+              ],
+              "correct_probe_count": 4,
+              "failure_bucket": "correct",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 0,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": null,
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1039",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "attract"
+              ],
+              "correct_probe_count": 3,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 1,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 1,
+              "disagreement_profile": "recency_overshoot_only",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1040",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "repel",
+                "repel"
+              ],
+              "correct_probe_count": 1,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 3,
+              "old_rule_error_probe_count": 2,
+              "recency_overshoot_error_probe_count": 1,
+              "disagreement_profile": "mixed",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1041",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "repel",
+                "attract"
+              ],
+              "correct_probe_count": 4,
+              "failure_bucket": "correct",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 0,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": null,
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1042",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "repel"
+              ],
+              "correct_probe_count": 4,
+              "failure_bucket": "correct",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 0,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": null,
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1043",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "repel"
+              ],
+              "correct_probe_count": 4,
+              "failure_bucket": "correct",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 0,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": null,
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1044",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "repel",
+                "attract"
+              ],
+              "correct_probe_count": 4,
+              "failure_bucket": "correct",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 0,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": null,
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1045",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "attract",
+                "repel"
+              ],
+              "correct_probe_count": 4,
+              "failure_bucket": "correct",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 0,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": null,
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1046",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "attract",
+            "repel",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "repel",
+                "attract"
+              ],
+              "correct_probe_count": 2,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": true,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": true,
+              "error_probe_count": 2,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 2,
+              "disagreement_profile": "recency_overshoot_only",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1047",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "repel",
+            "repel",
+            "attract",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "repel",
+                "attract",
+                "attract"
+              ],
+              "correct_probe_count": 4,
+              "failure_bucket": "correct",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 0,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": null,
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1048",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "repel"
+              ],
+              "correct_probe_count": 2,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 2,
+              "old_rule_error_probe_count": 1,
+              "recency_overshoot_error_probe_count": 1,
+              "disagreement_profile": "mixed",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1049",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "attract",
+                "repel",
+                "attract"
+              ],
+              "correct_probe_count": 3,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 1,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 1,
+              "disagreement_profile": "recency_overshoot_only",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1050",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "repel",
+                "attract"
+              ],
+              "correct_probe_count": 4,
+              "failure_bucket": "correct",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 0,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": null,
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1051",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "attract",
+                "attract"
+              ],
+              "correct_probe_count": 3,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 1,
+              "old_rule_error_probe_count": 1,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": "old_rule_only",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "split_name": "public_leaderboard",
+      "episode_count": 16,
+      "pairing_checks": {
+        "same_episode_order": true,
+        "same_probe_targets": true
+      },
+      "rows": [
+        {
+          "episode_id": "ife-r12-2100",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "repel",
+                "attract"
+              ],
+              "correct_probe_count": 4,
+              "failure_bucket": "correct",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 0,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": null,
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2101",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "repel",
+                "attract"
+              ],
+              "correct_probe_count": 2,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 2,
+              "old_rule_error_probe_count": 1,
+              "recency_overshoot_error_probe_count": 1,
+              "disagreement_profile": "mixed",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2102",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "repel",
+                "attract"
+              ],
+              "correct_probe_count": 4,
+              "failure_bucket": "correct",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 0,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": null,
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2103",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "attract",
+                "attract",
+                "attract"
+              ],
+              "correct_probe_count": 2,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 2,
+              "old_rule_error_probe_count": 1,
+              "recency_overshoot_error_probe_count": 1,
+              "disagreement_profile": "mixed",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2104",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "attract",
+                "repel"
+              ],
+              "correct_probe_count": 4,
+              "failure_bucket": "correct",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 0,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": null,
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2105",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "repel",
+            "repel",
+            "attract",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "attract"
+              ],
+              "correct_probe_count": 3,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 1,
+              "old_rule_error_probe_count": 1,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": "old_rule_only",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2106",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "attract",
+                "repel",
+                "attract"
+              ],
+              "correct_probe_count": 3,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 1,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 1,
+              "disagreement_profile": "recency_overshoot_only",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2107",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "repel"
+              ],
+              "correct_probe_count": 2,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 2,
+              "old_rule_error_probe_count": 1,
+              "recency_overshoot_error_probe_count": 1,
+              "disagreement_profile": "mixed",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2108",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "attract",
+                "repel",
+                "repel"
+              ],
+              "correct_probe_count": 2,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": true,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": true,
+              "error_probe_count": 2,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 2,
+              "disagreement_profile": "recency_overshoot_only",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2109",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "attract",
+                "repel",
+                "repel"
+              ],
+              "correct_probe_count": 2,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": true,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": true,
+              "error_probe_count": 2,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 2,
+              "disagreement_profile": "recency_overshoot_only",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2110",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "repel",
+                "repel"
+              ],
+              "correct_probe_count": 3,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 1,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 1,
+              "disagreement_profile": "recency_overshoot_only",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2111",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "repel",
+            "repel",
+            "attract",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "attract",
+                "repel"
+              ],
+              "correct_probe_count": 2,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": true,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": true,
+              "error_probe_count": 2,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 2,
+              "disagreement_profile": "recency_overshoot_only",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2112",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "repel",
+            "repel",
+            "attract",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "repel"
+              ],
+              "correct_probe_count": 2,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": true,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": true,
+              "error_probe_count": 2,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 2,
+              "disagreement_profile": "recency_overshoot_only",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2113",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "repel"
+              ],
+              "correct_probe_count": 4,
+              "failure_bucket": "correct",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 0,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": null,
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2114",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "attract",
+            "attract",
+            "repel",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "repel",
+                "repel"
+              ],
+              "correct_probe_count": 3,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 1,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 1,
+              "disagreement_profile": "recency_overshoot_only",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2115",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "repel"
+              ],
+              "correct_probe_count": 4,
+              "failure_bucket": "correct",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 0,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": null,
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "split_name": "private_leaderboard",
+      "episode_count": 16,
+      "pairing_checks": {
+        "same_episode_order": true,
+        "same_probe_targets": true
+      },
+      "rows": [
+        {
+          "episode_id": "ife-r12-9060",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "attract",
+                "attract"
+              ],
+              "correct_probe_count": 3,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 1,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 1,
+              "disagreement_profile": "recency_overshoot_only",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9061",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "attract",
+            "attract",
+            "repel",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "attract"
+              ],
+              "correct_probe_count": 1,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 3,
+              "old_rule_error_probe_count": 2,
+              "recency_overshoot_error_probe_count": 1,
+              "disagreement_profile": "mixed",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9062",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "repel",
+                "attract"
+              ],
+              "correct_probe_count": 4,
+              "failure_bucket": "correct",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 0,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": null,
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9063",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "attract",
+            "repel",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "attract",
+                "attract",
+                "repel"
+              ],
+              "correct_probe_count": 3,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 1,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 1,
+              "disagreement_profile": "recency_overshoot_only",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9064",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "attract"
+              ],
+              "correct_probe_count": 3,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 1,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 1,
+              "disagreement_profile": "recency_overshoot_only",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9065",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "repel",
+                "attract"
+              ],
+              "correct_probe_count": 4,
+              "failure_bucket": "correct",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 0,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": null,
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9066",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "repel"
+              ],
+              "correct_probe_count": 4,
+              "failure_bucket": "correct",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 0,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": null,
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9067",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "repel"
+              ],
+              "correct_probe_count": 4,
+              "failure_bucket": "correct",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 0,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": null,
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9068",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "repel",
+            "repel",
+            "attract",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "repel",
+                "attract",
+                "attract"
+              ],
+              "correct_probe_count": 4,
+              "failure_bucket": "correct",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 0,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": null,
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9069",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "attract",
+            "attract",
+            "repel",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "attract",
+                "repel",
+                "repel"
+              ],
+              "correct_probe_count": 4,
+              "failure_bucket": "correct",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 0,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": null,
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9070",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "repel",
+            "repel",
+            "attract",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "repel",
+                "attract"
+              ],
+              "correct_probe_count": 2,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 2,
+              "old_rule_error_probe_count": 1,
+              "recency_overshoot_error_probe_count": 1,
+              "disagreement_profile": "mixed",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9071",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "repel",
+                "attract"
+              ],
+              "correct_probe_count": 4,
+              "failure_bucket": "correct",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 0,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": null,
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9072",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "repel",
+                "attract"
+              ],
+              "correct_probe_count": 4,
+              "failure_bucket": "correct",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 0,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": null,
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9073",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "attract",
+            "repel",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "attract",
+                "repel",
+                "repel"
+              ],
+              "correct_probe_count": 4,
+              "failure_bucket": "correct",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 0,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": null,
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9074",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "attract",
+                "repel"
+              ],
+              "correct_probe_count": 4,
+              "failure_bucket": "correct",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": false,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": false,
+              "error_probe_count": 0,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 0,
+              "disagreement_profile": null,
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9075",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "repel",
+                "attract"
+              ],
+              "correct_probe_count": 2,
+              "failure_bucket": "adaptation_failure",
+              "possible_old_rule_persistence": false,
+              "possible_recency_overshoot": true,
+              "exact_global_old_rule_persistence": false,
+              "exact_global_recency_overshoot": true,
+              "error_probe_count": 2,
+              "old_rule_error_probe_count": 0,
+              "recency_overshoot_error_probe_count": 2,
+              "disagreement_profile": "recency_overshoot_only",
+              "error_type": null,
+              "finish_reason": "FinishReason.STOP"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "execution_summary": [
+    {
+      "scope_type": "overall",
+      "scope_label": "overall",
+      "mode": "Binary",
+      "episode_count": 48,
+      "completed_count": 48,
+      "provider_failure_count": 0,
+      "provider_model_versions": [
+        "gemini-2.5-flash"
+      ],
+      "observed_duration_count": 48,
+      "total_duration_seconds": 47.031899300993246,
+      "mean_duration_seconds": 0.9798312354373593,
+      "response_id_count": 48,
+      "usage_observed_count": 48,
+      "input_tokens": 11808,
+      "output_tokens": 912,
+      "total_tokens": 12720,
+      "finish_reason_counts": {
+        "FinishReason.STOP": 48
+      }
+    },
+    {
+      "scope_type": "split",
+      "scope_label": "dev",
+      "mode": "Binary",
+      "episode_count": 16,
+      "completed_count": 16,
+      "provider_failure_count": 0,
+      "provider_model_versions": [
+        "gemini-2.5-flash"
+      ],
+      "observed_duration_count": 16,
+      "total_duration_seconds": 15.697309266997763,
+      "mean_duration_seconds": 0.9810818291873602,
+      "response_id_count": 16,
+      "usage_observed_count": 16,
+      "input_tokens": 3936,
+      "output_tokens": 304,
+      "total_tokens": 4240,
+      "finish_reason_counts": {
+        "FinishReason.STOP": 16
+      }
+    },
+    {
+      "scope_type": "split",
+      "scope_label": "public_leaderboard",
+      "mode": "Binary",
+      "episode_count": 16,
+      "completed_count": 16,
+      "provider_failure_count": 0,
+      "provider_model_versions": [
+        "gemini-2.5-flash"
+      ],
+      "observed_duration_count": 16,
+      "total_duration_seconds": 15.812251616995127,
+      "mean_duration_seconds": 0.9882657260621954,
+      "response_id_count": 16,
+      "usage_observed_count": 16,
+      "input_tokens": 3936,
+      "output_tokens": 304,
+      "total_tokens": 4240,
+      "finish_reason_counts": {
+        "FinishReason.STOP": 16
+      }
+    },
+    {
+      "scope_type": "split",
+      "scope_label": "private_leaderboard",
+      "mode": "Binary",
+      "episode_count": 16,
+      "completed_count": 16,
+      "provider_failure_count": 0,
+      "provider_model_versions": [
+        "gemini-2.5-flash"
+      ],
+      "observed_duration_count": 16,
+      "total_duration_seconds": 15.522338417000356,
+      "mean_duration_seconds": 0.9701461510625222,
+      "response_id_count": 16,
+      "usage_observed_count": 16,
+      "input_tokens": 3936,
+      "output_tokens": 304,
+      "total_tokens": 4240,
+      "finish_reason_counts": {
+        "FinishReason.STOP": 16
+      }
+    }
+  ],
+  "failure_taxonomy": [
+    {
+      "scope": "overall",
+      "mode": "Binary",
+      "episode_count": 48,
+      "runtime_error_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "adaptation_failure_rate": 0.5208333333333334,
+      "possible_old_rule_persistence_rate": 0.0,
+      "possible_recency_overshoot_rate": 0.125
+    },
+    {
+      "scope": "dev",
+      "mode": "Binary",
+      "episode_count": 16,
+      "runtime_error_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "adaptation_failure_rate": 0.5,
+      "possible_old_rule_persistence_rate": 0.0,
+      "possible_recency_overshoot_rate": 0.0625
+    },
+    {
+      "scope": "public_leaderboard",
+      "mode": "Binary",
+      "episode_count": 16,
+      "runtime_error_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "adaptation_failure_rate": 0.6875,
+      "possible_old_rule_persistence_rate": 0.0,
+      "possible_recency_overshoot_rate": 0.25
+    },
+    {
+      "scope": "private_leaderboard",
+      "mode": "Binary",
+      "episode_count": 16,
+      "runtime_error_rate": 0.0,
+      "parse_failure_rate": 0.0,
+      "adaptation_failure_rate": 0.375,
+      "possible_old_rule_persistence_rate": 0.0,
+      "possible_recency_overshoot_rate": 0.0625
+    }
+  ],
+  "diagnostic_summary": [
+    {
+      "scope_type": "overall",
+      "scope_label": "overall",
+      "mode": "Binary",
+      "episode_count": 48,
+      "runtime_error_count": 0,
+      "runtime_error_rate": 0.0,
+      "parse_attempted_count": 48,
+      "parse_attempted_rate": 1.0,
+      "parse_failure_count": 0,
+      "parse_failure_rate": 0.0,
+      "parse_valid_count": 48,
+      "parse_valid_rate": 1.0,
+      "correct_count": 23,
+      "correct_rate": 0.4791666666666667,
+      "adaptation_failure_count": 25,
+      "adaptation_failure_rate": 0.5208333333333334,
+      "adaptation_failure_rate_among_parse_valid": 0.5208333333333334,
+      "exact_global_old_rule_persistence_count": 0,
+      "exact_global_old_rule_persistence_rate": 0.0,
+      "exact_global_old_rule_persistence_rate_among_adaptation_failures": 0.0,
+      "exact_global_recency_overshoot_count": 6,
+      "exact_global_recency_overshoot_rate": 0.125,
+      "exact_global_recency_overshoot_rate_among_adaptation_failures": 0.24,
+      "old_rule_only_count": 2,
+      "recency_overshoot_only_count": 14,
+      "mixed_disagreement_count": 9,
+      "other_disagreement_count": 0,
+      "error_probe_count": 42,
+      "old_rule_error_probe_count": 13,
+      "recency_overshoot_error_probe_count": 29,
+      "old_rule_error_probe_rate": 0.30952380952380953,
+      "recency_overshoot_error_probe_rate": 0.6904761904761905
+    },
+    {
+      "scope_type": "split",
+      "scope_label": "dev",
+      "mode": "Binary",
+      "episode_count": 16,
+      "runtime_error_count": 0,
+      "runtime_error_rate": 0.0,
+      "parse_attempted_count": 16,
+      "parse_attempted_rate": 1.0,
+      "parse_failure_count": 0,
+      "parse_failure_rate": 0.0,
+      "parse_valid_count": 16,
+      "parse_valid_rate": 1.0,
+      "correct_count": 8,
+      "correct_rate": 0.5,
+      "adaptation_failure_count": 8,
+      "adaptation_failure_rate": 0.5,
+      "adaptation_failure_rate_among_parse_valid": 0.5,
+      "exact_global_old_rule_persistence_count": 0,
+      "exact_global_old_rule_persistence_rate": 0.0,
+      "exact_global_old_rule_persistence_rate_among_adaptation_failures": 0.0,
+      "exact_global_recency_overshoot_count": 1,
+      "exact_global_recency_overshoot_rate": 0.0625,
+      "exact_global_recency_overshoot_rate_among_adaptation_failures": 0.125,
+      "old_rule_only_count": 1,
+      "recency_overshoot_only_count": 3,
+      "mixed_disagreement_count": 4,
+      "other_disagreement_count": 0,
+      "error_probe_count": 14,
+      "old_rule_error_probe_count": 6,
+      "recency_overshoot_error_probe_count": 8,
+      "old_rule_error_probe_rate": 0.42857142857142855,
+      "recency_overshoot_error_probe_rate": 0.5714285714285714
+    },
+    {
+      "scope_type": "split",
+      "scope_label": "public_leaderboard",
+      "mode": "Binary",
+      "episode_count": 16,
+      "runtime_error_count": 0,
+      "runtime_error_rate": 0.0,
+      "parse_attempted_count": 16,
+      "parse_attempted_rate": 1.0,
+      "parse_failure_count": 0,
+      "parse_failure_rate": 0.0,
+      "parse_valid_count": 16,
+      "parse_valid_rate": 1.0,
+      "correct_count": 5,
+      "correct_rate": 0.3125,
+      "adaptation_failure_count": 11,
+      "adaptation_failure_rate": 0.6875,
+      "adaptation_failure_rate_among_parse_valid": 0.6875,
+      "exact_global_old_rule_persistence_count": 0,
+      "exact_global_old_rule_persistence_rate": 0.0,
+      "exact_global_old_rule_persistence_rate_among_adaptation_failures": 0.0,
+      "exact_global_recency_overshoot_count": 4,
+      "exact_global_recency_overshoot_rate": 0.25,
+      "exact_global_recency_overshoot_rate_among_adaptation_failures": 0.36363636363636365,
+      "old_rule_only_count": 1,
+      "recency_overshoot_only_count": 7,
+      "mixed_disagreement_count": 3,
+      "other_disagreement_count": 0,
+      "error_probe_count": 18,
+      "old_rule_error_probe_count": 4,
+      "recency_overshoot_error_probe_count": 14,
+      "old_rule_error_probe_rate": 0.2222222222222222,
+      "recency_overshoot_error_probe_rate": 0.7777777777777778
+    },
+    {
+      "scope_type": "split",
+      "scope_label": "private_leaderboard",
+      "mode": "Binary",
+      "episode_count": 16,
+      "runtime_error_count": 0,
+      "runtime_error_rate": 0.0,
+      "parse_attempted_count": 16,
+      "parse_attempted_rate": 1.0,
+      "parse_failure_count": 0,
+      "parse_failure_rate": 0.0,
+      "parse_valid_count": 16,
+      "parse_valid_rate": 1.0,
+      "correct_count": 10,
+      "correct_rate": 0.625,
+      "adaptation_failure_count": 6,
+      "adaptation_failure_rate": 0.375,
+      "adaptation_failure_rate_among_parse_valid": 0.375,
+      "exact_global_old_rule_persistence_count": 0,
+      "exact_global_old_rule_persistence_rate": 0.0,
+      "exact_global_old_rule_persistence_rate_among_adaptation_failures": 0.0,
+      "exact_global_recency_overshoot_count": 1,
+      "exact_global_recency_overshoot_rate": 0.0625,
+      "exact_global_recency_overshoot_rate_among_adaptation_failures": 0.16666666666666666,
+      "old_rule_only_count": 0,
+      "recency_overshoot_only_count": 4,
+      "mixed_disagreement_count": 2,
+      "other_disagreement_count": 0,
+      "error_probe_count": 10,
+      "old_rule_error_probe_count": 3,
+      "recency_overshoot_error_probe_count": 7,
+      "old_rule_error_probe_rate": 0.3,
+      "recency_overshoot_error_probe_rate": 0.7
+    },
+    {
+      "scope_type": "template",
+      "scope_label": "T1",
+      "mode": "Binary",
+      "episode_count": 25,
+      "runtime_error_count": 0,
+      "runtime_error_rate": 0.0,
+      "parse_attempted_count": 25,
+      "parse_attempted_rate": 1.0,
+      "parse_failure_count": 0,
+      "parse_failure_rate": 0.0,
+      "parse_valid_count": 25,
+      "parse_valid_rate": 1.0,
+      "correct_count": 11,
+      "correct_rate": 0.44,
+      "adaptation_failure_count": 14,
+      "adaptation_failure_rate": 0.56,
+      "adaptation_failure_rate_among_parse_valid": 0.56,
+      "exact_global_old_rule_persistence_count": 0,
+      "exact_global_old_rule_persistence_rate": 0.0,
+      "exact_global_old_rule_persistence_rate_among_adaptation_failures": 0.0,
+      "exact_global_recency_overshoot_count": 1,
+      "exact_global_recency_overshoot_rate": 0.04,
+      "exact_global_recency_overshoot_rate_among_adaptation_failures": 0.07142857142857142,
+      "old_rule_only_count": 1,
+      "recency_overshoot_only_count": 8,
+      "mixed_disagreement_count": 5,
+      "other_disagreement_count": 0,
+      "error_probe_count": 21,
+      "old_rule_error_probe_count": 7,
+      "recency_overshoot_error_probe_count": 14,
+      "old_rule_error_probe_rate": 0.3333333333333333,
+      "recency_overshoot_error_probe_rate": 0.6666666666666666
+    },
+    {
+      "scope_type": "template",
+      "scope_label": "T2",
+      "mode": "Binary",
+      "episode_count": 23,
+      "runtime_error_count": 0,
+      "runtime_error_rate": 0.0,
+      "parse_attempted_count": 23,
+      "parse_attempted_rate": 1.0,
+      "parse_failure_count": 0,
+      "parse_failure_rate": 0.0,
+      "parse_valid_count": 23,
+      "parse_valid_rate": 1.0,
+      "correct_count": 12,
+      "correct_rate": 0.5217391304347826,
+      "adaptation_failure_count": 11,
+      "adaptation_failure_rate": 0.4782608695652174,
+      "adaptation_failure_rate_among_parse_valid": 0.4782608695652174,
+      "exact_global_old_rule_persistence_count": 0,
+      "exact_global_old_rule_persistence_rate": 0.0,
+      "exact_global_old_rule_persistence_rate_among_adaptation_failures": 0.0,
+      "exact_global_recency_overshoot_count": 5,
+      "exact_global_recency_overshoot_rate": 0.21739130434782608,
+      "exact_global_recency_overshoot_rate_among_adaptation_failures": 0.45454545454545453,
+      "old_rule_only_count": 1,
+      "recency_overshoot_only_count": 6,
+      "mixed_disagreement_count": 4,
+      "other_disagreement_count": 0,
+      "error_probe_count": 21,
+      "old_rule_error_probe_count": 6,
+      "recency_overshoot_error_probe_count": 15,
+      "old_rule_error_probe_rate": 0.2857142857142857,
+      "recency_overshoot_error_probe_rate": 0.7142857142857143
+    },
+    {
+      "scope_type": "difficulty",
+      "scope_label": "easy",
+      "mode": "Binary",
+      "episode_count": 25,
+      "runtime_error_count": 0,
+      "runtime_error_rate": 0.0,
+      "parse_attempted_count": 25,
+      "parse_attempted_rate": 1.0,
+      "parse_failure_count": 0,
+      "parse_failure_rate": 0.0,
+      "parse_valid_count": 25,
+      "parse_valid_rate": 1.0,
+      "correct_count": 11,
+      "correct_rate": 0.44,
+      "adaptation_failure_count": 14,
+      "adaptation_failure_rate": 0.56,
+      "adaptation_failure_rate_among_parse_valid": 0.56,
+      "exact_global_old_rule_persistence_count": 0,
+      "exact_global_old_rule_persistence_rate": 0.0,
+      "exact_global_old_rule_persistence_rate_among_adaptation_failures": 0.0,
+      "exact_global_recency_overshoot_count": 1,
+      "exact_global_recency_overshoot_rate": 0.04,
+      "exact_global_recency_overshoot_rate_among_adaptation_failures": 0.07142857142857142,
+      "old_rule_only_count": 1,
+      "recency_overshoot_only_count": 8,
+      "mixed_disagreement_count": 5,
+      "other_disagreement_count": 0,
+      "error_probe_count": 21,
+      "old_rule_error_probe_count": 7,
+      "recency_overshoot_error_probe_count": 14,
+      "old_rule_error_probe_rate": 0.3333333333333333,
+      "recency_overshoot_error_probe_rate": 0.6666666666666666
+    },
+    {
+      "scope_type": "difficulty",
+      "scope_label": "medium",
+      "mode": "Binary",
+      "episode_count": 23,
+      "runtime_error_count": 0,
+      "runtime_error_rate": 0.0,
+      "parse_attempted_count": 23,
+      "parse_attempted_rate": 1.0,
+      "parse_failure_count": 0,
+      "parse_failure_rate": 0.0,
+      "parse_valid_count": 23,
+      "parse_valid_rate": 1.0,
+      "correct_count": 12,
+      "correct_rate": 0.5217391304347826,
+      "adaptation_failure_count": 11,
+      "adaptation_failure_rate": 0.4782608695652174,
+      "adaptation_failure_rate_among_parse_valid": 0.4782608695652174,
+      "exact_global_old_rule_persistence_count": 0,
+      "exact_global_old_rule_persistence_rate": 0.0,
+      "exact_global_old_rule_persistence_rate_among_adaptation_failures": 0.0,
+      "exact_global_recency_overshoot_count": 5,
+      "exact_global_recency_overshoot_rate": 0.21739130434782608,
+      "exact_global_recency_overshoot_rate_among_adaptation_failures": 0.45454545454545453,
+      "old_rule_only_count": 1,
+      "recency_overshoot_only_count": 6,
+      "mixed_disagreement_count": 4,
+      "other_disagreement_count": 0,
+      "error_probe_count": 21,
+      "old_rule_error_probe_count": 6,
+      "recency_overshoot_error_probe_count": 15,
+      "old_rule_error_probe_rate": 0.2857142857142857,
+      "recency_overshoot_error_probe_rate": 0.7142857142857143
+    },
+    {
+      "scope_type": "transition",
+      "scope_label": "R_std_to_R_inv",
+      "mode": "Binary",
+      "episode_count": 24,
+      "runtime_error_count": 0,
+      "runtime_error_rate": 0.0,
+      "parse_attempted_count": 24,
+      "parse_attempted_rate": 1.0,
+      "parse_failure_count": 0,
+      "parse_failure_rate": 0.0,
+      "parse_valid_count": 24,
+      "parse_valid_rate": 1.0,
+      "correct_count": 13,
+      "correct_rate": 0.5416666666666666,
+      "adaptation_failure_count": 11,
+      "adaptation_failure_rate": 0.4583333333333333,
+      "adaptation_failure_rate_among_parse_valid": 0.4583333333333333,
+      "exact_global_old_rule_persistence_count": 0,
+      "exact_global_old_rule_persistence_rate": 0.0,
+      "exact_global_old_rule_persistence_rate_among_adaptation_failures": 0.0,
+      "exact_global_recency_overshoot_count": 2,
+      "exact_global_recency_overshoot_rate": 0.08333333333333333,
+      "exact_global_recency_overshoot_rate_among_adaptation_failures": 0.18181818181818182,
+      "old_rule_only_count": 2,
+      "recency_overshoot_only_count": 5,
+      "mixed_disagreement_count": 4,
+      "other_disagreement_count": 0,
+      "error_probe_count": 18,
+      "old_rule_error_probe_count": 7,
+      "recency_overshoot_error_probe_count": 11,
+      "old_rule_error_probe_rate": 0.3888888888888889,
+      "recency_overshoot_error_probe_rate": 0.6111111111111112
+    },
+    {
+      "scope_type": "transition",
+      "scope_label": "R_inv_to_R_std",
+      "mode": "Binary",
+      "episode_count": 24,
+      "runtime_error_count": 0,
+      "runtime_error_rate": 0.0,
+      "parse_attempted_count": 24,
+      "parse_attempted_rate": 1.0,
+      "parse_failure_count": 0,
+      "parse_failure_rate": 0.0,
+      "parse_valid_count": 24,
+      "parse_valid_rate": 1.0,
+      "correct_count": 10,
+      "correct_rate": 0.4166666666666667,
+      "adaptation_failure_count": 14,
+      "adaptation_failure_rate": 0.5833333333333334,
+      "adaptation_failure_rate_among_parse_valid": 0.5833333333333334,
+      "exact_global_old_rule_persistence_count": 0,
+      "exact_global_old_rule_persistence_rate": 0.0,
+      "exact_global_old_rule_persistence_rate_among_adaptation_failures": 0.0,
+      "exact_global_recency_overshoot_count": 4,
+      "exact_global_recency_overshoot_rate": 0.16666666666666666,
+      "exact_global_recency_overshoot_rate_among_adaptation_failures": 0.2857142857142857,
+      "old_rule_only_count": 0,
+      "recency_overshoot_only_count": 9,
+      "mixed_disagreement_count": 5,
+      "other_disagreement_count": 0,
+      "error_probe_count": 24,
+      "old_rule_error_probe_count": 6,
+      "recency_overshoot_error_probe_count": 18,
+      "old_rule_error_probe_rate": 0.25,
+      "recency_overshoot_error_probe_rate": 0.75
+    }
+  ],
+  "diagnostic_episode_rows": [
+    {
+      "split_name": "dev",
+      "episode_id": "ife-r12-1036",
+      "template_id": "T1",
+      "difficulty": "easy",
+      "transition": "R_inv_to_R_std",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 2,
+      "error_probe_count": 2,
+      "old_rule_error_probe_count": 1,
+      "recency_overshoot_error_probe_count": 1,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": false,
+      "disagreement_profile": "mixed",
+      "error_type": null
+    },
+    {
+      "split_name": "dev",
+      "episode_id": "ife-r12-1037",
+      "template_id": "T2",
+      "difficulty": "medium",
+      "transition": "R_std_to_R_inv",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 2,
+      "error_probe_count": 2,
+      "old_rule_error_probe_count": 1,
+      "recency_overshoot_error_probe_count": 1,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": false,
+      "disagreement_profile": "mixed",
+      "error_type": null
+    },
+    {
+      "split_name": "dev",
+      "episode_id": "ife-r12-1039",
+      "template_id": "T1",
+      "difficulty": "easy",
+      "transition": "R_std_to_R_inv",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 3,
+      "error_probe_count": 1,
+      "old_rule_error_probe_count": 0,
+      "recency_overshoot_error_probe_count": 1,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": false,
+      "disagreement_profile": "recency_overshoot_only",
+      "error_type": null
+    },
+    {
+      "split_name": "dev",
+      "episode_id": "ife-r12-1040",
+      "template_id": "T1",
+      "difficulty": "easy",
+      "transition": "R_inv_to_R_std",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 1,
+      "error_probe_count": 3,
+      "old_rule_error_probe_count": 2,
+      "recency_overshoot_error_probe_count": 1,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": false,
+      "disagreement_profile": "mixed",
+      "error_type": null
+    },
+    {
+      "split_name": "dev",
+      "episode_id": "ife-r12-1046",
+      "template_id": "T2",
+      "difficulty": "medium",
+      "transition": "R_inv_to_R_std",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 2,
+      "error_probe_count": 2,
+      "old_rule_error_probe_count": 0,
+      "recency_overshoot_error_probe_count": 2,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": true,
+      "disagreement_profile": "recency_overshoot_only",
+      "error_type": null
+    },
+    {
+      "split_name": "dev",
+      "episode_id": "ife-r12-1048",
+      "template_id": "T2",
+      "difficulty": "medium",
+      "transition": "R_inv_to_R_std",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 2,
+      "error_probe_count": 2,
+      "old_rule_error_probe_count": 1,
+      "recency_overshoot_error_probe_count": 1,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": false,
+      "disagreement_profile": "mixed",
+      "error_type": null
+    },
+    {
+      "split_name": "dev",
+      "episode_id": "ife-r12-1049",
+      "template_id": "T1",
+      "difficulty": "easy",
+      "transition": "R_inv_to_R_std",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 3,
+      "error_probe_count": 1,
+      "old_rule_error_probe_count": 0,
+      "recency_overshoot_error_probe_count": 1,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": false,
+      "disagreement_profile": "recency_overshoot_only",
+      "error_type": null
+    },
+    {
+      "split_name": "dev",
+      "episode_id": "ife-r12-1051",
+      "template_id": "T1",
+      "difficulty": "easy",
+      "transition": "R_std_to_R_inv",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 3,
+      "error_probe_count": 1,
+      "old_rule_error_probe_count": 1,
+      "recency_overshoot_error_probe_count": 0,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": false,
+      "disagreement_profile": "old_rule_only",
+      "error_type": null
+    },
+    {
+      "split_name": "public_leaderboard",
+      "episode_id": "ife-r12-2101",
+      "template_id": "T1",
+      "difficulty": "easy",
+      "transition": "R_inv_to_R_std",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 2,
+      "error_probe_count": 2,
+      "old_rule_error_probe_count": 1,
+      "recency_overshoot_error_probe_count": 1,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": false,
+      "disagreement_profile": "mixed",
+      "error_type": null
+    },
+    {
+      "split_name": "public_leaderboard",
+      "episode_id": "ife-r12-2103",
+      "template_id": "T2",
+      "difficulty": "medium",
+      "transition": "R_std_to_R_inv",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 2,
+      "error_probe_count": 2,
+      "old_rule_error_probe_count": 1,
+      "recency_overshoot_error_probe_count": 1,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": false,
+      "disagreement_profile": "mixed",
+      "error_type": null
+    },
+    {
+      "split_name": "public_leaderboard",
+      "episode_id": "ife-r12-2105",
+      "template_id": "T2",
+      "difficulty": "medium",
+      "transition": "R_std_to_R_inv",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 3,
+      "error_probe_count": 1,
+      "old_rule_error_probe_count": 1,
+      "recency_overshoot_error_probe_count": 0,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": false,
+      "disagreement_profile": "old_rule_only",
+      "error_type": null
+    },
+    {
+      "split_name": "public_leaderboard",
+      "episode_id": "ife-r12-2106",
+      "template_id": "T1",
+      "difficulty": "easy",
+      "transition": "R_inv_to_R_std",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 3,
+      "error_probe_count": 1,
+      "old_rule_error_probe_count": 0,
+      "recency_overshoot_error_probe_count": 1,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": false,
+      "disagreement_profile": "recency_overshoot_only",
+      "error_type": null
+    },
+    {
+      "split_name": "public_leaderboard",
+      "episode_id": "ife-r12-2107",
+      "template_id": "T1",
+      "difficulty": "easy",
+      "transition": "R_std_to_R_inv",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 2,
+      "error_probe_count": 2,
+      "old_rule_error_probe_count": 1,
+      "recency_overshoot_error_probe_count": 1,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": false,
+      "disagreement_profile": "mixed",
+      "error_type": null
+    },
+    {
+      "split_name": "public_leaderboard",
+      "episode_id": "ife-r12-2108",
+      "template_id": "T1",
+      "difficulty": "easy",
+      "transition": "R_inv_to_R_std",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 2,
+      "error_probe_count": 2,
+      "old_rule_error_probe_count": 0,
+      "recency_overshoot_error_probe_count": 2,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": true,
+      "disagreement_profile": "recency_overshoot_only",
+      "error_type": null
+    },
+    {
+      "split_name": "public_leaderboard",
+      "episode_id": "ife-r12-2109",
+      "template_id": "T2",
+      "difficulty": "medium",
+      "transition": "R_inv_to_R_std",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 2,
+      "error_probe_count": 2,
+      "old_rule_error_probe_count": 0,
+      "recency_overshoot_error_probe_count": 2,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": true,
+      "disagreement_profile": "recency_overshoot_only",
+      "error_type": null
+    },
+    {
+      "split_name": "public_leaderboard",
+      "episode_id": "ife-r12-2110",
+      "template_id": "T1",
+      "difficulty": "easy",
+      "transition": "R_std_to_R_inv",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 3,
+      "error_probe_count": 1,
+      "old_rule_error_probe_count": 0,
+      "recency_overshoot_error_probe_count": 1,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": false,
+      "disagreement_profile": "recency_overshoot_only",
+      "error_type": null
+    },
+    {
+      "split_name": "public_leaderboard",
+      "episode_id": "ife-r12-2111",
+      "template_id": "T2",
+      "difficulty": "medium",
+      "transition": "R_inv_to_R_std",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 2,
+      "error_probe_count": 2,
+      "old_rule_error_probe_count": 0,
+      "recency_overshoot_error_probe_count": 2,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": true,
+      "disagreement_profile": "recency_overshoot_only",
+      "error_type": null
+    },
+    {
+      "split_name": "public_leaderboard",
+      "episode_id": "ife-r12-2112",
+      "template_id": "T2",
+      "difficulty": "medium",
+      "transition": "R_std_to_R_inv",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 2,
+      "error_probe_count": 2,
+      "old_rule_error_probe_count": 0,
+      "recency_overshoot_error_probe_count": 2,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": true,
+      "disagreement_profile": "recency_overshoot_only",
+      "error_type": null
+    },
+    {
+      "split_name": "public_leaderboard",
+      "episode_id": "ife-r12-2114",
+      "template_id": "T1",
+      "difficulty": "easy",
+      "transition": "R_std_to_R_inv",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 3,
+      "error_probe_count": 1,
+      "old_rule_error_probe_count": 0,
+      "recency_overshoot_error_probe_count": 1,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": false,
+      "disagreement_profile": "recency_overshoot_only",
+      "error_type": null
+    },
+    {
+      "split_name": "private_leaderboard",
+      "episode_id": "ife-r12-9060",
+      "template_id": "T2",
+      "difficulty": "medium",
+      "transition": "R_inv_to_R_std",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 3,
+      "error_probe_count": 1,
+      "old_rule_error_probe_count": 0,
+      "recency_overshoot_error_probe_count": 1,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": false,
+      "disagreement_profile": "recency_overshoot_only",
+      "error_type": null
+    },
+    {
+      "split_name": "private_leaderboard",
+      "episode_id": "ife-r12-9061",
+      "template_id": "T2",
+      "difficulty": "medium",
+      "transition": "R_std_to_R_inv",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 1,
+      "error_probe_count": 3,
+      "old_rule_error_probe_count": 2,
+      "recency_overshoot_error_probe_count": 1,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": false,
+      "disagreement_profile": "mixed",
+      "error_type": null
+    },
+    {
+      "split_name": "private_leaderboard",
+      "episode_id": "ife-r12-9063",
+      "template_id": "T1",
+      "difficulty": "easy",
+      "transition": "R_inv_to_R_std",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 3,
+      "error_probe_count": 1,
+      "old_rule_error_probe_count": 0,
+      "recency_overshoot_error_probe_count": 1,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": false,
+      "disagreement_profile": "recency_overshoot_only",
+      "error_type": null
+    },
+    {
+      "split_name": "private_leaderboard",
+      "episode_id": "ife-r12-9064",
+      "template_id": "T1",
+      "difficulty": "easy",
+      "transition": "R_inv_to_R_std",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 3,
+      "error_probe_count": 1,
+      "old_rule_error_probe_count": 0,
+      "recency_overshoot_error_probe_count": 1,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": false,
+      "disagreement_profile": "recency_overshoot_only",
+      "error_type": null
+    },
+    {
+      "split_name": "private_leaderboard",
+      "episode_id": "ife-r12-9070",
+      "template_id": "T1",
+      "difficulty": "easy",
+      "transition": "R_inv_to_R_std",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 2,
+      "error_probe_count": 2,
+      "old_rule_error_probe_count": 1,
+      "recency_overshoot_error_probe_count": 1,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": false,
+      "disagreement_profile": "mixed",
+      "error_type": null
+    },
+    {
+      "split_name": "private_leaderboard",
+      "episode_id": "ife-r12-9075",
+      "template_id": "T2",
+      "difficulty": "medium",
+      "transition": "R_std_to_R_inv",
+      "mode": "Binary",
+      "parse_status": "valid",
+      "failure_bucket": "adaptation_failure",
+      "correct_probe_count": 2,
+      "error_probe_count": 2,
+      "old_rule_error_probe_count": 0,
+      "recency_overshoot_error_probe_count": 2,
+      "exact_global_old_rule_persistence": false,
+      "exact_global_recency_overshoot": true,
+      "disagreement_profile": "recency_overshoot_only",
+      "error_type": null
+    }
+  ]
+}

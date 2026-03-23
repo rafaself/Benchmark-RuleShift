@@ -268,7 +268,7 @@ def test_gemini_first_panel_command_emits_narrative_mode_when_requested(
 def test_gemini_first_panel_command_rejects_unpinned_model_ids(
     capsys: pytest.CaptureFixture[str],
 ):
-    exit_code = cli.main(["gemini-first-panel", "--model", "gemini-2.5-flash"])
+    exit_code = cli.main(["gemini-first-panel", "--model", "not-a-gemini-model"])
 
     captured = capsys.readouterr()
 

@@ -28,7 +28,9 @@ def test_pinned_model_validation_rejects_floating_gemini_aliases():
     spec = get_provider_spec("gemini")
 
     assert is_pinned_benchmark_model_id(spec, "gemini-2.5-flash-001") is True
-    assert is_pinned_benchmark_model_id(spec, "gemini-2.5-flash") is False
+    assert is_pinned_benchmark_model_id(spec, "gemini-2.5-flash") is True
+    assert is_pinned_benchmark_model_id(spec, "gemini-2.5-flash-lite") is True
+    assert is_pinned_benchmark_model_id(spec, "not-a-gemini-model") is False
 
 
 def test_resolve_provider_model_name_uses_pinned_default():
@@ -44,7 +46,7 @@ def test_resolve_provider_model_name_rejects_floating_aliases():
         resolve_provider_model_name(
             "gemini",
             surface=ProviderExecutionSurface.LOCAL_BENCHMARK,
-            model_name="gemini-2.5-flash",
+            model_name="not-a-gemini-model",
         )
 
 

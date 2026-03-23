@@ -1,0 +1,1709 @@
+{
+  "capture_schema_version": "v1.1",
+  "release_id": "R18",
+  "provider_name": "gemini",
+  "model_name": "gemini-2.5-flash",
+  "prompt_modes": [
+    "binary"
+  ],
+  "splits": [
+    {
+      "split_name": "dev",
+      "episode_count": 16,
+      "rows": [
+        {
+          "episode_id": "ife-r12-1036",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "attract",
+                "repel"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "repel, attract, attract, repel",
+              "duration_seconds": 2.2955175150000287,
+              "response_id": "FWLBafbLIafOz7IP6dKfwQ8",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1037",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "repel",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, repel, repel, attract",
+              "duration_seconds": 0.9749799580004037,
+              "response_id": "FmLBaYm3GqGGz7IP48vHsAg",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1038",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "repel",
+            "repel",
+            "attract",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "repel",
+                "attract",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "repel, repel, attract, attract",
+              "duration_seconds": 0.9522700199995597,
+              "response_id": "F2LBab3SGOzpz7IP6uuCyQY",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1039",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, repel, attract, attract",
+              "duration_seconds": 0.8862531399990985,
+              "response_id": "GGLBaaeXFs3iz7IP6oDr2Ak",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1040",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "repel",
+                "repel"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, repel, repel, repel",
+              "duration_seconds": 0.8519987999989098,
+              "response_id": "GWLBacWnD--Dz7IPlIjEkAk",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1041",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "repel",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, repel, repel, attract",
+              "duration_seconds": 0.7550494039987825,
+              "response_id": "GmLBaY-ZBo-sz7IPwZGhgQ4",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1042",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "repel"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, repel, attract, repel",
+              "duration_seconds": 0.7907664169997588,
+              "response_id": "GmLBac2gNOThz7IPvc-5mAo",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1043",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "repel"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, repel, attract, repel",
+              "duration_seconds": 0.9250103329995909,
+              "response_id": "G2LBaeC5Kfznz7IPvbiF6Aw",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1044",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "repel",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, repel, repel, attract",
+              "duration_seconds": 0.9008475410009851,
+              "response_id": "HGLBaYzhIojVz7IPkbfeyAM",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1045",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "attract",
+                "repel"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "repel, attract, attract, repel",
+              "duration_seconds": 0.8733040239985712,
+              "response_id": "HWLBac2RHfysz7IPtoq0kAU",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1046",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "attract",
+            "repel",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "repel",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "repel, attract, repel, attract",
+              "duration_seconds": 0.8589932220002083,
+              "response_id": "HmLBaZuHFbCsz7IPxa7MqQM",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1047",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "repel",
+            "repel",
+            "attract",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "repel",
+                "attract",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "repel, repel, attract, attract",
+              "duration_seconds": 0.997889591000785,
+              "response_id": "H2LBaeCnDKrVz7IPlJG7gQU",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1048",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "repel"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, repel, attract, repel",
+              "duration_seconds": 0.9683072580010048,
+              "response_id": "IGLBacqWDJHRz7IPwe3wgQ4",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1049",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "attract",
+                "repel",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, attract, repel, attract",
+              "duration_seconds": 1.0154314179999346,
+              "response_id": "IWLBacPCCqnUz7IPnvLqwAg",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1050",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "repel",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "repel, attract, repel, attract",
+              "duration_seconds": 0.9288610240000708,
+              "response_id": "ImLBaeusC5jgz7IPkMmnmQ4",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-1051",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "attract",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "repel, attract, attract, attract",
+              "duration_seconds": 0.7218296020000707,
+              "response_id": "I2LBab75BtuHz7IPxqDc6Qc",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "split_name": "public_leaderboard",
+      "episode_count": 16,
+      "rows": [
+        {
+          "episode_id": "ife-r12-2100",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "repel",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "repel, attract, repel, attract",
+              "duration_seconds": 0.9282440850001876,
+              "response_id": "I2LBaaq2NJ3Uz7IP25_UiQ0",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2101",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "repel",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "repel, attract, repel, attract",
+              "duration_seconds": 0.8730355660009081,
+              "response_id": "JGLBaenkL6Plz7IPxPK2AQ",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2102",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "repel",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, repel, repel, attract",
+              "duration_seconds": 0.8956304099992849,
+              "response_id": "JWLBadS6KPPQz7IPz9XA6QU",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2103",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "attract",
+                "attract",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, attract, attract, attract",
+              "duration_seconds": 0.9358022669985075,
+              "response_id": "JmLBaZeKIp_pz7IPmOLj8Aw",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2104",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "attract",
+                "repel"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "repel, attract, attract, repel",
+              "duration_seconds": 1.1563408949987206,
+              "response_id": "J2LBadnQHeStz7IP4aiJiAU",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2105",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "repel",
+            "repel",
+            "attract",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, repel, attract, attract",
+              "duration_seconds": 1.0222408170011477,
+              "response_id": "KGLBaam1J-bhz7IPg53uqQk",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2106",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "attract",
+                "repel",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, attract, repel, attract",
+              "duration_seconds": 0.9027980749997369,
+              "response_id": "KWLBadrfKN2Cz7IP9pTd8Ak",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2107",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "repel"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, repel, attract, repel",
+              "duration_seconds": 0.8597402169998531,
+              "response_id": "KmLBaZfWIvrPz7IPgMrfiAU",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2108",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "attract",
+                "repel",
+                "repel"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, attract, repel, repel",
+              "duration_seconds": 0.9107614799995645,
+              "response_id": "K2LBaemKGuLUz7IPmvilgQ4",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2109",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "attract",
+                "repel",
+                "repel"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, attract, repel, repel",
+              "duration_seconds": 0.8848336920000293,
+              "response_id": "LGLBafjaFObQz7IP8KGu8Ak",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2110",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "repel",
+                "repel"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, repel, repel, repel",
+              "duration_seconds": 0.896064861000923,
+              "response_id": "LWLBaaXYDY7oz7IP7MXI-AI",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2111",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "repel",
+            "repel",
+            "attract",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "attract",
+                "repel"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "repel, attract, attract, repel",
+              "duration_seconds": 0.8820337300003303,
+              "response_id": "LmLBaaK0B8bjz7IP2uzqsQk",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2112",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "repel",
+            "repel",
+            "attract",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "repel"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, repel, attract, repel",
+              "duration_seconds": 1.011980647999735,
+              "response_id": "L2LBab4a1OHPsg_c7MdB",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2113",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "repel"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, repel, attract, repel",
+              "duration_seconds": 1.0234636449986283,
+              "response_id": "MGLBaYZ3oOnPsg_WjPv4AQ",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2114",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "attract",
+            "attract",
+            "repel",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "repel",
+                "repel"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, repel, repel, repel",
+              "duration_seconds": 1.413334313998348,
+              "response_id": "MWLBadvJAuetz7IPlKnLkAI",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-2115",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "repel"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, repel, attract, repel",
+              "duration_seconds": 1.215946914999222,
+              "response_id": "MmLBafTVG-Thz7IP28-5mAo",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "split_name": "private_leaderboard",
+      "episode_count": 16,
+      "rows": [
+        {
+          "episode_id": "ife-r12-9060",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "attract",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "repel, attract, attract, attract",
+              "duration_seconds": 0.8144666339994728,
+              "response_id": "M2LBabmRKq7mz7IPkqT0mAk",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9061",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "attract",
+            "attract",
+            "repel",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, repel, attract, attract",
+              "duration_seconds": 0.8498979949999921,
+              "response_id": "NGLBaf2yH_Pgz7IPxdP1iQo",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9062",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "repel",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, repel, repel, attract",
+              "duration_seconds": 0.8330091640000319,
+              "response_id": "NWLBadbhFaGFz7IP1M-KiQ0",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9063",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "attract",
+            "repel",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "attract",
+                "attract",
+                "repel"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, attract, attract, repel",
+              "duration_seconds": 0.9152918170002522,
+              "response_id": "NmLBac-uC4jVz7IP5aTesAM",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9064",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, repel, attract, attract",
+              "duration_seconds": 0.8141464079999423,
+              "response_id": "N2LBadqGBuzpz7IP4-uCyQY",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9065",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "repel",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "repel, attract, repel, attract",
+              "duration_seconds": 0.8708340319990384,
+              "response_id": "N2LBaZPmN_PQz7IP2tXA6QU",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9066",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "repel"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, repel, attract, repel",
+              "duration_seconds": 0.9438819829993008,
+              "response_id": "OGLBaYaKMIbgz7IPno2cqA8",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9067",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "attract",
+                "repel"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, repel, attract, repel",
+              "duration_seconds": 0.8985469440012821,
+              "response_id": "OWLBafXFLOvQz7IPrMig8AU",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9068",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "repel",
+            "repel",
+            "attract",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "repel",
+                "attract",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "repel, repel, attract, attract",
+              "duration_seconds": 0.9683817540008022,
+              "response_id": "OmLBaYCzJu_nz7IPy4zauQI",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9069",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "attract",
+            "attract",
+            "repel",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "attract",
+                "repel",
+                "repel"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, attract, repel, repel",
+              "duration_seconds": 0.899067925000054,
+              "response_id": "O2LBaZvUJJDrz7IPzqCtwAc",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9070",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "repel",
+            "repel",
+            "attract",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "repel",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "repel, attract, repel, attract",
+              "duration_seconds": 2.3941677840011835,
+              "response_id": "PGLBaYqXHrnUz7IP6ayvoQ8",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9071",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "attract",
+            "repel",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "repel",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, repel, repel, attract",
+              "duration_seconds": 0.8566567500001838,
+              "response_id": "PmLBaYyqNufVz7IPqsftkAk",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9072",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "repel",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "repel, attract, repel, attract",
+              "duration_seconds": 0.8380079020007543,
+              "response_id": "P2LBaaLdLaThz7IPx_SvgQo",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9073",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_inv_to_R_std",
+          "probe_targets": [
+            "attract",
+            "attract",
+            "repel",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "attract",
+                "repel",
+                "repel"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, attract, repel, repel",
+              "duration_seconds": 0.9760292819992173,
+              "response_id": "QGLBaZT1I7OHz7IPv57W6A0",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9074",
+          "template_id": "T1",
+          "difficulty": "easy",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "attract",
+            "repel"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "repel",
+                "attract",
+                "attract",
+                "repel"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "repel, attract, attract, repel",
+              "duration_seconds": 0.8151413020004838,
+              "response_id": "QWLBaYGLIpPtz7IPpIywqAg",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        },
+        {
+          "episode_id": "ife-r12-9075",
+          "template_id": "T2",
+          "difficulty": "medium",
+          "transition": "R_std_to_R_inv",
+          "probe_targets": [
+            "repel",
+            "attract",
+            "repel",
+            "attract"
+          ],
+          "modes": {
+            "binary": {
+              "parse_status": "valid",
+              "predicted_labels": [
+                "attract",
+                "repel",
+                "repel",
+                "attract"
+              ],
+              "error_type": null,
+              "error_message": null,
+              "response_text": "attract, repel, repel, attract",
+              "duration_seconds": 0.834810740998364,
+              "response_id": "QmLBacmKF7Dmz7IP64iCgQI",
+              "provider_model_version": "gemini-2.5-flash",
+              "finish_reason": "FinishReason.STOP",
+              "usage": {
+                "input_tokens": 246,
+                "output_tokens": 19,
+                "total_tokens": 265
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
