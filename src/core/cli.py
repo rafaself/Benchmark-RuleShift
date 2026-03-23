@@ -16,6 +16,7 @@ from core.gemini_panel import (
 from core.kaggle import validate_kaggle_staging_manifest
 from core.model_execution import ModelMode
 from core.providers.gemini import GeminiConfigurationError
+from core.providers.registry import ProviderSelectionError
 from core.report_outputs import write_text_with_timestamped_snapshot
 from core.splits import (
     PARTITIONS,
@@ -220,7 +221,7 @@ def _command_gemini_first_panel(args: argparse.Namespace) -> int:
             report_path=report_path,
             modes=modes,
         )
-    except GeminiConfigurationError as exc:
+    except (GeminiConfigurationError, ProviderSelectionError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
 

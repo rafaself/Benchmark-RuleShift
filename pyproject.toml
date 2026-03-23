@@ -8,6 +8,10 @@ version = "0.0.0"
 description = "Local benchmark tooling for Iron Find Electric."
 requires-python = ">=3.12"
 dependencies = [
+]
+
+[project.optional-dependencies]
+gemini = [
   "google-genai>=1,<2",
 ]
 

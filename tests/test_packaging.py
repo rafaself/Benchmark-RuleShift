@@ -75,6 +75,10 @@ def test_pyproject_exposes_local_console_entrypoints():
         "ife-integrity": "core.cli:integrity_entrypoint",
         "ife-evidence-pass": "core.cli:evidence_pass_entrypoint",
     }
+    assert pyproject["project"]["dependencies"] == []
+    assert pyproject["project"]["optional-dependencies"]["gemini"] == [
+        "google-genai>=1,<2",
+    ]
 
 
 def test_kaggle_staging_notebook_points_at_frozen_bundle_artifacts():
@@ -161,3 +165,10 @@ def test_packaging_docs_do_not_claim_unsupported_features():
 
     for phrase in forbidden_positive_claims:
         assert phrase not in lowered
+
+
+def test_kaggle_packaging_text_keeps_optional_provider_sdks_out_of_base_path():
+    text = _USAGE_PATH.read_text(encoding="utf-8").lower()
+
+    assert "optional local-only provider sdks" in text
+    assert "no production dependency installation is needed" in text

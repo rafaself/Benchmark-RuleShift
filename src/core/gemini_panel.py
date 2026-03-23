@@ -21,6 +21,11 @@ from core.model_runner import (
 )
 from core.parser import ParseStatus
 from core.providers.gemini import GeminiAdapter
+from core.providers.registry import (
+    ProviderExecutionSurface,
+    get_provider_spec,
+    resolve_provider_model_name,
+)
 from core.report_outputs import (
     build_latest_report_path,
     current_report_timestamp,
@@ -43,6 +48,8 @@ __all__ = [
 ]
 
 DEFAULT_GEMINI_MODEL = "gemini-2.5-flash"
+_GEMINI_PROVIDER_SPEC = get_provider_spec("gemini")
+DEFAULT_GEMINI_MODEL = _GEMINI_PROVIDER_SPEC.default_benchmark_model or DEFAULT_GEMINI_MODEL
 DEFAULT_GEMINI_FIRST_PANEL_REPORT_PATH = build_latest_report_path(
     "live",
     "gemini-first-panel",
@@ -96,11 +103,16 @@ def run_gemini_first_panel(
     if len(set(normalized_modes)) != len(normalized_modes):
         raise ValueError("modes must not contain duplicates")
 
+    resolved_model_name = resolve_provider_model_name(
+        "gemini",
+        surface=ProviderExecutionSurface.LOCAL_BENCHMARK,
+        model_name=model_name,
+    )
     active_adapter = GeminiAdapter.from_env() if adapter is None else adapter
     episodes_by_split: dict[str, tuple[Episode, ...]] = {}
     benchmark_results_by_split: dict[str, BenchmarkRunResult] = {}
     model_sources_by_split: dict[str, tuple[AuditSource, ...]] = {}
-    provider_name = "gemini"
+    provider_name = _GEMINI_PROVIDER_SPEC.provider_name
 
     for split_name in PARTITIONS:
         episodes = tuple(record.episode for record in load_frozen_split(split_name))
@@ -108,7 +120,7 @@ def run_gemini_first_panel(
             episodes,
             active_adapter,
             provider_name=provider_name,
-            model_name=model_name,
+            model_name=resolved_model_name,
             config=config,
             modes=normalized_modes,
             progress_callback=_build_panel_progress_callback(split_name),
@@ -117,10 +129,10 @@ def run_gemini_first_panel(
         benchmark_results_by_split[split_name] = benchmark_result
         model_sources_by_split[split_name] = tuple(
             AuditSource.from_parsed_predictions(
-                f"{model_name} {_TASK_MODE_LABELS[mode_result.mode]}",
+                f"{resolved_model_name} {_TASK_MODE_LABELS[mode_result.mode]}",
                 tuple(row.parsed_prediction for row in mode_result.rows),
                 task_mode=_TASK_MODE_LABELS[mode_result.mode],
-                source_family=model_name,
+                source_family=resolved_model_name,
                 is_real_model=True,
             )
             for mode_result in benchmark_result.mode_results
@@ -133,7 +145,7 @@ def run_gemini_first_panel(
     )
     artifact_payload = _build_panel_artifact(
         provider_name=provider_name,
-        model_name=model_name,
+        model_name=resolved_model_name,
         prompt_modes=normalized_modes,
         release_report=release_report,
         episodes_by_split=episodes_by_split,
@@ -141,7 +153,7 @@ def run_gemini_first_panel(
     )
     report_markdown = render_gemini_first_panel_markdown(
         release_report,
-        model_name=model_name,
+        model_name=resolved_model_name,
         provider_name=provider_name,
         prompt_modes=normalized_modes,
         artifact_payload=artifact_payload,
@@ -164,7 +176,7 @@ def run_gemini_first_panel(
 
     return GeminiFirstPanelArtifacts(
         provider_name=provider_name,
-        model_name=model_name,
+        model_name=resolved_model_name,
         prompt_modes=normalized_modes,
         release_report=release_report,
         report_markdown=report_markdown,

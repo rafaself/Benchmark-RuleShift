@@ -5,6 +5,7 @@ from enum import StrEnum
 from typing import Protocol, runtime_checkable
 
 __all__ = [
+    "ModelExecutionOutcome",
     "ModelMode",
     "ModelRunConfig",
     "ModelUsage",
@@ -21,6 +22,11 @@ def _is_nonempty_string(value: object) -> bool:
 
 def _is_plain_int(value: object) -> bool:
     return isinstance(value, int) and not isinstance(value, bool)
+
+
+class ModelExecutionOutcome(StrEnum):
+    COMPLETED = "completed"
+    PROVIDER_FAILURE = "provider_failure"
 
 
 class ModelMode(StrEnum):
@@ -81,6 +87,7 @@ class ModelRawResult:
     provider_name: str
     model_name: str
     mode: ModelMode
+    execution_outcome: ModelExecutionOutcome = ModelExecutionOutcome.COMPLETED
     response_text: str | None = None
     duration_seconds: float | None = None
     error_type: str | None = None
@@ -96,6 +103,11 @@ class ModelRawResult:
         if not _is_nonempty_string(self.model_name):
             raise ValueError("model_name must be a non-empty string")
         object.__setattr__(self, "mode", ModelMode(self.mode))
+        object.__setattr__(
+            self,
+            "execution_outcome",
+            ModelExecutionOutcome(self.execution_outcome),
+        )
         if self.response_text is not None and not isinstance(self.response_text, str):
             raise TypeError("response_text must be a string or None")
         if self.duration_seconds is not None and self.duration_seconds < 0:
@@ -114,16 +126,29 @@ class ModelRawResult:
             raise ValueError("provider_model_version must be a non-empty string or None")
         if self.finish_reason is not None and not _is_nonempty_string(self.finish_reason):
             raise ValueError("finish_reason must be a non-empty string or None")
+        if self.execution_outcome is ModelExecutionOutcome.COMPLETED:
+            if self.error_type is not None or self.error_message is not None:
+                raise ValueError(
+                    "completed model results must not define error_type or error_message"
+                )
+        else:
+            if self.error_type is None:
+                raise ValueError("provider-failure results must define error_type")
+            if self.response_text is not None:
+                raise ValueError(
+                    "provider-failure results must not define response_text"
+                )
 
     @property
     def succeeded(self) -> bool:
-        return self.error_type is None
+        return self.execution_outcome is ModelExecutionOutcome.COMPLETED
 
     @classmethod
     def from_request(
         cls,
         request: ModelRequest,
         *,
+        execution_outcome: ModelExecutionOutcome = ModelExecutionOutcome.COMPLETED,
         response_text: str | None = None,
         duration_seconds: float | None = None,
         error_type: str | None = None,
@@ -137,6 +162,7 @@ class ModelRawResult:
             provider_name=request.provider_name,
             model_name=request.model_name,
             mode=request.mode,
+            execution_outcome=execution_outcome,
             response_text=response_text,
             duration_seconds=duration_seconds,
             error_type=error_type,

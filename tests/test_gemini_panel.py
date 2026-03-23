@@ -8,7 +8,13 @@ from core.gemini_panel import (
     default_gemini_first_panel_report_path,
     run_gemini_first_panel,
 )
-from core.model_execution import ModelMode, ModelRawResult, ModelRequest, ModelRunConfig
+from core.model_execution import (
+    ModelExecutionOutcome,
+    ModelMode,
+    ModelRawResult,
+    ModelRequest,
+    ModelRunConfig,
+)
 from generator import generate_episode
 from protocol import InteractionLabel, Split
 from render import render_binary_prompt, render_narrative_prompt
@@ -69,7 +75,7 @@ def test_run_gemini_first_panel_writes_paired_artifact_and_report(
             binary_prompt = render_binary_prompt(episode)
             binary_request = ModelRequest(
                 provider_name="gemini",
-                model_name="fake-model",
+                model_name="gemini-2.5-flash-001",
                 prompt_text=binary_prompt,
                 mode=ModelMode.BINARY,
             )
@@ -81,7 +87,7 @@ def test_run_gemini_first_panel_writes_paired_artifact_and_report(
             narrative_prompt = render_narrative_prompt(episode)
             narrative_request = ModelRequest(
                 provider_name="gemini",
-                model_name="fake-model",
+                model_name="gemini-2.5-flash-001",
                 prompt_text=narrative_prompt,
                 mode=ModelMode.NARRATIVE,
             )
@@ -89,6 +95,7 @@ def test_run_gemini_first_panel_writes_paired_artifact_and_report(
                 responses[(ModelMode.NARRATIVE, narrative_prompt)] = (
                     ModelRawResult.from_request(
                         narrative_request,
+                        execution_outcome=ModelExecutionOutcome.PROVIDER_FAILURE,
                         error_type="TimeoutError",
                         error_message="timed out",
                     )
@@ -116,7 +123,7 @@ def test_run_gemini_first_panel_writes_paired_artifact_and_report(
 
     report_path = tmp_path / "m1_binary_vs_narrative_robustness_report.md"
     artifacts = run_gemini_first_panel(
-        model_name="fake-model",
+        model_name="gemini-2.5-flash-001",
         report_path=report_path,
         modes=(ModelMode.BINARY, ModelMode.NARRATIVE),
         adapter=FakeGeminiAdapter(responses),
@@ -163,7 +170,10 @@ def test_run_gemini_first_panel_writes_paired_artifact_and_report(
     assert "## Failure Taxonomy" in artifacts.report_markdown
     assert "| Scope | Mode | Provider/runtime error rate |" in artifacts.report_markdown
     assert "Provider/runtime failures were observed in the live run." in artifacts.report_markdown
-    assert "Binary-only headline metric: fake-model Binary =" in artifacts.report_markdown
+    assert (
+        "Binary-only headline metric: gemini-2.5-flash-001 Binary ="
+        in artifacts.report_markdown
+    )
     assert "Binary vs Narrative comparison is unavailable" not in artifacts.report_markdown
 
 

@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from core.metrics import MetricSummary
 from core.model_execution import (
     ModelAdapter,
+    ModelExecutionOutcome,
     ModelMode,
     ModelRawResult,
     ModelRequest,
@@ -235,13 +236,17 @@ def test_runner_captures_adapter_failures_as_invalid_rows():
     )
     narrative_row = result.mode_results[1].rows[0]
 
-    assert narrative_row.parsed_prediction.status is ParseStatus.INVALID
+    assert narrative_row.parsed_prediction.status is ParseStatus.SKIPPED_PROVIDER_FAILURE
+    assert (
+        narrative_row.execution.raw_result.execution_outcome
+        is ModelExecutionOutcome.PROVIDER_FAILURE
+    )
     assert narrative_row.execution.raw_result.error_type == "TimeoutError"
     assert narrative_row.execution.raw_result.error_message == "timed out"
     assert narrative_row.execution.raw_result.response_text is None
     assert result.metrics == MetricSummary(
         post_shift_probe_accuracy=1.0,
-        parse_valid_rate=0.5,
+        parse_valid_rate=1.0,
         binary_accuracy=1.0,
         narrative_accuracy=0.0,
     )

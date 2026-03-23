@@ -42,7 +42,7 @@ Current evidence status:
 
 This benchmark does not claim to measure physics skill, broad AGI capability, broad executive-function coverage, switch cost, recovery length, immediate post-shift drop, or online change-detection latency.
 
-Optional real-model execution is available locally through the Gemini first-panel runner. It is not part of the deterministic main test gate and only runs when `GEMINI_API_KEY` is configured, either in the shell environment or in a repo-root `.env` file. The current M1 evidence was produced via this runner.
+Optional real-model execution is available locally through the Gemini first-panel runner. It is not part of the deterministic main test gate, requires the optional Gemini SDK extra, and only runs when `GEMINI_API_KEY` is configured, either in the shell environment or in a repo-root `.env` file. Benchmark runs now require pinned model IDs; the default Gemini panel model is pinned. The current M1 evidence was produced via this runner.
 
 ## Benchmark Shape
 
@@ -126,6 +126,12 @@ Create and activate a local virtual environment:
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install -r requirements-dev.txt
+```
+
+If you want to run the optional local Gemini benchmark panel, install the provider extra as well:
+
+```bash
+python3 -m pip install -e ".[gemini]"
 ```
 
 Run the test suite:

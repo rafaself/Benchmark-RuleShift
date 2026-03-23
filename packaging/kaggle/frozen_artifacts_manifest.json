@@ -20,7 +20,7 @@
     },
     "usage": {
       "path": "packaging/kaggle/README.md",
-      "sha256": "c9fcfede0be01b4c738bc0aeb586ed7f71d8f39733b2a8ea4e1fc4bf3a33e936"
+      "sha256": "d3da27568816fd56f1abd6541dcb01410cc409acb4af066583696bcf919fb802"
     },
     "packaging_note": {
       "path": "packaging/kaggle/PACKAGING_NOTE.md",

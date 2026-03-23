@@ -28,5 +28,5 @@ This directory packages the repaired benchmark for Kaggle staging without redefi
 ## Environment Assumptions
 
 - The notebook only requires Python and the files bundled in this repository.
-- No production dependency installation is needed for the staging notebook itself.
+- No production dependency installation is needed for the staging notebook itself, and Kaggle staging must stay independent of optional local-only provider SDKs.
 - The staging notebook dry run validates packaged assets, parsing, scoring, and reporting without live external inference. M1 live Gemini panel evidence exists separately in the reports tree and is not part of the staging dry-run pathway.

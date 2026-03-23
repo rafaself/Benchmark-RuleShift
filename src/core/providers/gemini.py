@@ -7,6 +7,7 @@ from pathlib import Path
 import time
 
 from core.model_execution import (
+    ModelExecutionOutcome,
     ModelMode,
     ModelRawResult,
     ModelRequest,
@@ -115,6 +116,7 @@ class GeminiAdapter:
         except Exception as exc:
             return ModelRawResult.from_request(
                 request,
+                execution_outcome=ModelExecutionOutcome.PROVIDER_FAILURE,
                 duration_seconds=time.perf_counter() - started_at,
                 error_type=type(exc).__name__,
                 error_message=str(exc),

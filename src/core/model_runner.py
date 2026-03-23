@@ -7,6 +7,7 @@ from core.metrics import MetricSummary, compute_metrics
 from core.model_execution import (
     ModelAdapter,
     ModelExecutionRecord,
+    ModelExecutionOutcome,
     ModelMode,
     ModelRawResult,
     ModelRequest,
@@ -180,12 +181,16 @@ def _run_episode(
     except Exception as exc:
         raw_result = ModelRawResult.from_request(
             request,
+            execution_outcome=ModelExecutionOutcome.PROVIDER_FAILURE,
             error_type=type(exc).__name__,
             error_message=str(exc),
         )
 
     _validate_raw_result(request, raw_result)
-    parsed_prediction = parser(raw_result.response_text or "")
+    if raw_result.execution_outcome is ModelExecutionOutcome.COMPLETED:
+        parsed_prediction = parser(raw_result.response_text or "")
+    else:
+        parsed_prediction = ParsedPrediction.skipped_provider_failure()
 
     return BenchmarkModeRunRow(
         episode_id=episode.episode_id,

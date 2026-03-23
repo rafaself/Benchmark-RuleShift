@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from core.model_execution import ModelMode, ModelRequest, ModelRunConfig
+from core.model_execution import ModelExecutionOutcome
 from core.providers.gemini import (
     GEMINI_API_KEY_ENV_VAR,
     GeminiAdapter,
@@ -113,6 +114,7 @@ def test_gemini_adapter_reads_api_key_from_environment_and_maps_structured_binar
     )
 
     assert result.succeeded is True
+    assert result.execution_outcome is ModelExecutionOutcome.COMPLETED
     assert result.response_text == "attract, repel, repel, attract"
     assert result.usage is not None
     assert result.usage.input_tokens == 11
@@ -299,6 +301,7 @@ def test_gemini_adapter_returns_canonical_error_result_for_provider_failures(
     result = adapter.generate(request, ModelRunConfig())
 
     assert result.succeeded is False
+    assert result.execution_outcome is ModelExecutionOutcome.PROVIDER_FAILURE
     assert result.error_type == "RuntimeError"
     assert result.error_message == "provider exploded"
     assert result.response_text is None
@@ -343,5 +346,6 @@ def test_gemini_adapter_fails_clearly_when_sdk_is_unavailable(
     )
 
     assert result.succeeded is False
+    assert result.execution_outcome is ModelExecutionOutcome.PROVIDER_FAILURE
     assert result.error_type == "MissingGeminiSdkError"
     assert "google-genai" in (result.error_message or "")

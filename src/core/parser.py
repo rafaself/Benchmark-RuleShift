@@ -27,12 +27,17 @@ _BOLD_MARKER_RE = re.compile(r"\*+")
 class ParseStatus(StrEnum):
     VALID = "valid"
     INVALID = "invalid"
+    SKIPPED_PROVIDER_FAILURE = "skipped_provider_failure"
 
 
 @dataclass(frozen=True, slots=True)
 class ParsedPrediction:
     labels: tuple[InteractionLabel, ...]
     status: ParseStatus
+
+    @classmethod
+    def skipped_provider_failure(cls) -> "ParsedPrediction":
+        return cls(labels=(), status=ParseStatus.SKIPPED_PROVIDER_FAILURE)
 
 
 _INVALID_PREDICTION = ParsedPrediction(labels=(), status=ParseStatus.INVALID)

@@ -163,7 +163,7 @@ def test_gemini_first_panel_command_emits_report_metadata(
         "run_gemini_first_panel",
         lambda **_: GeminiFirstPanelArtifacts(
             provider_name="gemini",
-            model_name="gemini-2.5-flash",
+            model_name="gemini-2.5-flash-001",
             prompt_modes=(ModelMode.BINARY,),
             release_report=_StubReport(),
             report_markdown="# report\n",
@@ -184,7 +184,7 @@ def test_gemini_first_panel_command_emits_report_metadata(
     assert payload == {
         "release_id": "R18",
         "provider_name": "gemini",
-        "model_name": "gemini-2.5-flash",
+        "model_name": "gemini-2.5-flash-001",
         "prompt_modes": ["binary"],
         "report_path": str(report_path),
         "artifact_path": str(report_path.with_suffix(".json")),
@@ -211,7 +211,7 @@ def test_gemini_first_panel_command_emits_narrative_mode_when_requested(
         "run_gemini_first_panel",
         lambda **_: GeminiFirstPanelArtifacts(
             provider_name="gemini",
-            model_name="gemini-2.5-flash",
+            model_name="gemini-2.5-flash-001",
             prompt_modes=(ModelMode.BINARY, ModelMode.NARRATIVE),
             release_report=_StubReport(),
             report_markdown="# report\n",
@@ -241,6 +241,17 @@ def test_gemini_first_panel_command_emits_narrative_mode_when_requested(
     assert payload["snapshot_report_path"] == str(
         tmp_path / "m1_binary_vs_narrative_robustness_report__20260322_203500.md"
     )
+
+
+def test_gemini_first_panel_command_rejects_unpinned_model_ids(
+    capsys: pytest.CaptureFixture[str],
+):
+    exit_code = cli.main(["gemini-first-panel", "--model", "gemini-2.5-flash"])
+
+    captured = capsys.readouterr()
+
+    assert exit_code == 2
+    assert "pinned model ID" in captured.err
 
 
 def test_main_returns_130_on_keyboard_interrupt(

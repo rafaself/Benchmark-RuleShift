@@ -65,9 +65,14 @@ def compute_metrics(
     )
 
     all_predictions = normalized_binary_predictions + normalized_narrative_predictions
-    total_predictions = len(all_predictions)
+    parse_attempted_predictions = tuple(
+        prediction
+        for prediction in all_predictions
+        if prediction.status is not ParseStatus.SKIPPED_PROVIDER_FAILURE
+    )
+    total_predictions = len(parse_attempted_predictions)
     valid_predictions = sum(
-        prediction.status is ParseStatus.VALID for prediction in all_predictions
+        prediction.status is ParseStatus.VALID for prediction in parse_attempted_predictions
     )
     binary_accuracy = compute_post_shift_probe_accuracy(
         normalized_binary_predictions,
