@@ -123,9 +123,11 @@ For each episode:
 - set `shift_after_position = pre_count`;
 - first `pre_count` labeled examples use `rule_A`;
 - next `post_labeled_count` labeled examples use `rule_B`;
-- all 4 probes are answered under `rule_B`.
+- probe targets are derived using a slice-local effective rule: for each probe, the active rule is `rule_B` if the probe's charge sign pattern (`++`, `--`, `+-`, or `-+`) was covered by the post-shift labeled items; otherwise `rule_A`. Probe targets are frozen in the split manifests and must not be recomputed during evaluation.
 
 The shift is never announced to the model.
+
+Note: the post-shift labeled items cover exactly two distinct sign patterns (one same-sign and one opposite-sign); the probe block covers all four sign patterns exactly once. Targets never collapse to the uniform global `rule_A` or global `rule_B` output for all four probes.
 
 ## 4.3 No duplicate item tuples within an episode
 

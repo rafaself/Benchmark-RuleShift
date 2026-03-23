@@ -39,3 +39,4 @@ Direct entry point if needed: `.venv/bin/python scripts/ife.py <command>`.
 - `README.md`: current project state and command surface.
 - `src/README.md`: canonical code layout.
 - `iron_find_electric_implementation_spec.md`: task and benchmark contract.
+- `packaging/kaggle/KAGGLE_BENCHMARK_CONTRACT.md`: Kaggle integration contract (Phase 2 reference). Defines the leaderboard task, metric, scoring unit, output format, split semantics, and frozen asset policy for `@kbench.task` implementation.
