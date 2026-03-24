@@ -79,7 +79,7 @@ jobs:
         run: python scripts/build_deploy.py
 
       - name: Remove transient files from deploy artifacts
-        run: bash scripts/clean_deploy_artifacts.sh "${DEPLOY_RUNTIME_DIR}" "${DEPLOY_NOTEBOOK_DIR}"
+        run: bash scripts/cd/clean_deploy_artifacts.sh "${DEPLOY_RUNTIME_DIR}" "${DEPLOY_NOTEBOOK_DIR}"
 
       - name: Verify deploy artifacts exist
         run: |
@@ -97,7 +97,7 @@ jobs:
 
       - name: Validate metadata and capture outputs
         id: capture
-        run: python scripts/validate_kaggle_metadata.py preflight
+        run: python scripts/cd/validate_kaggle_metadata.py preflight
 
       - name: Upload runtime artifact
         uses: actions/upload-artifact@v4
@@ -169,13 +169,13 @@ jobs:
           }
 
       - name: Verify dataset publish payload
-        run: python scripts/validate_kaggle_metadata.py dataset
+        run: python scripts/cd/validate_kaggle_metadata.py dataset
 
       - name: Determine dataset publish mode
         id: dataset_mode
         env:
           DATASET_ID: ${{ needs.preflight-build.outputs.dataset_id }}
-        run: bash scripts/determine_dataset_publish_mode.sh
+        run: bash scripts/cd/determine_dataset_publish_mode.sh
 
       - name: Create dataset
         if: steps.dataset_mode.outputs.mode == 'create'
@@ -200,7 +200,7 @@ jobs:
       - name: Validate remote dataset metadata
         env:
           DATASET_ID: ${{ needs.preflight-build.outputs.dataset_id }}
-        run: bash scripts/validate_remote_dataset.sh
+        run: bash scripts/cd/validate_remote_dataset.sh
 
       - name: Write dataset publish summary
         run: |
@@ -258,7 +258,7 @@ jobs:
           }
 
       - name: Verify notebook publish payload
-        run: python scripts/validate_kaggle_metadata.py notebook
+        run: python scripts/cd/validate_kaggle_metadata.py notebook
 
       - name: Publish notebook to Kaggle
         env:
@@ -272,7 +272,7 @@ jobs:
         env:
           KERNEL_ID: ${{ needs.preflight-build.outputs.kernel_id }}
           DATASET_ID: ${{ needs.preflight-build.outputs.dataset_id }}
-        run: python scripts/validate_remote_kernel.py
+        run: python scripts/cd/validate_remote_kernel.py
 
       - name: Write notebook publish summary
         run: |
