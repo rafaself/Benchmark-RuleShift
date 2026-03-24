@@ -3,16 +3,8 @@ name: CD — Kaggle Publish
 on:
   workflow_dispatch:
     inputs:
-      dataset_mode:
-        description: 'Dataset publish mode'
-        required: true
-        type: choice
-        options:
-          - version
-          - create
-        default: version
       dataset_version_message:
-        description: 'Dataset version message (used with "version"; defaults to commit SHA)'
+        description: 'Dataset version message (defaults to commit SHA)'
         required: false
         type: string
         default: ""
@@ -277,17 +269,24 @@ jobs:
           PY
 
       - name: Publish dataset to Kaggle
+        id: publish_dataset
         env:
           KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
           DATASET_VERSION_MESSAGE: ${{ inputs.dataset_version_message }}
+          DATASET_ID: ${{ needs.preflight-build.outputs.dataset_id }}
         run: |
-          if [ "${{ inputs.dataset_mode }}" = "create" ]; then
-            echo "Creating dataset ${{ needs.preflight-build.outputs.dataset_id }}"
-            kaggle datasets create -p deploy/kaggle-runtime
-          else
-            VERSION_MSG="${DATASET_VERSION_MESSAGE:-Update from ${{ github.sha }}}"
-            echo "Versioning dataset ${{ needs.preflight-build.outputs.dataset_id }}: $VERSION_MSG"
+          OWNER="${DATASET_ID%%/*}"
+          SLUG="${DATASET_ID##*/}"
+          VERSION_MSG="${DATASET_VERSION_MESSAGE:-Update from ${{ github.sha }}}"
+
+          if kaggle datasets metadata -o "$OWNER" -d "$SLUG" -p /tmp/kaggle-meta-check 2>/dev/null; then
+            echo "Dataset $DATASET_ID exists — publishing new version"
             kaggle datasets version -p deploy/kaggle-runtime -m "$VERSION_MSG"
+            echo "mode=version" >> "$GITHUB_OUTPUT"
+          else
+            echo "Dataset $DATASET_ID not found — creating"
+            kaggle datasets create -p deploy/kaggle-runtime
+            echo "mode=create" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Write dataset publish summary
@@ -296,7 +295,7 @@ jobs:
             echo "## Dataset publish"
             echo ""
             echo "- Dataset: \`${{ needs.preflight-build.outputs.dataset_id }}\`"
-            echo "- Mode: \`${{ inputs.dataset_mode }}\`"
+            echo "- Mode: \`${{ steps.publish_dataset.outputs.mode }}\`"
             echo "- Ref: \`${{ github.ref }}\`"
             echo "- Commit: \`${{ github.sha }}\`"
           } >> "$GITHUB_STEP_SUMMARY"
