@@ -48,16 +48,14 @@ jobs:
           pip install -r requirements-dev.txt
           pip install -e .
           pip install "pandas>=2.0,<3.0"
-          pip install kaggle
+          pip install "kaggle>=1.7.4.5"
 
-      - name: Check Kaggle secrets are configured
+      - name: Check Kaggle token is configured
         env:
-          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
-          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
         run: |
-          test -n "$KAGGLE_USERNAME" || { echo "ERROR: KAGGLE_USERNAME secret is not set" >&2; exit 1; }
-          test -n "$KAGGLE_KEY" || { echo "ERROR: KAGGLE_KEY secret is not set" >&2; exit 1; }
-          echo "Kaggle credentials present."
+          test -n "$KAGGLE_API_TOKEN" || { echo "ERROR: KAGGLE_API_TOKEN secret is not set" >&2; exit 1; }
+          echo "Kaggle token present."
 
       - name: Validate packaging contract
         run: python -m pytest tests/test_packaging.py -v
@@ -79,34 +77,60 @@ jobs:
           test -d deploy/kaggle-runtime/src/frozen_splits \
             || { echo "ERROR: frozen_splits/ missing" >&2; exit 1; }
 
-      - name: Patch publish metadata from canonical sources
+      - name: Normalize publish metadata from canonical sources
         id: patch_meta
-        env:
-          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
         run: |
           python - <<'PY'
           import json
-          import os
+          import sys
           from pathlib import Path
 
-          username = os.environ["KAGGLE_USERNAME"]
+          errors = []
 
           dataset_path = Path("deploy/kaggle-runtime/dataset-metadata.json")
           notebook_src_path = Path("packaging/kaggle/kernel-metadata.json")
           notebook_dst_path = Path("deploy/kaggle-notebook/kernel-metadata.json")
 
           dataset_meta = json.loads(dataset_path.read_text())
-          dataset_meta["id"] = f"{username}/ruleshift-runtime"
-          dataset_path.write_text(json.dumps(dataset_meta, indent=2) + "\n")
-
           kernel_meta = json.loads(notebook_src_path.read_text())
-          kernel_slug = kernel_meta["id"].split("/")[-1]
-          kernel_meta["id"] = f"{username}/{kernel_slug}"
-          kernel_meta["dataset_sources"] = [dataset_meta["id"]]
+
+          dataset_id = dataset_meta.get("id", "")
+          kernel_id = kernel_meta.get("id", "")
+          code_file = kernel_meta.get("code_file", "")
+
+          if "/" not in dataset_id:
+              errors.append(
+                  "dataset-metadata.json must contain a fully-qualified Kaggle dataset id "
+                  "(for example: 'owner-slug/dataset-slug')."
+              )
+
+          if "/" not in kernel_id:
+              errors.append(
+                  "packaging/kaggle/kernel-metadata.json must contain a fully-qualified Kaggle kernel id "
+                  "(for example: 'owner-slug/kernel-slug')."
+              )
+
+          placeholders = ("YOUR_USERNAME", "<username>", "owner-slug")
+          for marker in placeholders:
+              if marker in dataset_id:
+                  errors.append(f"dataset id still contains placeholder: {dataset_id!r}")
+              if marker in kernel_id:
+                  errors.append(f"kernel id still contains placeholder: {kernel_id!r}")
+
+          if not code_file:
+              errors.append("kernel-metadata.json missing 'code_file'")
+
+          if errors:
+              print("Canonical metadata validation FAILED:", file=sys.stderr)
+              for err in errors:
+                  print(f"  - {err}", file=sys.stderr)
+              sys.exit(1)
+
+          kernel_meta["dataset_sources"] = [dataset_id]
           notebook_dst_path.write_text(json.dumps(kernel_meta, indent=2) + "\n")
 
-          print(f"dataset id: {dataset_meta['id']}")
-          print(f"kernel id: {kernel_meta['id']}")
+          print(f"dataset id: {dataset_id}")
+          print(f"kernel id: {kernel_id}")
           print(f"code_file: {kernel_meta['code_file']}")
           print(f"dataset_sources: {kernel_meta['dataset_sources']}")
           PY
@@ -134,11 +158,17 @@ jobs:
           if "/" not in km.get("id", ""):
               errors.append(f"kernel id is not fully qualified: {km.get('id')!r}")
 
+          if "/" not in dm.get("id", ""):
+              errors.append(f"dataset id is not fully qualified: {dm.get('id')!r}")
+
           if not km.get("dataset_sources"):
               errors.append("dataset_sources is empty")
 
-          if "YOUR_USERNAME" in dm.get("id", ""):
-              errors.append(f"dataset id still has placeholder: {dm.get('id')!r}")
+          for placeholder in ("YOUR_USERNAME", "<username>", "owner-slug"):
+              if placeholder in dm.get("id", ""):
+                  errors.append(f"dataset id still has placeholder: {dm.get('id')!r}")
+              if placeholder in km.get("id", ""):
+                  errors.append(f"kernel id still has placeholder: {km.get('id')!r}")
 
           for field in ("title", "id", "licenses"):
               if not dm.get(field):
@@ -228,20 +258,33 @@ jobs:
       - name: Install Kaggle CLI
         run: |
           python -m pip install --upgrade pip
-          pip install kaggle
+          pip install "kaggle>=1.7.4.5"
 
-      - name: Check Kaggle secrets are configured
+      - name: Check Kaggle token is configured
         env:
-          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
-          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
         run: |
-          test -n "$KAGGLE_USERNAME" || { echo "ERROR: KAGGLE_USERNAME secret is not set" >&2; exit 1; }
-          test -n "$KAGGLE_KEY" || { echo "ERROR: KAGGLE_KEY secret is not set" >&2; exit 1; }
+          test -n "$KAGGLE_API_TOKEN" || { echo "ERROR: KAGGLE_API_TOKEN secret is not set" >&2; exit 1; }
+
+      - name: Verify dataset publish payload
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          dm = json.loads(Path("deploy/kaggle-runtime/dataset-metadata.json").read_text())
+
+          assert "/" in dm["id"], dm
+          assert dm.get("title"), dm
+          assert dm.get("licenses"), dm
+
+          print("Dataset payload verified.")
+          print(f"Dataset id: {dm['id']}")
+          PY
 
       - name: Publish dataset to Kaggle
         env:
-          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
-          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
           DATASET_VERSION_MESSAGE: ${{ inputs.dataset_version_message }}
         run: |
           if [ "${{ inputs.dataset_mode }}" = "create" ]; then
@@ -287,15 +330,13 @@ jobs:
       - name: Install Kaggle CLI
         run: |
           python -m pip install --upgrade pip
-          pip install kaggle
+          pip install "kaggle>=1.7.4.5"
 
-      - name: Check Kaggle secrets are configured
+      - name: Check Kaggle token is configured
         env:
-          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
-          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
         run: |
-          test -n "$KAGGLE_USERNAME" || { echo "ERROR: KAGGLE_USERNAME secret is not set" >&2; exit 1; }
-          test -n "$KAGGLE_KEY" || { echo "ERROR: KAGGLE_KEY secret is not set" >&2; exit 1; }
+          test -n "$KAGGLE_API_TOKEN" || { echo "ERROR: KAGGLE_API_TOKEN secret is not set" >&2; exit 1; }
 
       - name: Verify notebook publish payload
         run: |
@@ -307,6 +348,7 @@ jobs:
           notebook_path = Path("deploy/kaggle-notebook") / km["code_file"]
 
           assert km["kernel_type"] == "notebook", km
+          assert "/" in km["id"], km
           assert notebook_path.exists(), notebook_path
           assert km.get("dataset_sources"), km
 
@@ -318,8 +360,7 @@ jobs:
 
       - name: Publish notebook to Kaggle
         env:
-          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
-          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
         run: |
           echo "Pushing notebook ${{ needs.preflight-build.outputs.kernel_id }}"
           kaggle kernels push -p deploy/kaggle-notebook
