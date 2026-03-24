@@ -1,7 +1,7 @@
 PYTHON ?= .venv/bin/python
 CLI := $(PYTHON) scripts/ruleshift_benchmark.py
 
-.PHONY: help test validity reaudit integrity evidence-pass
+.PHONY: help test validity reaudit integrity evidence-pass notebook-check
 
 help:
 	@printf "Available targets:\n"
@@ -10,6 +10,7 @@ help:
 	@printf "  make reaudit\n"
 	@printf "  make integrity\n"
 	@printf "  make evidence-pass\n"
+	@printf "  make notebook-check\n"
 
 test:
 	$(CLI) test
@@ -25,3 +26,6 @@ integrity:
 
 evidence-pass:
 	$(CLI) evidence-pass
+
+notebook-check:
+	$(PYTHON) -m pytest tests/test_kbench_notebook.py -v
