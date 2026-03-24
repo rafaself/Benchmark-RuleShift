@@ -322,7 +322,7 @@ def test_kaggle_staging_path_does_not_depend_on_openai_runtime():
 def test_official_kbench_notebook_imports_package_owned_benchmark_logic():
     sources = _read_notebook_sources(_KBENCH_NOTEBOOK_PATH)
 
-    assert "from kaggle import BinaryResponse, normalize_binary_response, normalize_narrative_response, score_episode" in sources
+    assert "from kaggle import BinaryResponse, Label, normalize_binary_response, normalize_narrative_response, score_episode" in sources
     assert "load_kaggle_staging_manifest" not in sources
     assert "validate_kaggle_staging_manifest" not in sources
     assert "resolve_kaggle_artifact_path" not in sources
