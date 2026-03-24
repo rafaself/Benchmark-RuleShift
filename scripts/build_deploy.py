@@ -65,12 +65,14 @@ def _verify_dataset_metadata() -> None:
 
 
 def build_kaggle_notebook() -> None:
-    """Copy the official notebook into deploy/kaggle-notebook/."""
+    """Copy the official notebook and kernel metadata into deploy/kaggle-notebook/."""
     if DEPLOY_NOTEBOOK_DIR.exists():
         shutil.rmtree(DEPLOY_NOTEBOOK_DIR)
     DEPLOY_NOTEBOOK_DIR.mkdir(parents=True)
     shutil.copy2(NOTEBOOK_SRC, DEPLOY_NOTEBOOK_DIR / NOTEBOOK_SRC.name)
     print(f"  notebook -> {DEPLOY_NOTEBOOK_DIR / NOTEBOOK_SRC.name}")
+    shutil.copy2(KERNEL_METADATA_SRC, DEPLOY_NOTEBOOK_DIR / KERNEL_METADATA_SRC.name)
+    print(f"  kernel-metadata.json -> {DEPLOY_NOTEBOOK_DIR / KERNEL_METADATA_SRC.name}")
 
 
 def build_kaggle_runtime() -> None:
@@ -85,32 +87,22 @@ def build_kaggle_runtime() -> None:
       src/frozen_splits/                 -- frozen episode manifests
       packaging/kaggle/frozen_artifacts_manifest.json
 
-    dataset-metadata.json is preserved from the previous build if it
-    already exists (it contains YOUR_USERNAME which must be filled in
-    manually before publishing), otherwise it is seeded from a template.
+    dataset-metadata.json is written from the canonical template on every
+    build.
     """
-    # Preserve dataset-metadata.json across rebuilds so manual edits survive.
-    saved_meta: str | None = None
-    meta_path = DEPLOY_RUNTIME_DIR / "dataset-metadata.json"
-    if meta_path.exists():
-        saved_meta = meta_path.read_text(encoding="utf-8")
-
     if DEPLOY_RUNTIME_DIR.exists():
         shutil.rmtree(DEPLOY_RUNTIME_DIR)
     DEPLOY_RUNTIME_DIR.mkdir(parents=True)
 
-    # Restore or seed dataset-metadata.json.
-    if saved_meta is not None:
-        meta_path.write_text(saved_meta, encoding="utf-8")
-        print(f"  (preserved) dataset-metadata.json")
-    else:
-        template = {
-            "title": "RuleShift Runtime",
-            "id": "YOUR_USERNAME/ruleshift-runtime",
-            "licenses": [{"name": "CC0-1.0"}],
-        }
-        meta_path.write_text(json.dumps(template, indent=2) + "\n", encoding="utf-8")
-        print(f"  (seeded)    dataset-metadata.json")
+    # Write dataset-metadata.json from the canonical template.
+    meta_path = DEPLOY_RUNTIME_DIR / "dataset-metadata.json"
+    template = {
+        "title": "RuleShift Runtime",
+        "id": "ruleshift-benchmark/ruleshift-runtime",
+        "licenses": [{"name": "CC0-1.0"}],
+    }
+    meta_path.write_text(json.dumps(template, indent=2) + "\n", encoding="utf-8")
+    print(f"  dataset-metadata.json")
 
     # Copy src/ (subset needed by the Kaggle notebook).
     runtime_src = DEPLOY_RUNTIME_DIR / "src"

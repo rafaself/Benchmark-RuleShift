@@ -77,8 +77,7 @@ jobs:
           test -d deploy/kaggle-runtime/src/frozen_splits \
             || { echo "ERROR: frozen_splits/ missing" >&2; exit 1; }
 
-      - name: Normalize publish metadata from canonical sources
-        id: patch_meta
+      - name: Validate canonical metadata IDs
         run: |
           python - <<'PY'
           import json
@@ -88,15 +87,13 @@ jobs:
           errors = []
 
           dataset_path = Path("deploy/kaggle-runtime/dataset-metadata.json")
-          notebook_src_path = Path("packaging/kaggle/kernel-metadata.json")
-          notebook_dst_path = Path("deploy/kaggle-notebook/kernel-metadata.json")
+          notebook_path = Path("deploy/kaggle-notebook/kernel-metadata.json")
 
           dataset_meta = json.loads(dataset_path.read_text())
-          kernel_meta = json.loads(notebook_src_path.read_text())
+          kernel_meta = json.loads(notebook_path.read_text())
 
           dataset_id = dataset_meta.get("id", "")
           kernel_id = kernel_meta.get("id", "")
-          code_file = kernel_meta.get("code_file", "")
 
           if "/" not in dataset_id:
               errors.append(
@@ -106,7 +103,7 @@ jobs:
 
           if "/" not in kernel_id:
               errors.append(
-                  "packaging/kaggle/kernel-metadata.json must contain a fully-qualified Kaggle kernel id "
+                  "deploy/kaggle-notebook/kernel-metadata.json must contain a fully-qualified Kaggle kernel id "
                   "(for example: 'owner-slug/kernel-slug')."
               )
 
@@ -117,7 +114,7 @@ jobs:
               if marker in kernel_id:
                   errors.append(f"kernel id still contains placeholder: {kernel_id!r}")
 
-          if not code_file:
+          if not kernel_meta.get("code_file"):
               errors.append("kernel-metadata.json missing 'code_file'")
 
           if errors:
@@ -126,13 +123,10 @@ jobs:
                   print(f"  - {err}", file=sys.stderr)
               sys.exit(1)
 
-          kernel_meta["dataset_sources"] = [dataset_id]
-          notebook_dst_path.write_text(json.dumps(kernel_meta, indent=2) + "\n")
-
           print(f"dataset id: {dataset_id}")
           print(f"kernel id: {kernel_id}")
           print(f"code_file: {kernel_meta['code_file']}")
-          print(f"dataset_sources: {kernel_meta['dataset_sources']}")
+          print(f"dataset_sources: {kernel_meta.get('dataset_sources', [])}")
           PY
 
       - name: Validate publish-ready metadata
