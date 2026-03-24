@@ -98,7 +98,7 @@ def build_kaggle_runtime() -> None:
     meta_path = DEPLOY_RUNTIME_DIR / "dataset-metadata.json"
     template = {
         "title": "RuleShift Runtime",
-        "id": "ruleshift-benchmark/ruleshift-runtime",
+        "id": "raptorengineer/ruleshift-runtime",
         "licenses": [{"name": "CC0-1.0"}],
     }
     meta_path.write_text(json.dumps(template, indent=2) + "\n", encoding="utf-8")

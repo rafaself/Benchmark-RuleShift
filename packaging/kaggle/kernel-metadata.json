@@ -1,5 +1,5 @@
 {
-  "id": "ruleshift-benchmark/ruleshift-benchmark-v1",
+  "id": "raptorengineer/ruleshift-benchmark-v1",
   "title": "RuleShift Benchmark v1 — Cognitive Flexibility Benchmark",
   "code_file": "ruleshift_benchmark_v1_kbench.ipynb",
   "language": "python",
@@ -8,7 +8,7 @@
   "enable_gpu": false,
   "enable_tpu": false,
   "enable_internet": false,
-  "dataset_sources": ["ruleshift-benchmark/ruleshift-runtime"],
+  "dataset_sources": ["raptorengineer/ruleshift-runtime"],
   "competition_sources": [],
   "kernel_sources": []
 }
