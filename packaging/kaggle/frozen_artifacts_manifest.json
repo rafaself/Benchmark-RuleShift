@@ -11,12 +11,12 @@
   },
   "entry_points": {
     "kbench_notebook": {
-      "path": "packaging/kaggle/ruleshift_benchmark_v1_kbench.ipynb",
+      "path": "packaging/kaggle/ruleshift_benchmark_v1.ipynb",
       "sha256": "5c238a4273f0b63a37551ef47e88a29638f6cea8fc1322f561797f7c8fcc4c78"
     },
     "kernel_metadata": {
       "path": "packaging/kaggle/kernel-metadata.json",
-      "sha256": "0de7b4a5ae6b1adf4f0edc297eea02264b6b3212ac55ea50539e60ace14593b7"
+      "sha256": "a5fe368d5b6f738a19c5c5275795e32981e97711935076f7223c6685af3fba6a"
     }
   },
   "frozen_split_manifests": {

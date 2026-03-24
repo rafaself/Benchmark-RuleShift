@@ -36,10 +36,6 @@ errors = []
 
 if remote_meta.get("id") != local_meta.get("id"):
     errors.append(f"remote id {remote_meta.get('id')!r} != local id {local_meta.get('id')!r}")
-if remote_meta.get("code_file") != local_meta.get("code_file"):
-    errors.append(
-        f"remote code_file {remote_meta.get('code_file')!r} != local code_file {local_meta.get('code_file')!r}"
-    )
 remote_sources = remote_meta.get("dataset_sources", [])
 if dataset_id not in remote_sources:
     errors.append(

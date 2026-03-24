@@ -22,7 +22,7 @@ env:
   KAGGLE_DATASET_DIR_MODE: "zip"
   DEPLOY_RUNTIME_DIR: "deploy/kaggle-runtime"
   DEPLOY_NOTEBOOK_DIR: "deploy/kaggle-notebook"
-  EXPECTED_NOTEBOOK_FILE: "ruleshift_benchmark_v1_kbench.ipynb"
+  EXPECTED_NOTEBOOK_FILE: "ruleshift_benchmark_v1.ipynb"
 
 defaults:
   run:

@@ -96,7 +96,7 @@ jobs:
 
       - name: Verify deploy/kaggle-notebook/ was produced
         run: |
-          test -f deploy/kaggle-notebook/ruleshift_benchmark_v1_kbench.ipynb \
+          test -f deploy/kaggle-notebook/ruleshift_benchmark_v1.ipynb \
             || (echo "ERROR: deploy/kaggle-notebook/ not built" && exit 1)
 
       - name: Verify deploy/kaggle-runtime/ was produced

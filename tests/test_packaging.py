@@ -20,7 +20,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 _KAGGLE_DIR = _REPO_ROOT / "packaging" / "kaggle"
 _PYPROJECT_PATH = _REPO_ROOT / "pyproject.toml"
 _CONTRACT_PATH = _REPO_ROOT / "KAGGLE_BENCHMARK_CONTRACT.md"
-_KBENCH_NOTEBOOK_PATH = _KAGGLE_DIR / "ruleshift_benchmark_v1_kbench.ipynb"
+_KBENCH_NOTEBOOK_PATH = _KAGGLE_DIR / "ruleshift_benchmark_v1.ipynb"
 _STAGING_DIR = _KAGGLE_DIR / "staging"
 _ARCHIVE_DIR = _KAGGLE_DIR / "archive"
 _STAGING_NOTEBOOK_PATH = _STAGING_DIR / "ruleshift_benchmark_v1_kaggle_staging.ipynb"
@@ -90,8 +90,8 @@ def test_official_kaggle_submission_flow_is_consistent_across_surface():
     usage_text = _USAGE_PATH.read_text(encoding="utf-8")
     card_text = _CARD_PATH.read_text(encoding="utf-8")
 
-    official_notebook_relpath = "packaging/kaggle/ruleshift_benchmark_v1_kbench.ipynb"
-    official_notebook_name = "ruleshift_benchmark_v1_kbench.ipynb"
+    official_notebook_relpath = "packaging/kaggle/ruleshift_benchmark_v1.ipynb"
+    official_notebook_name = "ruleshift_benchmark_v1.ipynb"
     official_entry_points = tuple(
         artifact["path"]
         for artifact in manifest["entry_points"].values()
@@ -106,7 +106,7 @@ def test_official_kaggle_submission_flow_is_consistent_across_surface():
     assert official_notebook_name in usage_text
     assert official_notebook_relpath in card_text
     assert official_notebook_relpath in contract_text
-    assert 'code_file = "ruleshift_benchmark_v1_kbench.ipynb"' in contract_text
+    assert 'code_file = "ruleshift_benchmark_v1.ipynb"' in contract_text
     assert "No other notebook or local runtime path is an official Kaggle leaderboard submission surface." in usage_text
 
 
@@ -130,7 +130,7 @@ def test_kaggle_directory_layout_separates_active_staging_and_archive_files():
         "README.md",
         "frozen_artifacts_manifest.json",
         "kernel-metadata.json",
-        "ruleshift_benchmark_v1_kbench.ipynb",
+        "ruleshift_benchmark_v1.ipynb",
     ]
     assert _STAGING_NOTEBOOK_PATH.is_file()
     assert _PACKAGING_NOTE_PATH.is_file()
@@ -141,7 +141,7 @@ def test_kaggle_runbook_documents_the_minimum_runtime_subset():
     usage_text = _USAGE_PATH.read_text(encoding="utf-8")
 
     required_runtime_paths = (
-        "packaging/kaggle/ruleshift_benchmark_v1_kbench.ipynb",
+        "packaging/kaggle/ruleshift_benchmark_v1.ipynb",
         "packaging/kaggle/kernel-metadata.json",
         "packaging/kaggle/frozen_artifacts_manifest.json",
         "src/",

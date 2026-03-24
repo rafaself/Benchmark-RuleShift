@@ -24,7 +24,7 @@ SRC_DIR = REPO_ROOT / "src"
 KAGGLE_DIR = REPO_ROOT / "packaging" / "kaggle"
 DEPLOY_DIR = REPO_ROOT / "deploy"
 
-NOTEBOOK_SRC = KAGGLE_DIR / "ruleshift_benchmark_v1_kbench.ipynb"
+NOTEBOOK_SRC = KAGGLE_DIR / "ruleshift_benchmark_v1.ipynb"
 KERNEL_METADATA_SRC = KAGGLE_DIR / "kernel-metadata.json"
 FROZEN_ARTIFACTS_MANIFEST_SRC = KAGGLE_DIR / "frozen_artifacts_manifest.json"
 

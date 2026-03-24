@@ -17,7 +17,7 @@ import pytest
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 _SRC_DIR = _REPO_ROOT / "src"
-_NOTEBOOK_PATH = _REPO_ROOT / "packaging" / "kaggle" / "ruleshift_benchmark_v1_kbench.ipynb"
+_NOTEBOOK_PATH = _REPO_ROOT / "packaging" / "kaggle" / "ruleshift_benchmark_v1.ipynb"
 
 # Ensure src/ is on sys.path (same as conftest.py).
 if str(_SRC_DIR) not in sys.path:
