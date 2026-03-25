@@ -192,6 +192,7 @@ def test_pyproject_exposes_local_console_entrypoints():
         "ruleshift-benchmark-reaudit": "core.cli:reaudit_entrypoint",
         "ruleshift-benchmark-integrity": "core.cli:integrity_entrypoint",
         "ruleshift-benchmark-evidence-pass": "core.cli:evidence_pass_entrypoint",
+        "ruleshift-benchmark-contract-audit": "core.cli:contract_audit_entrypoint",
     }
     assert pyproject["project"]["dependencies"] == []
     assert pyproject["project"]["optional-dependencies"]["gemini"] == [

@@ -1,0 +1,50 @@
+{
+  "audit": "p0_contract",
+  "passed": true,
+  "checks": {
+    "notebook_metadata": {
+      "passed": true,
+      "errors": []
+    },
+    "task_artifact": {
+      "passed": true,
+      "task_json": {
+        "task_id": "ruleshift_benchmark_v1",
+        "task_name": "RuleShift Benchmark v1",
+        "tasks": [
+          {
+            "name": "ruleshift_benchmark_v1_binary",
+            "description": "Cognitive flexibility benchmark: infer a hidden rule shift from sparse contradictory evidence in a sequence of charge interactions, then predict four post-shift probe outcomes.",
+            "role": "leaderboard_primary"
+          },
+          {
+            "name": "ruleshift_benchmark_v1_narrative",
+            "description": "Narrative companion for RuleShift Benchmark v1. Same episodes as Binary, natural-language prompt format. Robustness evidence only \u2014 not leaderboard-scored.",
+            "role": "companion"
+          }
+        ],
+        "chosen_task": "ruleshift_benchmark_v1_binary",
+        "splits": [
+          "dev",
+          "public_leaderboard",
+          "private_leaderboard"
+        ],
+        "episodes_per_split": 16,
+        "total_episodes": 48,
+        "probe_count": 4
+      },
+      "errors": []
+    },
+    "run_artifact": {
+      "passed": true,
+      "run_artifact_path": "/home/rafa/dev/Challenges/ch-executive-functions-1/reports/live/gemini-first-panel/binary-vs-narrative/latest/artifact.json",
+      "errors": []
+    },
+    "manifest_hashes": {
+      "passed": true,
+      "errors": []
+    }
+  },
+  "error_count": 0,
+  "errors": []
+}

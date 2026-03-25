@@ -8,6 +8,7 @@ import sys
 from typing import Any
 
 from core.audit import run_release_r15_reaudit, serialize_release_r15_reaudit_report
+from core.contract_audit import run_contract_audit
 from core.anthropic_panel import (
     DEFAULT_ANTHROPIC_MODEL,
     default_anthropic_panel_report_path,
@@ -94,6 +95,19 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_output_argument(evidence_parser)
     evidence_parser.set_defaults(func=_command_evidence_pass)
+
+    contract_audit_parser = subparsers.add_parser(
+        "contract-audit",
+        help="Run the P0 public artifact contract audit.",
+    )
+    contract_audit_parser.add_argument(
+        "--run-artifact",
+        type=Path,
+        default=None,
+        help="Path to a run artifact (artifact.json) to validate.",
+    )
+    _add_output_argument(contract_audit_parser)
+    contract_audit_parser.set_defaults(func=_command_contract_audit)
 
     gemini_panel_parser = subparsers.add_parser(
         "gemini-first-panel",
@@ -188,6 +202,10 @@ def evidence_pass_entrypoint() -> int:
     return main(["evidence-pass"])
 
 
+def contract_audit_entrypoint() -> int:
+    return main(["contract-audit"])
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args, unknown = parser.parse_known_args(argv)
@@ -256,6 +274,15 @@ def _command_evidence_pass(args: argparse.Namespace) -> int:
     payload["integrity"] = _build_integrity_payload()
     _emit_payload(payload, output_path=args.output)
     return 0
+
+
+def _command_contract_audit(args: argparse.Namespace) -> int:
+    payload = run_contract_audit(
+        repo_root=_repo_root(),
+        run_artifact_path=args.run_artifact,
+    )
+    _emit_payload(payload, output_path=args.output)
+    return 0 if payload["passed"] else 1
 
 
 def _command_gemini_first_panel(args: argparse.Namespace) -> int:
