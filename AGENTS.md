@@ -15,6 +15,7 @@ Repo-wide defaults only. Child `AGENTS.md` files may add local deltas for their 
 - Do not change benchmark semantics, validity thresholds, split composition, or task rules unless explicitly requested.
 - Update tests when behavior changes.
 - Prefer TDD when logic changes or bug fixes justify it.
+- Private split evaluation order: iterate exclusively on `dev` and `public_leaderboard`; run private evaluation only after code, prompt, and parameters are frozen. Never route private-only assets (`private_leaderboard.json`, `private_episodes.json`) into `deploy/kaggle-runtime/` or `packaging/kaggle/frozen_artifacts_manifest.json`.
 
 ## Verification
 - Start with the smallest relevant check first.

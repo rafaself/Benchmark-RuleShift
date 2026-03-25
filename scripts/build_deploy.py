@@ -51,6 +51,26 @@ def _verify_kernel_metadata() -> None:
         )
 
 
+_PRIVATE_ONLY_FILENAMES: tuple[str, ...] = (
+    "private_leaderboard.json",
+    "private_episodes.json",
+)
+
+
+def _verify_no_private_in_runtime() -> None:
+    """Fail the build if any private-only asset appears in deploy/kaggle-runtime/."""
+    violations = []
+    for name in _PRIVATE_ONLY_FILENAMES:
+        hits = list(DEPLOY_RUNTIME_DIR.rglob(name))
+        violations.extend(hits)
+    if violations:
+        sys.exit(
+            "ERROR: private-only asset(s) found in deploy/kaggle-runtime/ — "
+            "private data must not enter the public runtime package:\n"
+            + "\n".join(f"  {p.relative_to(REPO_ROOT)}" for p in violations)
+        )
+
+
 def _verify_dataset_metadata() -> None:
     meta_path = DEPLOY_RUNTIME_DIR / "dataset-metadata.json"
     if not meta_path.exists():
@@ -191,6 +211,9 @@ def main() -> None:
 
     print("\nVerifying deploy/kaggle-runtime/dataset-metadata.json...")
     _verify_dataset_metadata()
+
+    print("\nVerifying no private-only assets in deploy/kaggle-runtime/...")
+    _verify_no_private_in_runtime()
 
     print("\nDone.")
     print(f"  {DEPLOY_NOTEBOOK_DIR}")
