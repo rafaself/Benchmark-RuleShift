@@ -546,6 +546,25 @@ def verify_remote_hashes(
     return results
 
 
+def _reject_dev_rows(df: Any, label: str) -> None:
+    """Fail hard if *df* contains any rows from the dev split.
+
+    Called on both binary_df and narrative_df before any aggregation so that
+    dev results can never contaminate the official leaderboard payload.
+    Only checked when a 'split' column is present; callers that have already
+    dropped the column (the expected path) pass through silently.
+    """
+    if "split" not in df.columns:
+        return
+    dev_count = int((df["split"] == "dev").sum())
+    if dev_count > 0:
+        raise ValueError(
+            f"{label} contains {dev_count} dev row(s); "
+            "only leaderboard results may be aggregated into the official payload. "
+            "Drop the dev split before calling build_kaggle_payload."
+        )
+
+
 def _normalize_result_df(df: Any) -> Any:
     """Normalize a kbench result dataframe to use 'num_correct'/'total' columns.
 
@@ -609,6 +628,8 @@ def build_kaggle_payload(
             "binary_df must contain 'num_correct' and 'total' columns"
         )
 
+    _reject_dev_rows(binary_df, "binary_df")
+
     # Narrative is mandatory for a valid release
     if narrative_df is None:
         raise ValueError(
@@ -630,6 +651,8 @@ def build_kaggle_payload(
         raise ValueError(
             "narrative_df must contain 'num_correct' and 'total' columns"
         )
+
+    _reject_dev_rows(narrative_df, "narrative_df")
 
     # Episode count alignment check
     bin_episodes = len(binary_df)

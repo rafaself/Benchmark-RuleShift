@@ -445,9 +445,10 @@ def test_notebook_runs_both_tasks():
     assert "ruleshift_benchmark_v1_binary" in all_sources
     assert "ruleshift_benchmark_v1_narrative" in all_sources
 
-    # Both evaluate() calls must be present
+    # Binary task uses .evaluate(); Narrative is a plain function run in a manual loop.
     assert "binary_results = ruleshift_benchmark_v1_binary.evaluate(" in all_sources
-    assert "narrative_results = ruleshift_benchmark_v1_narrative.evaluate(" in all_sources
+    assert "def ruleshift_benchmark_v1_narrative(" in all_sources
+    assert "narrative_results_df = pd.DataFrame" in all_sources
 
 
 # ---------------------------------------------------------------------------
@@ -475,12 +476,14 @@ def test_notebook_uses_canonical_builder_in_real_emitted_artifact_path():
         if cell.get("cell_type") != "code":
             continue
         source = "".join(cell["source"]) if isinstance(cell["source"], list) else cell["source"]
-        if "build_kaggle_payload" in source:
+        # The canonical emission cell both calls and validates the payload;
+        # match on validate_kaggle_payload to avoid prose mentions in other cells.
+        if "validate_kaggle_payload" in source:
             canonical_source = source
             break
 
     assert canonical_source is not None, (
-        "No cell containing build_kaggle_payload found in the official notebook"
+        "No cell containing validate_kaggle_payload found in the official notebook"
     )
 
     # Must call the canonical builder and the validator
@@ -499,9 +502,9 @@ def test_notebook_uses_canonical_builder_in_real_emitted_artifact_path():
         "not directly from 'core.kaggle'"
     )
 
-    # Must hard-fail when narrative_results is missing
-    assert "narrative_results is None" in canonical_source, (
-        "Canonical payload cell must fail hard when narrative_results is None; "
+    # Must hard-fail when narrative_results_df is missing
+    assert "narrative_results_df is None" in canonical_source, (
+        "Canonical payload cell must fail hard when narrative_results_df is None; "
         "Narrative is mandatory for a valid release"
     )
 
@@ -553,3 +556,102 @@ def test_emitted_public_result_includes_both_results_and_comparison():
     assert comp["episode_count_aligned"] is True
     assert comp["binary_total_episodes"] == n
     assert comp["narrative_total_episodes"] == n
+
+
+# ---------------------------------------------------------------------------
+# build_kaggle_payload — dev-row rejection guard
+# ---------------------------------------------------------------------------
+
+def test_build_kaggle_payload_rejects_binary_df_with_dev_rows():
+    """binary_df whose split column contains only dev rows must be rejected."""
+    bin_df = pd.DataFrame([
+        {"num_correct": 3, "total": 4, "split": "dev"},
+        {"num_correct": 4, "total": 4, "split": "dev"},
+    ])
+    nar_df = _make_narrative_df(n=2)
+    with pytest.raises(ValueError, match="dev row"):
+        build_kaggle_payload(bin_df, nar_df)
+
+
+def test_build_kaggle_payload_rejects_narrative_df_with_dev_rows():
+    """narrative_df whose split column contains only dev rows must be rejected."""
+    bin_df = _make_binary_df(n=2)
+    nar_df = pd.DataFrame([
+        {"num_correct": 2, "total": 4, "split": "dev"},
+        {"num_correct": 3, "total": 4, "split": "dev"},
+    ])
+    with pytest.raises(ValueError, match="dev row"):
+        build_kaggle_payload(bin_df, nar_df)
+
+
+def test_build_kaggle_payload_rejects_mixed_binary_df():
+    """binary_df mixing leaderboard and dev rows must be rejected."""
+    bin_df = pd.DataFrame([
+        {"num_correct": 3, "total": 4, "split": "public_leaderboard"},
+        {"num_correct": 2, "total": 4, "split": "dev"},
+        {"num_correct": 4, "total": 4, "split": "public_leaderboard"},
+    ])
+    nar_df = _make_narrative_df(n=3)
+    with pytest.raises(ValueError, match="dev row"):
+        build_kaggle_payload(bin_df, nar_df)
+
+
+def test_build_kaggle_payload_rejects_mixed_narrative_df():
+    """narrative_df mixing leaderboard and dev rows must be rejected."""
+    bin_df = _make_binary_df(n=3)
+    nar_df = pd.DataFrame([
+        {"num_correct": 2, "total": 4, "split": "public_leaderboard"},
+        {"num_correct": 1, "total": 4, "split": "dev"},
+        {"num_correct": 3, "total": 4, "split": "public_leaderboard"},
+    ])
+    with pytest.raises(ValueError, match="dev row"):
+        build_kaggle_payload(bin_df, nar_df)
+
+
+def test_build_kaggle_payload_accepts_leaderboard_split_column():
+    """DataFrames with a split column but no dev rows must be accepted."""
+    bin_df = pd.DataFrame([
+        {"num_correct": 3, "total": 4, "split": "public_leaderboard"},
+        {"num_correct": 4, "total": 4, "split": "public_leaderboard"},
+        {"num_correct": 2, "total": 4, "split": "private_leaderboard"},
+        {"num_correct": 4, "total": 4, "split": "private_leaderboard"},
+    ])
+    nar_df = pd.DataFrame([
+        {"num_correct": 2, "total": 4, "split": "public_leaderboard"},
+        {"num_correct": 3, "total": 4, "split": "public_leaderboard"},
+        {"num_correct": 1, "total": 4, "split": "private_leaderboard"},
+        {"num_correct": 3, "total": 4, "split": "private_leaderboard"},
+    ])
+    payload = build_kaggle_payload(bin_df, nar_df)  # must not raise
+    assert payload["primary_result"]["total_episodes"] == 4
+
+
+def test_build_kaggle_payload_passes_without_split_column():
+    """DataFrames with no split column pass the dev guard silently (expected notebook path)."""
+    bin_df = _make_binary_df(n=4)
+    nar_df = _make_narrative_df(n=4)
+    assert "split" not in bin_df.columns
+    assert "split" not in nar_df.columns
+    payload = build_kaggle_payload(bin_df, nar_df)  # must not raise
+    assert payload["primary_result"]["total_episodes"] == 4
+
+
+def test_build_kaggle_payload_dev_rejection_names_dataframe_label():
+    """Error message must identify which DataFrame (binary_df / narrative_df) is contaminated."""
+    bin_df_with_dev = pd.DataFrame([{"num_correct": 3, "total": 4, "split": "dev"}])
+    nar_df = _make_narrative_df(n=1)
+    with pytest.raises(ValueError, match="binary_df"):
+        build_kaggle_payload(bin_df_with_dev, nar_df)
+
+    bin_df = _make_binary_df(n=1)
+    nar_df_with_dev = pd.DataFrame([{"num_correct": 2, "total": 4, "split": "dev"}])
+    with pytest.raises(ValueError, match="narrative_df"):
+        build_kaggle_payload(bin_df, nar_df_with_dev)
+
+
+def test_build_kaggle_payload_dev_rejection_reports_count():
+    """Error message must state how many dev rows were found."""
+    bin_df = pd.DataFrame([{"num_correct": 3, "total": 4, "split": "dev"}] * 3)
+    nar_df = _make_narrative_df(n=3)
+    with pytest.raises(ValueError, match="3 dev row"):
+        build_kaggle_payload(bin_df, nar_df)
