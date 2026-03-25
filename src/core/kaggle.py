@@ -315,13 +315,14 @@ def validate_kaggle_payload(payload: dict[str, object]) -> None:
     """Validates the canonical Kaggle benchmark payload structure.
 
     Fails hard if the payload is malformed, missing required fields, has zero
-    evaluated episodes, or matches the old bad kbench conversations/results/
-    numericResult shape that only carried a confidenceInterval.
+    evaluated episodes, is missing Narrative results, or matches the old bad
+    kbench conversations/results/numericResult shape.
 
     Raises:
         TypeError: If payload is not a dict.
         ValueError: If required fields are absent, total_episodes is 0,
-            or the payload has the old kbench shape.
+            narrative_result or comparison is missing/None/malformed,
+            episode_count_aligned is not True, or the payload has the old kbench shape.
     """
     if not isinstance(payload, dict):
         raise TypeError("payload must be a dict")
@@ -371,9 +372,75 @@ def validate_kaggle_payload(payload: dict[str, object]) -> None:
             f"confidence_interval is missing required fields: {sorted(missing_ci)}"
         )
 
-    for placeholder in ("narrative_result", "comparison", "slices"):
-        if placeholder not in payload:
-            raise ValueError(f"payload must contain '{placeholder}' placeholder")
+    # Validate narrative_result — required, not a placeholder
+    if "narrative_result" not in payload:
+        raise ValueError("payload must contain 'narrative_result'")
+    narrative = payload["narrative_result"]
+    if narrative is None:
+        raise ValueError(
+            "narrative_result is None; Narrative evaluation is mandatory for a valid release"
+        )
+    if not isinstance(narrative, dict):
+        raise ValueError("narrative_result must be a dict")
+    _REQUIRED_NR: frozenset[str] = frozenset(
+        {"score", "numerator", "denominator", "total_episodes", "confidence_interval"}
+    )
+    missing_nr = _REQUIRED_NR - set(narrative.keys())
+    if missing_nr:
+        raise ValueError(
+            f"narrative_result is missing required fields: {sorted(missing_nr)}"
+        )
+    if narrative["total_episodes"] == 0:
+        raise ValueError(
+            "narrative_result.total_episodes is 0; "
+            "Narrative evaluation output is missing or empty"
+        )
+    if narrative["denominator"] == 0:
+        raise ValueError(
+            "narrative_result.denominator is 0; Narrative evaluation output is malformed"
+        )
+    nar_ci = narrative["confidence_interval"]
+    if not isinstance(nar_ci, dict):
+        raise ValueError("narrative_result.confidence_interval must be a dict")
+    missing_nar_ci = _REQUIRED_CI - set(nar_ci.keys())
+    if missing_nar_ci:
+        raise ValueError(
+            f"narrative_result.confidence_interval is missing required fields: {sorted(missing_nar_ci)}"
+        )
+
+    # Validate comparison — required, not a placeholder
+    if "comparison" not in payload:
+        raise ValueError("payload must contain 'comparison'")
+    comparison = payload["comparison"]
+    if comparison is None:
+        raise ValueError(
+            "comparison is None; Binary vs Narrative comparison is mandatory for a valid release"
+        )
+    if not isinstance(comparison, dict):
+        raise ValueError("comparison must be a dict")
+    _REQUIRED_COMP: frozenset[str] = frozenset(
+        {
+            "binary_score",
+            "narrative_score",
+            "delta",
+            "episode_count_aligned",
+            "binary_total_episodes",
+            "narrative_total_episodes",
+        }
+    )
+    missing_comp = _REQUIRED_COMP - set(comparison.keys())
+    if missing_comp:
+        raise ValueError(
+            f"comparison is missing required fields: {sorted(missing_comp)}"
+        )
+    if comparison["episode_count_aligned"] is not True:
+        raise ValueError(
+            "comparison.episode_count_aligned is not True; "
+            "Binary and Narrative must evaluate the same frozen episodes"
+        )
+
+    if "slices" not in payload:
+        raise ValueError("payload must contain 'slices'")
 
     if "metadata" not in payload:
         raise ValueError("payload must contain 'metadata'")
@@ -381,21 +448,27 @@ def validate_kaggle_payload(payload: dict[str, object]) -> None:
 
 def build_kaggle_payload(
     binary_df: Any,
-    narrative_df: Any | None = None,
+    narrative_df: Any,
 ) -> dict[str, object]:
     """Constructs the canonical final Kaggle payload from task results.
 
+    Both Binary and Narrative results are required for a valid release.
+    Fails hard if narrative_df is None, empty, mismatched in episode count,
+    or mismatched in denominator basis.
+
     Args:
         binary_df: pandas DataFrame containing 'num_correct' and 'total' columns.
-        narrative_df: Optional pandas DataFrame for narrative results (MR-2 placeholder).
+        narrative_df: pandas DataFrame containing 'num_correct' and 'total' columns.
+            Must align with binary_df on episode count and total denominator.
 
     Returns:
-        A dictionary representing the JSON payload to be emitted.
-    
+        A dictionary representing the JSON payload to be emitted, including
+        primary_result, narrative_result, comparison, slices, and metadata.
+
     Raises:
-        ValueError: If binary_df is empty or missing required columns.
+        ValueError: If binary_df or narrative_df is missing, empty, or misaligned.
         ImportError: If pandas is not available.
-        TypeError: If binary_df is not a pandas DataFrame.
+        TypeError: If binary_df or narrative_df is not a pandas DataFrame.
     """
     try:
         import pandas as pd
@@ -413,26 +486,59 @@ def build_kaggle_payload(
             "binary_df must contain 'num_correct' and 'total' columns"
         )
 
-    # Compute aggregate metrics
-    bin_num = int(binary_df["num_correct"].sum())
-    bin_den = int(binary_df["total"].sum())
-    bin_episodes = len(binary_df)
+    # Narrative is mandatory for a valid release
+    if narrative_df is None:
+        raise ValueError(
+            "narrative_df is required for a valid release; "
+            "Narrative evaluation is missing or was skipped"
+        )
 
-    # Compute bootstrap CI
+    if not isinstance(narrative_df, pd.DataFrame):
+        raise TypeError("narrative_df must be a pandas DataFrame")
+
+    if narrative_df.empty:
+        raise ValueError(
+            "narrative_df cannot be empty; Narrative evaluation results are required"
+        )
+
+    if "num_correct" not in narrative_df.columns or "total" not in narrative_df.columns:
+        raise ValueError(
+            "narrative_df must contain 'num_correct' and 'total' columns"
+        )
+
+    # Episode count alignment check
+    bin_episodes = len(binary_df)
+    nar_episodes = len(narrative_df)
+    if bin_episodes != nar_episodes:
+        raise ValueError(
+            f"Binary and Narrative episode counts do not match: "
+            f"binary={bin_episodes}, narrative={nar_episodes}. "
+            "Both must evaluate the same frozen episodes."
+        )
+
+    # Denominator alignment check (same probe-count basis)
+    bin_den = int(binary_df["total"].sum())
+    nar_den = int(narrative_df["total"].sum())
+    if bin_den != nar_den:
+        raise ValueError(
+            f"Binary and Narrative denominators do not match: "
+            f"binary={bin_den}, narrative={nar_den}. "
+            "Both must use the same probe count basis."
+        )
+
+    # Binary aggregate metrics
+    bin_num = int(binary_df["num_correct"].sum())
     bin_ci = compute_bootstrap_confidence_interval(
         binary_df["num_correct"].tolist(),
         binary_df["total"].tolist(),
     )
 
-    # Narrative placeholder (MR-1: Explicitly None as per requirement)
-    # "Binary vs Narrative comparison field or summary hook... leave a stable placeholder"
-    narrative_result = None
-
-    # Comparison placeholder (MR-2)
-    comparison = None
-
-    # Slices placeholder
-    slices: dict[str, object] = {}
+    # Narrative aggregate metrics
+    nar_num = int(narrative_df["num_correct"].sum())
+    nar_ci = compute_bootstrap_confidence_interval(
+        narrative_df["num_correct"].tolist(),
+        narrative_df["total"].tolist(),
+    )
 
     return {
         "primary_result": {
@@ -448,9 +554,30 @@ def build_kaggle_payload(
                 "margin": bin_ci.margin,
             },
         },
-        "narrative_result": narrative_result,
-        "comparison": comparison,
-        "slices": slices,
+        "narrative_result": {
+            "score": nar_ci.mean,
+            "numerator": nar_num,
+            "denominator": nar_den,
+            "total_episodes": nar_episodes,
+            "confidence_interval": {
+                "mean": nar_ci.mean,
+                "lower": nar_ci.lower,
+                "upper": nar_ci.upper,
+                "level": nar_ci.level,
+                "margin": nar_ci.margin,
+            },
+        },
+        "comparison": {
+            "binary_score": bin_ci.mean,
+            "narrative_score": nar_ci.mean,
+            "delta": bin_ci.mean - nar_ci.mean,
+            "episode_count_aligned": True,
+            "binary_total_episodes": bin_episodes,
+            "narrative_total_episodes": nar_episodes,
+            "binary_denominator": bin_den,
+            "narrative_denominator": nar_den,
+        },
+        "slices": {},
         "metadata": {
             "benchmark_version": MANIFEST_VERSION,
         },
