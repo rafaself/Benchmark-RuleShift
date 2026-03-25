@@ -49,6 +49,15 @@ def _read_notebook_sources() -> list[str]:
     return ["".join(cell.get("source", ())) for cell in notebook["cells"]]
 
 
+def _cell_source(cell_id: str) -> str:
+    """Return the source of the cell with the given id."""
+    notebook = json.loads(_NOTEBOOK_PATH.read_text(encoding="utf-8"))
+    for cell in notebook["cells"]:
+        if cell.get("id") == cell_id:
+            return "".join(cell.get("source", ()))
+    raise KeyError(f"Cell id {cell_id!r} not found in notebook")
+
+
 def _execute_notebook_cells() -> dict:
     """Execute every code cell in notebook order (Jupyter magic lines skipped).
 
@@ -173,8 +182,7 @@ class TestNotebookBootstrap:
 
     def test_repo_root_resolves_from_cwd(self):
         """The notebook's _find_repo_root must find this repo when cwd is the repo root."""
-        sources = _read_notebook_sources()
-        cell2 = sources[2]
+        cell2 = _cell_source("cell-2")
         ns: dict = {"Path": Path, "sys": sys}
         exec(compile(cell2, "<cell-2>", "exec"), ns)  # noqa: S102
         repo_root = ns["REPO_ROOT"]
