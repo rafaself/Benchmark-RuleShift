@@ -134,7 +134,7 @@ def build_kaggle_runtime() -> None:
         print(f"  src/{py.name}")
 
     # src/core/
-    shutil.copytree(SRC_DIR / "core", runtime_src / "core")
+    shutil.copytree(SRC_DIR / "core", runtime_src / "core", ignore=shutil.ignore_patterns("__pycache__"))
     print(f"  src/core/")
 
     # src/tasks/
@@ -144,6 +144,7 @@ def build_kaggle_runtime() -> None:
     shutil.copytree(
         SRC_DIR / "tasks" / "ruleshift_benchmark",
         tasks_dst / "ruleshift_benchmark",
+        ignore=shutil.ignore_patterns("__pycache__"),
     )
     print(f"  src/tasks/ruleshift_benchmark/")
 

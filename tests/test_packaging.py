@@ -365,6 +365,32 @@ _PRIVATE_ONLY_FILENAMES = (
     "private_episodes.json",
 )
 
+_BUILD_DEPLOY_DIR = _REPO_ROOT / "scripts"
+
+
+def test_build_deploy_guardrail_rejects_private_asset_in_runtime(tmp_path):
+    """Verify _verify_no_private_in_runtime() exits when a private-only file is present."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("build_deploy", _BUILD_DEPLOY_DIR / "build_deploy.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    fake_runtime = tmp_path / "kaggle-runtime"
+    fake_runtime.mkdir()
+    (fake_runtime / "private_episodes.json").write_text("{}", encoding="utf-8")
+
+    orig_runtime = mod.DEPLOY_RUNTIME_DIR
+    orig_repo = mod.REPO_ROOT
+    mod.DEPLOY_RUNTIME_DIR = fake_runtime
+    mod.REPO_ROOT = tmp_path
+    try:
+        import pytest
+        with pytest.raises(SystemExit):
+            mod._verify_no_private_in_runtime()
+    finally:
+        mod.DEPLOY_RUNTIME_DIR = orig_runtime
+        mod.REPO_ROOT = orig_repo
+
 
 def test_kaggle_runtime_deploy_does_not_contain_private_leaderboard():
     """Guardrail: private_leaderboard.json must never appear in the runtime package."""
