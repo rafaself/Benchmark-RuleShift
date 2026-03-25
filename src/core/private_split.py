@@ -106,6 +106,13 @@ def _parse_private_episodes(payload: object) -> tuple[FrozenSplitEpisode, ...]:
     if not isinstance(seed_bank_version, str) or not seed_bank_version:
         raise ValueError("seed_bank_version must be a non-empty string")
 
+    retired = payload.get("retired_seed_bank_versions", [])
+    if isinstance(retired, list) and seed_bank_version in retired:
+        raise ValueError(
+            f"seed_bank_version {seed_bank_version!r} is listed as retired; "
+            "this private_episodes.json has not been rotated to the active version"
+        )
+
     episodes_raw = payload.get("episodes")
     if not isinstance(episodes_raw, list) or not episodes_raw:
         raise ValueError("episodes must be a non-empty list")

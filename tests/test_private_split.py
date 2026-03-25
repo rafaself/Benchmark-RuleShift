@@ -162,3 +162,61 @@ def test_load_private_split_empty_episodes_raises():
         bad_path.write_text(json.dumps(data), encoding="utf-8")
         with pytest.raises(ValueError, match="episodes"):
             load_private_split(Path(tmpdir))
+
+
+# ---------------------------------------------------------------------------
+# Release 3: split rotation
+# ---------------------------------------------------------------------------
+
+def test_active_private_split_is_r14_private_3():
+    """Active private split must be R14-private-3 (rotated from R14-private-2)."""
+    data = json.loads(_PRIVATE_EPISODES_PATH.read_text(encoding="utf-8"))
+    assert data["seed_bank_version"] == "R14-private-3"
+
+
+def test_active_private_split_seeds_are_9108_to_9123():
+    """Active private split must use the new seed range 9108–9123."""
+    records = load_private_split(_PRIVATE_DATASET_ROOT)
+    seeds = tuple(r.seed for r in records)
+    assert seeds == tuple(range(9108, 9124))
+
+
+def test_retired_split_r14_private_2_not_in_active_seeds():
+    """Old R14-private-2 seeds 9060–9075 must not appear in the active split."""
+    records = load_private_split(_PRIVATE_DATASET_ROOT)
+    active_seeds = {r.seed for r in records}
+    old_seeds = set(range(9060, 9076))  # R14-private-2 seeds
+    assert active_seeds.isdisjoint(old_seeds), (
+        f"Active split must not contain retired seeds; overlap: {active_seeds & old_seeds}"
+    )
+
+
+def test_private_episodes_retired_versions_field_lists_r14_private_2():
+    """private_episodes.json must carry retired_seed_bank_versions to mark R14-private-2."""
+    data = json.loads(_PRIVATE_EPISODES_PATH.read_text(encoding="utf-8"))
+    assert "retired_seed_bank_versions" in data
+    assert "R14-private-2" in data["retired_seed_bank_versions"]
+
+
+def test_load_private_split_rejects_file_with_retired_version_as_active():
+    """Loader must reject a private_episodes.json whose active version is in its retired list."""
+    data = json.loads(_PRIVATE_EPISODES_PATH.read_text(encoding="utf-8"))
+    # Simulate a stale file where the active version was not rotated
+    data["seed_bank_version"] = "R14-private-2"
+    data["retired_seed_bank_versions"] = ["R14-private-2"]
+    with tempfile.TemporaryDirectory() as tmpdir:
+        bad_path = Path(tmpdir) / PRIVATE_EPISODES_FILENAME
+        bad_path.write_text(json.dumps(data), encoding="utf-8")
+        with pytest.raises(ValueError, match="retired"):
+            load_private_split(Path(tmpdir))
+
+
+def test_private_split_no_overlap_with_dev_or_public():
+    """New private seeds must not overlap with dev or public seeds."""
+    from splits import load_split_manifest
+    dev_seeds = set(load_split_manifest("dev").seeds)
+    pub_seeds = set(load_split_manifest("public_leaderboard").seeds)
+    records = load_private_split(_PRIVATE_DATASET_ROOT)
+    priv_seeds = {r.seed for r in records}
+    assert priv_seeds.isdisjoint(dev_seeds), "Private seeds overlap with dev"
+    assert priv_seeds.isdisjoint(pub_seeds), "Private seeds overlap with public"
