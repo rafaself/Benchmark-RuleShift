@@ -14,8 +14,8 @@ This package is a Kaggle packaging layer over the implemented local benchmark. T
 
 ## Task Paths
 
-- **Binary** is the only leaderboard-primary path. The Binary task is the scored evaluation path for the v1 claim.
-- **Narrative** is the required same-episode robustness companion. It uses the same frozen episodes and probe targets as Binary, and only the final four labels are scored.
+- **Binary** (`ruleshift_benchmark_v1_binary`) is the only leaderboard-primary path. The Binary task is the scored evaluation path for the v1 claim.
+- **Narrative** is supplementary same-episode robustness evidence only. It uses the same frozen episodes and probe targets as Binary, and only the final four labels are scored. Narrative results do not contribute to the leaderboard score.
 - Electrostatics is only the controlled substrate. The benchmark is not intended to measure physics skill as the primary target.
 
 Each episode contains:
@@ -40,9 +40,11 @@ Narrative is reviewed only as same-episode robustness evidence and does not chan
 
 Frozen split names are exactly:
 
-- `dev`
-- `public_leaderboard`
-- `private_leaderboard`
+- `dev` — local validation only; never included in the official leaderboard evaluation
+- `public_leaderboard` — included in the official leaderboard evaluation
+- `private_leaderboard` — included in the official leaderboard evaluation (attached separately as a private dataset)
+
+The official leaderboard evaluation (`ruleshift_benchmark_v1_binary`) runs only over `public_leaderboard` and `private_leaderboard`.
 
 ## Baselines
 
@@ -153,7 +155,7 @@ M2 confirms that packaged frozen artifacts load, manifest validation passes, and
 
 - The package does not bundle model predictions or Kaggle submission outputs.
 - Current readiness evidence is Gemini-only; the package does not require Anthropic or OpenAI evidence for v1 readiness.
-- Narrative is not leaderboard-primary, and only the final four labels are scored.
+- Narrative is supplementary evidence only and does not contribute to the leaderboard score.
 - No claim should depend on explanation quality or formatting compliance.
 - No claim here upgrades the local evidence beyond the bundled R13, R15, and committed Gemini evidence surfaces.
 - Local validation remains authoritative if any staging notebook output diverges from the frozen evidence.

@@ -37,10 +37,10 @@ Current implementation notes:
 
 Task and metric boundaries:
 
-- Binary is the only leaderboard-primary path.
-- Narrative is the required same-episode robustness companion. It uses the same frozen episodes and probe targets as Binary, and only the final four labels are scored.
+- Binary (`ruleshift_benchmark_v1_binary`) is the only leaderboard-primary path.
+- Narrative is supplementary same-episode robustness evidence only. It uses the same frozen episodes and probe targets as Binary, and only the final four labels are scored. Narrative results do not contribute to the leaderboard score.
 - Post-shift Probe Accuracy is the sole headline metric.
-- Split names are exactly `dev`, `public_leaderboard`, and `private_leaderboard`.
+- Split names are exactly `dev`, `public_leaderboard`, and `private_leaderboard`. `dev` is local-only and is never included in the official leaderboard evaluation.
 
 Current v1 readiness status:
 
