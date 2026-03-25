@@ -606,7 +606,11 @@ class TestNotebookEndToEnd:
         last_code = next(
             c for c in reversed(cells) if c.get("cell_type") == "code"
         )
-        source = "".join(last_code.get("source", ())).strip()
-        assert source == "%choose ruleshift_benchmark_v1_binary", (
-            f"Last code cell must be '%choose ruleshift_benchmark_v1_binary', got: {source!r}"
+        source = "".join(last_code.get("source", ()))
+        magic_lines = [
+            line.strip() for line in source.splitlines()
+            if line.strip().startswith("%")
+        ]
+        assert magic_lines == ["%choose ruleshift_benchmark_v1_binary"], (
+            f"Last code cell must contain exactly '%choose ruleshift_benchmark_v1_binary', got magic lines: {magic_lines!r}"
         )
