@@ -18,7 +18,8 @@ The official Kaggle notebook runs with this minimum packaged subset:
 - `src/` runtime modules, including `src/kaggle.py` and the imported `src/core/` and `src/tasks/ruleshift_benchmark/` modules
 - `src/frozen_splits/dev.json`
 - `src/frozen_splits/public_leaderboard.json`
-- `src/frozen_splits/private_leaderboard.json`
+
+Private evaluation data is loaded from a separate private-only dataset (`private_episodes.json`) and is not part of the public runtime package. `src/frozen_splits/private_leaderboard.json` is not shipped in the runtime package.
 
 The active runtime contract does not require `BENCHMARK_CARD.md`, this runbook, staging notebooks, archive files, `reports/`, or `tests/fixtures/`.
 

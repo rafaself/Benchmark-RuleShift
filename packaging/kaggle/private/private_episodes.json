@@ -1,0 +1,2505 @@
+{
+  "partition": "private_leaderboard",
+  "episode_split": "private",
+  "manifest_version": "R14",
+  "seed_bank_version": "R14-private-2",
+  "episode_count": 16,
+  "episodes": [
+    {
+      "seed": 9060,
+      "manifest_version": "R14",
+      "seed_bank_version": "R14-private-2",
+      "episode": {
+        "episode_id": "ife-r12-9060",
+        "split": "private",
+        "difficulty": "medium",
+        "template_id": "T2",
+        "rule_A": "R_inv",
+        "rule_B": "R_std",
+        "transition": "R_inv_to_R_std",
+        "pre_count": 3,
+        "post_labeled_count": 2,
+        "shift_after_position": 3,
+        "contradiction_count_post": 2,
+        "items": [
+          {
+            "position": 1,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": -1,
+            "q2": 3,
+            "label": "repel"
+          },
+          {
+            "position": 2,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": 1,
+            "q2": 2,
+            "label": "attract"
+          },
+          {
+            "position": 3,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": 2,
+            "q2": 2,
+            "label": "attract"
+          },
+          {
+            "position": 4,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": -2,
+            "q2": 1,
+            "label": "attract"
+          },
+          {
+            "position": 5,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": -3,
+            "q2": -2,
+            "label": "repel"
+          },
+          {
+            "position": 6,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -2,
+            "q2": -1,
+            "label": null
+          },
+          {
+            "position": 7,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -3,
+            "q2": 1,
+            "label": null
+          },
+          {
+            "position": 8,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 1,
+            "q2": -2,
+            "label": null
+          },
+          {
+            "position": 9,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 3,
+            "q2": 3,
+            "label": null
+          }
+        ],
+        "probe_targets": [
+          "repel",
+          "attract",
+          "repel",
+          "attract"
+        ],
+        "probe_label_counts": [
+          [
+            "attract",
+            2
+          ],
+          [
+            "repel",
+            2
+          ]
+        ],
+        "probe_sign_pattern_counts": [
+          [
+            "++",
+            1
+          ],
+          [
+            "--",
+            1
+          ],
+          [
+            "+-",
+            1
+          ],
+          [
+            "-+",
+            1
+          ]
+        ],
+        "probe_metadata": [
+          {
+            "position": 6,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          },
+          {
+            "position": 7,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 8,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 9,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          }
+        ],
+        "difficulty_version": "R12",
+        "spec_version": "v1",
+        "generator_version": "R12",
+        "template_set_version": "v1"
+      }
+    },
+    {
+      "seed": 9061,
+      "manifest_version": "R14",
+      "seed_bank_version": "R14-private-2",
+      "episode": {
+        "episode_id": "ife-r12-9061",
+        "split": "private",
+        "difficulty": "medium",
+        "template_id": "T2",
+        "rule_A": "R_std",
+        "rule_B": "R_inv",
+        "transition": "R_std_to_R_inv",
+        "pre_count": 3,
+        "post_labeled_count": 2,
+        "shift_after_position": 3,
+        "contradiction_count_post": 2,
+        "items": [
+          {
+            "position": 1,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": 3,
+            "q2": -1,
+            "label": "attract"
+          },
+          {
+            "position": 2,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": 3,
+            "q2": 1,
+            "label": "repel"
+          },
+          {
+            "position": 3,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": -2,
+            "q2": 3,
+            "label": "attract"
+          },
+          {
+            "position": 4,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": 3,
+            "q2": -2,
+            "label": "repel"
+          },
+          {
+            "position": 5,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": 1,
+            "q2": 1,
+            "label": "attract"
+          },
+          {
+            "position": 6,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -1,
+            "q2": 1,
+            "label": null
+          },
+          {
+            "position": 7,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 2,
+            "q2": 1,
+            "label": null
+          },
+          {
+            "position": 8,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 2,
+            "q2": -1,
+            "label": null
+          },
+          {
+            "position": 9,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -1,
+            "q2": -1,
+            "label": null
+          }
+        ],
+        "probe_targets": [
+          "attract",
+          "attract",
+          "repel",
+          "repel"
+        ],
+        "probe_label_counts": [
+          [
+            "attract",
+            2
+          ],
+          [
+            "repel",
+            2
+          ]
+        ],
+        "probe_sign_pattern_counts": [
+          [
+            "++",
+            1
+          ],
+          [
+            "--",
+            1
+          ],
+          [
+            "+-",
+            1
+          ],
+          [
+            "-+",
+            1
+          ]
+        ],
+        "probe_metadata": [
+          {
+            "position": 6,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          },
+          {
+            "position": 7,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 8,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          },
+          {
+            "position": 9,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          }
+        ],
+        "difficulty_version": "R12",
+        "spec_version": "v1",
+        "generator_version": "R12",
+        "template_set_version": "v1"
+      }
+    },
+    {
+      "seed": 9062,
+      "manifest_version": "R14",
+      "seed_bank_version": "R14-private-2",
+      "episode": {
+        "episode_id": "ife-r12-9062",
+        "split": "private",
+        "difficulty": "medium",
+        "template_id": "T2",
+        "rule_A": "R_inv",
+        "rule_B": "R_std",
+        "transition": "R_inv_to_R_std",
+        "pre_count": 3,
+        "post_labeled_count": 2,
+        "shift_after_position": 3,
+        "contradiction_count_post": 2,
+        "items": [
+          {
+            "position": 1,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": 1,
+            "q2": 1,
+            "label": "attract"
+          },
+          {
+            "position": 2,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": 2,
+            "q2": 2,
+            "label": "attract"
+          },
+          {
+            "position": 3,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": 3,
+            "q2": -2,
+            "label": "repel"
+          },
+          {
+            "position": 4,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": -3,
+            "q2": -2,
+            "label": "repel"
+          },
+          {
+            "position": 5,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": -3,
+            "q2": 2,
+            "label": "attract"
+          },
+          {
+            "position": 6,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -1,
+            "q2": 3,
+            "label": null
+          },
+          {
+            "position": 7,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 2,
+            "q2": -3,
+            "label": null
+          },
+          {
+            "position": 8,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -1,
+            "q2": -3,
+            "label": null
+          },
+          {
+            "position": 9,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 2,
+            "q2": 1,
+            "label": null
+          }
+        ],
+        "probe_targets": [
+          "attract",
+          "repel",
+          "repel",
+          "attract"
+        ],
+        "probe_label_counts": [
+          [
+            "attract",
+            2
+          ],
+          [
+            "repel",
+            2
+          ]
+        ],
+        "probe_sign_pattern_counts": [
+          [
+            "++",
+            1
+          ],
+          [
+            "--",
+            1
+          ],
+          [
+            "+-",
+            1
+          ],
+          [
+            "-+",
+            1
+          ]
+        ],
+        "probe_metadata": [
+          {
+            "position": 6,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 7,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 8,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          },
+          {
+            "position": 9,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          }
+        ],
+        "difficulty_version": "R12",
+        "spec_version": "v1",
+        "generator_version": "R12",
+        "template_set_version": "v1"
+      }
+    },
+    {
+      "seed": 9063,
+      "manifest_version": "R14",
+      "seed_bank_version": "R14-private-2",
+      "episode": {
+        "episode_id": "ife-r12-9063",
+        "split": "private",
+        "difficulty": "easy",
+        "template_id": "T1",
+        "rule_A": "R_inv",
+        "rule_B": "R_std",
+        "transition": "R_inv_to_R_std",
+        "pre_count": 2,
+        "post_labeled_count": 3,
+        "shift_after_position": 2,
+        "contradiction_count_post": 3,
+        "items": [
+          {
+            "position": 1,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": 3,
+            "q2": 1,
+            "label": "attract"
+          },
+          {
+            "position": 2,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": -3,
+            "q2": -1,
+            "label": "attract"
+          },
+          {
+            "position": 3,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": -1,
+            "q2": 1,
+            "label": "attract"
+          },
+          {
+            "position": 4,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": -2,
+            "q2": 3,
+            "label": "attract"
+          },
+          {
+            "position": 5,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": -1,
+            "q2": -3,
+            "label": "repel"
+          },
+          {
+            "position": 6,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 3,
+            "q2": 2,
+            "label": null
+          },
+          {
+            "position": 7,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -3,
+            "q2": 1,
+            "label": null
+          },
+          {
+            "position": 8,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 3,
+            "q2": -3,
+            "label": null
+          },
+          {
+            "position": 9,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -2,
+            "q2": -3,
+            "label": null
+          }
+        ],
+        "probe_targets": [
+          "attract",
+          "attract",
+          "repel",
+          "repel"
+        ],
+        "probe_label_counts": [
+          [
+            "attract",
+            2
+          ],
+          [
+            "repel",
+            2
+          ]
+        ],
+        "probe_sign_pattern_counts": [
+          [
+            "++",
+            1
+          ],
+          [
+            "--",
+            1
+          ],
+          [
+            "+-",
+            1
+          ],
+          [
+            "-+",
+            1
+          ]
+        ],
+        "probe_metadata": [
+          {
+            "position": 6,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          },
+          {
+            "position": 7,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 8,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 9,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          }
+        ],
+        "difficulty_version": "R12",
+        "spec_version": "v1",
+        "generator_version": "R12",
+        "template_set_version": "v1"
+      }
+    },
+    {
+      "seed": 9064,
+      "manifest_version": "R14",
+      "seed_bank_version": "R14-private-2",
+      "episode": {
+        "episode_id": "ife-r12-9064",
+        "split": "private",
+        "difficulty": "easy",
+        "template_id": "T1",
+        "rule_A": "R_inv",
+        "rule_B": "R_std",
+        "transition": "R_inv_to_R_std",
+        "pre_count": 2,
+        "post_labeled_count": 3,
+        "shift_after_position": 2,
+        "contradiction_count_post": 3,
+        "items": [
+          {
+            "position": 1,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": -1,
+            "q2": -1,
+            "label": "attract"
+          },
+          {
+            "position": 2,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": -2,
+            "q2": 1,
+            "label": "repel"
+          },
+          {
+            "position": 3,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": 2,
+            "q2": 1,
+            "label": "repel"
+          },
+          {
+            "position": 4,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": 1,
+            "q2": -2,
+            "label": "attract"
+          },
+          {
+            "position": 5,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": 1,
+            "q2": -1,
+            "label": "attract"
+          },
+          {
+            "position": 6,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 2,
+            "q2": -2,
+            "label": null
+          },
+          {
+            "position": 7,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 3,
+            "q2": 1,
+            "label": null
+          },
+          {
+            "position": 8,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -2,
+            "q2": 2,
+            "label": null
+          },
+          {
+            "position": 9,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -1,
+            "q2": -3,
+            "label": null
+          }
+        ],
+        "probe_targets": [
+          "attract",
+          "repel",
+          "repel",
+          "attract"
+        ],
+        "probe_label_counts": [
+          [
+            "attract",
+            2
+          ],
+          [
+            "repel",
+            2
+          ]
+        ],
+        "probe_sign_pattern_counts": [
+          [
+            "++",
+            1
+          ],
+          [
+            "--",
+            1
+          ],
+          [
+            "+-",
+            1
+          ],
+          [
+            "-+",
+            1
+          ]
+        ],
+        "probe_metadata": [
+          {
+            "position": 6,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 7,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          },
+          {
+            "position": 8,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 9,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          }
+        ],
+        "difficulty_version": "R12",
+        "spec_version": "v1",
+        "generator_version": "R12",
+        "template_set_version": "v1"
+      }
+    },
+    {
+      "seed": 9065,
+      "manifest_version": "R14",
+      "seed_bank_version": "R14-private-2",
+      "episode": {
+        "episode_id": "ife-r12-9065",
+        "split": "private",
+        "difficulty": "medium",
+        "template_id": "T2",
+        "rule_A": "R_inv",
+        "rule_B": "R_std",
+        "transition": "R_inv_to_R_std",
+        "pre_count": 3,
+        "post_labeled_count": 2,
+        "shift_after_position": 3,
+        "contradiction_count_post": 2,
+        "items": [
+          {
+            "position": 1,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": -1,
+            "q2": -3,
+            "label": "attract"
+          },
+          {
+            "position": 2,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": -2,
+            "q2": -3,
+            "label": "attract"
+          },
+          {
+            "position": 3,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": 1,
+            "q2": 3,
+            "label": "attract"
+          },
+          {
+            "position": 4,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": 1,
+            "q2": -1,
+            "label": "attract"
+          },
+          {
+            "position": 5,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": 3,
+            "q2": 2,
+            "label": "repel"
+          },
+          {
+            "position": 6,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -1,
+            "q2": 1,
+            "label": null
+          },
+          {
+            "position": 7,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -3,
+            "q2": -3,
+            "label": null
+          },
+          {
+            "position": 8,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 2,
+            "q2": 1,
+            "label": null
+          },
+          {
+            "position": 9,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 3,
+            "q2": -2,
+            "label": null
+          }
+        ],
+        "probe_targets": [
+          "repel",
+          "attract",
+          "repel",
+          "attract"
+        ],
+        "probe_label_counts": [
+          [
+            "attract",
+            2
+          ],
+          [
+            "repel",
+            2
+          ]
+        ],
+        "probe_sign_pattern_counts": [
+          [
+            "++",
+            1
+          ],
+          [
+            "--",
+            1
+          ],
+          [
+            "+-",
+            1
+          ],
+          [
+            "-+",
+            1
+          ]
+        ],
+        "probe_metadata": [
+          {
+            "position": 6,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 7,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          },
+          {
+            "position": 8,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          },
+          {
+            "position": 9,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          }
+        ],
+        "difficulty_version": "R12",
+        "spec_version": "v1",
+        "generator_version": "R12",
+        "template_set_version": "v1"
+      }
+    },
+    {
+      "seed": 9066,
+      "manifest_version": "R14",
+      "seed_bank_version": "R14-private-2",
+      "episode": {
+        "episode_id": "ife-r12-9066",
+        "split": "private",
+        "difficulty": "easy",
+        "template_id": "T1",
+        "rule_A": "R_inv",
+        "rule_B": "R_std",
+        "transition": "R_inv_to_R_std",
+        "pre_count": 2,
+        "post_labeled_count": 3,
+        "shift_after_position": 2,
+        "contradiction_count_post": 3,
+        "items": [
+          {
+            "position": 1,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": 3,
+            "q2": -1,
+            "label": "repel"
+          },
+          {
+            "position": 2,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": 2,
+            "q2": 1,
+            "label": "attract"
+          },
+          {
+            "position": 3,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": -3,
+            "q2": 1,
+            "label": "attract"
+          },
+          {
+            "position": 4,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": -1,
+            "q2": 2,
+            "label": "attract"
+          },
+          {
+            "position": 5,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": -3,
+            "q2": -2,
+            "label": "repel"
+          },
+          {
+            "position": 6,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 1,
+            "q2": 3,
+            "label": null
+          },
+          {
+            "position": 7,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -3,
+            "q2": -3,
+            "label": null
+          },
+          {
+            "position": 8,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -2,
+            "q2": 2,
+            "label": null
+          },
+          {
+            "position": 9,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 3,
+            "q2": -3,
+            "label": null
+          }
+        ],
+        "probe_targets": [
+          "attract",
+          "repel",
+          "attract",
+          "repel"
+        ],
+        "probe_label_counts": [
+          [
+            "attract",
+            2
+          ],
+          [
+            "repel",
+            2
+          ]
+        ],
+        "probe_sign_pattern_counts": [
+          [
+            "++",
+            1
+          ],
+          [
+            "--",
+            1
+          ],
+          [
+            "+-",
+            1
+          ],
+          [
+            "-+",
+            1
+          ]
+        ],
+        "probe_metadata": [
+          {
+            "position": 6,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          },
+          {
+            "position": 7,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          },
+          {
+            "position": 8,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 9,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          }
+        ],
+        "difficulty_version": "R12",
+        "spec_version": "v1",
+        "generator_version": "R12",
+        "template_set_version": "v1"
+      }
+    },
+    {
+      "seed": 9067,
+      "manifest_version": "R14",
+      "seed_bank_version": "R14-private-2",
+      "episode": {
+        "episode_id": "ife-r12-9067",
+        "split": "private",
+        "difficulty": "easy",
+        "template_id": "T1",
+        "rule_A": "R_std",
+        "rule_B": "R_inv",
+        "transition": "R_std_to_R_inv",
+        "pre_count": 2,
+        "post_labeled_count": 3,
+        "shift_after_position": 2,
+        "contradiction_count_post": 3,
+        "items": [
+          {
+            "position": 1,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": -1,
+            "q2": 2,
+            "label": "attract"
+          },
+          {
+            "position": 2,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": 2,
+            "q2": 2,
+            "label": "repel"
+          },
+          {
+            "position": 3,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": 3,
+            "q2": 2,
+            "label": "attract"
+          },
+          {
+            "position": 4,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": 2,
+            "q2": 1,
+            "label": "attract"
+          },
+          {
+            "position": 5,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": 3,
+            "q2": -2,
+            "label": "repel"
+          },
+          {
+            "position": 6,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -2,
+            "q2": 3,
+            "label": null
+          },
+          {
+            "position": 7,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 3,
+            "q2": -3,
+            "label": null
+          },
+          {
+            "position": 8,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 2,
+            "q2": 3,
+            "label": null
+          },
+          {
+            "position": 9,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -2,
+            "q2": -2,
+            "label": null
+          }
+        ],
+        "probe_targets": [
+          "attract",
+          "repel",
+          "attract",
+          "repel"
+        ],
+        "probe_label_counts": [
+          [
+            "attract",
+            2
+          ],
+          [
+            "repel",
+            2
+          ]
+        ],
+        "probe_sign_pattern_counts": [
+          [
+            "++",
+            1
+          ],
+          [
+            "--",
+            1
+          ],
+          [
+            "+-",
+            1
+          ],
+          [
+            "-+",
+            1
+          ]
+        ],
+        "probe_metadata": [
+          {
+            "position": 6,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          },
+          {
+            "position": 7,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          },
+          {
+            "position": 8,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 9,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          }
+        ],
+        "difficulty_version": "R12",
+        "spec_version": "v1",
+        "generator_version": "R12",
+        "template_set_version": "v1"
+      }
+    },
+    {
+      "seed": 9068,
+      "manifest_version": "R14",
+      "seed_bank_version": "R14-private-2",
+      "episode": {
+        "episode_id": "ife-r12-9068",
+        "split": "private",
+        "difficulty": "medium",
+        "template_id": "T2",
+        "rule_A": "R_std",
+        "rule_B": "R_inv",
+        "transition": "R_std_to_R_inv",
+        "pre_count": 3,
+        "post_labeled_count": 2,
+        "shift_after_position": 3,
+        "contradiction_count_post": 2,
+        "items": [
+          {
+            "position": 1,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": 1,
+            "q2": -1,
+            "label": "attract"
+          },
+          {
+            "position": 2,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": -3,
+            "q2": 3,
+            "label": "attract"
+          },
+          {
+            "position": 3,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": 3,
+            "q2": -3,
+            "label": "attract"
+          },
+          {
+            "position": 4,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": -2,
+            "q2": 1,
+            "label": "repel"
+          },
+          {
+            "position": 5,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": 1,
+            "q2": 1,
+            "label": "attract"
+          },
+          {
+            "position": 6,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -2,
+            "q2": -1,
+            "label": null
+          },
+          {
+            "position": 7,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -3,
+            "q2": 1,
+            "label": null
+          },
+          {
+            "position": 8,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 3,
+            "q2": 2,
+            "label": null
+          },
+          {
+            "position": 9,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 1,
+            "q2": -3,
+            "label": null
+          }
+        ],
+        "probe_targets": [
+          "repel",
+          "repel",
+          "attract",
+          "attract"
+        ],
+        "probe_label_counts": [
+          [
+            "attract",
+            2
+          ],
+          [
+            "repel",
+            2
+          ]
+        ],
+        "probe_sign_pattern_counts": [
+          [
+            "++",
+            1
+          ],
+          [
+            "--",
+            1
+          ],
+          [
+            "+-",
+            1
+          ],
+          [
+            "-+",
+            1
+          ]
+        ],
+        "probe_metadata": [
+          {
+            "position": 6,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 7,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          },
+          {
+            "position": 8,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 9,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          }
+        ],
+        "difficulty_version": "R12",
+        "spec_version": "v1",
+        "generator_version": "R12",
+        "template_set_version": "v1"
+      }
+    },
+    {
+      "seed": 9069,
+      "manifest_version": "R14",
+      "seed_bank_version": "R14-private-2",
+      "episode": {
+        "episode_id": "ife-r12-9069",
+        "split": "private",
+        "difficulty": "easy",
+        "template_id": "T1",
+        "rule_A": "R_std",
+        "rule_B": "R_inv",
+        "transition": "R_std_to_R_inv",
+        "pre_count": 2,
+        "post_labeled_count": 3,
+        "shift_after_position": 2,
+        "contradiction_count_post": 3,
+        "items": [
+          {
+            "position": 1,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": -1,
+            "q2": 2,
+            "label": "attract"
+          },
+          {
+            "position": 2,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": 1,
+            "q2": -1,
+            "label": "attract"
+          },
+          {
+            "position": 3,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": -1,
+            "q2": -3,
+            "label": "attract"
+          },
+          {
+            "position": 4,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": 2,
+            "q2": -3,
+            "label": "repel"
+          },
+          {
+            "position": 5,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": -2,
+            "q2": -3,
+            "label": "attract"
+          },
+          {
+            "position": 6,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -3,
+            "q2": -2,
+            "label": null
+          },
+          {
+            "position": 7,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -2,
+            "q2": 3,
+            "label": null
+          },
+          {
+            "position": 8,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 3,
+            "q2": -3,
+            "label": null
+          },
+          {
+            "position": 9,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 2,
+            "q2": 3,
+            "label": null
+          }
+        ],
+        "probe_targets": [
+          "attract",
+          "attract",
+          "repel",
+          "repel"
+        ],
+        "probe_label_counts": [
+          [
+            "attract",
+            2
+          ],
+          [
+            "repel",
+            2
+          ]
+        ],
+        "probe_sign_pattern_counts": [
+          [
+            "++",
+            1
+          ],
+          [
+            "--",
+            1
+          ],
+          [
+            "+-",
+            1
+          ],
+          [
+            "-+",
+            1
+          ]
+        ],
+        "probe_metadata": [
+          {
+            "position": 6,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 7,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          },
+          {
+            "position": 8,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          },
+          {
+            "position": 9,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          }
+        ],
+        "difficulty_version": "R12",
+        "spec_version": "v1",
+        "generator_version": "R12",
+        "template_set_version": "v1"
+      }
+    },
+    {
+      "seed": 9070,
+      "manifest_version": "R14",
+      "seed_bank_version": "R14-private-2",
+      "episode": {
+        "episode_id": "ife-r12-9070",
+        "split": "private",
+        "difficulty": "easy",
+        "template_id": "T1",
+        "rule_A": "R_inv",
+        "rule_B": "R_std",
+        "transition": "R_inv_to_R_std",
+        "pre_count": 2,
+        "post_labeled_count": 3,
+        "shift_after_position": 2,
+        "contradiction_count_post": 3,
+        "items": [
+          {
+            "position": 1,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": -2,
+            "q2": 3,
+            "label": "repel"
+          },
+          {
+            "position": 2,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": 3,
+            "q2": 1,
+            "label": "attract"
+          },
+          {
+            "position": 3,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": -3,
+            "q2": 1,
+            "label": "attract"
+          },
+          {
+            "position": 4,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": -1,
+            "q2": -1,
+            "label": "repel"
+          },
+          {
+            "position": 5,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": -1,
+            "q2": 2,
+            "label": "attract"
+          },
+          {
+            "position": 6,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -3,
+            "q2": -3,
+            "label": null
+          },
+          {
+            "position": 7,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 1,
+            "q2": -2,
+            "label": null
+          },
+          {
+            "position": 8,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -3,
+            "q2": 3,
+            "label": null
+          },
+          {
+            "position": 9,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 2,
+            "q2": 2,
+            "label": null
+          }
+        ],
+        "probe_targets": [
+          "repel",
+          "repel",
+          "attract",
+          "attract"
+        ],
+        "probe_label_counts": [
+          [
+            "attract",
+            2
+          ],
+          [
+            "repel",
+            2
+          ]
+        ],
+        "probe_sign_pattern_counts": [
+          [
+            "++",
+            1
+          ],
+          [
+            "--",
+            1
+          ],
+          [
+            "+-",
+            1
+          ],
+          [
+            "-+",
+            1
+          ]
+        ],
+        "probe_metadata": [
+          {
+            "position": 6,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          },
+          {
+            "position": 7,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 8,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 9,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          }
+        ],
+        "difficulty_version": "R12",
+        "spec_version": "v1",
+        "generator_version": "R12",
+        "template_set_version": "v1"
+      }
+    },
+    {
+      "seed": 9071,
+      "manifest_version": "R14",
+      "seed_bank_version": "R14-private-2",
+      "episode": {
+        "episode_id": "ife-r12-9071",
+        "split": "private",
+        "difficulty": "medium",
+        "template_id": "T2",
+        "rule_A": "R_std",
+        "rule_B": "R_inv",
+        "transition": "R_std_to_R_inv",
+        "pre_count": 3,
+        "post_labeled_count": 2,
+        "shift_after_position": 3,
+        "contradiction_count_post": 2,
+        "items": [
+          {
+            "position": 1,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": -3,
+            "q2": 1,
+            "label": "attract"
+          },
+          {
+            "position": 2,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": -3,
+            "q2": -3,
+            "label": "repel"
+          },
+          {
+            "position": 3,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": -3,
+            "q2": 2,
+            "label": "attract"
+          },
+          {
+            "position": 4,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": 2,
+            "q2": -2,
+            "label": "repel"
+          },
+          {
+            "position": 5,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": 2,
+            "q2": 2,
+            "label": "attract"
+          },
+          {
+            "position": 6,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 1,
+            "q2": 2,
+            "label": null
+          },
+          {
+            "position": 7,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -2,
+            "q2": -2,
+            "label": null
+          },
+          {
+            "position": 8,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 2,
+            "q2": -1,
+            "label": null
+          },
+          {
+            "position": 9,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -2,
+            "q2": 1,
+            "label": null
+          }
+        ],
+        "probe_targets": [
+          "attract",
+          "repel",
+          "repel",
+          "attract"
+        ],
+        "probe_label_counts": [
+          [
+            "attract",
+            2
+          ],
+          [
+            "repel",
+            2
+          ]
+        ],
+        "probe_sign_pattern_counts": [
+          [
+            "++",
+            1
+          ],
+          [
+            "--",
+            1
+          ],
+          [
+            "+-",
+            1
+          ],
+          [
+            "-+",
+            1
+          ]
+        ],
+        "probe_metadata": [
+          {
+            "position": 6,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 7,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 8,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          },
+          {
+            "position": 9,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          }
+        ],
+        "difficulty_version": "R12",
+        "spec_version": "v1",
+        "generator_version": "R12",
+        "template_set_version": "v1"
+      }
+    },
+    {
+      "seed": 9072,
+      "manifest_version": "R14",
+      "seed_bank_version": "R14-private-2",
+      "episode": {
+        "episode_id": "ife-r12-9072",
+        "split": "private",
+        "difficulty": "easy",
+        "template_id": "T1",
+        "rule_A": "R_std",
+        "rule_B": "R_inv",
+        "transition": "R_std_to_R_inv",
+        "pre_count": 2,
+        "post_labeled_count": 3,
+        "shift_after_position": 2,
+        "contradiction_count_post": 3,
+        "items": [
+          {
+            "position": 1,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": -3,
+            "q2": 3,
+            "label": "attract"
+          },
+          {
+            "position": 2,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": -2,
+            "q2": -1,
+            "label": "repel"
+          },
+          {
+            "position": 3,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": 3,
+            "q2": -3,
+            "label": "repel"
+          },
+          {
+            "position": 4,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": 2,
+            "q2": -3,
+            "label": "repel"
+          },
+          {
+            "position": 5,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": 2,
+            "q2": 3,
+            "label": "attract"
+          },
+          {
+            "position": 6,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -2,
+            "q2": -3,
+            "label": null
+          },
+          {
+            "position": 7,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 2,
+            "q2": 2,
+            "label": null
+          },
+          {
+            "position": 8,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 1,
+            "q2": -2,
+            "label": null
+          },
+          {
+            "position": 9,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -2,
+            "q2": 3,
+            "label": null
+          }
+        ],
+        "probe_targets": [
+          "repel",
+          "attract",
+          "repel",
+          "attract"
+        ],
+        "probe_label_counts": [
+          [
+            "attract",
+            2
+          ],
+          [
+            "repel",
+            2
+          ]
+        ],
+        "probe_sign_pattern_counts": [
+          [
+            "++",
+            1
+          ],
+          [
+            "--",
+            1
+          ],
+          [
+            "+-",
+            1
+          ],
+          [
+            "-+",
+            1
+          ]
+        ],
+        "probe_metadata": [
+          {
+            "position": 6,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 7,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 8,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          },
+          {
+            "position": 9,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          }
+        ],
+        "difficulty_version": "R12",
+        "spec_version": "v1",
+        "generator_version": "R12",
+        "template_set_version": "v1"
+      }
+    },
+    {
+      "seed": 9073,
+      "manifest_version": "R14",
+      "seed_bank_version": "R14-private-2",
+      "episode": {
+        "episode_id": "ife-r12-9073",
+        "split": "private",
+        "difficulty": "easy",
+        "template_id": "T1",
+        "rule_A": "R_inv",
+        "rule_B": "R_std",
+        "transition": "R_inv_to_R_std",
+        "pre_count": 2,
+        "post_labeled_count": 3,
+        "shift_after_position": 2,
+        "contradiction_count_post": 3,
+        "items": [
+          {
+            "position": 1,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": -1,
+            "q2": 1,
+            "label": "repel"
+          },
+          {
+            "position": 2,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": 3,
+            "q2": 2,
+            "label": "attract"
+          },
+          {
+            "position": 3,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": -2,
+            "q2": -2,
+            "label": "repel"
+          },
+          {
+            "position": 4,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": -3,
+            "q2": -3,
+            "label": "repel"
+          },
+          {
+            "position": 5,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": 3,
+            "q2": -2,
+            "label": "attract"
+          },
+          {
+            "position": 6,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 1,
+            "q2": 3,
+            "label": null
+          },
+          {
+            "position": 7,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 2,
+            "q2": -1,
+            "label": null
+          },
+          {
+            "position": 8,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -1,
+            "q2": 3,
+            "label": null
+          },
+          {
+            "position": 9,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -2,
+            "q2": -3,
+            "label": null
+          }
+        ],
+        "probe_targets": [
+          "attract",
+          "attract",
+          "repel",
+          "repel"
+        ],
+        "probe_label_counts": [
+          [
+            "attract",
+            2
+          ],
+          [
+            "repel",
+            2
+          ]
+        ],
+        "probe_sign_pattern_counts": [
+          [
+            "++",
+            1
+          ],
+          [
+            "--",
+            1
+          ],
+          [
+            "+-",
+            1
+          ],
+          [
+            "-+",
+            1
+          ]
+        ],
+        "probe_metadata": [
+          {
+            "position": 6,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          },
+          {
+            "position": 7,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 8,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 9,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          }
+        ],
+        "difficulty_version": "R12",
+        "spec_version": "v1",
+        "generator_version": "R12",
+        "template_set_version": "v1"
+      }
+    },
+    {
+      "seed": 9074,
+      "manifest_version": "R14",
+      "seed_bank_version": "R14-private-2",
+      "episode": {
+        "episode_id": "ife-r12-9074",
+        "split": "private",
+        "difficulty": "easy",
+        "template_id": "T1",
+        "rule_A": "R_std",
+        "rule_B": "R_inv",
+        "transition": "R_std_to_R_inv",
+        "pre_count": 2,
+        "post_labeled_count": 3,
+        "shift_after_position": 2,
+        "contradiction_count_post": 3,
+        "items": [
+          {
+            "position": 1,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": 2,
+            "q2": 2,
+            "label": "repel"
+          },
+          {
+            "position": 2,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": 1,
+            "q2": -3,
+            "label": "attract"
+          },
+          {
+            "position": 3,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": 3,
+            "q2": -2,
+            "label": "repel"
+          },
+          {
+            "position": 4,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": -2,
+            "q2": -1,
+            "label": "attract"
+          },
+          {
+            "position": 5,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": 3,
+            "q2": -1,
+            "label": "repel"
+          },
+          {
+            "position": 6,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 1,
+            "q2": -1,
+            "label": null
+          },
+          {
+            "position": 7,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -2,
+            "q2": 3,
+            "label": null
+          },
+          {
+            "position": 8,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -1,
+            "q2": -3,
+            "label": null
+          },
+          {
+            "position": 9,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 1,
+            "q2": 2,
+            "label": null
+          }
+        ],
+        "probe_targets": [
+          "repel",
+          "attract",
+          "attract",
+          "repel"
+        ],
+        "probe_label_counts": [
+          [
+            "attract",
+            2
+          ],
+          [
+            "repel",
+            2
+          ]
+        ],
+        "probe_sign_pattern_counts": [
+          [
+            "++",
+            1
+          ],
+          [
+            "--",
+            1
+          ],
+          [
+            "+-",
+            1
+          ],
+          [
+            "-+",
+            1
+          ]
+        ],
+        "probe_metadata": [
+          {
+            "position": 6,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          },
+          {
+            "position": 7,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          },
+          {
+            "position": 8,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 9,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          }
+        ],
+        "difficulty_version": "R12",
+        "spec_version": "v1",
+        "generator_version": "R12",
+        "template_set_version": "v1"
+      }
+    },
+    {
+      "seed": 9075,
+      "manifest_version": "R14",
+      "seed_bank_version": "R14-private-2",
+      "episode": {
+        "episode_id": "ife-r12-9075",
+        "split": "private",
+        "difficulty": "medium",
+        "template_id": "T2",
+        "rule_A": "R_std",
+        "rule_B": "R_inv",
+        "transition": "R_std_to_R_inv",
+        "pre_count": 3,
+        "post_labeled_count": 2,
+        "shift_after_position": 3,
+        "contradiction_count_post": 2,
+        "items": [
+          {
+            "position": 1,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": -3,
+            "q2": -3,
+            "label": "repel"
+          },
+          {
+            "position": 2,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": 2,
+            "q2": -1,
+            "label": "attract"
+          },
+          {
+            "position": 3,
+            "phase": "pre",
+            "kind": "labeled",
+            "q1": 3,
+            "q2": -3,
+            "label": "attract"
+          },
+          {
+            "position": 4,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": 3,
+            "q2": 2,
+            "label": "attract"
+          },
+          {
+            "position": 5,
+            "phase": "post",
+            "kind": "labeled",
+            "q1": -1,
+            "q2": 1,
+            "label": "repel"
+          },
+          {
+            "position": 6,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -3,
+            "q2": -2,
+            "label": null
+          },
+          {
+            "position": 7,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 2,
+            "q2": -2,
+            "label": null
+          },
+          {
+            "position": 8,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -3,
+            "q2": 2,
+            "label": null
+          },
+          {
+            "position": 9,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 2,
+            "q2": 3,
+            "label": null
+          }
+        ],
+        "probe_targets": [
+          "repel",
+          "attract",
+          "repel",
+          "attract"
+        ],
+        "probe_label_counts": [
+          [
+            "attract",
+            2
+          ],
+          [
+            "repel",
+            2
+          ]
+        ],
+        "probe_sign_pattern_counts": [
+          [
+            "++",
+            1
+          ],
+          [
+            "--",
+            1
+          ],
+          [
+            "+-",
+            1
+          ],
+          [
+            "-+",
+            1
+          ]
+        ],
+        "probe_metadata": [
+          {
+            "position": 6,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          },
+          {
+            "position": 7,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          },
+          {
+            "position": 8,
+            "is_disagreement_probe": true,
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
+          },
+          {
+            "position": 9,
+            "is_disagreement_probe": true,
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
+          }
+        ],
+        "difficulty_version": "R12",
+        "spec_version": "v1",
+        "generator_version": "R12",
+        "template_set_version": "v1"
+      }
+    }
+  ]
+}
