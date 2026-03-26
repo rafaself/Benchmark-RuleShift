@@ -1,30 +1,31 @@
 # AGENTS.md
 
 ## Scope
-Repo-wide defaults only. Child `AGENTS.md` files may add local deltas for their own subtrees.
+These instructions apply to the entire repository.
 
-## Repo anchors
-- This repository is benchmark infrastructure for RuleShift Benchmark v1.
-- Keep changes aligned with the implemented local benchmark.
-- Local code in `src/` and frozen assets in `src/frozen_splits/` are the source of truth.
-- Kaggle under `packaging/kaggle/` is packaging, not the benchmark source of truth.
+## Source of truth
+- Treat `src/` as the source of truth for benchmark logic, contracts, and evaluation behavior.
+- Treat `packaging/kaggle/` as downstream packaging that must reflect, not redefine, benchmark behavior.
 
-## Guardrails
-- Prefer narrow, targeted fixes.
-- Preserve determinism, replayability, and frozen split compatibility.
-- Do not change benchmark semantics, validity thresholds, split composition, or task rules unless explicitly requested.
-- Update tests when behavior changes.
-- Prefer TDD when logic changes or bug fixes justify it.
-- Private split evaluation order: iterate exclusively on `dev` and `public_leaderboard`; run private evaluation only after code, prompt, and parameters are frozen. Never route private-only assets (`private_leaderboard.json`, `private_episodes.json`) into `deploy/kaggle-runtime/` or `packaging/kaggle/frozen_artifacts_manifest.json`.
+## Benchmark boundaries
+- Keep the benchmark narrowly scoped to cognitive flexibility.
+- Keep Binary as the only leaderboard-primary path.
+- Keep Narrative strictly supplemental as an audit layer for Binary, never as the primary benchmark metric.
 
-## Verification
-- Start with the smallest relevant check first.
-- `make test`
-- `make validity`
-- `make reaudit`
-- `make integrity`
-- `make evidence-pass`
+## Private/public isolation
+- Never place private split artifacts in public repo paths or public packaging outputs.
+- Preserve strict separation between public assets and authorized private leaderboard assets.
 
-## Pointers
-- `README.md`
-- `src/README.md`
+## Change discipline
+- Prefer small, auditable changes over broad refactors.
+- Do not introduce legacy compatibility unless explicitly required.
+- Remove stale docs and redundant docs instead of adding parallel explanations.
+- Update documentation only when it reflects the real current state of the codebase.
+- Prefer test-first or test-aligned changes for benchmark logic, parsers, scoring, and split behavior.
+
+## Validation
+- Run targeted tests for the files you changed.
+- When packaging or split logic changes, verify public/private isolation before finishing.
+
+## Commit style
+- Use commit messages in the format: `type(scope): message`.
