@@ -32,15 +32,13 @@ python scripts/cd/build_private_dataset_package.py \
 
 ## 3. Verify Public Isolation
 
-Before any public deploy or submission:
+Before any public packaging or submission:
 
 ```bash
 python scripts/check_public_private_isolation.py
-python scripts/build_deploy.py
-python scripts/check_public_private_isolation.py
 ```
 
-The public repo and `deploy/kaggle-runtime/` must not contain `private_episodes.json`, `src/frozen_splits/private_leaderboard.json`, or any repo-local private fallback.
+The public repo and `packaging/kaggle/` must not contain `private_episodes.json`, `src/frozen_splits/private_leaderboard.json`, or any repo-local private fallback.
 
 ## 4. Submission Checklist
 

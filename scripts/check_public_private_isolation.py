@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail when private split artifacts appear in public repo or packaging paths."""
+"""Fail when private split artifacts appear in public repo or public packaging paths."""
 
 from __future__ import annotations
 
@@ -11,8 +11,6 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SRC_DIR = REPO_ROOT / "src"
 KAGGLE_DIR = REPO_ROOT / "packaging" / "kaggle"
-DEPLOY_RUNTIME_DIR = REPO_ROOT / "deploy" / "kaggle-runtime"
-
 FORBIDDEN_PATHS = (
     SRC_DIR / "frozen_splits" / "private_leaderboard.json",
     KAGGLE_DIR / "private" / "private_episodes.json",
@@ -22,7 +20,7 @@ FORBIDDEN_FILENAMES = (
     "private_leaderboard.json",
     "private_episodes.json",
 )
-_IGNORED_REPO_DIRS = {".git", ".venv", ".pytest_cache", "__pycache__", "deploy"}
+_IGNORED_REPO_DIRS = {".git", ".venv", ".pytest_cache", "__pycache__"}
 
 
 def _collect_public_location_errors() -> list[str]:
@@ -109,22 +107,9 @@ def _collect_notebook_compliance_errors() -> list[str]:
 
     return errors
 
-
-def _collect_runtime_errors(runtime_dir: Path) -> list[str]:
-    if not runtime_dir.exists():
-        return []
-
-    errors: list[str] = []
-    for filename in FORBIDDEN_FILENAMES:
-        for path in runtime_dir.rglob(filename):
-            errors.append(f"deploy runtime contains private artifact: {path.relative_to(REPO_ROOT)}")
-    return errors
-
-
 def main() -> int:
     errors = [
         *_collect_public_location_errors(),
-        *_collect_runtime_errors(DEPLOY_RUNTIME_DIR),
         *_collect_notebook_compliance_errors(),
     ]
     if errors:

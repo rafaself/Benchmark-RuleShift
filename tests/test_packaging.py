@@ -111,6 +111,8 @@ def test_non_official_packaged_paths_are_removed():
 
     assert "staging" not in card_text.lower()
     assert not (_KAGGLE_DIR / "staging" / "ruleshift_benchmark_v1_kaggle_staging.ipynb").exists()
+    assert not (_KAGGLE_DIR / "staging").exists()
+    assert not (_KAGGLE_DIR / "archive").exists()
 
 
 def test_kaggle_directory_layout_contains_only_official_entry_surfaces():
@@ -156,9 +158,9 @@ def test_packaging_docs_describe_private_split_as_mount_only():
 def test_packaging_docs_describe_separate_private_flow():
     runbook_text = (_KAGGLE_DIR / "PRIVATE_SPLIT_RUNBOOK.md").read_text(encoding="utf-8")
 
-    assert "scripts/build_deploy.py" in runbook_text
     assert "scripts/generate_private_split_artifact.py" in runbook_text
     assert "scripts/cd/build_private_dataset_package.py" in runbook_text
+    assert "scripts/check_public_private_isolation.py" in runbook_text
     assert "Never commit the artifact" in runbook_text
 
 
@@ -228,6 +230,9 @@ def test_docs_do_not_reference_removed_parallel_sources():
         assert "FROZEN_BENCHMARK_SPEC.md" not in text
         assert "packaging/kaggle/README.md" not in text
         assert "src/README.md" not in text
+        assert "deploy/kaggle-runtime" not in text
+        assert "deploy/kaggle-notebook" not in text
+        assert "scripts/build_deploy.py" not in text
 
 
 def test_active_docs_identify_one_official_packaged_readiness_anchor():
@@ -361,139 +366,22 @@ def test_kaggle_package_helpers_preserve_binary_and_narrative_scoring_contract()
     assert score_episode(None, ("attract", "repel", "repel", "attract")) == (0, 4)
 
 
-_PRIVATE_ONLY_FILENAMES = (
-    "private_leaderboard.json",
-    "private_episodes.json",
-)
-
-_BUILD_DEPLOY_DIR = _REPO_ROOT / "scripts"
-
-
-def test_build_deploy_runtime_core_subset_matches_official_notebook_path():
-    import importlib.util
-
-    spec = importlib.util.spec_from_file_location("build_deploy", _BUILD_DEPLOY_DIR / "build_deploy.py")
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-
-    assert mod._RUNTIME_CORE_MODULES == (
-        "__init__.py",
-        "audit.py",
-        "invariance.py",
-        "kaggle.py",
-        "metrics.py",
-        "parser.py",
-        "private_split.py",
-        "slices.py",
-        "splits.py",
-        "validate.py",
-    )
-    assert "cli.py" not in mod._RUNTIME_CORE_MODULES
-    assert "model_runner.py" not in mod._RUNTIME_CORE_MODULES
-
-
-def test_build_deploy_guardrail_rejects_private_asset_in_runtime(tmp_path):
-    """Verify _verify_no_private_in_runtime() exits when a private-only file is present."""
-    import importlib.util
-    spec = importlib.util.spec_from_file_location("build_deploy", _BUILD_DEPLOY_DIR / "build_deploy.py")
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-
-    fake_runtime = tmp_path / "kaggle-runtime"
-    fake_runtime.mkdir()
-    (fake_runtime / "private_episodes.json").write_text("{}", encoding="utf-8")
-
-    orig_runtime = mod.DEPLOY_RUNTIME_DIR
-    orig_repo = mod.REPO_ROOT
-    mod.DEPLOY_RUNTIME_DIR = fake_runtime
-    mod.REPO_ROOT = tmp_path
-    try:
-        import pytest
-        with pytest.raises(SystemExit):
-            mod._verify_no_private_in_runtime()
-    finally:
-        mod.DEPLOY_RUNTIME_DIR = orig_runtime
-        mod.REPO_ROOT = orig_repo
-
-
-def test_build_deploy_guardrail_rejects_non_public_split_whitelist(tmp_path):
-    import importlib.util
-    spec = importlib.util.spec_from_file_location("build_deploy", _BUILD_DEPLOY_DIR / "build_deploy.py")
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-
-    fake_runtime = tmp_path / "kaggle-runtime"
-    frozen_splits = fake_runtime / "src" / "frozen_splits"
-    frozen_splits.mkdir(parents=True)
-    (frozen_splits / "dev.json").write_text("{}", encoding="utf-8")
-    (frozen_splits / "public_leaderboard.json").write_text("{}", encoding="utf-8")
-    (frozen_splits / "extra.json").write_text("{}", encoding="utf-8")
-
-    orig_runtime = mod.DEPLOY_RUNTIME_DIR
-    mod.DEPLOY_RUNTIME_DIR = fake_runtime
-    try:
-        import pytest
-        with pytest.raises(SystemExit):
-            mod._verify_public_runtime_split_whitelist()
-    finally:
-        mod.DEPLOY_RUNTIME_DIR = orig_runtime
-
-
-def test_kaggle_runtime_deploy_does_not_contain_private_leaderboard():
-    """Guardrail: private_leaderboard.json must never appear in the runtime package."""
-    deploy_runtime = _REPO_ROOT / "deploy" / "kaggle-runtime"
-    if not deploy_runtime.exists():
-        import pytest
-        pytest.skip("deploy/kaggle-runtime/ not yet built; run scripts/build_deploy.py first")
-    private_files = list(deploy_runtime.rglob("private_leaderboard.json"))
-    assert private_files == [], (
-        f"private_leaderboard.json must not be shipped in deploy/kaggle-runtime/; "
-        f"found: {[str(p) for p in private_files]}"
-    )
-
-
-def test_runtime_deploy_contains_no_private_only_assets():
-    """Guardrail: no private-only asset filename may appear anywhere in deploy/kaggle-runtime/."""
-    deploy_runtime = _REPO_ROOT / "deploy" / "kaggle-runtime"
-    if not deploy_runtime.exists():
-        import pytest
-        pytest.skip("deploy/kaggle-runtime/ not yet built; run scripts/build_deploy.py first")
-    violations = []
-    for name in _PRIVATE_ONLY_FILENAMES:
-        violations.extend(deploy_runtime.rglob(name))
-    assert violations == [], (
-        f"Private-only asset(s) found in deploy/kaggle-runtime/: "
-        f"{[str(p) for p in violations]}"
-    )
-
-
 def test_public_packaging_does_not_reference_private_assets():
     """Guardrail: frozen_artifacts_manifest.json must not reference any private-only asset."""
+    private_only_filenames = (
+        "private_leaderboard.json",
+        "private_episodes.json",
+    )
     manifest_text = (_KAGGLE_DIR / "frozen_artifacts_manifest.json").read_text(encoding="utf-8")
-    for name in _PRIVATE_ONLY_FILENAMES:
+    for name in private_only_filenames:
         assert name not in manifest_text, (
             f"Public packaging artifact frozen_artifacts_manifest.json references "
             f"private-only asset '{name}'"
         )
 
-
-def test_frozen_splits_runtime_package_contains_only_public_splits():
-    """Guardrail: the frozen_splits/ dir in the runtime package must contain only dev and
-    public_leaderboard — no private-only split files."""
-    deploy_runtime = _REPO_ROOT / "deploy" / "kaggle-runtime"
-    if not deploy_runtime.exists():
-        import pytest
-        pytest.skip("deploy/kaggle-runtime/ not yet built; run scripts/build_deploy.py first")
-    frozen_splits_dir = deploy_runtime / "src" / "frozen_splits"
-    if not frozen_splits_dir.exists():
-        return
-    shipped = {p.name for p in frozen_splits_dir.iterdir() if p.is_file()}
-    allowed = {"dev.json", "public_leaderboard.json"}
-    unexpected = shipped - allowed
-    assert unexpected == set(), (
-        f"Unexpected file(s) in runtime frozen_splits/: {unexpected}. "
-        f"Only dev.json and public_leaderboard.json are permitted."
-    )
+def test_repo_structure_uses_single_kaggle_packaging_path():
+    assert not (_REPO_ROOT / "deploy").exists()
+    assert not (_REPO_ROOT / "scripts" / "build_deploy.py").exists()
 
 
 def test_private_dataset_packaging_script_builds_private_only_package(tmp_path):

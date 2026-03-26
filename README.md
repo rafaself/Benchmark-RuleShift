@@ -2,7 +2,7 @@
 
 RuleShift Benchmark is a narrow Executive Functions benchmark for cognitive flexibility. It evaluates whether a model applies the post-shift rule to the final probes after sparse contradictory evidence. Electrostatics is only the controlled substrate. Binary is the only leaderboard-primary path; Narrative is supplemental audit output on the same frozen episodes and never changes the leaderboard score.
 
-This `README.md` is the main development source of truth for the repository. Benchmark logic lives under `src/`. Kaggle packaging under `packaging/kaggle/` is downstream and must mirror, not redefine, benchmark behavior.
+This `README.md` is the main repo guide. Benchmark logic lives under `src/`. Kaggle packaging under `packaging/kaggle/` is downstream and must mirror, not redefine, benchmark behavior.
 
 ## Current Contract
 
@@ -28,6 +28,7 @@ Only charge sign matters for the correct label.
 - `src/core/`: parsing, metrics, validation, audits, split loading, and runtime plumbing.
 - `src/frozen_splits/`: public frozen manifests for `dev` and `public_leaderboard`, stored at `src/frozen_splits/dev.json` and `src/frozen_splits/public_leaderboard.json`.
 - `packaging/kaggle/`: Kaggle-facing materials only.
+- `scripts/`: operational helpers that validate isolation or build private-only artifacts without redefining benchmark semantics.
 - `tests/`: benchmark, packaging, and workflow checks.
 
 ## Development
