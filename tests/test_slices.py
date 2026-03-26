@@ -36,11 +36,14 @@ class _FakeMeta:
 
     def __init__(
         self,
-        old_rule_label: InteractionLabel,
-        new_rule_label: InteractionLabel,
+        old_rule_label: InteractionLabel | None = None,
+        new_rule_label: InteractionLabel | None = None,
+        *,
+        old: InteractionLabel | None = None,
+        new: InteractionLabel | None = None,
     ) -> None:
-        self.old_rule_label = old_rule_label
-        self.new_rule_label = new_rule_label
+        self.old_rule_label = old_rule_label if old_rule_label is not None else old
+        self.new_rule_label = new_rule_label if new_rule_label is not None else new
 
 
 def _valid_prediction(*labels: InteractionLabel) -> ParsedPrediction:
@@ -71,6 +74,7 @@ def _make_episode_slice(
     *,
     episode_id: str = "ep-1",
     template: str = "T1",
+    template_family: str = "canonical",
     difficulty: str = "easy",
     shift_position: str = "2",
     transition_type: str = "R_std_to_R_inv",
@@ -81,6 +85,7 @@ def _make_episode_slice(
     return EpisodeSliceData(
         episode_id=episode_id,
         template=template,
+        template_family=template_family,
         difficulty=difficulty,
         shift_position=shift_position,
         transition_type=transition_type,
@@ -294,9 +299,10 @@ def test_classify_premature_switch_mixed_old_and_new_errors():
 # ---------------------------------------------------------------------------
 
 
-def test_slice_dimensions_has_five_canonical_entries():
+def test_slice_dimensions_has_six_canonical_entries():
     assert SLICE_DIMENSIONS == (
         "template",
+        "template_family",
         "difficulty",
         "shift_position",
         "transition_type",
@@ -318,6 +324,7 @@ def test_compute_episode_slice_data_extracts_episode_metadata():
 
     assert result.episode_id == episode.episode_id
     assert result.template == episode.template_id.value
+    assert result.template_family == episode.template_family.value
     assert result.difficulty == episode.difficulty.value
     assert result.shift_position == str(episode.shift_after_position)
     assert result.transition_type == episode.transition.value
@@ -391,6 +398,7 @@ def test_slice_accuracy_to_dict_has_accuracy_key():
 def test_build_slice_report_empty_returns_empty_groups():
     report = build_slice_report([])
     assert report.template == ()
+    assert report.template_family == ()
     assert report.difficulty == ()
     assert report.shift_position == ()
     assert report.transition_type == ()
@@ -416,6 +424,24 @@ def test_build_slice_report_aggregates_correct_probes_by_template():
     assert template_dict["T1"].total_probes == 8
     assert template_dict["T2"].episode_count == 1
     assert template_dict["T2"].correct_probes == 2
+
+
+def test_build_slice_report_aggregates_correct_probes_by_template_family():
+    slices = [
+        _make_episode_slice(template_family="canonical", correct_probes=3),
+        _make_episode_slice(template_family="canonical", correct_probes=4),
+        _make_episode_slice(template_family="observation_log", correct_probes=2),
+    ]
+    report = build_slice_report(slices)
+    template_family_dict = dict(report.template_family)
+
+    assert "canonical" in template_family_dict
+    assert "observation_log" in template_family_dict
+    assert template_family_dict["canonical"].episode_count == 2
+    assert template_family_dict["canonical"].correct_probes == 7
+    assert template_family_dict["canonical"].total_probes == 8
+    assert template_family_dict["observation_log"].episode_count == 1
+    assert template_family_dict["observation_log"].correct_probes == 2
 
 
 def test_build_slice_report_aggregates_error_type_counts():
@@ -455,12 +481,22 @@ def test_build_slice_report_difficulty_order_is_canonical():
     assert keys == ["easy", "medium"]
 
 
-def test_build_slice_report_to_dict_has_all_five_dimensions():
+def test_build_slice_report_to_dict_has_all_dimensions():
     slices = [_make_episode_slice()]
     report = build_slice_report(slices)
     d = report.to_dict()
     for dim in SLICE_DIMENSIONS:
         assert dim in d, f"SliceReport.to_dict() missing dimension {dim!r}"
+
+
+def test_build_slice_report_template_family_order_is_canonical():
+    slices = [
+        _make_episode_slice(template_family="observation_log"),
+        _make_episode_slice(template_family="canonical"),
+    ]
+    report = build_slice_report(slices)
+    keys = [k for k, _ in report.template_family]
+    assert keys == ["canonical", "observation_log"]
 
 
 def test_build_slice_report_transition_type_order_is_canonical():

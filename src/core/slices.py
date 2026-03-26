@@ -22,6 +22,7 @@ __all__ = [
 # Canonical order of required slice dimensions.
 SLICE_DIMENSIONS: tuple[str, ...] = (
     "template",
+    "template_family",
     "difficulty",
     "shift_position",
     "transition_type",
@@ -31,6 +32,7 @@ SLICE_DIMENSIONS: tuple[str, ...] = (
 _DIFFICULTY_ORDER: tuple[str, ...] = ("easy", "medium", "hard")
 _TRANSITION_ORDER: tuple[str, ...] = ("R_std_to_R_inv", "R_inv_to_R_std")
 _TEMPLATE_ORDER: tuple[str, ...] = ("T1", "T2")
+_TEMPLATE_FAMILY_ORDER: tuple[str, ...] = ("canonical", "observation_log")
 
 
 class ErrorType(StrEnum):
@@ -72,6 +74,7 @@ class EpisodeSliceData:
 
     episode_id: str
     template: str           # "T1" or "T2"
+    template_family: str    # "canonical" or "observation_log"
     difficulty: str         # "easy" or "medium"
     shift_position: str     # str(shift_after_position): "2" or "3"
     transition_type: str    # "R_std_to_R_inv" or "R_inv_to_R_std"
@@ -89,6 +92,7 @@ class SliceReport:
     """
 
     template: tuple[tuple[str, SliceAccuracy], ...]
+    template_family: tuple[tuple[str, SliceAccuracy], ...]
     difficulty: tuple[tuple[str, SliceAccuracy], ...]
     shift_position: tuple[tuple[str, SliceAccuracy], ...]
     transition_type: tuple[tuple[str, SliceAccuracy], ...]
@@ -99,6 +103,7 @@ class SliceReport:
     def to_dict(self) -> dict[str, object]:
         return {
             "template": {k: v.to_dict() for k, v in self.template},
+            "template_family": {k: v.to_dict() for k, v in self.template_family},
             "difficulty": {k: v.to_dict() for k, v in self.difficulty},
             "shift_position": {k: v.to_dict() for k, v in self.shift_position},
             "transition_type": {k: v.to_dict() for k, v in self.transition_type},
@@ -204,6 +209,7 @@ def compute_episode_slice_data(
     return EpisodeSliceData(
         episode_id=episode.episode_id,
         template=episode.template_id.value,
+        template_family=episode.template_family.value,
         difficulty=episode.difficulty.value,
         shift_position=str(episode.shift_after_position),
         transition_type=episode.transition.value,
@@ -220,6 +226,9 @@ def build_slice_report(
     return SliceReport(
         template=_aggregate_accuracy(
             episode_slices, lambda s: s.template, _TEMPLATE_ORDER
+        ),
+        template_family=_aggregate_accuracy(
+            episode_slices, lambda s: s.template_family, _TEMPLATE_FAMILY_ORDER
         ),
         difficulty=_aggregate_accuracy(
             episode_slices, lambda s: s.difficulty, _DIFFICULTY_ORDER

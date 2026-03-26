@@ -109,6 +109,32 @@ def test_split_audit_only_reports_emitted_difficulty_labels():
         )
 
 
+@pytest.mark.parametrize("partition", ("dev", "public_leaderboard"))
+def test_public_manifests_keep_template_family_balance_and_cross_balance(partition: str):
+    records = load_frozen_split(partition)
+    family_counts: dict[str, int] = {}
+    combo_counts: dict[tuple[str, str], int] = {}
+
+    for record in records:
+        episode = record.episode
+        family_counts[episode.template_family.value] = (
+            family_counts.get(episode.template_family.value, 0) + 1
+        )
+        combo_key = (episode.template_id.value, episode.template_family.value)
+        combo_counts[combo_key] = combo_counts.get(combo_key, 0) + 1
+
+    assert family_counts == {
+        "canonical": 8,
+        "observation_log": 8,
+    }
+    assert combo_counts == {
+        ("T1", "canonical"): 4,
+        ("T1", "observation_log"): 4,
+        ("T2", "canonical"): 4,
+        ("T2", "observation_log"): 4,
+    }
+
+
 def test_overlap_seed_fails_with_clear_reason():
     all_splits = load_all_frozen_splits()
     dev_record = all_splits["dev"][0]

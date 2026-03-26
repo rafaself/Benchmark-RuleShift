@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 
-from core.metrics import MetricSummary
 from core.model_execution import (
     ModelAdapter,
     ModelExecutionOutcome,
@@ -107,12 +106,14 @@ def test_runner_is_deterministic_for_fixed_fake_adapter_outputs():
     )
 
     assert first_result == second_result
-    assert first_result.metrics == MetricSummary(
-        post_shift_probe_accuracy=1.0,
-        binary_parse_valid_rate=1.0,
-        narrative_schema_valid_rate=1.0,
-        narrative_parse_failure_count=0,
-    )
+    assert first_result.metrics.post_shift_probe_accuracy == 1.0
+    assert first_result.metrics.binary_parse_valid_rate == 1.0
+    assert first_result.metrics.narrative_schema_valid_rate == 1.0
+    assert first_result.metrics.narrative_parse_failure_count == 0
+    assert first_result.metrics.slice_report is not None
+    assert {
+        label for label, _ in first_result.metrics.slice_report.template_family
+    } == {episode.template_family.value for episode in episodes}
 
 
 def test_runner_flows_renderer_to_adapter_to_parser_to_metrics():
@@ -215,12 +216,14 @@ def test_runner_marks_malformed_narrative_as_schema_invalid():
     assert narrative_mode.rows[0].narrative_result is not None
     assert narrative_mode.rows[0].narrative_result.status is NarrativeParseStatus.INVALID_FORMAT
     # Binary scoring is unaffected; narrative failure tracked separately.
-    assert result.metrics == MetricSummary(
-        post_shift_probe_accuracy=1.0,
-        binary_parse_valid_rate=1.0,
-        narrative_schema_valid_rate=0.0,
-        narrative_parse_failure_count=1,
-    )
+    assert result.metrics.post_shift_probe_accuracy == 1.0
+    assert result.metrics.binary_parse_valid_rate == 1.0
+    assert result.metrics.narrative_schema_valid_rate == 0.0
+    assert result.metrics.narrative_parse_failure_count == 1
+    assert result.metrics.slice_report is not None
+    assert [label for label, _ in result.metrics.slice_report.template_family] == [
+        episode.template_family.value
+    ]
 
 
 def test_runner_captures_adapter_failures_as_invalid_rows():
@@ -261,12 +264,14 @@ def test_runner_captures_adapter_failures_as_invalid_rows():
     assert narrative_row.execution.raw_result.error_message == "timed out"
     assert narrative_row.execution.raw_result.response_text is None
     # Provider failure excluded from denominator; narrative_parse_failure_count = 0.
-    assert result.metrics == MetricSummary(
-        post_shift_probe_accuracy=1.0,
-        binary_parse_valid_rate=1.0,
-        narrative_schema_valid_rate=0.0,
-        narrative_parse_failure_count=0,
-    )
+    assert result.metrics.post_shift_probe_accuracy == 1.0
+    assert result.metrics.binary_parse_valid_rate == 1.0
+    assert result.metrics.narrative_schema_valid_rate == 0.0
+    assert result.metrics.narrative_parse_failure_count == 0
+    assert result.metrics.slice_report is not None
+    assert [label for label, _ in result.metrics.slice_report.template_family] == [
+        episode.template_family.value
+    ]
 
 
 def test_runner_reports_progress_after_each_completed_episode():
