@@ -125,6 +125,7 @@ def test_kaggle_directory_layout_separates_active_staging_and_archive_files():
 
     assert top_level_files == [
         "BENCHMARK_CARD.md",
+        "PRIVATE_SPLIT_RUNBOOK.md",
         "README.md",
         "frozen_artifacts_manifest.json",
         "kernel-metadata.json",

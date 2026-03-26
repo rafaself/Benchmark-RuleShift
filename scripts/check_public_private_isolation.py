@@ -68,6 +68,53 @@ def _collect_public_location_errors() -> list[str]:
     return errors
 
 
+def _collect_notebook_compliance_errors() -> list[str]:
+    """Static compliance checks on the official notebook source."""
+    errors: list[str] = []
+    notebook_path = KAGGLE_DIR / "ruleshift_notebook_task.ipynb"
+    notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
+
+    all_sources = "\n".join(
+        "".join(cell.get("source", ()))
+        for cell in notebook["cells"]
+    )
+
+    # Requirement 3: private split must be loaded only through authorized resolution
+    if "resolve_private_dataset_root" not in all_sources:
+        errors.append(
+            "official notebook does not call resolve_private_dataset_root; "
+            "private split must be loaded through the authorized flow"
+        )
+
+    # Requirement 4: leaderboard evaluation must explicitly exclude dev
+    if '_LEADERBOARD_PARTITIONS = ("public_leaderboard", "private_leaderboard")' not in all_sources:
+        errors.append(
+            "official notebook does not define "
+            '_LEADERBOARD_PARTITIONS = ("public_leaderboard", "private_leaderboard"); '
+            "dev must be explicitly excluded from leaderboard evaluation"
+        )
+
+    # Requirement 5: final cell must select the single main task only
+    last_code_source = ""
+    for cell in reversed(notebook["cells"]):
+        if cell.get("cell_type") == "code":
+            last_code_source = "".join(cell.get("source", ()))
+            break
+    magic_lines = [
+        line.strip()
+        for line in last_code_source.splitlines()
+        if line.strip().startswith("%")
+    ]
+    if magic_lines != ["%choose ruleshift_benchmark_v1_binary"]:
+        errors.append(
+            "last notebook code cell must contain exactly "
+            "'%choose ruleshift_benchmark_v1_binary'; "
+            f"got magic lines: {magic_lines!r}"
+        )
+
+    return errors
+
+
 def _collect_runtime_errors(runtime_dir: Path) -> list[str]:
     if not runtime_dir.exists():
         return []
@@ -83,14 +130,15 @@ def main() -> int:
     errors = [
         *_collect_public_location_errors(),
         *_collect_runtime_errors(DEPLOY_RUNTIME_DIR),
+        *_collect_notebook_compliance_errors(),
     ]
     if errors:
-        print("Public/private isolation check FAILED:", file=sys.stderr)
+        print("Public/private isolation and compliance check FAILED:", file=sys.stderr)
         for error in errors:
             print(f"  - {error}", file=sys.stderr)
         return 1
 
-    print("Public/private isolation check passed.")
+    print("Public/private isolation and compliance check passed.")
     return 0
 
 

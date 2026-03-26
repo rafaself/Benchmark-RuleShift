@@ -73,3 +73,15 @@ Before running private evaluation on Kaggle:
 - [ ] `make test` passes
 - [ ] The private dataset is attached as a separate Kaggle dataset mount, not bundled in the public runtime package
 - [ ] `deploy/kaggle-runtime/` contains no `private_episodes.json` and no `private_leaderboard` entry
+
+## Submission-Readiness Checklist
+
+Run `make compliance-check` to verify all five compliance requirements automatically. The command runs the static isolation script followed by the end-to-end notebook boundary tests.
+
+Manual confirmation before submission:
+
+- [ ] **No private artifact in public repo** — `python scripts/check_public_private_isolation.py` passes (static: scans repo tree and manifest)
+- [ ] **No private artifact in public package** — deploy build output contains only `dev.json` and `public_leaderboard.json`; `private_episodes.json` is absent from `deploy/kaggle-runtime/`
+- [ ] **Private split loaded through authorized flow** — notebook calls `resolve_private_dataset_root`; no repo-local fallback path; confirmed by `make compliance-check`
+- [ ] **Leaderboard evaluation excludes dev** — `_LEADERBOARD_PARTITIONS = ("public_leaderboard", "private_leaderboard")` is explicit in the notebook; `TestNotebookEndToEnd` confirms `leaderboard_df` contains no dev rows
+- [ ] **Single main task in final cell** — last notebook code cell is `%choose ruleshift_benchmark_v1_binary`; `TestNotebookEndToEnd` confirms only Binary is in the kbench registry

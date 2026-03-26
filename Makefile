@@ -1,7 +1,7 @@
 PYTHON ?= .venv/bin/python
 CLI := $(PYTHON) scripts/ruleshift_benchmark.py
 
-.PHONY: help test validity reaudit integrity evidence-pass notebook-check contract-audit
+.PHONY: help test validity reaudit integrity evidence-pass notebook-check contract-audit compliance-check
 
 help:
 	@printf "Available targets:\n"
@@ -12,6 +12,7 @@ help:
 	@printf "  make evidence-pass\n"
 	@printf "  make notebook-check\n"
 	@printf "  make contract-audit\n"
+	@printf "  make compliance-check\n"
 
 test:
 	$(CLI) test
@@ -33,3 +34,7 @@ notebook-check:
 
 contract-audit:
 	$(CLI) contract-audit
+
+compliance-check:
+	$(PYTHON) scripts/check_public_private_isolation.py
+	$(PYTHON) -m pytest tests/test_kbench_notebook.py::TestNotebookEndToEnd -v
