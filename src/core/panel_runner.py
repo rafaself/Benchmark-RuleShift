@@ -1825,12 +1825,19 @@ def _observed_served_model_ids(
 
 def _build_split_manifest_metadata(split_name: str) -> dict[str, object]:
     manifest = load_split_manifest(split_name)
-    manifest_path = Path(__file__).resolve().parents[1] / "frozen_splits" / f"{split_name}.json"
+    if split_name == "private_leaderboard":
+        from core.private_split import PRIVATE_EPISODES_FILENAME, resolve_private_dataset_root
+
+        manifest_path = resolve_private_dataset_root() / PRIVATE_EPISODES_FILENAME
+        path_str = f"<private_dataset_root>/{PRIVATE_EPISODES_FILENAME}"
+    else:
+        manifest_path = Path(__file__).resolve().parents[1] / "frozen_splits" / f"{split_name}.json"
+        path_str = str(
+            manifest_path.resolve().relative_to(Path(__file__).resolve().parents[2])
+        )
     return {
         "split_name": split_name,
-        "path": str(
-            manifest_path.resolve().relative_to(Path(__file__).resolve().parents[2])
-        ),
+        "path": path_str,
         "sha256": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
         "manifest_version": manifest.manifest_version,
         "seed_bank_version": manifest.seed_bank_version,
