@@ -13,7 +13,7 @@ from core.private_split import (  # noqa: E402
 )
 from core.splits import MANIFEST_VERSION  # noqa: E402
 
-_TEST_PRIVATE_SEEDS = tuple(range(20000, 20016))
+_TEST_PRIVATE_SEEDS = tuple(range(9108, 9124))
 
 
 @pytest.fixture(scope="session")
