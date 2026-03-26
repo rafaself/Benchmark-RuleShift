@@ -8,6 +8,7 @@ from pathlib import Path
 import random
 from typing import Any, Final, Sequence
 
+from core.invariance import INVARIANCE_VERSION, PerturbationClass
 from core.parser import (
     NarrativeParseStatus,
     ParseStatus,
@@ -613,6 +614,8 @@ def _normalize_result_df(df: Any) -> Any:
 def build_kaggle_payload(
     binary_df: Any,
     narrative_df: Any,
+    *,
+    invariance_df: Any | None = None,
 ) -> dict[str, object]:
     """Constructs the canonical final Kaggle payload from task results.
 
@@ -624,10 +627,17 @@ def build_kaggle_payload(
         binary_df: pandas DataFrame containing 'num_correct' and 'total' columns.
         narrative_df: pandas DataFrame containing 'num_correct' and 'total' columns.
             Must align with binary_df on episode count and total denominator.
+        invariance_df: Optional pandas DataFrame with columns
+            ``perturbation_class``, ``num_correct``, and ``total``.  When
+            supplied, a diagnostic ``invariance`` section is included in the
+            payload.  Not required for leaderboard compliance; does not affect
+            ``primary_result``.
 
     Returns:
         A dictionary representing the JSON payload to be emitted, including
         primary_result, narrative_result, comparison, slices, and metadata.
+        If ``invariance_df`` is provided an additional ``invariance`` key is
+        present with per-perturbation-class accuracy (diagnostic only).
 
     Raises:
         ValueError: If binary_df or narrative_df is missing, empty, or misaligned.
@@ -712,7 +722,7 @@ def build_kaggle_payload(
         narrative_df["total"].tolist(),
     )
 
-    return {
+    payload: dict[str, object] = {
         "primary_result": {
             "score": bin_ci.mean,
             "numerator": bin_num,
@@ -754,6 +764,11 @@ def build_kaggle_payload(
             "benchmark_version": MANIFEST_VERSION,
         },
     }
+
+    if invariance_df is not None:
+        payload["invariance"] = _build_invariance_payload(invariance_df)
+
+    return payload
 
 
 def _build_payload_slices(binary_df: Any) -> dict[str, object]:
@@ -816,3 +831,34 @@ def _error_type_counts(df: Any) -> dict[str, int]:
         else:
             counts[ErrorType.PREMATURE_SWITCH.value] += 1
     return counts
+
+
+def _build_invariance_payload(invariance_df: Any) -> dict[str, object]:
+    """Build the diagnostic invariance section from an invariance results DataFrame.
+
+    Args:
+        invariance_df: pandas DataFrame with columns ``perturbation_class``,
+            ``num_correct``, and ``total``.  One row per (episode, class) pair.
+
+    Returns:
+        Dict with ``version`` and ``by_class`` keys suitable for embedding in
+        the canonical payload under the ``invariance`` key.
+    """
+    by_class: dict[str, object] = {}
+    for pc in PerturbationClass:
+        subset = invariance_df[invariance_df["perturbation_class"] == pc.value]
+        if len(subset) == 0:
+            continue
+        nc = int(subset["num_correct"].sum())
+        tot = int(subset["total"].sum())
+        by_class[pc.value] = {
+            "perturbation_class": pc.value,
+            "episode_count": len(subset),
+            "correct_probes": nc,
+            "total_probes": tot,
+            "accuracy": nc / tot if tot > 0 else 0.0,
+        }
+    return {
+        "version": INVARIANCE_VERSION,
+        "by_class": by_class,
+    }

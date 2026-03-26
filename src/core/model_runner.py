@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, replace as _dc_replace
 
+from core.invariance import InvarianceCase, build_invariance_report, generate_invariance_cases
 from core.metrics import MetricSummary, compute_metrics
 from core.model_execution import (
     ModelAdapter,
@@ -70,6 +71,7 @@ def run_model_benchmark(
     config: ModelRunConfig | None = None,
     modes: Iterable[ModelMode] = _MODE_ORDER,
     progress_callback: RunProgressCallback | None = None,
+    run_invariance: bool = False,
 ) -> BenchmarkRunResult:
     normalized_episodes = tuple(episodes)
     normalized_modes = _normalize_modes(modes)
@@ -133,6 +135,18 @@ def run_model_benchmark(
     slice_report = build_slice_report(episode_slices)
     metrics = _dc_replace(base_metrics, slice_report=slice_report)
 
+    if run_invariance:
+        inv_cases = generate_invariance_cases(normalized_episodes)
+        inv_predictions = _run_invariance_cases(
+            cases=inv_cases,
+            adapter=adapter,
+            provider_name=provider_name,
+            model_name=model_name,
+            config=normalized_config,
+        )
+        inv_report = build_invariance_report(inv_predictions)
+        metrics = _dc_replace(metrics, invariance_report=inv_report)
+
     return BenchmarkRunResult(
         provider_name=provider_name,
         model_name=model_name,
@@ -140,6 +154,42 @@ def run_model_benchmark(
         mode_results=mode_results,
         metrics=metrics,
     )
+
+
+def _run_invariance_cases(
+    *,
+    cases: list[InvarianceCase],
+    adapter: ModelAdapter,
+    provider_name: str,
+    model_name: str,
+    config: ModelRunConfig,
+) -> list[tuple[InvarianceCase, ParsedPrediction]]:
+    """Run each invariance case's perturbed prompt through the adapter in Binary mode."""
+    results: list[tuple[InvarianceCase, ParsedPrediction]] = []
+    for case in cases:
+        request = ModelRequest(
+            provider_name=provider_name,
+            model_name=model_name,
+            prompt_text=case.perturbed_prompt,
+            mode=ModelMode.BINARY,
+        )
+        try:
+            raw_result = adapter.generate(request, config)
+        except Exception as exc:
+            raw_result = ModelRawResult.from_request(
+                request,
+                execution_outcome=ModelExecutionOutcome.PROVIDER_FAILURE,
+                error_type=type(exc).__name__,
+                error_message=str(exc),
+            )
+
+        if raw_result.execution_outcome is ModelExecutionOutcome.COMPLETED:
+            prediction = parse_binary_output(raw_result.response_text or "")
+        else:
+            prediction = ParsedPrediction.skipped_provider_failure()
+
+        results.append((case, prediction))
+    return results
 
 
 def _normalize_modes(modes: Iterable[ModelMode]) -> tuple[ModelMode, ...]:
