@@ -34,7 +34,7 @@ def make_valid_t1_episode() -> Episode:
 
 
 def make_valid_t2_episode() -> Episode:
-    episode = generate_episode(10)
+    episode = generate_episode(4)
     assert episode.template_id is TemplateId.T2
     assert episode.difficulty is Difficulty.MEDIUM
     return episode

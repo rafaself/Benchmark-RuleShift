@@ -2,8 +2,8 @@
   "primary_result": {
     "score": 0.0,
     "numerator": 0,
-    "denominator": 128,
-    "total_episodes": 32,
+    "denominator": 136,
+    "total_episodes": 34,
     "confidence_interval": {
       "mean": 0.0,
       "lower": 0.0,
@@ -15,8 +15,8 @@
   "narrative_result": {
     "score": 0.0,
     "numerator": 0,
-    "denominator": 128,
-    "total_episodes": 32,
+    "denominator": 136,
+    "total_episodes": 34,
     "confidence_interval": {
       "mean": 0.0,
       "lower": 0.0,
@@ -30,10 +30,10 @@
     "narrative_score": 0.0,
     "delta": 0.0,
     "episode_count_aligned": true,
-    "binary_total_episodes": 32,
-    "narrative_total_episodes": 32,
-    "binary_denominator": 128,
-    "narrative_denominator": 128
+    "binary_total_episodes": 34,
+    "narrative_total_episodes": 34,
+    "binary_denominator": 136,
+    "narrative_denominator": 136
   },
   "slices": {
     "template": {},
@@ -42,7 +42,7 @@
     "shift_position": {},
     "transition_type": {},
     "error_type": {
-      "old_rule_persistence": 32,
+      "old_rule_persistence": 34,
       "premature_switch": 0,
       "recency_overweight": 0,
       "invalid_narrative": 0,
