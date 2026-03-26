@@ -13,6 +13,14 @@ A high v1 Binary score is evidence that a model correctly applied the post-shift
 
 This package is a Kaggle packaging layer over the implemented local benchmark. The implemented local benchmark under `src/` and the public frozen split manifests under `src/frozen_splits/` remain the runtime source of truth. The held-out private split is resolved only through the private split loader and an authorized private dataset mount. The single official Kaggle leaderboard notebook is `packaging/kaggle/ruleshift_notebook_task.ipynb`; `packaging/kaggle/staging/ruleshift_benchmark_v1_kaggle_staging.ipynb` is staging-only.
 
+## Current Benchmark Status
+
+- Scope: RuleShift Benchmark v1 remains a narrow cognitive-flexibility benchmark. Electrostatics is only the controlled substrate.
+- Leaderboard-primary path: Binary (`ruleshift_benchmark_v1_binary`) only.
+- Supplemental evidence: Narrative is same-episode robustness/audit evidence only. Only the final four labels are scored, and Narrative never changes the leaderboard score.
+- Current emitted difficulty labels in the shipped manifest and current audit fixtures: `easy`, `medium`, and `hard`. `reserved_difficulty_labels` is empty.
+- Report status: benchmark-state statements belong in the benchmark card, root README, and frozen manifests/audit fixtures. Preserved Gemini live reports are supporting evidence captures; `history/` paths are archival, and some retained live-report tables publish only `easy`/`medium` slices because they reflect older captured runs rather than current benchmark governance.
+
 ## Task Paths
 
 - **Binary** (`ruleshift_benchmark_v1_binary`) is the only leaderboard-primary path. The Binary task is the scored evaluation path for the v1 claim.
@@ -86,7 +94,7 @@ This Kaggle package references frozen local artifacts rather than regenerating a
 - held-out private split input: attached private dataset mount providing `private_episodes.json`
 - anti-shortcut gate evidence: `tests/fixtures/release_r13_validity_report.json`
 - empirical re-audit evidence: `tests/fixtures/release_r15_reaudit_report.json`
-- single packaged Gemini readiness anchor: `reports/m1_binary_vs_narrative_robustness_report.md`
+- current public paired Gemini report alias: `reports/m1_binary_vs_narrative_robustness_report.md`
 - Kaggle runtime-contract manifest and integrity hashes: `packaging/kaggle/frozen_artifacts_manifest.json`
 
 Version metadata currently frozen by the package:
@@ -129,9 +137,9 @@ The benchmark explicitly does **not** claim:
 ## Current Readiness Status
 
 - the active v1 readiness evidence path is Gemini;
-- the single current packaged readiness anchor is `reports/m1_binary_vs_narrative_robustness_report.md`;
-- that anchor is synced to the committed paired report preserving the requested model label `gemini-2.5-flash` at `reports/live/gemini-first-panel/binary-vs-narrative/history/report__20260323_120000.md`;
-- the paired Gemini Flash-Lite `latest/` run and the direct Flash vs Flash-Lite comparison are preserved as supporting comparison material, not as a second active readiness anchor;
+- the current public paired Gemini report surface is `reports/m1_binary_vs_narrative_robustness_report.md`, a convenience mirror of `reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md`, which currently contains the committed paired `gemini-2.5-flash-lite` run;
+- the earlier paired `gemini-2.5-flash` report at `reports/live/gemini-first-panel/binary-vs-narrative/history/report__20260323_120000.md` is retained as historical live evidence and provenance material;
+- the direct Flash vs Flash-Lite comparison is preserved as supplemental comparison material at `reports/live/gemini-first-panel/comparison/latest/report.md`, not as an official Kaggle submission path;
 - Anthropic and OpenAI integrations already exist locally, but they are outside the current v1 readiness gate;
 - current v1 readiness does not require cross-provider evidence.
 
@@ -154,13 +162,9 @@ The packaged anti-shortcut validity evidence is the local `R13` gate report. It 
 
 The packaged empirical re-audit is the local `R15` report over the refreshed `R14` frozen splits. It reports that the **recency shortcut was materially reduced** relative to the earlier blocker surface: `last_evidence` peaks at `0.500000` on `public_leaderboard`, so recency no longer looks like the dominant shortcut failure mode in that report.
 
-The same re-audit also says the benchmark is still limited by:
-
-- `hard` remaining reserved and un-emitted
-
 ### M1 live Gemini evidence
 
-The single current packaged readiness anchor is `reports/m1_binary_vs_narrative_robustness_report.md`, synced to the committed M1 Gemini panel report for requested model label `gemini-2.5-flash` at `reports/live/gemini-first-panel/binary-vs-narrative/history/report__20260323_120000.md`. This committed report was resynced in M6 from the original legacy capture; current local runners now require pinned model IDs, but the legacy capture did not record provider-served model-version, token-usage, or duration fields.
+The current public paired Gemini report mirror is `reports/m1_binary_vs_narrative_robustness_report.md`, which mirrors `reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md` and currently contains the committed paired `gemini-2.5-flash-lite` run. The earlier paired `gemini-2.5-flash` report remains preserved at `reports/live/gemini-first-panel/binary-vs-narrative/history/report__20260323_120000.md` as historical live evidence. That historical report was resynced in M6 from the original legacy capture; current local runners now require pinned model IDs, but the legacy capture did not record provider-served model-version, token-usage, or duration fields.
 
 - Binary accuracy: 0.781250
 - Narrative accuracy: 0.458333

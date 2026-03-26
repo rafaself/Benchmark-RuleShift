@@ -1,5 +1,9 @@
 # Private Split Separation Repair Report
 
+> **Status: HISTORICAL AUDIT REPORT**
+> This archived split-repair report reflects an earlier benchmark state.
+> References below to `hard` being reserved or un-emitted are historical and are not the current benchmark status.
+
 ## Summary
 
 The weak `heuristic_subset_separation` failure was caused by **private split composition**, not by gate thresholding and not by a remaining generator/protocol flaw.
@@ -90,7 +94,7 @@ After:
 - The re-audit no longer reports private slice separation as a blocker
 - Remaining blockers are:
   - no bundled real-model runs in-repo
-  - `hard` remains reserved and un-emitted
+  - at the time of this archived report, `hard` was still treated as reserved and un-emitted
 
 ## Evidence Pass
 
@@ -117,4 +121,4 @@ The failure mode was **underpowered private split composition**. The repaired be
 ## Remaining Blockers Before Real-Model Evaluation
 
 - No real-model runs are bundled in-repo, so model-vs-heuristic separation is still unverified.
-- `hard` remains reserved and un-emitted, so no hard-slice claim is supportable.
+- at the time of this archived report, `hard` was still treated as reserved and un-emitted, so no hard-slice claim was supportable.

@@ -1,5 +1,9 @@
 # Gemini First Panel Report
 
+> **Status: SUPPORTING LIVE REPORT MIRROR**
+> This file mirrors the current public paired Gemini live report at `reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md`.
+> It is a preserved live-evidence artifact, not the source of truth for benchmark scope, leaderboard role, or current emitted difficulty labels.
+
 - Release: R18
 - Provider: gemini
 - Model: gemini-2.5-flash-lite
@@ -145,5 +149,5 @@ Execution provenance is diagnostic-only operational context. It does not change 
 
 ## Notes
 
-- `hard` remains reserved and is not emitted in the current frozen repaired benchmark, so no hard slice is reported.
+- This preserved run publishes difficulty tables for `easy` and `medium` only. Current benchmark manifests and bundled audit fixtures expose `easy`, `medium`, and `hard`; use the root `README.md`, `packaging/kaggle/BENCHMARK_CARD.md`, or `packaging/kaggle/frozen_artifacts_manifest.json` for current benchmark-state statements.
 - Narrative remains required non-leaderboard robustness evidence on the same frozen episodes and probe targets as Binary; only the final four labels are scored, and it does not replace the primary Binary post-shift probe audit.

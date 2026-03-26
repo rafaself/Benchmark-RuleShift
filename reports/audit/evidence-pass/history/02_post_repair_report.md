@@ -1,8 +1,12 @@
 # Post-Repair Evidence Pass Report
 
+> **Status: HISTORICAL AUDIT REPORT**
+> This archived evidence-pass report reflects an earlier benchmark state.
+> References below to `hard` being reserved or un-emitted are historical and are not the current benchmark status.
+
 ## Executive Summary
 
-After the private split repair, the local RuleShift Benchmark is code-healthy, reproducible, and now clears the local benchmark-validity surface. The repaired private split passes the R13 anti-shortcut validity gate, the R15 deterministic re-audit no longer reports weak private slice separation as a blocker, and frozen artifact integrity remains clean. `hard` is still reserved and not emitted, and no real-model runs are bundled in-repo.
+After the private split repair, the local RuleShift Benchmark is code-healthy, reproducible, and now clears the local benchmark-validity surface. The repaired private split passes the R13 anti-shortcut validity gate, the R15 deterministic re-audit no longer reports weak private slice separation as a blocker, and frozen artifact integrity remains clean. At the time of this archived report, `hard` was still treated as reserved and un-emitted, and no real-model runs were bundled in-repo.
 
 ## Evidence Pass
 
@@ -49,7 +53,7 @@ The R15 note now reports:
 Current remaining blockers in the re-audit surface:
 
 - no bundled real-model runs in-repo
-- `hard` remains reserved and un-emitted
+- at the time of this archived report, `hard` was still treated as reserved and un-emitted
 
 ## Frozen Artifact Integrity
 

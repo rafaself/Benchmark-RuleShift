@@ -1,5 +1,9 @@
 # Gemini First Panel Report
 
+> **Status: HISTORICAL BINARY-ONLY LIVE REPORT**
+> This file is retained as historical Gemini Binary-only evidence.
+> It is not the current paired Binary/Narrative report surface and it is not the source of truth for current emitted difficulty labels.
+
 - Release: R18
 - Provider: gemini
 - Model: gemini-2.5-flash
@@ -93,6 +97,6 @@ Execution provenance is diagnostic-only operational context. It does not change 
 
 ## Notes
 
-- `hard` remains reserved and is not emitted in the current frozen repaired benchmark, so no hard slice is reported.
-- Narrative mode was not run in this first real-model panel, so Binary vs Narrative comparison is unavailable.
+- This preserved run publishes difficulty tables for `easy` and `medium` only. Current benchmark manifests and bundled audit fixtures expose `easy`, `medium`, and `hard`.
+- Narrative mode was not run in this first real-model panel, so this file is historical Binary-only evidence rather than the current paired robustness surface.
 - Narrative remains required non-leaderboard robustness evidence on the same frozen episodes and probe targets as Binary; only the final four labels are scored, and it does not replace the primary Binary post-shift probe audit.

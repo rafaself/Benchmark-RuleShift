@@ -12,6 +12,14 @@ RuleShift Benchmark v1 is a targeted Executive Functions benchmark for cognitive
 
 A high v1 Binary score is evidence that a model correctly applied the post-shift rule to the final probes after sparse contradictory evidence in the frozen episodes. It is not evidence of physics skill, broad adaptation ability, broad AGI capability, or general reasoning ability.
 
+## Current Benchmark Status
+
+- Scope: RuleShift Benchmark v1 is a narrow cognitive-flexibility benchmark in the Executive Functions track. Electrostatics remains only the controlled substrate.
+- Leaderboard-primary path: Binary (`ruleshift_benchmark_v1_binary`) only.
+- Supplemental evidence: Narrative is same-episode robustness/audit evidence only. Only the final four labels are scored, and Narrative never changes the leaderboard score.
+- Current emitted difficulty labels in the shipped manifest and current audit fixtures: `easy`, `medium`, and `hard`. `reserved_difficulty_labels` is empty.
+- Report status: benchmark-state statements live in this README and in [`packaging/kaggle/BENCHMARK_CARD.md`](./packaging/kaggle/BENCHMARK_CARD.md). Preserved Gemini live reports under [`reports/live/gemini-first-panel/`](./reports/live/gemini-first-panel/) are supporting evidence captures; `history/` paths are archival, and some retained live-report tables publish only `easy`/`medium` slices because they reflect older captured runs rather than current benchmark governance.
+
 ## Current State
 
 The repository currently implements:
@@ -34,7 +42,7 @@ Current implementation notes:
 - the current frozen benchmark clears the local R13 anti-shortcut validity gate and keeps the recency shortcut materially bounded in the current R15 re-audit surface;
 - the current emitted difficulty labels are `easy`, `medium`, and `hard`, and `reserved_difficulty_labels` is empty in the shipped manifest surface;
 - the frozen prompt/report contract includes the `template_family` axis (`canonical`, `observation_log`) and keeps invariance reporting diagnostic-only;
-- the repo already contains the single packaged Gemini readiness anchor at [`reports/m1_binary_vs_narrative_robustness_report.md`](./reports/m1_binary_vs_narrative_robustness_report.md), plus supporting live Gemini report material under [`reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md`](./reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md);
+- the repo contains the current public paired Gemini report mirror at [`reports/m1_binary_vs_narrative_robustness_report.md`](./reports/m1_binary_vs_narrative_robustness_report.md), which currently mirrors [`reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md`](./reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md); the earlier paired Gemini Flash report is preserved as historical evidence at [`reports/live/gemini-first-panel/binary-vs-narrative/history/report__20260323_120000.md`](./reports/live/gemini-first-panel/binary-vs-narrative/history/report__20260323_120000.md);
 - the Kaggle packaging bundle under [`packaging/kaggle/`](./packaging/kaggle/) mirrors the current local benchmark state, but it is downstream of the local benchmark and does not redefine benchmark governance.
 
 Task and metric boundaries:
@@ -50,8 +58,9 @@ Task and metric boundaries:
 Current v1 readiness status:
 
 - the active v1 readiness evidence path is Gemini;
-- the single current packaged readiness anchor is `reports/m1_binary_vs_narrative_robustness_report.md`, synced to the committed paired Gemini report for requested model label `gemini-2.5-flash` at `reports/live/gemini-first-panel/binary-vs-narrative/history/report__20260323_120000.md`;
-- the paired Gemini Flash-Lite `latest/` run and the direct Flash vs Flash-Lite comparison remain supporting comparison material, not the active readiness anchor or an official Kaggle submission path;
+- the current public paired Gemini report surface is [`reports/m1_binary_vs_narrative_robustness_report.md`](./reports/m1_binary_vs_narrative_robustness_report.md), a convenience mirror of [`reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md`](./reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md), which currently contains the committed paired `gemini-2.5-flash-lite` run;
+- the earlier paired `gemini-2.5-flash` report at [`reports/live/gemini-first-panel/binary-vs-narrative/history/report__20260323_120000.md`](./reports/live/gemini-first-panel/binary-vs-narrative/history/report__20260323_120000.md) is retained as historical live evidence and provenance material;
+- the direct Flash vs Flash-Lite comparison remains supplemental comparison material under [`reports/live/gemini-first-panel/comparison/latest/report.md`](./reports/live/gemini-first-panel/comparison/latest/report.md), not an official Kaggle submission path;
 - Anthropic and OpenAI integrations already exist locally, but they are outside the current v1 readiness gate and are not required for current v1 readiness;
 - current v1 readiness does not require cross-provider evidence.
 
@@ -64,8 +73,8 @@ Deferred-work boundary:
 
 Current evidence status:
 
-- **M1 (live Gemini panel)**: Binary accuracy = 0.781250, Narrative accuracy = 0.458333 (delta = 0.322917), Binary parse-valid = 1.000000, Narrative parse-valid = 0.937500. Binary substantially exceeds all heuristic baselines. Narrative is meaningfully lower than Binary on the same frozen episodes, indicating a real surface-form robustness gap. A small Narrative provider/runtime contamination note (overall rate = 0.041667) must be disclosed separately from parse/format and adaptation outcomes. The committed M1 report preserves the original requested model label `gemini-2.5-flash`.
-- **M1b (live Gemini Flash-Lite panel)**: Binary accuracy = 0.687500, Narrative accuracy = 0.276042 (delta = 0.411458), Binary parse-valid = 0.958333, Narrative parse-valid = 0.520833. The run uses the same frozen splits and benchmark versions as M1 and is retained as supporting comparison material under `latest/`.
+- **M1 (historical paired Gemini Flash run)**: Binary accuracy = 0.781250, Narrative accuracy = 0.458333 (delta = 0.322917), Binary parse-valid = 1.000000, Narrative parse-valid = 0.937500. Binary substantially exceeds all heuristic baselines. Narrative is meaningfully lower than Binary on the same frozen episodes, indicating a real surface-form robustness gap. A small Narrative provider/runtime contamination note (overall rate = 0.041667) must be disclosed separately from parse/format and adaptation outcomes. The committed historical report preserves the original requested model label `gemini-2.5-flash`.
+- **M1b (current public paired Gemini Flash-Lite report surface)**: Binary accuracy = 0.687500, Narrative accuracy = 0.276042 (delta = 0.411458), Binary parse-valid = 0.958333, Narrative parse-valid = 0.520833. The current public paired-report mirror lives at [`reports/m1_binary_vs_narrative_robustness_report.md`](./reports/m1_binary_vs_narrative_robustness_report.md) and mirrors [`reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md`](./reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md).
 - **M1c (intra-Gemini comparison)**: The Flash vs Flash-Lite comparison confirms matching benchmark versions and frozen split hashes, so the current Gemini anchor run and Flash-Lite run are directly comparable without widening the claim beyond the Gemini readiness path.
 - **M2 (staging dry-run readiness)**: Packaged frozen artifacts load, manifest validation passes, and the staging notebook runs end to end in both Binary and Narrative modes. M2 is packaging-validation evidence only, not live model-evaluation evidence.
 - **Local provider surfaces**: Gemini, Anthropic, and OpenAI runners exist locally. Only Gemini is part of the current v1 readiness path.

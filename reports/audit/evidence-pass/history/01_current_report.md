@@ -1,8 +1,12 @@
 # Current Evidence Pass Report
 
+> **Status: HISTORICAL AUDIT REPORT**
+> This archived evidence-pass report reflects an earlier benchmark state.
+> References below to `hard` being reserved or un-emitted are historical and are not the current benchmark status.
+
 ## Executive Summary
 
-The current local RuleShift Benchmark is code-healthy and reproducible, but it is still blocked on benchmark-validity evidence. The full local automated suite passed (`629 passed, 0 failed, 0 skipped`), all frozen manifests and regression fixtures loaded cleanly, and the current R15 deterministic re-audit reproduced the bundled evidence exactly. The current R13 anti-shortcut gate still fails on one criterion: private-leaderboard subset separation remains too weak. `hard` is still reserved and not emitted.
+The current local RuleShift Benchmark is code-healthy and reproducible, but it is still blocked on benchmark-validity evidence. The full local automated suite passed (`629 passed, 0 failed, 0 skipped`), all frozen manifests and regression fixtures loaded cleanly, and the current R15 deterministic re-audit reproduced the bundled evidence exactly. The current R13 anti-shortcut gate still fails on one criterion: private-leaderboard subset separation remains too weak. At the time of this archived report, `hard` was still treated as reserved and un-emitted.
 
 ## Scope and Execution
 
@@ -139,7 +143,7 @@ Interpretation:
 
 ### Scores by Currently Emitted Difficulty Labels Only
 
-`hard` is reserved and not emitted, so only `easy` and `medium` are auditable in the current build.
+At the time of this archived report, only `easy` and `medium` were auditable in that build.
 
 | Baseline | Easy | Medium |
 | --- | ---: | ---: |
@@ -226,7 +230,7 @@ Not by the current local evidence. `last_evidence` stays at `0.500000` on both l
 
 ### Are currently emitted difficulty labels behaving as expected?
 
-Yes, for the currently emitted labels. Only `easy` and `medium` are present, and all current audit outputs are internally consistent with that. `hard` is still reserved and not emitted.
+Yes, for the labels emitted in this archived build. Only `easy` and `medium` are present, and the audit outputs in this report are internally consistent with that. In that historical state, `hard` was still treated as reserved and un-emitted.
 
 ### Is the benchmark ready for Kaggle staging, or still blocked?
 
@@ -237,14 +241,14 @@ Blocking reasons:
 1. The current benchmark fails the R13 anti-shortcut validity gate.
 2. Private-leaderboard subset separation is below threshold.
 3. No real-model runs/adapters are bundled or configured locally, so model-vs-heuristic separation is unverified.
-4. `hard` remains reserved and un-emitted, so no hard-slice claim is supportable.
+4. In this historical state, `hard` was still treated as reserved and un-emitted, so no hard-slice claim was supportable.
 
 ### Exact Recommended Next Steps
 
 1. Strengthen the frozen benchmark so the private-leaderboard critical heuristics achieve at least `0.10` template gap and `0.10` emitted-difficulty gap without letting any critical shortcut baseline exceed `0.55` on the leaderboard splits.
 2. Re-run the exact same R13 gate and R15 re-audit after that change and refresh the frozen evidence artifacts only if the outputs change.
 3. Add at least one locally runnable real-model evaluation path, or explicitly stage without model evidence and keep the benchmark card conservative about that limitation.
-4. Continue to state clearly that `hard` is reserved and not emitted until the generator actually produces it and the frozen artifacts are refreshed.
+4. At that time, the correct guidance was to state clearly that `hard` was reserved and not emitted until the generator produced it and the frozen artifacts were refreshed.
 
 ## Bottom Line
 

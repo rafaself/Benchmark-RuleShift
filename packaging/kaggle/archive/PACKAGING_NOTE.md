@@ -27,4 +27,4 @@
 - The package explicitly does not claim physics skill, broad executive-function coverage, broad AGI capability, human-level performance, cross-provider readiness, switch cost measurement, recovery length, immediate post-shift drop, online change-detection latency, or emitted `hard` slices.
 - Current v1 readiness evidence is Gemini-only. The committed anchor evidence preserves the original requested model label `gemini-2.5-flash`, the canonical paired Flash-Lite run lives under `reports/live/gemini-first-panel/binary-vs-narrative/latest/`, and the direct Flash vs Flash-Lite comparison lives under `reports/live/gemini-first-panel/comparison/latest/`.
 - Anthropic and OpenAI integrations exist locally in the repository, but they are outside the current v1 readiness gate and outside the Kaggle staging path.
-- `hard` remains reserved and is not emitted.
+- At the time of this archived packaging note, `hard` was still treated as reserved and un-emitted.

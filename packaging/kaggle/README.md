@@ -33,13 +33,14 @@ The active runtime contract does not require `FROZEN_BENCHMARK_SPEC.md`, `BENCHM
 
 No other notebook or local runtime path is an official Kaggle leaderboard submission surface.
 
-## Official Packaged Evidence Anchor
+## Packaged Evidence References
 
-- Official packaged readiness anchor: `reports/m1_binary_vs_narrative_robustness_report.md`
-- Source report behind that anchor: the committed paired Gemini report preserving the requested model label `gemini-2.5-flash` at `reports/live/gemini-first-panel/binary-vs-narrative/history/report__20260323_120000.md`
-- Supporting comparison-only material: `reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md` and `reports/live/gemini-first-panel/comparison/latest/report.md`
+- Current public paired Gemini report alias: `reports/m1_binary_vs_narrative_robustness_report.md`
+- Current paired live-report source behind that alias: `reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md` (committed paired `gemini-2.5-flash-lite` run)
+- Historical paired Gemini Flash report retained for provenance/comparison: `reports/live/gemini-first-panel/binary-vs-narrative/history/report__20260323_120000.md`
+- Supporting comparison-only material: `reports/live/gemini-first-panel/comparison/latest/report.md`
 
-The supporting comparison material is preserved for history and inspection. It is not a second active readiness anchor and it is not part of the Kaggle submission path.
+These report surfaces are supporting evidence only. They are not part of the Kaggle submission path, and current benchmark-status statements still come from the benchmark code, frozen manifests, and benchmark-status docs rather than from any single preserved live report.
 
 ## Layout
 
