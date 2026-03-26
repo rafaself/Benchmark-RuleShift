@@ -6,7 +6,9 @@ from typing import Final
 from tasks.ruleshift_benchmark.protocol import (
     CHARGES,
     Difficulty,
+    DifficultyProfileId,
     EPISODE_LENGTH,
+    FactorLevel,
     LABELED_ITEM_COUNT,
     PROBE_COUNT,
     InteractionLabel,
@@ -19,6 +21,8 @@ from tasks.ruleshift_benchmark.protocol import (
     TEMPLATES,
     Transition,
     parse_difficulty,
+    parse_difficulty_profile_id,
+    parse_factor_level,
     parse_item_kind,
     parse_label,
     parse_phase,
@@ -35,15 +39,18 @@ __all__ = [
     "GENERATOR_VERSION",
     "TEMPLATE_SET_VERSION",
     "DIFFICULTY_VERSION",
+    "DifficultyFactors",
     "EpisodeItem",
     "ProbeMetadata",
     "Episode",
+    "derive_difficulty_factors",
+    "derive_difficulty_profile",
 ]
 
 SPEC_VERSION: Final[str] = "v1"
-GENERATOR_VERSION: Final[str] = "R12"
+GENERATOR_VERSION: Final[str] = "R13"
 TEMPLATE_SET_VERSION: Final[str] = "v2"
-DIFFICULTY_VERSION: Final[str] = "R12"
+DIFFICULTY_VERSION: Final[str] = "R13"
 
 _PROBE_LABEL_ORDER: Final[tuple[InteractionLabel, ...]] = (
     InteractionLabel.ATTRACT,
@@ -164,18 +171,208 @@ def _has_both_probe_labels(probe_targets: tuple[InteractionLabel, ...]) -> bool:
     return len(set(probe_targets)) >= 2
 
 
-def _derive_difficulty(
-    template_id: TemplateId,
-    contradiction_count_post: int,
-    probe_targets: tuple[InteractionLabel, ...],
-) -> Difficulty:
+def _count_probe_rule_switches(
+    probe_items: tuple["EpisodeItem", ...],
+    updated_sign_patterns: frozenset[str],
+) -> int:
+    active_rules = tuple(
+        "new"
+        if _probe_sign_pattern(item.q1, item.q2) in updated_sign_patterns
+        else "old"
+        for item in probe_items
+    )
+    return sum(
+        left != right for left, right in zip(active_rules, active_rules[1:])
+    )
+
+
+def _build_post_sign_pattern_counts(
+    post_labeled_items: tuple["EpisodeItem", ...],
+) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for item in post_labeled_items:
+        pattern = _probe_sign_pattern(item.q1, item.q2)
+        counts[pattern] = counts.get(pattern, 0) + 1
+    return counts
+
+
+def _probe_pattern_overlap_count(
+    probe_items: tuple["EpisodeItem", ...],
+    patterns: frozenset[str],
+) -> int:
+    return sum(
+        _probe_sign_pattern(item.q1, item.q2) in patterns
+        for item in probe_items
+    )
+
+
+def _retained_probe_overlap_count(
+    probe_items: tuple["EpisodeItem", ...],
+    *,
+    updated_sign_patterns: frozenset[str],
+    pre_sign_patterns: frozenset[str],
+) -> int:
+    return sum(
+        _probe_sign_pattern(item.q1, item.q2) not in updated_sign_patterns
+        and _probe_sign_pattern(item.q1, item.q2) in pre_sign_patterns
+        for item in probe_items
+    )
+
+
+def _distance_factor_for_final_probe(
+    *,
+    probe_items: tuple["EpisodeItem", ...],
+    post_labeled_items: tuple["EpisodeItem", ...],
+    updated_sign_patterns: frozenset[str],
+) -> FactorLevel:
+    final_probe = probe_items[-1]
+    final_pattern = _probe_sign_pattern(final_probe.q1, final_probe.q2)
+    if final_pattern not in updated_sign_patterns:
+        return FactorLevel.HIGH
+
+    matching_positions = tuple(
+        item.position
+        for item in post_labeled_items
+        if _probe_sign_pattern(item.q1, item.q2) == final_pattern
+    )
+    last_position = max(matching_positions)
+    if last_position == LABELED_ITEM_COUNT:
+        return FactorLevel.LOW
+    if last_position == LABELED_ITEM_COUNT - 1:
+        return FactorLevel.MEDIUM
+    return FactorLevel.HIGH
+
+
+def _clarity_factor_for_probe_block(
+    *,
+    probe_items: tuple["EpisodeItem", ...],
+    post_labeled_items: tuple["EpisodeItem", ...],
+    updated_sign_patterns: frozenset[str],
+) -> FactorLevel:
+    post_pattern_counts = _build_post_sign_pattern_counts(post_labeled_items)
+    final_pattern = _probe_sign_pattern(probe_items[-1].q1, probe_items[-1].q2)
+    if max(post_pattern_counts.values()) >= 2 and final_pattern in updated_sign_patterns:
+        return FactorLevel.HIGH
+    if max(post_pattern_counts.values()) >= 2:
+        return FactorLevel.MEDIUM
+    return FactorLevel.LOW
+
+
+@dataclass(frozen=True, slots=True)
+class DifficultyFactors:
+    conflict_strength: FactorLevel
+    post_shift_evidence_clarity: FactorLevel
+    probe_ambiguity: FactorLevel
+    evidence_to_final_probe_distance: FactorLevel
+    pre_shift_distractor_pressure: FactorLevel
+
+    def __post_init__(self) -> None:
+        object.__setattr__(
+            self,
+            "conflict_strength",
+            parse_factor_level(self.conflict_strength),
+        )
+        object.__setattr__(
+            self,
+            "post_shift_evidence_clarity",
+            parse_factor_level(self.post_shift_evidence_clarity),
+        )
+        object.__setattr__(
+            self,
+            "probe_ambiguity",
+            parse_factor_level(self.probe_ambiguity),
+        )
+        object.__setattr__(
+            self,
+            "evidence_to_final_probe_distance",
+            parse_factor_level(self.evidence_to_final_probe_distance),
+        )
+        object.__setattr__(
+            self,
+            "pre_shift_distractor_pressure",
+            parse_factor_level(self.pre_shift_distractor_pressure),
+        )
+
+
+def derive_difficulty_factors(
+    items: tuple["EpisodeItem", ...],
+    pre_count: int,
+) -> DifficultyFactors:
+    labeled_items = items[:LABELED_ITEM_COUNT]
+    post_labeled_items = labeled_items[pre_count:]
+    probe_items = items[LABELED_ITEM_COUNT:]
+    pre_sign_patterns = frozenset(
+        _probe_sign_pattern(item.q1, item.q2) for item in labeled_items[:pre_count]
+    )
+    updated_sign_patterns = _build_updated_sign_patterns(post_labeled_items)
+    switch_count = _count_probe_rule_switches(probe_items, updated_sign_patterns)
+    retained_overlap_count = _retained_probe_overlap_count(
+        probe_items,
+        updated_sign_patterns=updated_sign_patterns,
+        pre_sign_patterns=pre_sign_patterns,
+    )
+    probe_pre_overlap_count = _probe_pattern_overlap_count(probe_items, pre_sign_patterns)
+
+    if switch_count <= 1:
+        conflict_strength = FactorLevel.LOW
+    elif switch_count == 2:
+        conflict_strength = FactorLevel.MEDIUM
+    else:
+        conflict_strength = FactorLevel.HIGH
+
+    if retained_overlap_count == 0:
+        probe_ambiguity = FactorLevel.LOW
+    elif retained_overlap_count == 1:
+        probe_ambiguity = FactorLevel.MEDIUM
+    else:
+        probe_ambiguity = FactorLevel.HIGH
+
+    if probe_pre_overlap_count <= 1:
+        distractor_pressure = FactorLevel.LOW
+    elif probe_pre_overlap_count == 2:
+        distractor_pressure = FactorLevel.MEDIUM
+    else:
+        distractor_pressure = FactorLevel.HIGH
+
+    return DifficultyFactors(
+        conflict_strength=conflict_strength,
+        post_shift_evidence_clarity=_clarity_factor_for_probe_block(
+            probe_items=probe_items,
+            post_labeled_items=post_labeled_items,
+            updated_sign_patterns=updated_sign_patterns,
+        ),
+        probe_ambiguity=probe_ambiguity,
+        evidence_to_final_probe_distance=_distance_factor_for_final_probe(
+            probe_items=probe_items,
+            post_labeled_items=post_labeled_items,
+            updated_sign_patterns=updated_sign_patterns,
+        ),
+        pre_shift_distractor_pressure=distractor_pressure,
+    )
+
+
+def derive_difficulty_profile(
+    factors: DifficultyFactors,
+) -> tuple[Difficulty, DifficultyProfileId]:
     if (
-        template_id is TemplateId.T1
-        and contradiction_count_post >= 1
-        and _has_both_probe_labels(probe_targets)
+        factors.conflict_strength is FactorLevel.LOW
+        and factors.post_shift_evidence_clarity is FactorLevel.HIGH
+        and factors.probe_ambiguity is FactorLevel.LOW
+        and factors.evidence_to_final_probe_distance is FactorLevel.LOW
+        and factors.pre_shift_distractor_pressure is FactorLevel.LOW
     ):
-        return Difficulty.EASY
-    return Difficulty.MEDIUM
+        return Difficulty.EASY, DifficultyProfileId.EASY_ANCHORED
+
+    if (
+        factors.conflict_strength is FactorLevel.HIGH
+        and factors.post_shift_evidence_clarity is FactorLevel.LOW
+        and factors.probe_ambiguity is FactorLevel.HIGH
+        and factors.evidence_to_final_probe_distance is FactorLevel.HIGH
+        and factors.pre_shift_distractor_pressure is FactorLevel.HIGH
+    ):
+        return Difficulty.HARD, DifficultyProfileId.HARD_INTERLEAVED
+
+    return Difficulty.MEDIUM, DifficultyProfileId.MEDIUM_BALANCED
 
 
 def _normalize_probe_label_counts(
@@ -304,6 +501,8 @@ class Episode:
     post_labeled_count: int
     shift_after_position: int
     contradiction_count_post: int
+    difficulty_profile_id: DifficultyProfileId
+    difficulty_factors: DifficultyFactors
     items: tuple[EpisodeItem, ...]
     probe_targets: tuple[InteractionLabel, ...]
     probe_label_counts: tuple[tuple[InteractionLabel, int], ...]
@@ -505,13 +704,32 @@ class Episode:
                 "probe_sign_pattern_counts must cover each sign pattern exactly once"
             )
 
-        expected_difficulty = _derive_difficulty(
-            self.template_id,
-            self.contradiction_count_post,
-            normalized_probe_targets,
+        object.__setattr__(
+            self,
+            "difficulty_profile_id",
+            parse_difficulty_profile_id(self.difficulty_profile_id),
+        )
+        if not isinstance(self.difficulty_factors, DifficultyFactors):
+            raise TypeError("difficulty_factors must be a DifficultyFactors")
+
+        expected_difficulty_factors = derive_difficulty_factors(
+            normalized_items,
+            self.pre_count,
+        )
+        if self.difficulty_factors != expected_difficulty_factors:
+            raise ValueError(
+                "difficulty_factors must match the canonical factor derivation"
+            )
+
+        expected_difficulty, expected_profile_id = derive_difficulty_profile(
+            expected_difficulty_factors
         )
         if self.difficulty is not expected_difficulty:
-            raise ValueError("difficulty must match the derived R12 difficulty rules")
+            raise ValueError("difficulty must match the derived R13 difficulty rules")
+        if self.difficulty_profile_id is not expected_profile_id:
+            raise ValueError(
+                "difficulty_profile_id must match the derived R13 difficulty profile"
+            )
 
         if self.difficulty_version != DIFFICULTY_VERSION:
             raise ValueError(

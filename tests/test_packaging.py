@@ -69,8 +69,8 @@ def test_kaggle_staging_manifest_resolves_current_frozen_artifacts():
     assert tuple(manifest["frozen_split_manifests"]) == _RUNTIME_PARTITIONS
     assert "private_leaderboard" not in manifest["frozen_split_manifests"]
     assert tuple(manifest["entry_points"]) == ("kbench_notebook", "kernel_metadata")
-    assert manifest["current_emitted_difficulty_labels"] == ["easy", "medium"]
-    assert manifest["reserved_difficulty_labels"] == ["hard"]
+    assert manifest["current_emitted_difficulty_labels"] == ["easy", "medium", "hard"]
+    assert manifest["reserved_difficulty_labels"] == []
 
     for partition in _RUNTIME_PARTITIONS:
         artifact = manifest["frozen_split_manifests"][partition]
@@ -248,7 +248,7 @@ def test_benchmark_card_matches_current_implementation_state():
     assert "`template_position`" in text
     assert "easy" in text
     assert "medium" in text
-    assert "reserved and not emitted" in text
+    assert "hard" in text
     assert "recency shortcut was materially reduced" in text
     assert "R13 anti-shortcut validity gate" in text
     assert "R15 empirical re-audit" in text

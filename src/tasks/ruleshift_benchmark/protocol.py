@@ -19,6 +19,8 @@ __all__ = [
     "TRANSITIONS",
     "SPLITS",
     "DIFFICULTIES",
+    "DIFFICULTY_PROFILES",
+    "FACTOR_LEVELS",
     "PHASES",
     "ITEM_KINDS",
     "RuleName",
@@ -28,6 +30,8 @@ __all__ = [
     "Transition",
     "Split",
     "Difficulty",
+    "DifficultyProfileId",
+    "FactorLevel",
     "Phase",
     "ItemKind",
     "TemplateSpec",
@@ -39,6 +43,8 @@ __all__ = [
     "parse_transition",
     "parse_split",
     "parse_difficulty",
+    "parse_difficulty_profile_id",
+    "parse_factor_level",
     "parse_phase",
     "parse_item_kind",
 ]
@@ -125,6 +131,18 @@ class Difficulty(StrEnum):
     HARD = "hard"
 
 
+class DifficultyProfileId(StrEnum):
+    EASY_ANCHORED = "easy_anchored"
+    MEDIUM_BALANCED = "medium_balanced"
+    HARD_INTERLEAVED = "hard_interleaved"
+
+
+class FactorLevel(StrEnum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+
+
 class Phase(StrEnum):
     PRE = "pre"
     POST = "post"
@@ -154,6 +172,10 @@ TEMPLATE_FAMILIES: Final[frozenset[TemplateFamily]] = frozenset(TemplateFamily)
 TRANSITIONS: Final[frozenset[Transition]] = frozenset(Transition)
 SPLITS: Final[frozenset[Split]] = frozenset(Split)
 DIFFICULTIES: Final[frozenset[Difficulty]] = frozenset(Difficulty)
+DIFFICULTY_PROFILES: Final[frozenset[DifficultyProfileId]] = frozenset(
+    DifficultyProfileId
+)
+FACTOR_LEVELS: Final[frozenset[FactorLevel]] = frozenset(FactorLevel)
 PHASES: Final[frozenset[Phase]] = frozenset(Phase)
 ITEM_KINDS: Final[frozenset[ItemKind]] = frozenset(ItemKind)
 
@@ -294,6 +316,16 @@ def parse_split(value: Split | str) -> Split:
 
 def parse_difficulty(value: Difficulty | str) -> Difficulty:
     return _parse_enum(Difficulty, value, "difficulty")
+
+
+def parse_difficulty_profile_id(
+    value: DifficultyProfileId | str,
+) -> DifficultyProfileId:
+    return _parse_enum(DifficultyProfileId, value, "difficulty_profile_id")
+
+
+def parse_factor_level(value: FactorLevel | str) -> FactorLevel:
+    return _parse_enum(FactorLevel, value, "factor_level")
 
 
 def parse_phase(value: Phase | str) -> Phase:

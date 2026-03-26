@@ -6,7 +6,7 @@
 
 - This task is the implemented local benchmark for RuleShift Benchmark v1.
 - Keep the benchmark deterministic and replayable from seeds.
-- `hard` remains part of the vocabulary but is currently reserved and not emitted.
+- Difficulty is emitted as explicit `easy`, `medium`, and `hard` tiers from factor-based generation.
 
 ## Boundaries
 
@@ -18,7 +18,7 @@
 
 - Prefer narrow fixes tied to the affected module.
 - Preserve benchmark semantics first; avoid “cleanup” edits that can shift outputs.
-- Keep docs and report language honest about the current state: local validation is authoritative, Kaggle is downstream staging, and no claim should depend on emitted `hard` episodes.
+- Keep docs and report language honest about the current state: local validation is authoritative and Kaggle is downstream staging.
 
 ## Validation
 

@@ -25,7 +25,7 @@ from parser import (
 from protocol import LABELED_ITEM_COUNT, InteractionLabel
 from render import render_binary_prompt, render_narrative_prompt
 from rules import label
-from schema import Episode, EpisodeItem, ProbeMetadata
+from schema import DifficultyFactors, Episode, EpisodeItem, ProbeMetadata
 from validate import (
     BaselineAccuracySummary,
     BenchmarkValidityReport,
@@ -73,6 +73,9 @@ def _episode_from_payload(payload: dict[str, object]) -> Episode:
     normalized_payload["probe_metadata"] = tuple(
         ProbeMetadata(**metadata_payload)
         for metadata_payload in normalized_payload["probe_metadata"]
+    )
+    normalized_payload["difficulty_factors"] = DifficultyFactors(
+        **normalized_payload["difficulty_factors"]
     )
     return Episode(**normalized_payload)
 
@@ -138,6 +141,7 @@ def _synthetic_baseline_summary(
     difficulty_scores: tuple[tuple[str, float], ...] = (
         ("easy", 0.5),
         ("medium", 0.5),
+        ("hard", 0.0),
     ),
 ) -> BaselineAccuracySummary:
     return BaselineAccuracySummary(
@@ -177,7 +181,7 @@ def _synthetic_report(
         passed=False,
         comparison_summary="provisional",
         validity_note="provisional",
-        limitations=("No emitted hard episodes in supplied set; hard slice omitted.",),
+        limitations=("Supplied episodes do not cover the full emitted difficulty set.",),
     )
 
 
@@ -311,9 +315,9 @@ def test_validate_dataset_returns_deterministic_distribution_summary():
         sign_pattern_counts=(("++", 2), ("--", 2), ("+-", 2), ("-+", 2)),
         version_values=(
             ("spec_version", ("v1",)),
-            ("generator_version", ("R12",)),
+            ("generator_version", ("R13",)),
             ("template_set_version", ("v2",)),
-            ("difficulty_version", ("R12",)),
+            ("difficulty_version", ("R13",)),
         ),
     )
     assert result.summary == validate_dataset(episodes).summary
@@ -344,7 +348,7 @@ def test_validate_episode_rejects_recency_and_persistence_collapsible_probe_bloc
 
 def test_validate_dataset_checks_regeneration_for_canonical_ids_and_skips_noncanonical_ids():
     canonical_episode = generate_episode(0)
-    noncanonical_episode = generate_episode(1)
+    noncanonical_episode = generate_episode(10)
     object.__setattr__(noncanonical_episode, "episode_id", "fixture-1")
 
     result = validate_dataset((canonical_episode, noncanonical_episode))
@@ -490,14 +494,15 @@ def test_benchmark_validity_report_honestly_limits_difficulty_reporting_to_emitt
         if summary.baseline_name == "template_position"
     )
 
-    assert report.difficulty_labels_present == ("easy", "medium")
-    assert report.difficulty_labels_missing == ("hard",)
+    assert report.difficulty_labels_present == ("easy", "medium", "hard")
+    assert report.difficulty_labels_missing == ()
     assert tuple(label for label, _ in template_position.by_difficulty) == (
         "easy",
         "medium",
+        "hard",
     )
-    assert "hard" not in {label for label, _ in template_position.by_difficulty}
-    assert "Hard is still not emitted" in report.validity_note
+    assert "hard" in {label for label, _ in template_position.by_difficulty}
+    assert "Hard is still not emitted" not in report.validity_note
 
 
 def test_benchmark_validity_gate_fails_when_shortcut_baseline_remains_too_strong():

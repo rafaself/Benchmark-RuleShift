@@ -19,7 +19,7 @@
 
 - Preserve deterministic behavior and stable serialized outputs.
 - Prefer additive or narrowly-scoped interface changes over broad API reshaping.
-- Be careful with report text and validation/audit outputs; they should describe the current local benchmark honestly, including that `hard` is reserved and not emitted.
+- Be careful with report text and validation/audit outputs; they should describe the current local benchmark honestly, including the current emitted difficulty set.
 
 ## Validation
 

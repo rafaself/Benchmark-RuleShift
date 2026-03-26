@@ -13,11 +13,11 @@ def test_build_comparison_normalizes_diagnostic_mode_labels_and_preserves_run_pa
         "execution_timestamp": "20260323_120000",
         "benchmark_versions": {
             "schema_version": "v1",
-            "generator_version": "R12",
+            "generator_version": "R13",
             "template_family_version": "v2",
             "parser_version": "v1",
             "metric_version": "v1",
-            "difficulty_version": "R12",
+            "difficulty_version": "R13",
             "artifact_schema_version": "v1.1",
         },
         "frozen_artifacts": {

@@ -231,7 +231,10 @@ def build_slice_report(
             episode_slices, lambda s: s.template_family, _TEMPLATE_FAMILY_ORDER
         ),
         difficulty=_aggregate_accuracy(
-            episode_slices, lambda s: s.difficulty, _DIFFICULTY_ORDER
+            episode_slices,
+            lambda s: s.difficulty,
+            _DIFFICULTY_ORDER,
+            include_missing_ordered=True,
         ),
         shift_position=_aggregate_accuracy(
             episode_slices, lambda s: s.shift_position
@@ -247,6 +250,8 @@ def _aggregate_accuracy(
     slices: Sequence[EpisodeSliceData],
     key_fn: Callable[[EpisodeSliceData], str],
     order: tuple[str, ...] | None = None,
+    *,
+    include_missing_ordered: bool = False,
 ) -> tuple[tuple[str, SliceAccuracy], ...]:
     groups: dict[str, list[EpisodeSliceData]] = {}
     for s in slices:
@@ -254,7 +259,7 @@ def _aggregate_accuracy(
         groups.setdefault(key, []).append(s)
 
     if order is not None:
-        sorted_keys = [k for k in order if k in groups]
+        sorted_keys = list(order) if include_missing_ordered else [k for k in order if k in groups]
         sorted_keys += sorted(k for k in groups if k not in order)
     else:
         sorted_keys = sorted(groups)
@@ -263,9 +268,9 @@ def _aggregate_accuracy(
         (
             key,
             SliceAccuracy(
-                episode_count=len(groups[key]),
-                correct_probes=sum(s.correct_probes for s in groups[key]),
-                total_probes=sum(s.total_probes for s in groups[key]),
+                episode_count=len(groups.get(key, ())),
+                correct_probes=sum(s.correct_probes for s in groups.get(key, ())),
+                total_probes=sum(s.total_probes for s in groups.get(key, ())),
             ),
         )
         for key in sorted_keys

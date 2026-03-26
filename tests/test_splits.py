@@ -101,11 +101,13 @@ def test_split_audit_only_reports_emitted_difficulty_labels():
     assert tuple(gap.label for gap in audit_result.cross_partition.difficulty) == (
         "easy",
         "medium",
+        "hard",
     )
     for _, summary in audit_result.per_partition:
         assert tuple(label for label, _ in summary.difficulty_counts) == (
             "easy",
             "medium",
+            "hard",
         )
 
 

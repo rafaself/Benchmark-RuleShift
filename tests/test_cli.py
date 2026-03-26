@@ -34,7 +34,7 @@ def test_reaudit_command_emits_current_release_report(capsys: pytest.CaptureFixt
 
     assert exit_code == 0
     assert payload["release_id"] == "R15"
-    assert payload["difficulty_labels_missing"] == ["hard"]
+    assert payload["difficulty_labels_missing"] == []
     assert payload["model_summaries"] == []
 
 

@@ -22,9 +22,12 @@ from typing import Final
 
 from core.splits import FrozenSplitEpisode, MANIFEST_VERSION
 from tasks.ruleshift_benchmark.schema import (
+    DifficultyFactors,
     Episode,
     EpisodeItem,
     ProbeMetadata,
+    derive_difficulty_factors,
+    derive_difficulty_profile,
 )
 
 __all__ = [
@@ -324,26 +327,39 @@ def _build_episode(ep: dict) -> Episode:  # type: ignore[type-arg]
         )
         for pm in ep["probe_metadata"]
     )
+    pre_count = ep["pre_count"]
+    difficulty_factors = derive_difficulty_factors(items, pre_count)
+    raw_difficulty_factors = ep.get("difficulty_factors", difficulty_factors)
+    if isinstance(raw_difficulty_factors, dict):
+        raw_difficulty_factors = DifficultyFactors(**raw_difficulty_factors)
+    derived_difficulty, difficulty_profile_id = derive_difficulty_profile(
+        difficulty_factors
+    )
     return Episode(
         episode_id=ep["episode_id"],
         split=ep["split"],
-        difficulty=ep["difficulty"],
+        difficulty=ep.get("difficulty", derived_difficulty.value),
         template_id=ep["template_id"],
         template_family=ep.get("template_family", "canonical"),
         rule_A=ep["rule_A"],
         rule_B=ep["rule_B"],
         transition=ep["transition"],
-        pre_count=ep["pre_count"],
+        pre_count=pre_count,
         post_labeled_count=ep["post_labeled_count"],
         shift_after_position=ep["shift_after_position"],
         contradiction_count_post=ep["contradiction_count_post"],
+        difficulty_profile_id=ep.get(
+            "difficulty_profile_id",
+            difficulty_profile_id.value,
+        ),
+        difficulty_factors=raw_difficulty_factors,
         items=items,
         probe_targets=probe_targets,
         probe_label_counts=probe_label_counts,
         probe_sign_pattern_counts=probe_sign_pattern_counts,
         probe_metadata=probe_metadata,
-        difficulty_version=ep.get("difficulty_version", "R12"),
+        difficulty_version=ep.get("difficulty_version", "R13"),
         spec_version=ep.get("spec_version", "v1"),
-        generator_version=ep.get("generator_version", "R12"),
-        template_set_version=ep.get("template_set_version", "v1"),
+        generator_version=ep.get("generator_version", "R13"),
+        template_set_version=ep.get("template_set_version", "v2"),
     )

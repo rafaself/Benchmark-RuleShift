@@ -399,7 +399,11 @@ def test_build_slice_report_empty_returns_empty_groups():
     report = build_slice_report([])
     assert report.template == ()
     assert report.template_family == ()
-    assert report.difficulty == ()
+    assert report.difficulty == (
+        ("easy", SliceAccuracy(episode_count=0, correct_probes=0, total_probes=0)),
+        ("medium", SliceAccuracy(episode_count=0, correct_probes=0, total_probes=0)),
+        ("hard", SliceAccuracy(episode_count=0, correct_probes=0, total_probes=0)),
+    )
     assert report.shift_position == ()
     assert report.transition_type == ()
     # error_type always has all 5 keys even when empty
@@ -478,7 +482,7 @@ def test_build_slice_report_difficulty_order_is_canonical():
     ]
     report = build_slice_report(slices)
     keys = [k for k, _ in report.difficulty]
-    assert keys == ["easy", "medium"]
+    assert keys == ["easy", "medium", "hard"]
 
 
 def test_build_slice_report_to_dict_has_all_dimensions():

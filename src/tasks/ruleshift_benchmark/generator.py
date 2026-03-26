@@ -6,6 +6,7 @@ from tasks.ruleshift_benchmark.protocol import (
     CASE_SPACE,
     LABELED_ITEM_COUNT,
     Difficulty,
+    DifficultyProfileId,
     InteractionLabel,
     ItemKind,
     Phase,
@@ -19,13 +20,16 @@ from tasks.ruleshift_benchmark.protocol import (
 from tasks.ruleshift_benchmark.rules import label
 from tasks.ruleshift_benchmark.schema import (
     DIFFICULTY_VERSION,
+    DifficultyFactors,
     Episode,
     EpisodeItem,
     ProbeMetadata,
     _build_effective_probe_targets,
     _build_updated_sign_patterns,
+    derive_difficulty_factors,
     _has_mixed_polarity_sign_patterns,
     _is_global_rule_probe_block,
+    derive_difficulty_profile,
 )
 
 RULE_CHOICES: tuple[RuleName, ...] = (RuleName.R_STD, RuleName.R_INV)
@@ -39,6 +43,16 @@ _PROBE_LABEL_ORDER: tuple[InteractionLabel, ...] = (
     InteractionLabel.REPEL,
 )
 _PROBE_SIGN_PATTERN_ORDER: tuple[str, ...] = ("++", "--", "+-", "-+")
+_DIFFICULTY_ORDER: tuple[Difficulty, ...] = (
+    Difficulty.EASY,
+    Difficulty.MEDIUM,
+    Difficulty.HARD,
+)
+_DIFFICULTY_TEMPLATE_CHOICES: dict[Difficulty, tuple[TemplateId, ...]] = {
+    Difficulty.EASY: (TemplateId.T1,),
+    Difficulty.MEDIUM: TEMPLATE_CHOICES,
+    Difficulty.HARD: (TemplateId.T2,),
+}
 
 
 def _is_plain_int(value: object) -> bool:
@@ -198,19 +212,8 @@ def _is_valid_candidate(
     )
 
 
-def _assign_difficulty(
-    template_id: TemplateId,
-    contradiction_count_post: int,
-    probe_label_counts: tuple[tuple[InteractionLabel, int], ...],
-) -> Difficulty:
-    has_both_probe_labels = all(count > 0 for _, count in probe_label_counts)
-    if (
-        template_id is TemplateId.T1
-        and contradiction_count_post >= 1
-        and has_both_probe_labels
-    ):
-        return Difficulty.EASY
-    return Difficulty.MEDIUM
+def _target_difficulty_for_seed(seed: int) -> Difficulty:
+    return _DIFFICULTY_ORDER[seed % len(_DIFFICULTY_ORDER)]
 
 
 def generate_episode(seed: int, split: Split | str = Split.DEV) -> Episode:
@@ -220,7 +223,8 @@ def generate_episode(seed: int, split: Split | str = Split.DEV) -> Episode:
     rng = random.Random(seed)
     rule_a = rng.choice(RULE_CHOICES)
     rule_b = rule_a.opposite
-    template_id = rng.choice(TEMPLATE_CHOICES)
+    target_difficulty = _target_difficulty_for_seed(seed)
+    template_id = rng.choice(_DIFFICULTY_TEMPLATE_CHOICES[target_difficulty])
     template_family = rng.choice(TEMPLATE_FAMILY_CHOICES)
     template = TEMPLATES[template_id]
 
@@ -242,20 +246,20 @@ def generate_episode(seed: int, split: Split | str = Split.DEV) -> Episode:
             rule_b,
             probe_targets,
         ):
-            break
-
+            difficulty_factors = derive_difficulty_factors(items, template.pre_count)
+            difficulty, difficulty_profile_id = derive_difficulty_profile(
+                difficulty_factors
+            )
+            if difficulty is target_difficulty:
+                break
     probe_label_counts = _build_probe_label_counts(probe_targets)
     probe_sign_pattern_counts = _build_probe_sign_pattern_counts(items)
     probe_metadata = _build_probe_metadata(items, rule_a, rule_b)
 
     return Episode(
-        episode_id=f"ife-r12-{seed}",
+        episode_id=f"ife-r13-{seed}",
         split=split,
-        difficulty=_assign_difficulty(
-            template_id,
-            contradiction_count_post,
-            probe_label_counts,
-        ),
+        difficulty=difficulty,
         template_id=template_id,
         template_family=template_family,
         rule_A=rule_a,
@@ -265,6 +269,8 @@ def generate_episode(seed: int, split: Split | str = Split.DEV) -> Episode:
         post_labeled_count=template.post_labeled_count,
         shift_after_position=template.shift_after_position,
         contradiction_count_post=contradiction_count_post,
+        difficulty_profile_id=difficulty_profile_id,
+        difficulty_factors=difficulty_factors,
         items=items,
         probe_targets=probe_targets,
         probe_label_counts=probe_label_counts,

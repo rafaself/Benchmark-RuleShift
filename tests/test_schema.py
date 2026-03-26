@@ -2,6 +2,7 @@ from dataclasses import fields, replace
 
 import pytest
 
+from generator import generate_episode
 from protocol import (
     Difficulty,
     InteractionLabel,
@@ -13,6 +14,7 @@ from protocol import (
     TemplateId,
     Transition,
 )
+from rules import label
 from schema import (
     DIFFICULTY_VERSION,
     GENERATOR_VERSION,
@@ -25,271 +27,23 @@ from schema import (
 
 
 def make_valid_t1_episode() -> Episode:
-    items = (
-        EpisodeItem(
-            position=1,
-            phase=Phase.PRE,
-            kind=ItemKind.LABELED,
-            q1=1,
-            q2=2,
-            label=InteractionLabel.ATTRACT,
-        ),
-        EpisodeItem(
-            position=2,
-            phase=Phase.PRE,
-            kind=ItemKind.LABELED,
-            q1=-1,
-            q2=1,
-            label=InteractionLabel.ATTRACT,
-        ),
-        EpisodeItem(
-            position=3,
-            phase=Phase.POST,
-            kind=ItemKind.LABELED,
-            q1=-2,
-            q2=-3,
-            label=InteractionLabel.ATTRACT,
-        ),
-        EpisodeItem(
-            position=4,
-            phase=Phase.POST,
-            kind=ItemKind.LABELED,
-            q1=2,
-            q2=-2,
-            label=InteractionLabel.REPEL,
-        ),
-        EpisodeItem(
-            position=5,
-            phase=Phase.POST,
-            kind=ItemKind.LABELED,
-            q1=-1,
-            q2=-2,
-            label=InteractionLabel.ATTRACT,
-        ),
-        EpisodeItem(
-            position=6,
-            phase=Phase.POST,
-            kind=ItemKind.PROBE,
-            q1=2,
-            q2=3,
-        ),
-        EpisodeItem(
-            position=7,
-            phase=Phase.POST,
-            kind=ItemKind.PROBE,
-            q1=-3,
-            q2=-2,
-        ),
-        EpisodeItem(
-            position=8,
-            phase=Phase.POST,
-            kind=ItemKind.PROBE,
-            q1=3,
-            q2=-1,
-        ),
-        EpisodeItem(
-            position=9,
-            phase=Phase.POST,
-            kind=ItemKind.PROBE,
-            q1=-2,
-            q2=3,
-        ),
-    )
-    return Episode(
-        episode_id="ife-r12-schema-t1",
-        split=Split.DEV,
-        difficulty=Difficulty.EASY,
-        template_id=TemplateId.T1,
-        template_family=TemplateFamily.CANONICAL,
-        rule_A=RuleName.R_STD,
-        rule_B=RuleName.R_INV,
-        transition=Transition.R_STD_TO_R_INV,
-        pre_count=2,
-        post_labeled_count=3,
-        shift_after_position=2,
-        contradiction_count_post=3,
-        items=items,
-        probe_targets=(
-            InteractionLabel.REPEL,
-            InteractionLabel.ATTRACT,
-            InteractionLabel.REPEL,
-            InteractionLabel.ATTRACT,
-        ),
-        probe_label_counts=(
-            (InteractionLabel.ATTRACT, 2),
-            (InteractionLabel.REPEL, 2),
-        ),
-        probe_sign_pattern_counts=(
-            ("++", 1),
-            ("--", 1),
-            ("+-", 1),
-            ("-+", 1),
-        ),
-        probe_metadata=(
-            ProbeMetadata(
-                position=6,
-                is_disagreement_probe=True,
-                old_rule_label=InteractionLabel.REPEL,
-                new_rule_label=InteractionLabel.ATTRACT,
-            ),
-            ProbeMetadata(
-                position=7,
-                is_disagreement_probe=True,
-                old_rule_label=InteractionLabel.REPEL,
-                new_rule_label=InteractionLabel.ATTRACT,
-            ),
-            ProbeMetadata(
-                position=8,
-                is_disagreement_probe=True,
-                old_rule_label=InteractionLabel.ATTRACT,
-                new_rule_label=InteractionLabel.REPEL,
-            ),
-            ProbeMetadata(
-                position=9,
-                is_disagreement_probe=True,
-                old_rule_label=InteractionLabel.ATTRACT,
-                new_rule_label=InteractionLabel.REPEL,
-            ),
-        ),
-        difficulty_version=DIFFICULTY_VERSION,
-    )
+    episode = generate_episode(0)
+    assert episode.template_id is TemplateId.T1
+    assert episode.difficulty is Difficulty.EASY
+    return episode
 
 
 def make_valid_t2_episode() -> Episode:
-    items = (
-        EpisodeItem(
-            position=1,
-            phase=Phase.PRE,
-            kind=ItemKind.LABELED,
-            q1=1,
-            q2=2,
-            label=InteractionLabel.ATTRACT,
-        ),
-        EpisodeItem(
-            position=2,
-            phase=Phase.PRE,
-            kind=ItemKind.LABELED,
-            q1=-1,
-            q2=2,
-            label=InteractionLabel.REPEL,
-        ),
-        EpisodeItem(
-            position=3,
-            phase=Phase.PRE,
-            kind=ItemKind.LABELED,
-            q1=-2,
-            q2=-3,
-            label=InteractionLabel.ATTRACT,
-        ),
-        EpisodeItem(
-            position=4,
-            phase=Phase.POST,
-            kind=ItemKind.LABELED,
-            q1=2,
-            q2=3,
-            label=InteractionLabel.REPEL,
-        ),
-        EpisodeItem(
-            position=5,
-            phase=Phase.POST,
-            kind=ItemKind.LABELED,
-            q1=-2,
-            q2=1,
-            label=InteractionLabel.ATTRACT,
-        ),
-        EpisodeItem(
-            position=6,
-            phase=Phase.POST,
-            kind=ItemKind.PROBE,
-            q1=1,
-            q2=3,
-        ),
-        EpisodeItem(
-            position=7,
-            phase=Phase.POST,
-            kind=ItemKind.PROBE,
-            q1=-1,
-            q2=-3,
-        ),
-        EpisodeItem(
-            position=8,
-            phase=Phase.POST,
-            kind=ItemKind.PROBE,
-            q1=2,
-            q2=-1,
-        ),
-        EpisodeItem(
-            position=9,
-            phase=Phase.POST,
-            kind=ItemKind.PROBE,
-            q1=-3,
-            q2=2,
-        ),
-    )
-    return Episode(
-        episode_id="ife-r12-schema-t2",
-        split=Split.DEV,
-        difficulty=Difficulty.MEDIUM,
-        template_id=TemplateId.T2,
-        template_family=TemplateFamily.OBSERVATION_LOG,
-        rule_A=RuleName.R_INV,
-        rule_B=RuleName.R_STD,
-        transition=Transition.R_INV_TO_R_STD,
-        pre_count=3,
-        post_labeled_count=2,
-        shift_after_position=3,
-        contradiction_count_post=2,
-        items=items,
-        probe_targets=(
-            InteractionLabel.REPEL,
-            InteractionLabel.ATTRACT,
-            InteractionLabel.REPEL,
-            InteractionLabel.ATTRACT,
-        ),
-        probe_label_counts=(
-            (InteractionLabel.ATTRACT, 2),
-            (InteractionLabel.REPEL, 2),
-        ),
-        probe_sign_pattern_counts=(
-            ("++", 1),
-            ("--", 1),
-            ("+-", 1),
-            ("-+", 1),
-        ),
-        probe_metadata=(
-            ProbeMetadata(
-                position=6,
-                is_disagreement_probe=True,
-                old_rule_label=InteractionLabel.ATTRACT,
-                new_rule_label=InteractionLabel.REPEL,
-            ),
-            ProbeMetadata(
-                position=7,
-                is_disagreement_probe=True,
-                old_rule_label=InteractionLabel.ATTRACT,
-                new_rule_label=InteractionLabel.REPEL,
-            ),
-            ProbeMetadata(
-                position=8,
-                is_disagreement_probe=True,
-                old_rule_label=InteractionLabel.REPEL,
-                new_rule_label=InteractionLabel.ATTRACT,
-            ),
-            ProbeMetadata(
-                position=9,
-                is_disagreement_probe=True,
-                old_rule_label=InteractionLabel.REPEL,
-                new_rule_label=InteractionLabel.ATTRACT,
-            ),
-        ),
-        difficulty_version=DIFFICULTY_VERSION,
-    )
+    episode = generate_episode(10)
+    assert episode.template_id is TemplateId.T2
+    assert episode.difficulty is Difficulty.MEDIUM
+    return episode
 
 
 def test_schema_accepts_valid_t1_episode():
     episode = make_valid_t1_episode()
 
-    assert episode.episode_id == "ife-r12-schema-t1"
+    assert episode.template_id is TemplateId.T1
     assert len(episode.items) == 9
     assert episode.difficulty is Difficulty.EASY
 
@@ -297,7 +51,7 @@ def test_schema_accepts_valid_t1_episode():
 def test_schema_accepts_valid_t2_episode():
     episode = make_valid_t2_episode()
 
-    assert episode.episode_id == "ife-r12-schema-t2"
+    assert episode.template_id is TemplateId.T2
     assert len(episode.items) == 9
     assert episode.difficulty is Difficulty.MEDIUM
 
@@ -316,6 +70,8 @@ def test_schema_fields_are_present():
         "post_labeled_count",
         "shift_after_position",
         "contradiction_count_post",
+        "difficulty_profile_id",
+        "difficulty_factors",
         "items",
         "probe_targets",
         "probe_label_counts",
@@ -335,7 +91,7 @@ def test_schema_fields_are_present():
     assert episode.template_set_version == TEMPLATE_SET_VERSION
     assert episode.difficulty_version == DIFFICULTY_VERSION
     assert episode.split is Split.DEV
-    assert episode.transition is Transition.R_STD_TO_R_INV
+    assert episode.transition is Transition.from_rules(episode.rule_A, episode.rule_B)
 
 
 def test_schema_requires_first_five_items_to_be_labeled():
@@ -379,16 +135,29 @@ def test_schema_requires_shift_after_position_to_match_pre_count():
 def test_schema_rejects_duplicate_charge_pairs():
     episode = make_valid_t1_episode()
     invalid_items = list(episode.items)
+    duplicate_q1 = episode.items[0].q1
+    duplicate_q2 = episode.items[0].q2
     invalid_items[8] = EpisodeItem(
         position=9,
         phase=Phase.POST,
         kind=ItemKind.PROBE,
-        q1=1,
-        q2=2,
+        q1=duplicate_q1,
+        q2=duplicate_q2,
+    )
+    invalid_probe_metadata = list(episode.probe_metadata)
+    invalid_probe_metadata[3] = ProbeMetadata(
+        position=9,
+        is_disagreement_probe=True,
+        old_rule_label=label(episode.rule_A, duplicate_q1, duplicate_q2),
+        new_rule_label=label(episode.rule_B, duplicate_q1, duplicate_q2),
     )
 
     with pytest.raises(ValueError, match="must not repeat"):
-        replace(episode, items=tuple(invalid_items))
+        replace(
+            episode,
+            items=tuple(invalid_items),
+            probe_metadata=tuple(invalid_probe_metadata),
+        )
 
 
 def test_schema_rejects_invalid_total_item_count():
@@ -480,14 +249,14 @@ def test_schema_requires_canonical_probe_sign_pattern_counts():
         )
 
 
-def test_schema_requires_difficulty_to_match_r3_rules():
+def test_schema_requires_difficulty_to_match_r13_rules():
     episode = make_valid_t1_episode()
 
     with pytest.raises(ValueError, match="difficulty must match"):
         replace(episode, difficulty=Difficulty.MEDIUM)
 
 
-def test_schema_rejects_hard_difficulty_for_valid_r3_fixtures():
+def test_schema_rejects_hard_difficulty_for_valid_r13_fixtures():
     episode = make_valid_t2_episode()
 
     with pytest.raises(ValueError, match="difficulty must match"):
@@ -501,7 +270,7 @@ def test_schema_requires_difficulty_version_to_match_constant():
         replace(episode, difficulty_version="R4")
 
 
-def test_fixture_based_difficulty_rules_match_clarified_r3_behavior():
+def test_fixture_based_difficulty_rules_match_clarified_r13_behavior():
     assert make_valid_t1_episode().difficulty is Difficulty.EASY
     assert make_valid_t2_episode().difficulty is Difficulty.MEDIUM
     assert make_valid_t1_episode().difficulty is not Difficulty.HARD

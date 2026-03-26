@@ -340,5 +340,5 @@ def test_panel_runner_builds_direct_diagnostic_summary_and_report_labels():
     assert metadata["requested_model_id"] == model_name
     assert metadata["served_model_id"] is None
     assert metadata["invocation"]["surface"] == "cli"
-    assert metadata["benchmark_versions"]["generator_version"] == "R12"
+    assert metadata["benchmark_versions"]["generator_version"] == "R13"
     assert metadata["frozen_artifacts"]["split_manifests"][0]["split_name"] == "dev"

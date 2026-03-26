@@ -34,7 +34,14 @@ from protocol import (
     Transition,
 )
 from rules import label
-from schema import DIFFICULTY_VERSION, Episode, EpisodeItem, ProbeMetadata
+from schema import (
+    DIFFICULTY_VERSION,
+    Episode,
+    EpisodeItem,
+    ProbeMetadata,
+    derive_difficulty_factors,
+    derive_difficulty_profile,
+)
 
 _R15_REAUDIT_FIXTURE_PATH = (
     Path(__file__).resolve().parent / "fixtures" / "release_r15_reaudit_report.json"
@@ -70,15 +77,6 @@ def _effective_probe_targets(
         )
         for item in probe_items
     )
-
-
-def _difficulty_for(
-    template_id: TemplateId,
-    probe_targets: tuple[InteractionLabel, ...],
-) -> Difficulty:
-    if template_id is TemplateId.T1 and len(set(probe_targets)) >= 2:
-        return Difficulty.EASY
-    return Difficulty.MEDIUM
 
 
 def _build_episode(
@@ -131,11 +129,13 @@ def _build_episode(
         label(rule_a, item.q1, item.q2) != label(rule_b, item.q1, item.q2)
         for item in item_rows[template.pre_count:LABELED_ITEM_COUNT]
     )
+    difficulty_factors = derive_difficulty_factors(item_rows, template.pre_count)
+    difficulty, difficulty_profile_id = derive_difficulty_profile(difficulty_factors)
 
     return Episode(
         episode_id=episode_id,
         split=Split.DEV,
-        difficulty=_difficulty_for(template_id, probe_targets),
+        difficulty=difficulty,
         template_id=template_id,
         template_family=(
             TemplateFamily.CANONICAL
@@ -149,6 +149,8 @@ def _build_episode(
         post_labeled_count=template.post_labeled_count,
         shift_after_position=template.shift_after_position,
         contradiction_count_post=contradiction_count_post,
+        difficulty_profile_id=difficulty_profile_id,
+        difficulty_factors=difficulty_factors,
         items=item_rows,
         probe_targets=probe_targets,
         probe_label_counts=(
@@ -323,21 +325,29 @@ def test_template_level_and_difficulty_level_summaries_match_hand_checked_fixtur
         ),
     }
     assert _slice_map(binary_summary.by_difficulty) == {
-        "easy": AuditSliceSummary(
-            episode_count=1,
-            correct_probe_count=1,
-            total_probe_count=4,
-            accuracy=0.25,
-            valid_prediction_count=1,
+        "medium": AuditSliceSummary(
+            episode_count=2,
+            correct_probe_count=5,
+            total_probe_count=8,
+            accuracy=0.625,
+            valid_prediction_count=2,
             parse_valid_rate=1.0,
         ),
-        "medium": AuditSliceSummary(
-            episode_count=1,
-            correct_probe_count=4,
-            total_probe_count=4,
-            accuracy=1.0,
-            valid_prediction_count=1,
-            parse_valid_rate=1.0,
+        "easy": AuditSliceSummary(
+            episode_count=0,
+            correct_probe_count=0,
+            total_probe_count=0,
+            accuracy=0.0,
+            valid_prediction_count=0,
+            parse_valid_rate=0.0,
+        ),
+        "hard": AuditSliceSummary(
+            episode_count=0,
+            correct_probe_count=0,
+            total_probe_count=0,
+            accuracy=0.0,
+            valid_prediction_count=0,
+            parse_valid_rate=0.0,
         ),
     }
     assert _slice_map(binary_summary.by_template_family) == {
@@ -377,13 +387,13 @@ def test_baseline_comparison_summary_is_stable():
 def test_audit_handles_current_absence_of_emitted_hard_episodes_cleanly():
     report = _report()
 
-    assert report.difficulty_labels_present == ("easy", "medium")
-    assert report.difficulty_labels_missing == ("hard",)
+    assert report.difficulty_labels_present == ("medium",)
+    assert report.difficulty_labels_missing == ("easy", "hard")
     assert report.limitations == (
-        "No emitted hard episodes in supplied set; hard slice omitted.",
+        "Supplied episodes do not cover the full emitted difficulty set.",
     )
     for summary in report.source_summaries:
-        assert "hard" not in _slice_map(summary.by_difficulty)
+        assert set(_slice_map(summary.by_difficulty)) == {"easy", "medium", "hard"}
 
 
 def test_task_mode_summaries_and_comparison_are_reported_deterministically():
@@ -483,10 +493,10 @@ def test_release_r15_reaudit_honestly_reports_absent_real_model_runs():
 
     assert report.model_summaries == ()
     assert report.matched_mode_comparisons == ()
-    assert report.difficulty_labels_present == ("easy", "medium")
-    assert report.difficulty_labels_missing == ("hard",)
+    assert report.difficulty_labels_present == ("medium",)
+    assert report.difficulty_labels_missing == ("easy", "hard")
     assert report.limitations == (
-        "No emitted hard episodes in supplied set; hard slice omitted.",
+        "Supplied episodes do not cover the full emitted difficulty set.",
         "No structured model runs supplied; frozen R15 re-audit covers deterministic baselines only.",
         "No matched Binary/Narrative model runs supplied; Binary vs Narrative comparison is unavailable.",
         "Narrative remains required non-leaderboard robustness evidence on the same frozen episodes and probe targets as Binary; only the final four labels are scored, and it does not replace the primary Binary post-shift probe audit.",
@@ -582,23 +592,34 @@ def test_release_r15_binary_vs_narrative_comparison_is_stable_on_matched_fixture
                 (
                     "easy",
                     ModeComparisonSummary(
-                        binary_accuracy=0.25,
-                        narrative_accuracy=1.0,
-                        accuracy_gap=-0.75,
-                        binary_parse_valid_rate=1.0,
-                        narrative_parse_valid_rate=1.0,
+                        binary_accuracy=0.0,
+                        narrative_accuracy=0.0,
+                        accuracy_gap=0.0,
+                        binary_parse_valid_rate=0.0,
+                        narrative_parse_valid_rate=0.0,
                         parse_valid_rate_gap=0.0,
                     ),
                 ),
                 (
                     "medium",
                     ModeComparisonSummary(
-                        binary_accuracy=1.0,
-                        narrative_accuracy=0.0,
-                        accuracy_gap=1.0,
+                        binary_accuracy=0.625,
+                        narrative_accuracy=0.5,
+                        accuracy_gap=0.125,
                         binary_parse_valid_rate=1.0,
+                        narrative_parse_valid_rate=0.5,
+                        parse_valid_rate_gap=0.5,
+                    ),
+                ),
+                (
+                    "hard",
+                    ModeComparisonSummary(
+                        binary_accuracy=0.0,
+                        narrative_accuracy=0.0,
+                        accuracy_gap=0.0,
+                        binary_parse_valid_rate=0.0,
                         narrative_parse_valid_rate=0.0,
-                        parse_valid_rate_gap=1.0,
+                        parse_valid_rate_gap=0.0,
                     ),
                 ),
             ),
@@ -608,23 +629,34 @@ def test_release_r15_binary_vs_narrative_comparison_is_stable_on_matched_fixture
         (
             "easy",
             AuditSliceSummary(
-                episode_count=1,
-                correct_probe_count=1,
-                total_probe_count=4,
-                accuracy=0.25,
-                valid_prediction_count=1,
-                parse_valid_rate=1.0,
+                episode_count=0,
+                correct_probe_count=0,
+                total_probe_count=0,
+                accuracy=0.0,
+                valid_prediction_count=0,
+                parse_valid_rate=0.0,
             ),
         ),
         (
             "medium",
             AuditSliceSummary(
-                episode_count=1,
-                correct_probe_count=4,
-                total_probe_count=4,
-                accuracy=1.0,
-                valid_prediction_count=1,
+                episode_count=2,
+                correct_probe_count=5,
+                total_probe_count=8,
+                accuracy=0.625,
+                valid_prediction_count=2,
                 parse_valid_rate=1.0,
+            ),
+        ),
+        (
+            "hard",
+            AuditSliceSummary(
+                episode_count=0,
+                correct_probe_count=0,
+                total_probe_count=0,
+                accuracy=0.0,
+                valid_prediction_count=0,
+                parse_valid_rate=0.0,
             ),
         ),
     )

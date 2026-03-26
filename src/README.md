@@ -51,7 +51,7 @@ These exact split names are part of the benchmark-facing contract.
 - Binary is the only leaderboard-primary path.
 - Narrative is the same-episode robustness companion; its output is schema-validated (structured JSON) and its parse/validation failures are reported separately from Binary scoring.
 - Post-shift Probe Accuracy is the sole headline metric (Binary only).
-- `hard` is still part of the protocol vocabulary but is reserved and not emitted by the current generator.
+- Difficulty is emitted as explicit `easy`, `medium`, and `hard` tiers derived from auditable generation factors.
 - The R13 anti-shortcut validity gate passes; `last_evidence` is bounded at `0.500000` on leaderboard splits.
 - Current committed readiness evidence is Gemini-only, anchored by the paired `gemini-2.5-flash` report and the canonical paired `gemini-2.5-flash-lite` run plus direct intra-Gemini comparison.
 - Anthropic and OpenAI integrations already exist locally, but they are outside the current v1 readiness gate.

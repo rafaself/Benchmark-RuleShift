@@ -83,13 +83,13 @@ Version metadata currently frozen by the package:
 
 - split manifest version: `R14`
 - spec version: `v1`
-- generator version: `R12`
+- generator version: `R13`
 - template set version: `v1`
-- difficulty version: `R12`
+- difficulty version: `R13`
 
 ## Current Implementation State
 
-Current emitted difficulty labels are `easy` and `medium`. `hard` is reserved and not emitted by the current implementation, so no benchmark claim depends on emitted `hard` slices.
+Current emitted difficulty labels are `easy`, `medium`, and `hard`. Difficulty is generation-defined and reported diagnostically without changing the Binary leaderboard task.
 
 The benchmark currently claims:
 

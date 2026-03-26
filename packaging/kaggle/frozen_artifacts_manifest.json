@@ -5,14 +5,14 @@
   "benchmark_versions": {
     "manifest_version": "R14",
     "spec_version": "v1",
-    "generator_version": "R12",
-    "template_set_version": "v1",
-    "difficulty_version": "R12"
+    "generator_version": "R13",
+    "template_set_version": "v2",
+    "difficulty_version": "R13"
   },
   "entry_points": {
     "kbench_notebook": {
       "path": "packaging/kaggle/ruleshift_notebook_task.ipynb",
-      "sha256": "368d1fb673373e73097bc36ca4afa1d74cea84f804d0ba79581625c83c1e8b07"
+      "sha256": "b20532777dd4e8811bf7191d0df4b43f6c01b674f86cd0f7bdcfb20123b47928"
     },
     "kernel_metadata": {
       "path": "packaging/kaggle/kernel-metadata.json",
@@ -22,16 +22,16 @@
   "frozen_split_manifests": {
     "dev": {
       "path": "src/frozen_splits/dev.json",
-      "sha256": "986f750f73549b42b9bcfc728d3d86f80d76ce57bc5013471740ec6e4773f403",
+      "sha256": "3782024dc0496c3beb1f4bfe640f1f286263be1b5c8598e8108be03543e94ca5",
       "manifest_version": "R14",
-      "seed_bank_version": "R14-dev-1",
+      "seed_bank_version": "R14-dev-3",
       "episode_split": "dev"
     },
     "public_leaderboard": {
       "path": "src/frozen_splits/public_leaderboard.json",
-      "sha256": "6b884cbfd706db58d1b54925a21065f37daac32bfd128385bed729a816a1defb",
+      "sha256": "13761bbddd35abf3b3c147ec6f25d70ae71688d3f60b7bce6cba62f1562f3204",
       "manifest_version": "R14",
-      "seed_bank_version": "R14-public-1",
+      "seed_bank_version": "R14-public-3",
       "episode_split": "public"
     }
   },
@@ -41,9 +41,8 @@
   ],
   "current_emitted_difficulty_labels": [
     "easy",
-    "medium"
-  ],
-  "reserved_difficulty_labels": [
+    "medium",
     "hard"
-  ]
+  ],
+  "reserved_difficulty_labels": []
 }

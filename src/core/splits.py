@@ -67,6 +67,7 @@ _PARTITION_TO_EPISODE_SPLIT: Final[dict[str, Split]] = {
     "private_leaderboard": Split.PRIVATE,
 }
 _WITHIN_SPLIT_DIFFICULTY_GAP_THRESHOLD: Final[float] = 0.25
+_PUBLIC_DIFFICULTY_COUNT_GAP_THRESHOLD: Final[int] = 1
 _CROSS_SPLIT_GAP_THRESHOLDS: Final[dict[str, float]] = {
     "template": 0.25,
     "template_family": 0.0,
@@ -299,25 +300,36 @@ def audit_frozen_splits(
                 )
             )
 
-        difficulty_gap = _share_gap_from_counts(difficulty_counts)
-        if difficulty_gap > _WITHIN_SPLIT_DIFFICULTY_GAP_THRESHOLD:
-            issues.append(
-                ValidationIssue(
-                    code="difficulty_balance",
-                    message=(
-                        f"{partition}: difficulty share gap {difficulty_gap:.6f} "
-                        f"exceeds {_WITHIN_SPLIT_DIFFICULTY_GAP_THRESHOLD:.6f}: "
-                        f"{difficulty_counts}"
-                    ),
+        if partition in PUBLIC_PARTITIONS:
+            if any(count == 0 for _, count in difficulty_counts):
+                issues.append(
+                    ValidationIssue(
+                        code="difficulty_coverage",
+                        message=(
+                            f"{partition}: public frozen splits must include easy, medium, "
+                            f"and hard, got {difficulty_counts}"
+                        ),
+                    )
+                )
+            difficulty_gap = _count_gap(difficulty_counts)
+            if difficulty_gap > _PUBLIC_DIFFICULTY_COUNT_GAP_THRESHOLD:
+                issues.append(
+                    ValidationIssue(
+                        code="difficulty_balance",
+                        message=(
+                            f"{partition}: difficulty count gap {difficulty_gap} exceeds "
+                            f"{_PUBLIC_DIFFICULTY_COUNT_GAP_THRESHOLD}: {difficulty_counts}"
+                        ),
+                    )
+                )
+        if partition in PUBLIC_PARTITIONS:
+            issues.extend(
+                _collect_template_family_coverage_issues(
+                    partition,
+                    episodes,
+                    validation_result.summary.template_family_counts,
                 )
             )
-        issues.extend(
-            _collect_template_family_coverage_issues(
-                partition,
-                episodes,
-                validation_result.summary.template_family_counts,
-            )
-        )
 
     overlap_issues = _collect_overlap_issues(normalized_splits)
     issues.extend(overlap_issues)
@@ -345,11 +357,11 @@ def assert_no_partition_overlap(
 def _count_difficulty_counts(
     episodes: tuple[Episode, ...],
 ) -> tuple[tuple[str, int], ...]:
-    counts: dict[str, int] = {}
+    counts: dict[str, int] = {"easy": 0, "medium": 0, "hard": 0}
     for episode in episodes:
         label = episode.difficulty.value
         counts[label] = counts.get(label, 0) + 1
-    return tuple((label, counts[label]) for label in sorted(counts))
+    return (("easy", counts["easy"]), ("medium", counts["medium"]), ("hard", counts["hard"]))
 
 
 def _share_gap_from_counts(counts: tuple[tuple[str, int], ...]) -> float:
@@ -358,6 +370,11 @@ def _share_gap_from_counts(counts: tuple[tuple[str, int], ...]) -> float:
         return 0.0
     shares = tuple(count / total for _, count in counts)
     return max(shares) - min(shares)
+
+
+def _count_gap(counts: tuple[tuple[str, int], ...]) -> int:
+    values = tuple(count for _, count in counts)
+    return max(values) - min(values) if values else 0
 
 
 def _collect_template_family_coverage_issues(
@@ -511,16 +528,11 @@ def _payload_fingerprint(episode: Episode) -> str:
 def _build_cross_partition_summary(
     per_partition: list[tuple[str, SplitDistributionSummary]],
 ) -> CrossSplitComparisonSummary:
-    partition_summaries = dict(per_partition)
-    difficulty_labels = tuple(
-        sorted(
-            {
-                label
-                for summary in partition_summaries.values()
-                for label, _ in summary.difficulty_counts
-            }
-        )
-    )
+    public_per_partition = [
+        (partition, summary)
+        for partition, summary in per_partition
+        if partition in PUBLIC_PARTITIONS
+    ]
     return CrossSplitComparisonSummary(
         template=_distribution_gaps(
             per_partition,
@@ -552,9 +564,9 @@ def _build_cross_partition_summary(
             ),
         ),
         difficulty=_distribution_gaps(
-            per_partition,
+            public_per_partition if public_per_partition else per_partition,
             lambda summary: summary.difficulty_counts,
-            difficulty_labels,
+            ("easy", "medium", "hard"),
         ),
     )
 

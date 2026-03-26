@@ -282,7 +282,9 @@ def run_audit(
     )
     limitations = []
     if "hard" in difficulty_labels_missing:
-        limitations.append("No emitted hard episodes in supplied set; hard slice omitted.")
+        limitations.append(
+            "Supplied episodes do not cover the full emitted difficulty set."
+        )
 
     heuristic_sources = {
         source.name: source
@@ -521,11 +523,7 @@ def _build_source_summary(
         by_difficulty=_build_episode_slices(
             episodes=episodes,
             predictions=source.predictions,
-            labels=tuple(
-                difficulty
-                for difficulty in _DIFFICULTY_ORDER
-                if any(episode.difficulty.value == difficulty for episode in episodes)
-            ),
+            labels=_DIFFICULTY_ORDER,
             key_fn=lambda episode: episode.difficulty.value,
         ),
         failure_patterns=_build_failure_patterns(
@@ -548,8 +546,6 @@ def _build_episode_slices(
         slice_indices = tuple(
             index for index, episode in enumerate(episodes) if key_fn(episode) == label
         )
-        if not slice_indices:
-            continue
         slice_summaries.append(
             (
                 label,
@@ -1065,14 +1061,7 @@ def _build_release_mode_comparisons(
                     episodes=combined_episodes,
                     binary_predictions=combined_binary_predictions,
                     narrative_predictions=combined_narrative_predictions,
-                    labels=tuple(
-                        difficulty
-                        for difficulty in _DIFFICULTY_ORDER
-                        if any(
-                            episode.difficulty.value == difficulty
-                            for episode in combined_episodes
-                        )
-                    ),
+                    labels=_DIFFICULTY_ORDER,
                     key_fn=lambda episode: episode.difficulty.value,
                 ),
             )
@@ -1125,8 +1114,6 @@ def _build_mode_slice_comparisons(
         slice_indices = tuple(
             index for index, episode in enumerate(episodes) if key_fn(episode) == label
         )
-        if not slice_indices:
-            continue
         comparisons.append(
             (
                 label,
@@ -1171,7 +1158,9 @@ def _build_release_limitations(
 ) -> tuple[str, ...]:
     limitations: list[str] = []
     if "hard" in difficulty_labels_missing:
-        limitations.append("No emitted hard episodes in supplied set; hard slice omitted.")
+        limitations.append(
+            "Supplied episodes do not cover the full emitted difficulty set."
+        )
     if not model_summaries:
         limitations.append(
             "No structured model runs supplied; frozen R15 re-audit covers deterministic baselines only."
@@ -1242,7 +1231,7 @@ def _build_release_audit_note(
     if not any(summary.is_real_model for summary in model_summaries):
         blockers.append("real-model coverage is still absent in-repo")
     if "hard" in difficulty_labels_missing:
-        blockers.append("hard remains reserved and un-emitted")
+        blockers.append("some supplied episodes miss part of the emitted difficulty set")
 
     return (
         "R15 re-audited the refreshed R14 frozen splits with deterministic baselines "

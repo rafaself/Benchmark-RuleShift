@@ -9,6 +9,7 @@ from generator import generate_episode
 from protocol import (
     LABELED_ITEM_COUNT,
     Difficulty,
+    DifficultyProfileId,
     InteractionLabel,
     ItemKind,
     Phase,
@@ -104,6 +105,8 @@ def test_schema_fields_are_always_present():
         "post_labeled_count",
         "shift_after_position",
         "contradiction_count_post",
+        "difficulty_profile_id",
+        "difficulty_factors",
         "items",
         "probe_targets",
         "probe_label_counts",
@@ -267,16 +270,28 @@ def test_invalid_candidates_are_rejected_by_deterministic_resampling():
 @pytest.mark.parametrize("seed", range(64))
 def test_every_valid_episode_gets_exactly_one_difficulty_tier(seed):
     episode = generate_episode(seed)
-    is_mixed_probe_block = len(set(episode.probe_targets)) >= 2
-    matches_easy = episode.template_id is TemplateId.T1 and is_mixed_probe_block
-    matches_medium = not matches_easy
-    matches_hard = False
+    assert episode.difficulty is (
+        Difficulty.EASY
+        if seed % 3 == 0
+        else Difficulty.MEDIUM
+        if seed % 3 == 1
+        else Difficulty.HARD
+    )
 
-    assert sum((matches_easy, matches_medium, matches_hard)) == 1
-    if matches_easy:
-        assert episode.difficulty is Difficulty.EASY
-    if matches_medium:
-        assert episode.difficulty is Difficulty.MEDIUM
+
+@pytest.mark.parametrize("seed", range(24))
+def test_difficulty_profile_is_intentional_and_seed_stable(seed):
+    episode = generate_episode(seed)
+    expected_profile = (
+        DifficultyProfileId.EASY_ANCHORED
+        if seed % 3 == 0
+        else DifficultyProfileId.MEDIUM_BALANCED
+        if seed % 3 == 1
+        else DifficultyProfileId.HARD_INTERLEAVED
+    )
+
+    assert episode.difficulty_profile_id is expected_profile
+    assert generate_episode(seed).difficulty_factors == episode.difficulty_factors
 
 
 @pytest.mark.parametrize("seed", range(32))
@@ -313,7 +328,7 @@ def test_emitted_metadata_fields_are_consistent_with_episode_contents(seed):
         ("+-", 1),
         ("-+", 1),
     )
-    assert episode.difficulty_version == "R12"
+    assert episode.difficulty_version == "R13"
 
 
 def test_last_evidence_is_capped_on_representative_r12_sample():

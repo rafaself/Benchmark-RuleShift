@@ -165,7 +165,7 @@ def test_run_gemini_first_panel_writes_paired_artifact_and_report(
         "private_leaderboard",
     ]
     assert metadata["invocation"]["surface"] == "python-api"
-    assert metadata["benchmark_versions"]["generator_version"] == "R12"
+    assert metadata["benchmark_versions"]["generator_version"] == "R13"
     assert metadata["benchmark_versions"]["template_family_version"] == "v2"
     assert metadata["benchmark_versions"]["parser_version"] == "v1"
     assert metadata["benchmark_versions"]["metric_version"] == "v1"

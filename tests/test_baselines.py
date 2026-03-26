@@ -23,7 +23,14 @@ from protocol import (
     Transition,
 )
 from rules import label
-from schema import DIFFICULTY_VERSION, Episode, EpisodeItem, ProbeMetadata
+from schema import (
+    DIFFICULTY_VERSION,
+    Episode,
+    EpisodeItem,
+    ProbeMetadata,
+    derive_difficulty_factors,
+    derive_difficulty_profile,
+)
 
 
 def _probe_sign_pattern(q1: int, q2: int) -> str:
@@ -55,15 +62,6 @@ def _effective_probe_targets(
         )
         for item in probe_items
     )
-
-
-def _difficulty_for(
-    template_id: TemplateId,
-    probe_targets: tuple[InteractionLabel, ...],
-) -> Difficulty:
-    if template_id is TemplateId.T1 and len(set(probe_targets)) >= 2:
-        return Difficulty.EASY
-    return Difficulty.MEDIUM
 
 
 def _build_episode(
@@ -116,12 +114,17 @@ def _build_episode(
         label(rule_a, item.q1, item.q2) != label(rule_b, item.q1, item.q2)
         for item in item_rows[template.pre_count:LABELED_ITEM_COUNT]
     )
+    difficulty_factors = derive_difficulty_factors(item_rows, template.pre_count)
+    difficulty, difficulty_profile_id = derive_difficulty_profile(difficulty_factors)
 
     return Episode(
         episode_id=episode_id,
         split=Split.DEV,
-        difficulty=_difficulty_for(template_id, probe_targets),
+        difficulty=difficulty,
         template_id=template_id,
+        template_family=(
+            "canonical" if template_id is TemplateId.T1 else "observation_log"
+        ),
         rule_A=rule_a,
         rule_B=rule_b,
         transition=Transition.from_rules(rule_a, rule_b),
@@ -129,6 +132,8 @@ def _build_episode(
         post_labeled_count=template.post_labeled_count,
         shift_after_position=template.shift_after_position,
         contradiction_count_post=contradiction_count_post,
+        difficulty_profile_id=difficulty_profile_id,
+        difficulty_factors=difficulty_factors,
         items=item_rows,
         probe_targets=probe_targets,
         probe_label_counts=(

@@ -23,6 +23,7 @@ from tasks.ruleshift_benchmark.protocol import (
     LABELED_ITEM_COUNT,
     PROBE_COUNT,
     Difficulty,
+    DifficultyProfileId,
     InteractionLabel,
     ItemKind,
     Phase,
@@ -32,6 +33,7 @@ from tasks.ruleshift_benchmark.protocol import (
     TemplateId,
     Transition,
     parse_difficulty,
+    parse_difficulty_profile_id,
     parse_label,
     parse_rule,
     parse_template_family,
@@ -41,11 +43,14 @@ from tasks.ruleshift_benchmark.protocol import (
 from tasks.ruleshift_benchmark.rules import label
 from tasks.ruleshift_benchmark.schema import (
     DIFFICULTY_VERSION,
+    DifficultyFactors,
     GENERATOR_VERSION,
     SPEC_VERSION,
     TEMPLATE_SET_VERSION,
     Episode,
     ProbeMetadata,
+    derive_difficulty_factors,
+    derive_difficulty_profile,
 )
 
 __all__ = [
@@ -72,7 +77,7 @@ __all__ = [
     "validate_dataset",
 ]
 
-_EPISODE_ID_PATTERN = re.compile(r"^ife-r12-(\d+)$")
+_EPISODE_ID_PATTERN = re.compile(r"^ife-r(?:12|13)-(\d+)$")
 _TEMPLATE_ORDER = (TemplateId.T1.value, TemplateId.T2.value)
 _TEMPLATE_FAMILY_ORDER = (
     TemplateFamily.CANONICAL.value,
@@ -769,8 +774,7 @@ def _build_validity_note(
         + f"Current status: {'PASS' if passed else 'FAIL'}. "
         + blocking_clause
         + (
-            " Hard is still not emitted, so the report intentionally omits hard-slice "
-            "claims."
+            " Some supplied episodes do not cover the full emitted difficulty set."
             if "hard" in report.difficulty_labels_missing
             else ""
         )
@@ -853,6 +857,14 @@ def validate_episode(
     template_id = _parse_template_id(getattr(episode, "template_id", None), add_issue)
     _parse_template_family(getattr(episode, "template_family", None), add_issue)
     difficulty = _parse_difficulty(getattr(episode, "difficulty", None), add_issue)
+    difficulty_profile_id = _parse_difficulty_profile_id(
+        getattr(episode, "difficulty_profile_id", None),
+        add_issue,
+    )
+    difficulty_factors = _normalize_difficulty_factors(
+        getattr(episode, "difficulty_factors", None),
+        add_issue,
+    )
     rule_a = _parse_rule(getattr(episode, "rule_A", None), "rule_A", add_issue)
     rule_b = _parse_rule(getattr(episode, "rule_B", None), "rule_B", add_issue)
     transition = _parse_transition(
@@ -1169,21 +1181,31 @@ def validate_episode(
             "probe items must cover each sign pattern exactly once",
         )
 
-    if (
-        difficulty is not None
-        and template_id is not None
-        and normalized_probe_targets is not None
-        and isinstance(contradiction_count_post, int)
-    ):
-        expected_difficulty = _derive_difficulty(
-            template_id=template_id,
-            contradiction_count_post=contradiction_count_post,
-            probe_targets=normalized_probe_targets,
+    if len(items) == EPISODE_LENGTH and isinstance(pre_count, int):
+        expected_difficulty_factors = derive_difficulty_factors(items, pre_count)
+        if (
+            difficulty_factors is not None
+            and difficulty_factors != expected_difficulty_factors
+        ):
+            add_issue(
+                "invalid_difficulty_factors",
+                "difficulty_factors must match the canonical factor derivation",
+            )
+        expected_difficulty, expected_profile_id = derive_difficulty_profile(
+            expected_difficulty_factors
         )
-        if difficulty is not expected_difficulty:
+        if difficulty is not None and difficulty is not expected_difficulty:
             add_issue(
                 "invalid_episode_metadata",
-                "difficulty must match the derived R12 difficulty rules",
+                "difficulty must match the derived R13 difficulty rules",
+            )
+        if (
+            difficulty_profile_id is not None
+            and difficulty_profile_id is not expected_profile_id
+        ):
+            add_issue(
+                "invalid_episode_metadata",
+                "difficulty_profile_id must match the derived R13 difficulty profile",
             )
 
     version_messages: list[str] = []
@@ -1409,6 +1431,33 @@ def _parse_difficulty(
             "difficulty must be a valid benchmark difficulty",
         )
         return None
+
+
+def _parse_difficulty_profile_id(
+    value: object,
+    add_issue,
+) -> DifficultyProfileId | None:
+    try:
+        return parse_difficulty_profile_id(value)
+    except (TypeError, ValueError):
+        add_issue(
+            "invalid_episode_metadata",
+            "difficulty_profile_id must be a valid benchmark difficulty profile",
+        )
+        return None
+
+
+def _normalize_difficulty_factors(
+    value: object,
+    add_issue,
+) -> DifficultyFactors | None:
+    if isinstance(value, DifficultyFactors):
+        return value
+    add_issue(
+        "invalid_difficulty_factors",
+        "difficulty_factors must be a DifficultyFactors value",
+    )
+    return None
 
 
 def _parse_rule(

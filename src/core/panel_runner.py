@@ -633,7 +633,7 @@ def render_panel_markdown(
             "",
             "## Notes",
             "",
-            "- `hard` remains reserved and is not emitted in the current frozen repaired benchmark, so no hard slice is reported.",
+            "- Difficulty slices are diagnostic only; they do not change the Binary-only leaderboard metric.",
         ]
     )
     if ModelMode.NARRATIVE not in prompt_modes:
@@ -641,8 +641,6 @@ def render_panel_markdown(
             "- Narrative mode was not run in this first real-model panel, so Binary vs Narrative comparison is unavailable."
         )
     for limitation in release_report.limitations:
-        if "hard slice omitted" in limitation:
-            continue
         if (
             "No matched Binary/Narrative model runs supplied" in limitation
             and ModelMode.NARRATIVE not in prompt_modes

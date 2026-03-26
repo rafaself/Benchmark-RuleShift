@@ -74,6 +74,7 @@ _EXPECTED_BENCHMARK_VERSIONS: Final[dict[str, str]] = {
     "template_set_version": TEMPLATE_SET_VERSION,
     "difficulty_version": DIFFICULTY_VERSION,
 }
+_EXPECTED_EMITTED_DIFFICULTIES: Final[list[str]] = ["easy", "medium", "hard"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -152,12 +153,12 @@ def validate_kaggle_staging_manifest(
             "benchmark_versions must match the canonical split and schema versions"
         )
 
-    if manifest.get("current_emitted_difficulty_labels") != ["easy", "medium"]:
+    if manifest.get("current_emitted_difficulty_labels") != _EXPECTED_EMITTED_DIFFICULTIES:
         raise ValueError(
-            "current_emitted_difficulty_labels must equal ['easy', 'medium']"
+            "current_emitted_difficulty_labels must equal ['easy', 'medium', 'hard']"
         )
-    if manifest.get("reserved_difficulty_labels") != ["hard"]:
-        raise ValueError("reserved_difficulty_labels must equal ['hard']")
+    if manifest.get("reserved_difficulty_labels") != []:
+        raise ValueError("reserved_difficulty_labels must equal []")
 
     frozen_split_manifests = _require_mapping(
         manifest,
