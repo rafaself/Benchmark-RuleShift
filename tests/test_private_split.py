@@ -8,7 +8,7 @@ import sys
 
 import pytest
 
-from private_split import (
+from core.private_split import (
     PRIVATE_DATASET_ROOT_ENV_VAR,
     PRIVATE_EPISODES_FILENAME,
     PRIVATE_SPLIT_ARTIFACT_SCHEMA_VERSION,
@@ -16,7 +16,7 @@ from private_split import (
     load_private_split,
     load_private_split_manifest_info,
 )
-from splits import generate_frozen_split, load_frozen_split, load_split_manifest
+from core.splits import generate_frozen_split, load_frozen_split, load_split_manifest
 from tasks.ruleshift_benchmark.protocol import InteractionLabel, Split
 
 

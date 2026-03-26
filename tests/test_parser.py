@@ -1,4 +1,4 @@
-from parser import (
+from core.parser import (
     NarrativeAuditOutput,
     NarrativeParseStatus,
     NarrativeParsedResult,
@@ -7,7 +7,7 @@ from parser import (
     parse_binary_output,
     parse_narrative_audit_output,
 )
-from protocol import InteractionLabel
+from tasks.ruleshift_benchmark.protocol import InteractionLabel
 
 ATTRACT = InteractionLabel.ATTRACT
 REPEL = InteractionLabel.REPEL

@@ -1,7 +1,7 @@
 import pytest
 
-from protocol import CHARGES, InteractionLabel, RuleName
-from rules import label
+from tasks.ruleshift_benchmark.protocol import CHARGES, InteractionLabel, RuleName
+from tasks.ruleshift_benchmark.rules import label
 
 
 @pytest.mark.parametrize(

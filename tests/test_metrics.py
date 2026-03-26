@@ -1,12 +1,12 @@
-from metrics import MetricSummary, compute_metrics, compute_post_shift_probe_accuracy
-from parser import (
+from core.metrics import MetricSummary, compute_metrics, compute_post_shift_probe_accuracy
+from core.parser import (
     NarrativeAuditOutput,
     NarrativeParseStatus,
     NarrativeParsedResult,
     ParsedPrediction,
     ParseStatus,
 )
-from protocol import InteractionLabel
+from tasks.ruleshift_benchmark.protocol import InteractionLabel
 
 ATTRACT = InteractionLabel.ATTRACT
 REPEL = InteractionLabel.REPEL
@@ -193,7 +193,7 @@ def test_compute_metrics_empty_narrative_results():
 
 
 def test_compute_metrics_provider_failures_excluded_from_binary_rate():
-    from parser import ParsedPrediction, ParseStatus
+    from core.parser import ParsedPrediction, ParseStatus
 
     binary_predictions = (
         _valid_prediction(ATTRACT, REPEL, REPEL, ATTRACT),

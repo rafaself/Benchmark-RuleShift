@@ -28,6 +28,9 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 _SRC_DIR = _REPO_ROOT / "src"
 _NOTEBOOK_PATH = _REPO_ROOT / "packaging" / "kaggle" / "ruleshift_notebook_task.ipynb"
 
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 # Ensure src/ is on sys.path (same as conftest.py).
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
@@ -87,8 +90,8 @@ def _execute_notebook_cells() -> dict:
 def _build_eval_df():
     """Reproduce the combined-splits eval_df (all partitions) for unit tests."""
     import pandas as pd
-    from splits import PARTITIONS, load_frozen_split
-    from render import render_binary_prompt, render_narrative_prompt
+    from core.splits import PARTITIONS, load_frozen_split
+    from tasks.ruleshift_benchmark.render import render_binary_prompt, render_narrative_prompt
 
     frozen_splits = {p: load_frozen_split(p) for p in PARTITIONS}
 
@@ -112,7 +115,7 @@ def _build_eval_df():
 
 def _register_binary_task():
     """Register only the Binary task as @kbench.task — matching the notebook."""
-    from kaggle import (
+    from core.kaggle import (
         BinaryResponse,
         normalize_binary_response,
         score_episode,
@@ -143,7 +146,7 @@ def _register_binary_task():
 
 def _make_narrative_fn():
     """Return the Narrative function as a plain callable — not a kbench task."""
-    from kaggle import normalize_narrative_response, score_episode
+    from core.kaggle import normalize_narrative_response, score_episode
 
     def ruleshift_benchmark_v1_narrative(
         llm,
@@ -217,7 +220,7 @@ class TestNotebookImports:
     """Cell 3: all imports the notebook needs from the local package."""
 
     def test_kaggle_module_exports(self):
-        from kaggle import (  # noqa: F401
+        from core.kaggle import (  # noqa: F401
             BinaryResponse,
             normalize_binary_response,
             normalize_narrative_response,
@@ -225,19 +228,19 @@ class TestNotebookImports:
         )
 
     def test_splits_module_exports(self):
-        from splits import PARTITIONS, load_frozen_split  # noqa: F401
+        from core.splits import PARTITIONS, load_frozen_split  # noqa: F401
         assert len(PARTITIONS) == 3
 
     def test_parser_version_exported(self):
-        from parser import PARSER_VERSION  # noqa: F401
+        from core.parser import PARSER_VERSION  # noqa: F401
         assert isinstance(PARSER_VERSION, str) and PARSER_VERSION
 
     def test_metric_version_exported(self):
-        from metrics import METRIC_VERSION  # noqa: F401
+        from core.metrics import METRIC_VERSION  # noqa: F401
         assert isinstance(METRIC_VERSION, str) and METRIC_VERSION
 
     def test_render_functions_exported(self):
-        from render import render_binary_prompt, render_narrative_prompt  # noqa: F401
+        from tasks.ruleshift_benchmark.render import render_binary_prompt, render_narrative_prompt  # noqa: F401
 
 
 # ---------------------------------------------------------------------------
@@ -249,14 +252,14 @@ class TestFrozenSplitLoading:
     """Cell 3: load_frozen_split for every partition."""
 
     def test_all_partitions_load(self):
-        from splits import PARTITIONS, load_frozen_split
+        from core.splits import PARTITIONS, load_frozen_split
 
         for partition in PARTITIONS:
             records = load_frozen_split(partition)
             assert len(records) > 0, f"{partition} returned no episodes"
 
     def test_episodes_have_required_attributes(self):
-        from splits import load_frozen_split
+        from core.splits import load_frozen_split
 
         records = load_frozen_split("dev")
         for record in records:
@@ -284,7 +287,7 @@ class TestEvalDataframe:
         assert required.issubset(set(df.columns))
 
     def test_eval_df_row_count_matches_frozen_splits(self):
-        from splits import PARTITIONS, load_frozen_split
+        from core.splits import PARTITIONS, load_frozen_split
 
         expected = sum(len(load_frozen_split(p)) for p in PARTITIONS)
         df = _build_eval_df()
@@ -391,19 +394,19 @@ class TestScoringContract:
     """cell-11: dry-run scoring checks — same assertions as the notebook."""
 
     def test_perfect_prediction(self):
-        from kaggle import score_episode
+        from core.kaggle import score_episode
         df = _build_eval_df()
         targets = df.iloc[0]["probe_targets"]
         assert score_episode(targets, targets) == (4, 4)
 
     def test_invalid_prediction(self):
-        from kaggle import score_episode
+        from core.kaggle import score_episode
         df = _build_eval_df()
         targets = df.iloc[0]["probe_targets"]
         assert score_episode(None, targets) == (0, 4)
 
     def test_normalize_binary_roundtrip(self):
-        from kaggle import BinaryResponse, Label, normalize_binary_response
+        from core.kaggle import BinaryResponse, Label, normalize_binary_response
         df = _build_eval_df()
         targets = df.iloc[0]["probe_targets"]
         # Text path
@@ -415,7 +418,7 @@ class TestScoringContract:
         assert normalize_binary_response(structured) == targets
 
     def test_malformed_response_scores_zero(self):
-        from kaggle import normalize_binary_response, score_episode
+        from core.kaggle import normalize_binary_response, score_episode
         df = _build_eval_df()
         targets = df.iloc[0]["probe_targets"]
         malformed = normalize_binary_response("I don't know")
@@ -624,7 +627,7 @@ class TestNotebookEndToEnd:
     # ── 10-11: payload boundaries ─────────────────────────────────────────────
 
     def test_canonical_payload_validates_cleanly(self, ns):
-        from kaggle import validate_kaggle_payload
+        from core.kaggle import validate_kaggle_payload
         validate_kaggle_payload(ns["payload"])  # must not raise
 
     def test_payload_episode_counts_match_leaderboard(self, ns):

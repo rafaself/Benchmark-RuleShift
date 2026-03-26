@@ -1,6 +1,6 @@
 from functools import partial
 
-from baselines import (
+from tasks.ruleshift_benchmark.baselines import (
     physics_prior_baseline,
     last_evidence_baseline,
     never_update_baseline,
@@ -9,8 +9,8 @@ from baselines import (
     run_baselines,
     template_position_baseline,
 )
-from parser import ParseStatus
-from protocol import (
+from core.parser import ParseStatus
+from tasks.ruleshift_benchmark.protocol import (
     LABELED_ITEM_COUNT,
     Difficulty,
     InteractionLabel,
@@ -22,8 +22,8 @@ from protocol import (
     TemplateId,
     Transition,
 )
-from rules import label
-from schema import (
+from tasks.ruleshift_benchmark.rules import label
+from tasks.ruleshift_benchmark.schema import (
     DIFFICULTY_VERSION,
     Episode,
     EpisodeItem,

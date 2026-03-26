@@ -114,8 +114,6 @@ def _repo_root(repo_root: Path | str | None = None) -> Path:
 
 
 def _manifest_path(repo_root: Path | str | None = None) -> Path:
-    # The filename is retained for compatibility, but its role is now the
-    # official Kaggle runtime-contract manifest rather than a broad package index.
     return _repo_root(repo_root) / "packaging" / "kaggle" / "frozen_artifacts_manifest.json"
 
 

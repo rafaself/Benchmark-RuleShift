@@ -21,9 +21,9 @@ from core.panel_runner import (
     build_panel_raw_capture,
     render_panel_markdown,
 )
-from generator import generate_episode
-from parser import NarrativeParsedResult, NarrativeParseStatus, ParseStatus, ParsedPrediction
-from protocol import Split
+from tasks.ruleshift_benchmark.generator import generate_episode
+from core.parser import NarrativeParsedResult, NarrativeParseStatus, ParseStatus, ParsedPrediction
+from tasks.ruleshift_benchmark.protocol import Split
 
 
 def _row_from_prediction(

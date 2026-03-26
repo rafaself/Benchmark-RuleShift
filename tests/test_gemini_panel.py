@@ -15,9 +15,9 @@ from core.model_execution import (
     ModelRequest,
     ModelRunConfig,
 )
-from generator import generate_episode
-from protocol import InteractionLabel, Split
-from render import render_binary_prompt, render_narrative_prompt
+from tasks.ruleshift_benchmark.generator import generate_episode
+from tasks.ruleshift_benchmark.protocol import InteractionLabel, Split
+from tasks.ruleshift_benchmark.render import render_binary_prompt, render_narrative_prompt
 
 
 def _labels_text(labels: tuple[InteractionLabel, ...]) -> str:

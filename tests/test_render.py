@@ -1,7 +1,7 @@
-from generator import generate_episode
-from protocol import LABELED_ITEM_COUNT, RuleName, TemplateFamily
-from render import render_binary_prompt, render_narrative_prompt
-from rules import label
+from tasks.ruleshift_benchmark.generator import generate_episode
+from tasks.ruleshift_benchmark.protocol import LABELED_ITEM_COUNT, RuleName, TemplateFamily
+from tasks.ruleshift_benchmark.render import render_binary_prompt, render_narrative_prompt
+from tasks.ruleshift_benchmark.rules import label
 
 
 def _format_charge(charge: int) -> str:

@@ -27,9 +27,9 @@ from core.invariance import (
     generate_invariance_cases,
 )
 from core.metrics import MetricSummary
-from generator import generate_episode
-from parser import ParsedPrediction, ParseStatus
-from protocol import PROBE_COUNT, InteractionLabel
+from tasks.ruleshift_benchmark.generator import generate_episode
+from core.parser import ParsedPrediction, ParseStatus
+from tasks.ruleshift_benchmark.protocol import PROBE_COUNT, InteractionLabel
 from tasks.ruleshift_benchmark.render import render_binary_prompt
 from tasks.ruleshift_benchmark.protocol import TemplateFamily, TemplateId
 

@@ -5,8 +5,13 @@ import json
 
 import pytest
 
-from schema import DIFFICULTY_VERSION, GENERATOR_VERSION, SPEC_VERSION, TEMPLATE_SET_VERSION
-from splits import (
+from tasks.ruleshift_benchmark.schema import (
+    DIFFICULTY_VERSION,
+    GENERATOR_VERSION,
+    SPEC_VERSION,
+    TEMPLATE_SET_VERSION,
+)
+from core.splits import (
     PARTITIONS,
     FrozenSplitEpisode,
     assert_no_partition_overlap,
@@ -15,7 +20,7 @@ from splits import (
     load_frozen_split,
     load_split_manifest,
 )
-from validate import normalize_episode_payload
+from core.validate import normalize_episode_payload
 
 
 def _payload_fingerprint(record: FrozenSplitEpisode) -> str:

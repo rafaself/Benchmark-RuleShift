@@ -2,8 +2,8 @@ from dataclasses import fields, replace
 
 import pytest
 
-from generator import generate_episode
-from protocol import (
+from tasks.ruleshift_benchmark.generator import generate_episode
+from tasks.ruleshift_benchmark.protocol import (
     Difficulty,
     InteractionLabel,
     ItemKind,
@@ -14,8 +14,8 @@ from protocol import (
     TemplateId,
     Transition,
 )
-from rules import label
-from schema import (
+from tasks.ruleshift_benchmark.rules import label
+from tasks.ruleshift_benchmark.schema import (
     DIFFICULTY_VERSION,
     GENERATOR_VERSION,
     SPEC_VERSION,

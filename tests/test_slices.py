@@ -13,14 +13,14 @@ from core.slices import (
     classify_binary_error_type,
     compute_episode_slice_data,
 )
-from generator import generate_episode
-from parser import (
+from tasks.ruleshift_benchmark.generator import generate_episode
+from core.parser import (
     NarrativeParseStatus,
     NarrativeParsedResult,
     ParsedPrediction,
     ParseStatus,
 )
-from protocol import PROBE_COUNT, InteractionLabel
+from tasks.ruleshift_benchmark.protocol import PROBE_COUNT, InteractionLabel
 
 ATTRACT = InteractionLabel.ATTRACT
 REPEL = InteractionLabel.REPEL

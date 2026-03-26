@@ -6,27 +6,27 @@ from pathlib import Path
 
 import pytest
 
-from baselines import (
+from tasks.ruleshift_benchmark.baselines import (
     last_evidence_baseline,
     never_update_baseline,
     physics_prior_baseline,
     random_baseline,
     template_position_baseline,
 )
-from generator import generate_episode
-from metrics import MetricSummary, compute_metrics
-from parser import (
+from tasks.ruleshift_benchmark.generator import generate_episode
+from core.metrics import MetricSummary, compute_metrics
+from core.parser import (
     NarrativeParsedResult,
     ParsedPrediction,
     ParseStatus,
     parse_binary_output,
     parse_narrative_audit_output,
 )
-from protocol import LABELED_ITEM_COUNT, InteractionLabel
-from render import render_binary_prompt, render_narrative_prompt
-from rules import label
-from schema import DifficultyFactors, Episode, EpisodeItem, ProbeMetadata
-from validate import (
+from tasks.ruleshift_benchmark.protocol import LABELED_ITEM_COUNT, InteractionLabel
+from tasks.ruleshift_benchmark.render import render_binary_prompt, render_narrative_prompt
+from tasks.ruleshift_benchmark.rules import label
+from tasks.ruleshift_benchmark.schema import DifficultyFactors, Episode, EpisodeItem, ProbeMetadata
+from core.validate import (
     BaselineAccuracySummary,
     BenchmarkValidityReport,
     DatasetDistributionSummary,

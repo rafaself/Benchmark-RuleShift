@@ -12,9 +12,9 @@ from core.model_execution import (
     ModelRunConfig,
 )
 from core.model_runner import run_model_benchmark
-from generator import generate_episode
-from parser import NarrativeParseStatus, ParseStatus
-from render import render_binary_prompt, render_narrative_prompt
+from tasks.ruleshift_benchmark.generator import generate_episode
+from core.parser import NarrativeParseStatus, ParseStatus
+from tasks.ruleshift_benchmark.render import render_binary_prompt, render_narrative_prompt
 
 
 def _binary_labels_for(episode) -> str:

@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from audit import (
+from core.audit import (
     AuditSliceSummary,
     AuditSource,
     HeuristicAlignmentSummary,
@@ -11,7 +11,7 @@ from audit import (
     run_release_r15_reaudit,
     serialize_release_r15_reaudit_report,
 )
-from baselines import (
+from tasks.ruleshift_benchmark.baselines import (
     last_evidence_baseline,
     never_update_baseline,
     physics_prior_baseline,
@@ -19,8 +19,8 @@ from baselines import (
     run_baselines,
     template_position_baseline,
 )
-from parser import ParsedPrediction, ParseStatus
-from protocol import (
+from core.parser import ParsedPrediction, ParseStatus
+from tasks.ruleshift_benchmark.protocol import (
     LABELED_ITEM_COUNT,
     Difficulty,
     InteractionLabel,
@@ -33,8 +33,8 @@ from protocol import (
     TemplateId,
     Transition,
 )
-from rules import label
-from schema import (
+from tasks.ruleshift_benchmark.rules import label
+from tasks.ruleshift_benchmark.schema import (
     DIFFICULTY_VERSION,
     Episode,
     EpisodeItem,

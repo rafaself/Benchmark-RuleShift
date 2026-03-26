@@ -32,20 +32,6 @@ ruleshift-benchmark-contract-audit = "core.cli:contract_audit_entrypoint"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
-py-modules = [
-  "audit",
-  "baselines",
-  "generator",
-  "kaggle",
-  "metrics",
-  "parser",
-  "protocol",
-  "render",
-  "rules",
-  "schema",
-  "splits",
-  "validate",
-]
 
 [tool.setuptools.packages.find]
 where = ["src"]

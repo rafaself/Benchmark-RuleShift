@@ -1,6 +1,6 @@
 import pytest
 
-from protocol import (
+from tasks.ruleshift_benchmark.protocol import (
     CASE_SPACE,
     CHARGES,
     DIFFICULTIES,

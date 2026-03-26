@@ -141,7 +141,6 @@ def build_kaggle_runtime() -> None:
     The runtime folder mirrors the subset the notebook expects to find
     under /kaggle/input/ruleshift-runtime/ on Kaggle:
 
-      src/                               -- all top-level .py compatibility wrappers
       src/core/                          -- core infrastructure
       src/tasks/ruleshift_benchmark/     -- task-specific logic
       src/frozen_splits/                 -- frozen episode manifests
@@ -167,11 +166,6 @@ def build_kaggle_runtime() -> None:
     # Copy src/ (subset needed by the Kaggle notebook).
     runtime_src = DEPLOY_RUNTIME_DIR / "src"
     runtime_src.mkdir()
-
-    # Top-level compatibility wrappers (*.py in src/).
-    for py in sorted(SRC_DIR.glob("*.py")):
-        shutil.copy2(py, runtime_src / py.name)
-        print(f"  src/{py.name}")
 
     # src/core/
     shutil.copytree(SRC_DIR / "core", runtime_src / "core", ignore=shutil.ignore_patterns("__pycache__"))
@@ -209,13 +203,9 @@ def build_kaggle_runtime() -> None:
         "Expected Kaggle dataset root:\n"
         "`/kaggle/input/ruleshift-runtime/`\n\n"
         "Copied items:\n\n"
-        "- `src/`\n"
-        "  Required because the official notebook inserts "
-        "`/kaggle/input/ruleshift-runtime/src` into `sys.path` and imports the "
-        "runtime modules from there.\n"
         "- `src/core/`\n"
-        "  Required because `src/kaggle.py`, `src/splits.py`, `src/parser.py`, "
-        "and `src/metrics.py` re-export implementations from `core.*`.\n"
+        "  Required because the official notebook imports runtime infrastructure "
+        "from `core.*` after adding `/kaggle/input/ruleshift-runtime/src` to `sys.path`.\n"
         "- `src/tasks/ruleshift_benchmark/`\n"
         "  Required because the runtime scoring, rendering, schema, protocol, "
         "baseline, and generator logic import task modules from this package.\n"

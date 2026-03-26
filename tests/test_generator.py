@@ -4,9 +4,9 @@ from unittest.mock import patch
 import pytest
 
 import tasks.ruleshift_benchmark.generator as rsb_generator
-from baselines import last_evidence_baseline
-from generator import generate_episode
-from protocol import (
+from tasks.ruleshift_benchmark.baselines import last_evidence_baseline
+from tasks.ruleshift_benchmark.generator import generate_episode
+from tasks.ruleshift_benchmark.protocol import (
     LABELED_ITEM_COUNT,
     Difficulty,
     DifficultyProfileId,
@@ -18,8 +18,8 @@ from protocol import (
     TemplateId,
     Transition,
 )
-from rules import label
-from schema import Episode
+from tasks.ruleshift_benchmark.rules import label
+from tasks.ruleshift_benchmark.schema import Episode
 
 
 def _probe_sign_pattern(q1: int, q2: int) -> str:

@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from src.core.kaggle import (
+from core.kaggle import (
     ConfidenceInterval,
     build_kaggle_payload,
     compute_bootstrap_confidence_interval,
@@ -508,10 +508,8 @@ def test_notebook_uses_canonical_builder_in_real_emitted_artifact_path():
         "(the real Kaggle-emitted artifact), not only write a side JSON file"
     )
 
-    # Import must go through the canonical src/kaggle re-export, not core.kaggle directly
-    assert "from kaggle import" in canonical_source, (
-        "Canonical payload cell must import from 'kaggle' (the package re-export), "
-        "not directly from 'core.kaggle'"
+    assert "from core.kaggle import" in canonical_source, (
+        "Canonical payload cell must import from 'core.kaggle' directly"
     )
 
     # Must hard-fail when narrative_results_df is missing
