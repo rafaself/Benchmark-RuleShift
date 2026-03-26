@@ -1,5 +1,5 @@
 from generator import generate_episode
-from protocol import LABELED_ITEM_COUNT, RuleName
+from protocol import LABELED_ITEM_COUNT, RuleName, TemplateFamily
 from render import render_binary_prompt, render_narrative_prompt
 from rules import label
 
@@ -13,12 +13,40 @@ def _binary_line(item) -> str:
     return f"{item.position}. q1={_format_charge(item.q1)}, q2={_format_charge(item.q2)} -> {outcome}"
 
 
+def _binary_log_line(item) -> str:
+    outcome = item.label.value if item.label is not None else "?"
+    return (
+        f"[{item.position:02d}] q1={_format_charge(item.q1)} | "
+        f"q2={_format_charge(item.q2)} | observed={outcome}"
+    )
+
+
 def _narrative_line(item) -> str:
     outcome = item.label.value if item.label is not None else "?"
     return (
         f"{item.position}. A {_format_charge(item.q1)} charge and a {_format_charge(item.q2)} "
         f"charge were observed to {outcome}."
     )
+
+
+def _narrative_log_line(item) -> str:
+    outcome = item.label.value if item.label is not None else "?"
+    return (
+        f"[{item.position:02d}] charges({_format_charge(item.q1)}, {_format_charge(item.q2)}) "
+        f"=> observed {outcome}."
+    )
+
+
+def _rendered_binary_line(episode, item) -> str:
+    if episode.template_family is TemplateFamily.OBSERVATION_LOG:
+        return _binary_log_line(item)
+    return _binary_line(item)
+
+
+def _rendered_narrative_line(episode, item) -> str:
+    if episode.template_family is TemplateFamily.OBSERVATION_LOG:
+        return _narrative_log_line(item)
+    return _narrative_line(item)
 
 
 def _assert_lines_appear_in_order(text: str, lines: tuple[str, ...]) -> None:
@@ -53,12 +81,28 @@ def test_same_episode_renders_identically_across_repeated_runs():
 def test_binary_render_includes_all_labeled_examples_and_all_probes_in_correct_order():
     episode = make_valid_t1_episode()
     prompt = render_binary_prompt(episode)
-    labeled_lines = tuple(_binary_line(item) for item in episode.items[:LABELED_ITEM_COUNT])
-    probe_lines = tuple(_binary_line(item) for item in episode.items[LABELED_ITEM_COUNT:])
+    labeled_lines = tuple(
+        _rendered_binary_line(episode, item) for item in episode.items[:LABELED_ITEM_COUNT]
+    )
+    probe_lines = tuple(
+        _rendered_binary_line(episode, item)
+        for item in episode.items[LABELED_ITEM_COUNT:]
+    )
 
-    assert "Labeled examples:" in prompt
-    assert "Probes:" in prompt
-    assert prompt.index("Labeled examples:") < prompt.index("Probes:")
+    expected_labeled_heading = (
+        "Resolved log entries:"
+        if episode.template_family is TemplateFamily.OBSERVATION_LOG
+        else "Labeled examples:"
+    )
+    expected_probe_heading = (
+        "Unresolved probe entries:"
+        if episode.template_family is TemplateFamily.OBSERVATION_LOG
+        else "Probes:"
+    )
+
+    assert expected_labeled_heading in prompt
+    assert expected_probe_heading in prompt
+    assert prompt.index(expected_labeled_heading) < prompt.index(expected_probe_heading)
     _assert_lines_appear_in_order(prompt, labeled_lines + probe_lines)
 
 
@@ -66,8 +110,8 @@ def test_narrative_render_includes_the_same_underlying_items_and_probe_order():
     episode = make_valid_t2_episode()
     binary_prompt = render_binary_prompt(episode)
     narrative_prompt = render_narrative_prompt(episode)
-    binary_lines = tuple(_binary_line(item) for item in episode.items)
-    narrative_lines = tuple(_narrative_line(item) for item in episode.items)
+    binary_lines = tuple(_rendered_binary_line(episode, item) for item in episode.items)
+    narrative_lines = tuple(_rendered_narrative_line(episode, item) for item in episode.items)
 
     _assert_lines_appear_in_order(binary_prompt, binary_lines)
     _assert_lines_appear_in_order(narrative_prompt, narrative_lines)
@@ -109,16 +153,26 @@ def test_render_output_does_not_expose_hidden_metadata_or_target_labels():
     binary_prompt = render_binary_prompt(episode)
     narrative_prompt = render_narrative_prompt(episode)
     for probe_index, item in enumerate(episode.items[LABELED_ITEM_COUNT:]):
-        assert _binary_line(item) in binary_prompt
-        assert _narrative_line(item) in narrative_prompt
+        assert _rendered_binary_line(episode, item) in binary_prompt
+        assert _rendered_narrative_line(episode, item) in narrative_prompt
         target_label = episode.probe_targets[probe_index].value
-        assert (
-            f"{item.position}. q1={_format_charge(item.q1)}, q2={_format_charge(item.q2)} -> {target_label}"
-        ) not in binary_prompt
-        assert (
-            f"{item.position}. A {_format_charge(item.q1)} charge and a {_format_charge(item.q2)} "
-            f"charge were observed to {target_label}."
-        ) not in narrative_prompt
+        if episode.template_family is TemplateFamily.OBSERVATION_LOG:
+            assert (
+                f"[{item.position:02d}] q1={_format_charge(item.q1)} | "
+                f"q2={_format_charge(item.q2)} | observed={target_label}"
+            ) not in binary_prompt
+            assert (
+                f"[{item.position:02d}] charges({_format_charge(item.q1)}, {_format_charge(item.q2)}) "
+                f"=> observed {target_label}."
+            ) not in narrative_prompt
+        else:
+            assert (
+                f"{item.position}. q1={_format_charge(item.q1)}, q2={_format_charge(item.q2)} -> {target_label}"
+            ) not in binary_prompt
+            assert (
+                f"{item.position}. A {_format_charge(item.q1)} charge and a {_format_charge(item.q2)} "
+                f"charge were observed to {target_label}."
+            ) not in narrative_prompt
 
 
 def test_binary_and_narrative_preserve_identical_probe_targets_from_the_source_episode():
@@ -127,11 +181,8 @@ def test_binary_and_narrative_preserve_identical_probe_targets_from_the_source_e
     binary_prompt = render_binary_prompt(episode)
     narrative_prompt = render_narrative_prompt(episode)
     for item in episode.items[LABELED_ITEM_COUNT:]:
-        binary_fragment = f"{item.position}. q1={_format_charge(item.q1)}, q2={_format_charge(item.q2)} -> ?"
-        narrative_fragment = (
-            f"{item.position}. A {_format_charge(item.q1)} charge and a {_format_charge(item.q2)} "
-            "charge were observed to ?."
-        )
+        binary_fragment = _rendered_binary_line(episode, item)
+        narrative_fragment = _rendered_narrative_line(episode, item)
         assert binary_fragment in binary_prompt
         assert narrative_fragment in narrative_prompt
 

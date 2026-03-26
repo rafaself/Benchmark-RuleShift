@@ -29,6 +29,7 @@ from protocol import (
     RuleName,
     Split,
     TEMPLATES,
+    TemplateFamily,
     TemplateId,
     Transition,
 )
@@ -136,6 +137,11 @@ def _build_episode(
         split=Split.DEV,
         difficulty=_difficulty_for(template_id, probe_targets),
         template_id=template_id,
+        template_family=(
+            TemplateFamily.CANONICAL
+            if template_id is TemplateId.T1
+            else TemplateFamily.OBSERVATION_LOG
+        ),
         rule_A=rule_a,
         rule_B=rule_b,
         transition=Transition.from_rules(rule_a, rule_b),
@@ -326,6 +332,24 @@ def test_template_level_and_difficulty_level_summaries_match_hand_checked_fixtur
             parse_valid_rate=1.0,
         ),
         "medium": AuditSliceSummary(
+            episode_count=1,
+            correct_probe_count=4,
+            total_probe_count=4,
+            accuracy=1.0,
+            valid_prediction_count=1,
+            parse_valid_rate=1.0,
+        ),
+    }
+    assert _slice_map(binary_summary.by_template_family) == {
+        "canonical": AuditSliceSummary(
+            episode_count=1,
+            correct_probe_count=1,
+            total_probe_count=4,
+            accuracy=0.25,
+            valid_prediction_count=1,
+            parse_valid_rate=1.0,
+        ),
+        "observation_log": AuditSliceSummary(
             episode_count=1,
             correct_probe_count=4,
             total_probe_count=4,
@@ -530,6 +554,30 @@ def test_release_r15_binary_vs_narrative_comparison_is_stable_on_matched_fixture
                     ),
                 ),
             ),
+            by_template_family=(
+                (
+                    "canonical",
+                    ModeComparisonSummary(
+                        binary_accuracy=0.25,
+                        narrative_accuracy=1.0,
+                        accuracy_gap=-0.75,
+                        binary_parse_valid_rate=1.0,
+                        narrative_parse_valid_rate=1.0,
+                        parse_valid_rate_gap=0.0,
+                    ),
+                ),
+                (
+                    "observation_log",
+                    ModeComparisonSummary(
+                        binary_accuracy=1.0,
+                        narrative_accuracy=0.0,
+                        accuracy_gap=1.0,
+                        binary_parse_valid_rate=1.0,
+                        narrative_parse_valid_rate=0.0,
+                        parse_valid_rate_gap=1.0,
+                    ),
+                ),
+            ),
             by_difficulty=(
                 (
                     "easy",
@@ -570,6 +618,30 @@ def test_release_r15_binary_vs_narrative_comparison_is_stable_on_matched_fixture
         ),
         (
             "medium",
+            AuditSliceSummary(
+                episode_count=1,
+                correct_probe_count=4,
+                total_probe_count=4,
+                accuracy=1.0,
+                valid_prediction_count=1,
+                parse_valid_rate=1.0,
+            ),
+        ),
+    )
+    assert report.model_summaries[0].by_template_family == (
+        (
+            "canonical",
+            AuditSliceSummary(
+                episode_count=1,
+                correct_probe_count=1,
+                total_probe_count=4,
+                accuracy=0.25,
+                valid_prediction_count=1,
+                parse_valid_rate=1.0,
+            ),
+        ),
+        (
+            "observation_log",
             AuditSliceSummary(
                 episode_count=1,
                 correct_probe_count=4,

@@ -235,6 +235,10 @@ def render_panel_markdown(
             lines.append(
                 _render_mode_slice_row("template", label, comparison)
             )
+        for label, comparison in matched_mode_comparison.by_template_family:
+            lines.append(
+                _render_mode_slice_row("template_family", label, comparison)
+            )
         for label, comparison in matched_mode_comparison.by_difficulty:
             lines.append(
                 _render_mode_slice_row("difficulty", label, comparison)
@@ -599,6 +603,20 @@ def render_panel_markdown(
     lines.extend(
         [
             "",
+            "## Binary Template-Family Slices",
+            "",
+            "| Template family | Accuracy | Parse-valid rate |",
+            "| --- | ---: | ---: |",
+        ]
+    )
+    for label, slice_summary in primary_summary.by_template_family:
+        lines.append(
+            f"| {label} | {slice_summary.accuracy:.6f} | {slice_summary.parse_valid_rate:.6f} |"
+        )
+
+    lines.extend(
+        [
+            "",
             "## Binary Difficulty Slices",
             "",
             "| Difficulty | Accuracy | Parse-valid rate |",
@@ -818,6 +836,7 @@ def _build_split_artifact(
             {
                 "episode_id": episode.episode_id,
                 "template_id": episode.template_id.value,
+                "template_family": episode.template_family.value,
                 "difficulty": episode.difficulty.value,
                 "transition": episode.transition.value,
                 "probe_targets": [
@@ -950,6 +969,7 @@ def _build_split_raw_capture(
             {
                 "episode_id": episode.episode_id,
                 "template_id": episode.template_id.value,
+                "template_family": episode.template_family.value,
                 "difficulty": episode.difficulty.value,
                 "transition": episode.transition.value,
                 "probe_targets": [
@@ -1255,6 +1275,11 @@ def _build_diagnostic_summary(
 
     for scope_type, key_name, labels in (
         ("template", "template_id", _ordered_scope_labels(split_payloads, "template_id")),
+        (
+            "template_family",
+            "template_family",
+            _ordered_scope_labels(split_payloads, "template_family"),
+        ),
         ("difficulty", "difficulty", _ordered_scope_labels(split_payloads, "difficulty")),
         ("transition", "transition", _ordered_scope_labels(split_payloads, "transition")),
     ):
@@ -1290,6 +1315,8 @@ def _ordered_scope_labels(
     )
     if key_name == "template_id":
         order = ("T1", "T2")
+    elif key_name == "template_family":
+        order = ("canonical", "observation_log")
     elif key_name == "difficulty":
         order = ("easy", "medium", "hard")
     elif key_name == "transition":
@@ -1467,6 +1494,7 @@ def _build_diagnostic_episode_rows(
                         "split_name": split_name,
                         "episode_id": row["episode_id"],
                         "template_id": row["template_id"],
+                        "template_family": row["template_family"],
                         "difficulty": row["difficulty"],
                         "transition": row["transition"],
                         "mode": TASK_MODE_LABELS[mode],

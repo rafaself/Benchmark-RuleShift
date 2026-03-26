@@ -648,6 +648,19 @@ def render_comparison_markdown(comparison: dict[str, Any]) -> str:
         lines.append("")
 
         lines.extend([
+            "### By Template Family (Narrative)",
+            "",
+            "| Template family | Accuracy | Parse-valid | Runtime errors | Parse failures | Adaptation failures |",
+            "| --- | ---: | ---: | ---: | ---: | ---: |",
+        ])
+        for row in conc.get("narrative_by_template_family", []):
+            lines.append(
+                f"| {row['label']} | {row['accuracy']:.6f} | {row['parse_valid_rate']:.6f} | "
+                f"{row['runtime_errors']} | {row['parse_failures']} | {row['adaptation_failures']} |"
+            )
+        lines.append("")
+
+        lines.extend([
             "### By Transition (Narrative)",
             "",
             "| Transition | Accuracy | Parse-valid | Runtime errors | Parse failures | Adaptation failures |",
@@ -771,6 +784,7 @@ def _scope_keys(
         ("overall", "overall"),
         ("split", split_name),
         ("template", row["template_id"]),
+        ("template_family", row["template_family"]),
         ("difficulty", row["difficulty"]),
         ("transition", row["transition"]),
     ]
@@ -819,6 +833,7 @@ def _compare_episode(
         "split": split_name,
         "mode": mode,
         "template": row_a["template_id"],
+        "template_family": row_a["template_family"],
         "difficulty": row_a["difficulty"],
         "transition": row_a["transition"],
         "parse_status_a": ma.get("parse_status"),
@@ -1048,12 +1063,22 @@ def _build_concentration_analysis(
             })
 
     narrative_by_template: list[dict[str, Any]] = []
+    narrative_by_template_family: list[dict[str, Any]] = []
     narrative_by_transition: list[dict[str, Any]] = []
     for r in ds:
         if _normalize_mode(r.get("mode")) != "narrative":
             continue
         if r.get("scope_type") == "template":
             narrative_by_template.append({
+                "label": r["scope_label"],
+                "accuracy": float(r.get("correct_rate", 0)),
+                "parse_valid_rate": float(r.get("parse_valid_rate", 0)),
+                "runtime_errors": int(r.get("runtime_error_count", 0)),
+                "parse_failures": int(r.get("parse_failure_count", 0)),
+                "adaptation_failures": int(r.get("adaptation_failure_count", 0)),
+            })
+        if r.get("scope_type") == "template_family":
+            narrative_by_template_family.append({
                 "label": r["scope_label"],
                 "accuracy": float(r.get("correct_rate", 0)),
                 "parse_valid_rate": float(r.get("parse_valid_rate", 0)),
@@ -1088,6 +1113,15 @@ def _build_concentration_analysis(
             f"Narrative weakness is most concentrated on template {worst_template['label']} "
             f"(parse-valid {worst_template['parse_valid_rate']:.4f}, accuracy {worst_template['accuracy']:.4f})."
         )
+    if narrative_by_template_family:
+        worst_template_family = min(
+            narrative_by_template_family,
+            key=lambda x: (x["parse_valid_rate"], x["accuracy"]),
+        )
+        findings.append(
+            f"Narrative weakness is most concentrated on template family {worst_template_family['label']} "
+            f"(parse-valid {worst_template_family['parse_valid_rate']:.4f}, accuracy {worst_template_family['accuracy']:.4f})."
+        )
     if narrative_by_transition:
         worst_transition = min(
             narrative_by_transition,
@@ -1118,6 +1152,7 @@ def _build_concentration_analysis(
         "binary_by_split": binary_by_split,
         "narrative_by_split": narrative_by_split,
         "narrative_by_template": narrative_by_template,
+        "narrative_by_template_family": narrative_by_template_family,
         "narrative_by_transition": narrative_by_transition,
         "findings": findings,
     }

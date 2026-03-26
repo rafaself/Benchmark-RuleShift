@@ -69,6 +69,7 @@ _PARTITION_TO_EPISODE_SPLIT: Final[dict[str, Split]] = {
 _WITHIN_SPLIT_DIFFICULTY_GAP_THRESHOLD: Final[float] = 0.25
 _CROSS_SPLIT_GAP_THRESHOLDS: Final[dict[str, float]] = {
     "template": 0.25,
+    "template_family": 0.0,
     "transition": 0.25,
     "difficulty": 0.25,
     "probe_label": 0.125,
@@ -174,6 +175,7 @@ class DistributionGap:
 @dataclass(frozen=True, slots=True)
 class CrossSplitComparisonSummary:
     template: tuple[DistributionGap, ...]
+    template_family: tuple[DistributionGap, ...]
     transition: tuple[DistributionGap, ...]
     probe_label: tuple[DistributionGap, ...]
     difficulty: tuple[DistributionGap, ...]
@@ -309,6 +311,13 @@ def audit_frozen_splits(
                     ),
                 )
             )
+        issues.extend(
+            _collect_template_family_coverage_issues(
+                partition,
+                episodes,
+                validation_result.summary.template_family_counts,
+            )
+        )
 
     overlap_issues = _collect_overlap_issues(normalized_splits)
     issues.extend(overlap_issues)
@@ -349,6 +358,76 @@ def _share_gap_from_counts(counts: tuple[tuple[str, int], ...]) -> float:
         return 0.0
     shares = tuple(count / total for _, count in counts)
     return max(shares) - min(shares)
+
+
+def _collect_template_family_coverage_issues(
+    partition: str,
+    episodes: tuple[Episode, ...],
+    template_family_counts: tuple[tuple[str, int], ...],
+) -> tuple[ValidationIssue, ...]:
+    issues: list[ValidationIssue] = []
+    family_counts = {label: count for label, count in template_family_counts}
+    family_labels = tuple(sorted(family_counts))
+    if set(family_labels) != {"canonical", "observation_log"}:
+        issues.append(
+            ValidationIssue(
+                code="template_family_coverage",
+                message=(
+                    f"{partition}: template families must include canonical and observation_log, "
+                    f"got {tuple(sorted(family_counts.items()))}"
+                ),
+            )
+        )
+        return tuple(issues)
+
+    expected_family_count = len(episodes) // 2
+    if any(count != expected_family_count for count in family_counts.values()):
+        issues.append(
+            ValidationIssue(
+                code="template_family_balance",
+                message=(
+                    f"{partition}: template family counts must be exactly balanced at "
+                    f"{expected_family_count} each, got {tuple(sorted(family_counts.items()))}"
+                ),
+            )
+        )
+
+    combo_counts: dict[tuple[str, str], int] = {}
+    for episode in episodes:
+        key = (episode.template_id.value, episode.template_family.value)
+        combo_counts[key] = combo_counts.get(key, 0) + 1
+
+    expected_combos = (
+        ("T1", "canonical"),
+        ("T1", "observation_log"),
+        ("T2", "canonical"),
+        ("T2", "observation_log"),
+    )
+    if tuple(sorted(combo_counts)) != expected_combos:
+        issues.append(
+            ValidationIssue(
+                code="template_family_cross_coverage",
+                message=(
+                    f"{partition}: template/template_family combinations must cover all canonical combinations, "
+                    f"got {tuple(sorted(combo_counts.items()))}"
+                ),
+            )
+        )
+        return tuple(issues)
+
+    expected_combo_count = len(episodes) // len(expected_combos)
+    if any(combo_counts[key] != expected_combo_count for key in expected_combos):
+        issues.append(
+            ValidationIssue(
+                code="template_family_cross_balance",
+                message=(
+                    f"{partition}: template/template_family combinations must each appear "
+                    f"{expected_combo_count} times, got {tuple((key, combo_counts[key]) for key in expected_combos)}"
+                ),
+            )
+        )
+
+    return tuple(issues)
 
 
 def _collect_overlap_issues(
@@ -448,6 +527,14 @@ def _build_cross_partition_summary(
             lambda summary: summary.dataset_summary.template_counts,
             tuple(label for label, _ in per_partition[0][1].dataset_summary.template_counts),
         ),
+        template_family=_distribution_gaps(
+            per_partition,
+            lambda summary: summary.dataset_summary.template_family_counts,
+            tuple(
+                label
+                for label, _ in per_partition[0][1].dataset_summary.template_family_counts
+            ),
+        ),
         transition=_distribution_gaps(
             per_partition,
             lambda summary: summary.dataset_summary.transition_counts,
@@ -502,6 +589,7 @@ def _collect_cross_partition_gap_issues(
     issues: list[ValidationIssue] = []
     family_to_gaps = {
         "template": summary.template,
+        "template_family": summary.template_family,
         "transition": summary.transition,
         "difficulty": summary.difficulty,
         "probe_label": summary.probe_label,

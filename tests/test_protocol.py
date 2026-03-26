@@ -11,6 +11,7 @@ from protocol import (
     RULES,
     SPLITS,
     TEMPLATE_IDS,
+    TEMPLATE_FAMILIES,
     TEMPLATES,
     Difficulty,
     InteractionLabel,
@@ -18,6 +19,7 @@ from protocol import (
     Phase,
     RuleName,
     Split,
+    TemplateFamily,
     TemplateSpec,
     TemplateId,
     Transition,
@@ -27,6 +29,7 @@ from protocol import (
     parse_phase,
     parse_rule,
     parse_split,
+    parse_template_family,
     parse_template_id,
     parse_transition,
 )
@@ -42,6 +45,12 @@ def test_rule_parser_accepts_enums_and_canonical_strings():
     [
         (parse_label, InteractionLabel.ATTRACT, "attract", InteractionLabel.ATTRACT),
         (parse_template_id, TemplateId.T1, "T2", TemplateId.T2),
+        (
+            parse_template_family,
+            TemplateFamily.CANONICAL,
+            "observation_log",
+            TemplateFamily.OBSERVATION_LOG,
+        ),
         (
             parse_transition,
             Transition.R_STD_TO_R_INV,
@@ -76,6 +85,11 @@ def test_template_parser_rejects_noncanonical_values():
         parse_template_id("t1")
 
 
+def test_template_family_parser_rejects_noncanonical_values():
+    with pytest.raises(ValueError, match=r"unknown template_family: log"):
+        parse_template_family("log")
+
+
 @pytest.mark.parametrize(
     ("parser", "value", "field_name"),
     [
@@ -104,6 +118,7 @@ def test_rules_expose_canonical_opposites_and_transitions():
         (RuleName.R_STD, "R_std"),
         (InteractionLabel.REPEL, "repel"),
         (TemplateId.T2, "T2"),
+        (TemplateFamily.OBSERVATION_LOG, "observation_log"),
         (Transition.R_INV_TO_R_STD, "R_inv_to_R_std"),
         (Split.PRIVATE, "private"),
         (Difficulty.MEDIUM, "medium"),
@@ -120,6 +135,7 @@ def test_protocol_enums_preserve_raw_string_behavior(member, expected):
 def test_template_specs_match_frozen_counts():
     assert RULES == frozenset(RuleName)
     assert TEMPLATE_IDS == frozenset(TemplateId)
+    assert TEMPLATE_FAMILIES == frozenset(TemplateFamily)
     assert SPLITS == frozenset(Split)
     assert DIFFICULTIES == frozenset(Difficulty)
     assert PHASES == frozenset(Phase)

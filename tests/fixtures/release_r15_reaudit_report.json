@@ -36,9 +36,9 @@
       ],
       "overall": {
         "episode_count": 48,
-        "correct_probe_count": 104,
+        "correct_probe_count": 92,
         "total_probe_count": 192,
-        "accuracy": 0.5416666666666666,
+        "accuracy": 0.4791666666666667,
         "valid_prediction_count": 48,
         "parse_valid_rate": 1.0
       },
@@ -46,27 +46,27 @@
         {
           "split_name": "dev",
           "episode_count": 16,
-          "correct_probe_count": 39,
+          "correct_probe_count": 32,
           "total_probe_count": 64,
-          "accuracy": 0.609375,
+          "accuracy": 0.5,
           "valid_prediction_count": 16,
           "parse_valid_rate": 1.0
         },
         {
           "split_name": "public_leaderboard",
           "episode_count": 16,
-          "correct_probe_count": 31,
+          "correct_probe_count": 27,
           "total_probe_count": 64,
-          "accuracy": 0.484375,
+          "accuracy": 0.421875,
           "valid_prediction_count": 16,
           "parse_valid_rate": 1.0
         },
         {
           "split_name": "private_leaderboard",
           "episode_count": 16,
-          "correct_probe_count": 34,
+          "correct_probe_count": 33,
           "total_probe_count": 64,
-          "accuracy": 0.53125,
+          "accuracy": 0.515625,
           "valid_prediction_count": 16,
           "parse_valid_rate": 1.0
         }
@@ -74,40 +74,60 @@
       "by_template": [
         {
           "label": "T1",
-          "episode_count": 26,
-          "correct_probe_count": 57,
-          "total_probe_count": 104,
-          "accuracy": 0.5480769230769231,
-          "valid_prediction_count": 26,
+          "episode_count": 24,
+          "correct_probe_count": 47,
+          "total_probe_count": 96,
+          "accuracy": 0.4895833333333333,
+          "valid_prediction_count": 24,
           "parse_valid_rate": 1.0
         },
         {
           "label": "T2",
-          "episode_count": 22,
-          "correct_probe_count": 47,
-          "total_probe_count": 88,
-          "accuracy": 0.5340909090909091,
-          "valid_prediction_count": 22,
+          "episode_count": 24,
+          "correct_probe_count": 45,
+          "total_probe_count": 96,
+          "accuracy": 0.46875,
+          "valid_prediction_count": 24,
+          "parse_valid_rate": 1.0
+        }
+      ],
+      "by_template_family": [
+        {
+          "label": "canonical",
+          "episode_count": 24,
+          "correct_probe_count": 51,
+          "total_probe_count": 96,
+          "accuracy": 0.53125,
+          "valid_prediction_count": 24,
+          "parse_valid_rate": 1.0
+        },
+        {
+          "label": "observation_log",
+          "episode_count": 24,
+          "correct_probe_count": 41,
+          "total_probe_count": 96,
+          "accuracy": 0.4270833333333333,
+          "valid_prediction_count": 24,
           "parse_valid_rate": 1.0
         }
       ],
       "by_difficulty": [
         {
           "label": "easy",
-          "episode_count": 26,
-          "correct_probe_count": 57,
-          "total_probe_count": 104,
-          "accuracy": 0.5480769230769231,
-          "valid_prediction_count": 26,
+          "episode_count": 24,
+          "correct_probe_count": 47,
+          "total_probe_count": 96,
+          "accuracy": 0.4895833333333333,
+          "valid_prediction_count": 24,
           "parse_valid_rate": 1.0
         },
         {
           "label": "medium",
-          "episode_count": 22,
-          "correct_probe_count": 47,
-          "total_probe_count": 88,
-          "accuracy": 0.5340909090909091,
-          "valid_prediction_count": 22,
+          "episode_count": 24,
+          "correct_probe_count": 45,
+          "total_probe_count": 96,
+          "accuracy": 0.46875,
+          "valid_prediction_count": 24,
           "parse_valid_rate": 1.0
         }
       ],
@@ -115,38 +135,38 @@
         {
           "pattern_name": "persistence-like",
           "reference_source_name": "never_update",
-          "matching_probe_count": 100,
+          "matching_probe_count": 94,
           "total_probe_count": 192,
-          "probe_agreement_rate": 0.5208333333333334,
-          "matching_error_probe_count": 46,
-          "total_error_probes": 88,
-          "error_agreement_rate": 0.5227272727272727,
+          "probe_agreement_rate": 0.4895833333333333,
+          "matching_error_probe_count": 49,
+          "total_error_probes": 100,
+          "error_agreement_rate": 0.49,
+          "matching_episode_count": 3,
+          "episode_count": 48,
+          "episode_agreement_rate": 0.0625
+        },
+        {
+          "pattern_name": "recency / last-evidence-like",
+          "reference_source_name": "last_evidence",
+          "matching_probe_count": 98,
+          "total_probe_count": 192,
+          "probe_agreement_rate": 0.5104166666666666,
+          "matching_error_probe_count": 51,
+          "total_error_probes": 100,
+          "error_agreement_rate": 0.51,
           "matching_episode_count": 2,
           "episode_count": 48,
           "episode_agreement_rate": 0.041666666666666664
         },
         {
-          "pattern_name": "recency / last-evidence-like",
-          "reference_source_name": "last_evidence",
-          "matching_probe_count": 92,
-          "total_probe_count": 192,
-          "probe_agreement_rate": 0.4791666666666667,
-          "matching_error_probe_count": 42,
-          "total_error_probes": 88,
-          "error_agreement_rate": 0.4772727272727273,
-          "matching_episode_count": 0,
-          "episode_count": 48,
-          "episode_agreement_rate": 0.0
-        },
-        {
           "pattern_name": "physics-prior",
           "reference_source_name": "physics_prior",
-          "matching_probe_count": 96,
+          "matching_probe_count": 90,
           "total_probe_count": 192,
-          "probe_agreement_rate": 0.5,
-          "matching_error_probe_count": 44,
-          "total_error_probes": 88,
-          "error_agreement_rate": 0.5,
+          "probe_agreement_rate": 0.46875,
+          "matching_error_probe_count": 47,
+          "total_error_probes": 100,
+          "error_agreement_rate": 0.47,
           "matching_episode_count": 1,
           "episode_count": 48,
           "episode_agreement_rate": 0.020833333333333332
@@ -154,15 +174,15 @@
         {
           "pattern_name": "template-position",
           "reference_source_name": "template_position",
-          "matching_probe_count": 95,
+          "matching_probe_count": 86,
           "total_probe_count": 192,
-          "probe_agreement_rate": 0.4947916666666667,
-          "matching_error_probe_count": 44,
-          "total_error_probes": 88,
-          "error_agreement_rate": 0.5,
-          "matching_episode_count": 3,
+          "probe_agreement_rate": 0.4479166666666667,
+          "matching_error_probe_count": 48,
+          "total_error_probes": 100,
+          "error_agreement_rate": 0.48,
+          "matching_episode_count": 2,
           "episode_count": 48,
-          "episode_agreement_rate": 0.0625
+          "episode_agreement_rate": 0.041666666666666664
         }
       ]
     },
@@ -217,40 +237,60 @@
       "by_template": [
         {
           "label": "T1",
-          "episode_count": 26,
-          "correct_probe_count": 52,
-          "total_probe_count": 104,
+          "episode_count": 24,
+          "correct_probe_count": 48,
+          "total_probe_count": 96,
           "accuracy": 0.5,
-          "valid_prediction_count": 26,
+          "valid_prediction_count": 24,
           "parse_valid_rate": 1.0
         },
         {
           "label": "T2",
-          "episode_count": 22,
-          "correct_probe_count": 44,
-          "total_probe_count": 88,
+          "episode_count": 24,
+          "correct_probe_count": 48,
+          "total_probe_count": 96,
           "accuracy": 0.5,
-          "valid_prediction_count": 22,
+          "valid_prediction_count": 24,
+          "parse_valid_rate": 1.0
+        }
+      ],
+      "by_template_family": [
+        {
+          "label": "canonical",
+          "episode_count": 24,
+          "correct_probe_count": 48,
+          "total_probe_count": 96,
+          "accuracy": 0.5,
+          "valid_prediction_count": 24,
+          "parse_valid_rate": 1.0
+        },
+        {
+          "label": "observation_log",
+          "episode_count": 24,
+          "correct_probe_count": 48,
+          "total_probe_count": 96,
+          "accuracy": 0.5,
+          "valid_prediction_count": 24,
           "parse_valid_rate": 1.0
         }
       ],
       "by_difficulty": [
         {
           "label": "easy",
-          "episode_count": 26,
-          "correct_probe_count": 52,
-          "total_probe_count": 104,
+          "episode_count": 24,
+          "correct_probe_count": 48,
+          "total_probe_count": 96,
           "accuracy": 0.5,
-          "valid_prediction_count": 26,
+          "valid_prediction_count": 24,
           "parse_valid_rate": 1.0
         },
         {
           "label": "medium",
-          "episode_count": 22,
-          "correct_probe_count": 44,
-          "total_probe_count": 88,
+          "episode_count": 24,
+          "correct_probe_count": 48,
+          "total_probe_count": 96,
           "accuracy": 0.5,
-          "valid_prediction_count": 22,
+          "valid_prediction_count": 24,
           "parse_valid_rate": 1.0
         }
       ],
@@ -271,28 +311,28 @@
         {
           "pattern_name": "physics-prior",
           "reference_source_name": "physics_prior",
-          "matching_probe_count": 100,
+          "matching_probe_count": 92,
           "total_probe_count": 192,
-          "probe_agreement_rate": 0.5208333333333334,
-          "matching_error_probe_count": 50,
+          "probe_agreement_rate": 0.4791666666666667,
+          "matching_error_probe_count": 46,
           "total_error_probes": 96,
-          "error_agreement_rate": 0.5208333333333334,
-          "matching_episode_count": 25,
+          "error_agreement_rate": 0.4791666666666667,
+          "matching_episode_count": 23,
           "episode_count": 48,
-          "episode_agreement_rate": 0.5208333333333334
+          "episode_agreement_rate": 0.4791666666666667
         },
         {
           "pattern_name": "template-position",
           "reference_source_name": "template_position",
-          "matching_probe_count": 99,
+          "matching_probe_count": 90,
           "total_probe_count": 192,
-          "probe_agreement_rate": 0.515625,
-          "matching_error_probe_count": 50,
+          "probe_agreement_rate": 0.46875,
+          "matching_error_probe_count": 48,
           "total_error_probes": 96,
-          "error_agreement_rate": 0.5208333333333334,
-          "matching_episode_count": 3,
+          "error_agreement_rate": 0.5,
+          "matching_episode_count": 4,
           "episode_count": 48,
-          "episode_agreement_rate": 0.0625
+          "episode_agreement_rate": 0.08333333333333333
         }
       ]
     },
@@ -347,40 +387,60 @@
       "by_template": [
         {
           "label": "T1",
-          "episode_count": 26,
-          "correct_probe_count": 52,
-          "total_probe_count": 104,
+          "episode_count": 24,
+          "correct_probe_count": 48,
+          "total_probe_count": 96,
           "accuracy": 0.5,
-          "valid_prediction_count": 26,
+          "valid_prediction_count": 24,
           "parse_valid_rate": 1.0
         },
         {
           "label": "T2",
-          "episode_count": 22,
-          "correct_probe_count": 44,
-          "total_probe_count": 88,
+          "episode_count": 24,
+          "correct_probe_count": 48,
+          "total_probe_count": 96,
           "accuracy": 0.5,
-          "valid_prediction_count": 22,
+          "valid_prediction_count": 24,
+          "parse_valid_rate": 1.0
+        }
+      ],
+      "by_template_family": [
+        {
+          "label": "canonical",
+          "episode_count": 24,
+          "correct_probe_count": 48,
+          "total_probe_count": 96,
+          "accuracy": 0.5,
+          "valid_prediction_count": 24,
+          "parse_valid_rate": 1.0
+        },
+        {
+          "label": "observation_log",
+          "episode_count": 24,
+          "correct_probe_count": 48,
+          "total_probe_count": 96,
+          "accuracy": 0.5,
+          "valid_prediction_count": 24,
           "parse_valid_rate": 1.0
         }
       ],
       "by_difficulty": [
         {
           "label": "easy",
-          "episode_count": 26,
-          "correct_probe_count": 52,
-          "total_probe_count": 104,
+          "episode_count": 24,
+          "correct_probe_count": 48,
+          "total_probe_count": 96,
           "accuracy": 0.5,
-          "valid_prediction_count": 26,
+          "valid_prediction_count": 24,
           "parse_valid_rate": 1.0
         },
         {
           "label": "medium",
-          "episode_count": 22,
-          "correct_probe_count": 44,
-          "total_probe_count": 88,
+          "episode_count": 24,
+          "correct_probe_count": 48,
+          "total_probe_count": 96,
           "accuracy": 0.5,
-          "valid_prediction_count": 22,
+          "valid_prediction_count": 24,
           "parse_valid_rate": 1.0
         }
       ],
@@ -401,28 +461,28 @@
         {
           "pattern_name": "physics-prior",
           "reference_source_name": "physics_prior",
-          "matching_probe_count": 92,
+          "matching_probe_count": 100,
           "total_probe_count": 192,
-          "probe_agreement_rate": 0.4791666666666667,
-          "matching_error_probe_count": 46,
+          "probe_agreement_rate": 0.5208333333333334,
+          "matching_error_probe_count": 50,
           "total_error_probes": 96,
-          "error_agreement_rate": 0.4791666666666667,
-          "matching_episode_count": 23,
+          "error_agreement_rate": 0.5208333333333334,
+          "matching_episode_count": 25,
           "episode_count": 48,
-          "episode_agreement_rate": 0.4791666666666667
+          "episode_agreement_rate": 0.5208333333333334
         },
         {
           "pattern_name": "template-position",
           "reference_source_name": "template_position",
-          "matching_probe_count": 93,
+          "matching_probe_count": 102,
           "total_probe_count": 192,
-          "probe_agreement_rate": 0.484375,
-          "matching_error_probe_count": 47,
+          "probe_agreement_rate": 0.53125,
+          "matching_error_probe_count": 54,
           "total_error_probes": 96,
-          "error_agreement_rate": 0.4895833333333333,
-          "matching_episode_count": 4,
+          "error_agreement_rate": 0.5625,
+          "matching_episode_count": 7,
           "episode_count": 48,
-          "episode_agreement_rate": 0.08333333333333333
+          "episode_agreement_rate": 0.14583333333333334
         }
       ]
     },
@@ -477,40 +537,60 @@
       "by_template": [
         {
           "label": "T1",
-          "episode_count": 26,
-          "correct_probe_count": 52,
-          "total_probe_count": 104,
+          "episode_count": 24,
+          "correct_probe_count": 48,
+          "total_probe_count": 96,
           "accuracy": 0.5,
-          "valid_prediction_count": 26,
+          "valid_prediction_count": 24,
           "parse_valid_rate": 1.0
         },
         {
           "label": "T2",
-          "episode_count": 22,
-          "correct_probe_count": 44,
-          "total_probe_count": 88,
+          "episode_count": 24,
+          "correct_probe_count": 48,
+          "total_probe_count": 96,
           "accuracy": 0.5,
-          "valid_prediction_count": 22,
+          "valid_prediction_count": 24,
+          "parse_valid_rate": 1.0
+        }
+      ],
+      "by_template_family": [
+        {
+          "label": "canonical",
+          "episode_count": 24,
+          "correct_probe_count": 48,
+          "total_probe_count": 96,
+          "accuracy": 0.5,
+          "valid_prediction_count": 24,
+          "parse_valid_rate": 1.0
+        },
+        {
+          "label": "observation_log",
+          "episode_count": 24,
+          "correct_probe_count": 48,
+          "total_probe_count": 96,
+          "accuracy": 0.5,
+          "valid_prediction_count": 24,
           "parse_valid_rate": 1.0
         }
       ],
       "by_difficulty": [
         {
           "label": "easy",
-          "episode_count": 26,
-          "correct_probe_count": 52,
-          "total_probe_count": 104,
+          "episode_count": 24,
+          "correct_probe_count": 48,
+          "total_probe_count": 96,
           "accuracy": 0.5,
-          "valid_prediction_count": 26,
+          "valid_prediction_count": 24,
           "parse_valid_rate": 1.0
         },
         {
           "label": "medium",
-          "episode_count": 22,
-          "correct_probe_count": 44,
-          "total_probe_count": 88,
+          "episode_count": 24,
+          "correct_probe_count": 48,
+          "total_probe_count": 96,
           "accuracy": 0.5,
-          "valid_prediction_count": 22,
+          "valid_prediction_count": 24,
           "parse_valid_rate": 1.0
         }
       ],
@@ -518,19 +598,6 @@
         {
           "pattern_name": "persistence-like",
           "reference_source_name": "never_update",
-          "matching_probe_count": 100,
-          "total_probe_count": 192,
-          "probe_agreement_rate": 0.5208333333333334,
-          "matching_error_probe_count": 50,
-          "total_error_probes": 96,
-          "error_agreement_rate": 0.5208333333333334,
-          "matching_episode_count": 25,
-          "episode_count": 48,
-          "episode_agreement_rate": 0.5208333333333334
-        },
-        {
-          "pattern_name": "recency / last-evidence-like",
-          "reference_source_name": "last_evidence",
           "matching_probe_count": 92,
           "total_probe_count": 192,
           "probe_agreement_rate": 0.4791666666666667,
@@ -542,17 +609,30 @@
           "episode_agreement_rate": 0.4791666666666667
         },
         {
+          "pattern_name": "recency / last-evidence-like",
+          "reference_source_name": "last_evidence",
+          "matching_probe_count": 100,
+          "total_probe_count": 192,
+          "probe_agreement_rate": 0.5208333333333334,
+          "matching_error_probe_count": 50,
+          "total_error_probes": 96,
+          "error_agreement_rate": 0.5208333333333334,
+          "matching_episode_count": 25,
+          "episode_count": 48,
+          "episode_agreement_rate": 0.5208333333333334
+        },
+        {
           "pattern_name": "template-position",
           "reference_source_name": "template_position",
-          "matching_probe_count": 109,
+          "matching_probe_count": 82,
           "total_probe_count": 192,
-          "probe_agreement_rate": 0.5677083333333334,
-          "matching_error_probe_count": 55,
+          "probe_agreement_rate": 0.4270833333333333,
+          "matching_error_probe_count": 44,
           "total_error_probes": 96,
-          "error_agreement_rate": 0.5729166666666666,
-          "matching_episode_count": 6,
+          "error_agreement_rate": 0.4583333333333333,
+          "matching_episode_count": 4,
           "episode_count": 48,
-          "episode_agreement_rate": 0.125
+          "episode_agreement_rate": 0.08333333333333333
         }
       ]
     },
@@ -569,9 +649,9 @@
       ],
       "overall": {
         "episode_count": 48,
-        "correct_probe_count": 95,
+        "correct_probe_count": 90,
         "total_probe_count": 192,
-        "accuracy": 0.4947916666666667,
+        "accuracy": 0.46875,
         "valid_prediction_count": 48,
         "parse_valid_rate": 1.0
       },
@@ -579,27 +659,27 @@
         {
           "split_name": "dev",
           "episode_count": 16,
-          "correct_probe_count": 33,
+          "correct_probe_count": 27,
           "total_probe_count": 64,
-          "accuracy": 0.515625,
+          "accuracy": 0.421875,
           "valid_prediction_count": 16,
           "parse_valid_rate": 1.0
         },
         {
           "split_name": "public_leaderboard",
           "episode_count": 16,
-          "correct_probe_count": 32,
+          "correct_probe_count": 28,
           "total_probe_count": 64,
-          "accuracy": 0.5,
+          "accuracy": 0.4375,
           "valid_prediction_count": 16,
           "parse_valid_rate": 1.0
         },
         {
           "split_name": "private_leaderboard",
           "episode_count": 16,
-          "correct_probe_count": 30,
+          "correct_probe_count": 35,
           "total_probe_count": 64,
-          "accuracy": 0.46875,
+          "accuracy": 0.546875,
           "valid_prediction_count": 16,
           "parse_valid_rate": 1.0
         }
@@ -607,40 +687,60 @@
       "by_template": [
         {
           "label": "T1",
-          "episode_count": 26,
-          "correct_probe_count": 57,
-          "total_probe_count": 104,
-          "accuracy": 0.5480769230769231,
-          "valid_prediction_count": 26,
+          "episode_count": 24,
+          "correct_probe_count": 48,
+          "total_probe_count": 96,
+          "accuracy": 0.5,
+          "valid_prediction_count": 24,
           "parse_valid_rate": 1.0
         },
         {
           "label": "T2",
-          "episode_count": 22,
-          "correct_probe_count": 38,
-          "total_probe_count": 88,
-          "accuracy": 0.4318181818181818,
-          "valid_prediction_count": 22,
+          "episode_count": 24,
+          "correct_probe_count": 42,
+          "total_probe_count": 96,
+          "accuracy": 0.4375,
+          "valid_prediction_count": 24,
+          "parse_valid_rate": 1.0
+        }
+      ],
+      "by_template_family": [
+        {
+          "label": "canonical",
+          "episode_count": 24,
+          "correct_probe_count": 40,
+          "total_probe_count": 96,
+          "accuracy": 0.4166666666666667,
+          "valid_prediction_count": 24,
+          "parse_valid_rate": 1.0
+        },
+        {
+          "label": "observation_log",
+          "episode_count": 24,
+          "correct_probe_count": 50,
+          "total_probe_count": 96,
+          "accuracy": 0.5208333333333334,
+          "valid_prediction_count": 24,
           "parse_valid_rate": 1.0
         }
       ],
       "by_difficulty": [
         {
           "label": "easy",
-          "episode_count": 26,
-          "correct_probe_count": 57,
-          "total_probe_count": 104,
-          "accuracy": 0.5480769230769231,
-          "valid_prediction_count": 26,
+          "episode_count": 24,
+          "correct_probe_count": 48,
+          "total_probe_count": 96,
+          "accuracy": 0.5,
+          "valid_prediction_count": 24,
           "parse_valid_rate": 1.0
         },
         {
           "label": "medium",
-          "episode_count": 22,
-          "correct_probe_count": 38,
-          "total_probe_count": 88,
-          "accuracy": 0.4318181818181818,
-          "valid_prediction_count": 22,
+          "episode_count": 24,
+          "correct_probe_count": 42,
+          "total_probe_count": 96,
+          "accuracy": 0.4375,
+          "valid_prediction_count": 24,
           "parse_valid_rate": 1.0
         }
       ],
@@ -648,41 +748,41 @@
         {
           "pattern_name": "persistence-like",
           "reference_source_name": "never_update",
-          "matching_probe_count": 99,
+          "matching_probe_count": 90,
           "total_probe_count": 192,
-          "probe_agreement_rate": 0.515625,
-          "matching_error_probe_count": 50,
-          "total_error_probes": 97,
-          "error_agreement_rate": 0.5154639175257731,
-          "matching_episode_count": 3,
-          "episode_count": 48,
-          "episode_agreement_rate": 0.0625
-        },
-        {
-          "pattern_name": "recency / last-evidence-like",
-          "reference_source_name": "last_evidence",
-          "matching_probe_count": 93,
-          "total_probe_count": 192,
-          "probe_agreement_rate": 0.484375,
-          "matching_error_probe_count": 47,
-          "total_error_probes": 97,
-          "error_agreement_rate": 0.4845360824742268,
+          "probe_agreement_rate": 0.46875,
+          "matching_error_probe_count": 48,
+          "total_error_probes": 102,
+          "error_agreement_rate": 0.47058823529411764,
           "matching_episode_count": 4,
           "episode_count": 48,
           "episode_agreement_rate": 0.08333333333333333
         },
         {
+          "pattern_name": "recency / last-evidence-like",
+          "reference_source_name": "last_evidence",
+          "matching_probe_count": 102,
+          "total_probe_count": 192,
+          "probe_agreement_rate": 0.53125,
+          "matching_error_probe_count": 54,
+          "total_error_probes": 102,
+          "error_agreement_rate": 0.5294117647058824,
+          "matching_episode_count": 7,
+          "episode_count": 48,
+          "episode_agreement_rate": 0.14583333333333334
+        },
+        {
           "pattern_name": "physics-prior",
           "reference_source_name": "physics_prior",
-          "matching_probe_count": 109,
+          "matching_probe_count": 82,
           "total_probe_count": 192,
-          "probe_agreement_rate": 0.5677083333333334,
-          "matching_error_probe_count": 55,
-          "total_error_probes": 97,
-          "error_agreement_rate": 0.5670103092783505,
-          "matching_episode_count": 6,
+          "probe_agreement_rate": 0.4270833333333333,
+          "matching_error_probe_count": 44,
+          "total_error_probes": 102,
+          "error_agreement_rate": 0.43137254901960786,
+          "matching_episode_count": 4,
           "episode_count": 48,
-          "episode_agreement_rate": 0.125
+          "episode_agreement_rate": 0.08333333333333333
         }
       ]
     }
@@ -690,10 +790,6 @@
   "model_summaries": [],
   "baseline_comparison": {
     "accuracy_ranking": [
-      {
-        "name": "random",
-        "accuracy": 0.5416666666666666
-      },
       {
         "name": "last_evidence",
         "accuracy": 0.5
@@ -707,25 +803,21 @@
         "accuracy": 0.5
       },
       {
+        "name": "random",
+        "accuracy": 0.4791666666666667
+      },
+      {
         "name": "template_position",
-        "accuracy": 0.4947916666666667
+        "accuracy": 0.46875
       }
     ],
-    "best_baseline_name": "random",
-    "best_baseline_accuracy": 0.5416666666666666
+    "best_baseline_name": "last_evidence",
+    "best_baseline_accuracy": 0.5
   },
   "baseline_comparison_by_split": [
     {
       "split_name": "dev",
       "accuracy_ranking": [
-        {
-          "name": "random",
-          "accuracy": 0.609375
-        },
-        {
-          "name": "template_position",
-          "accuracy": 0.515625
-        },
         {
           "name": "last_evidence",
           "accuracy": 0.5
@@ -737,10 +829,18 @@
         {
           "name": "physics_prior",
           "accuracy": 0.5
+        },
+        {
+          "name": "random",
+          "accuracy": 0.5
+        },
+        {
+          "name": "template_position",
+          "accuracy": 0.421875
         }
       ],
-      "best_baseline_name": "random",
-      "best_baseline_accuracy": 0.609375
+      "best_baseline_name": "last_evidence",
+      "best_baseline_accuracy": 0.5
     },
     {
       "split_name": "public_leaderboard",
@@ -759,11 +859,11 @@
         },
         {
           "name": "template_position",
-          "accuracy": 0.5
+          "accuracy": 0.4375
         },
         {
           "name": "random",
-          "accuracy": 0.484375
+          "accuracy": 0.421875
         }
       ],
       "best_baseline_name": "last_evidence",
@@ -773,8 +873,12 @@
       "split_name": "private_leaderboard",
       "accuracy_ranking": [
         {
+          "name": "template_position",
+          "accuracy": 0.546875
+        },
+        {
           "name": "random",
-          "accuracy": 0.53125
+          "accuracy": 0.515625
         },
         {
           "name": "last_evidence",
@@ -787,18 +891,14 @@
         {
           "name": "physics_prior",
           "accuracy": 0.5
-        },
-        {
-          "name": "template_position",
-          "accuracy": 0.46875
         }
       ],
-      "best_baseline_name": "random",
-      "best_baseline_accuracy": 0.53125
+      "best_baseline_name": "template_position",
+      "best_baseline_accuracy": 0.546875
     }
   ],
   "matched_mode_comparisons": [],
-  "audit_note": "R15 re-audited the refreshed R14 frozen splits with deterministic baselines and any supplied structured model runs. `last_evidence` peaks at 0.500000 on public_leaderboard, so the recency shortcut no longer looks like the dominant failure mode. The strongest critical heuristic is template_position=0.515625 on dev, which keeps the named shortcut baselines materially bounded. No real-model runs are bundled in-repo, so meaningful model-vs-heuristic separation is still unverified. Packaging is still blocked because real-model coverage is still absent in-repo; hard remains reserved and un-emitted.",
+  "audit_note": "R15 re-audited the refreshed R14 frozen splits with deterministic baselines and any supplied structured model runs. `last_evidence` peaks at 0.500000 on public_leaderboard, so the recency shortcut no longer looks like the dominant failure mode. The strongest critical heuristic is template_position=0.546875 on private_leaderboard, which keeps the named shortcut baselines materially bounded. No real-model runs are bundled in-repo, so meaningful model-vs-heuristic separation is still unverified. Packaging is still blocked because private-leaderboard slice separation is still weak (best template gap 0.093750; best emitted-difficulty gap 0.093750); real-model coverage is still absent in-repo; hard remains reserved and un-emitted.",
   "limitations": [
     "No emitted hard episodes in supplied set; hard slice omitted.",
     "No structured model runs supplied; frozen R15 re-audit covers deterministic baselines only.",

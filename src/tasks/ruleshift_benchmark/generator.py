@@ -11,6 +11,7 @@ from tasks.ruleshift_benchmark.protocol import (
     Phase,
     RuleName,
     Split,
+    TemplateFamily,
     TemplateId,
     TEMPLATES,
     Transition,
@@ -29,6 +30,10 @@ from tasks.ruleshift_benchmark.schema import (
 
 RULE_CHOICES: tuple[RuleName, ...] = (RuleName.R_STD, RuleName.R_INV)
 TEMPLATE_CHOICES: tuple[TemplateId, ...] = (TemplateId.T1, TemplateId.T2)
+TEMPLATE_FAMILY_CHOICES: tuple[TemplateFamily, ...] = (
+    TemplateFamily.CANONICAL,
+    TemplateFamily.OBSERVATION_LOG,
+)
 _PROBE_LABEL_ORDER: tuple[InteractionLabel, ...] = (
     InteractionLabel.ATTRACT,
     InteractionLabel.REPEL,
@@ -216,6 +221,7 @@ def generate_episode(seed: int, split: Split | str = Split.DEV) -> Episode:
     rule_a = rng.choice(RULE_CHOICES)
     rule_b = rule_a.opposite
     template_id = rng.choice(TEMPLATE_CHOICES)
+    template_family = rng.choice(TEMPLATE_FAMILY_CHOICES)
     template = TEMPLATES[template_id]
 
     while True:
@@ -251,6 +257,7 @@ def generate_episode(seed: int, split: Split | str = Split.DEV) -> Episode:
             probe_label_counts,
         ),
         template_id=template_id,
+        template_family=template_family,
         rule_A=rule_a,
         rule_B=rule_b,
         transition=Transition.from_rules(rule_a, rule_b),

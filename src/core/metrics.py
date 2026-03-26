@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Iterable
+from typing import Iterable, TYPE_CHECKING
 
 from core.parser import NarrativeParsedResult, NarrativeParseStatus, ParseStatus, ParsedPrediction
 from tasks.ruleshift_benchmark.protocol import (
@@ -9,6 +9,9 @@ from tasks.ruleshift_benchmark.protocol import (
     InteractionLabel,
     parse_label,
 )
+
+if TYPE_CHECKING:
+    from core.slices import SliceReport
 
 __all__ = [
     "METRIC_VERSION",
@@ -30,6 +33,10 @@ class MetricSummary:
     narrative_schema_valid_rate: float
     # Number of narrative parse/validation failures (excludes provider failures).
     narrative_parse_failure_count: int
+    # Mandatory evaluation slices across all required dimensions.
+    # None only when episodes were not supplied to compute_metrics; populated
+    # by run_model_benchmark which has access to the Episode objects.
+    slice_report: "SliceReport | None" = None
 
 
 def compute_post_shift_probe_accuracy(

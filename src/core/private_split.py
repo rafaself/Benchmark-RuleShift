@@ -329,6 +329,7 @@ def _build_episode(ep: dict) -> Episode:  # type: ignore[type-arg]
         split=ep["split"],
         difficulty=ep["difficulty"],
         template_id=ep["template_id"],
+        template_family=ep.get("template_family", "canonical"),
         rule_A=ep["rule_A"],
         rule_B=ep["rule_B"],
         transition=ep["transition"],

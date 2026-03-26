@@ -28,11 +28,13 @@ from tasks.ruleshift_benchmark.protocol import (
     Phase,
     RuleName,
     TEMPLATES,
+    TemplateFamily,
     TemplateId,
     Transition,
     parse_difficulty,
     parse_label,
     parse_rule,
+    parse_template_family,
     parse_template_id,
     parse_transition,
 )
@@ -72,6 +74,10 @@ __all__ = [
 
 _EPISODE_ID_PATTERN = re.compile(r"^ife-r12-(\d+)$")
 _TEMPLATE_ORDER = (TemplateId.T1.value, TemplateId.T2.value)
+_TEMPLATE_FAMILY_ORDER = (
+    TemplateFamily.CANONICAL.value,
+    TemplateFamily.OBSERVATION_LOG.value,
+)
 _TRANSITION_ORDER = (
     Transition.R_STD_TO_R_INV.value,
     Transition.R_INV_TO_R_STD.value,
@@ -141,6 +147,7 @@ class EpisodeValidationResult:
 @dataclass(frozen=True, slots=True)
 class DatasetDistributionSummary:
     template_counts: tuple[tuple[str, int], ...]
+    template_family_counts: tuple[tuple[str, int], ...]
     transition_counts: tuple[tuple[str, int], ...]
     probe_label_counts: tuple[tuple[str, int], ...]
     sign_pattern_counts: tuple[tuple[str, int], ...]
@@ -160,6 +167,7 @@ class SplitBaselineAccuracySummary:
     split_name: str
     accuracy: float
     by_template: tuple[tuple[str, float], ...]
+    by_template_family: tuple[tuple[str, float], ...]
     by_difficulty: tuple[tuple[str, float], ...]
 
 
@@ -169,6 +177,7 @@ class BaselineAccuracySummary:
     overall_accuracy: float
     by_split: tuple[SplitBaselineAccuracySummary, ...]
     by_template: tuple[tuple[str, float], ...]
+    by_template_family: tuple[tuple[str, float], ...]
     by_difficulty: tuple[tuple[str, float], ...]
 
 
@@ -331,6 +340,10 @@ def serialize_benchmark_validity_report(
                             {"label": label, "accuracy": accuracy}
                             for label, accuracy in split_summary.by_template
                         ],
+                        "by_template_family": [
+                            {"label": label, "accuracy": accuracy}
+                            for label, accuracy in split_summary.by_template_family
+                        ],
                         "by_difficulty": [
                             {"label": label, "accuracy": accuracy}
                             for label, accuracy in split_summary.by_difficulty
@@ -341,6 +354,10 @@ def serialize_benchmark_validity_report(
                 "by_template": [
                     {"label": label, "accuracy": accuracy}
                     for label, accuracy in summary.by_template
+                ],
+                "by_template_family": [
+                    {"label": label, "accuracy": accuracy}
+                    for label, accuracy in summary.by_template_family
                 ],
                 "by_difficulty": [
                     {"label": label, "accuracy": accuracy}
@@ -555,6 +572,10 @@ def _build_baseline_accuracy_summary(
                     (label, summary.accuracy)
                     for label, summary in split_source_maps[split_name][baseline_name].by_template
                 ),
+                by_template_family=tuple(
+                    (label, summary.accuracy)
+                    for label, summary in split_source_maps[split_name][baseline_name].by_template_family
+                ),
                 by_difficulty=tuple(
                     (label, summary.accuracy)
                     for label, summary in split_source_maps[split_name][baseline_name].by_difficulty
@@ -564,6 +585,10 @@ def _build_baseline_accuracy_summary(
         ),
         by_template=tuple(
             (label, summary.accuracy) for label, summary in overall_summary.by_template
+        ),
+        by_template_family=tuple(
+            (label, summary.accuracy)
+            for label, summary in overall_summary.by_template_family
         ),
         by_difficulty=tuple(
             (label, summary.accuracy) for label, summary in overall_summary.by_difficulty
@@ -826,6 +851,7 @@ def validate_episode(
         )
 
     template_id = _parse_template_id(getattr(episode, "template_id", None), add_issue)
+    _parse_template_family(getattr(episode, "template_family", None), add_issue)
     difficulty = _parse_difficulty(getattr(episode, "difficulty", None), add_issue)
     rule_a = _parse_rule(getattr(episode, "rule_A", None), "rule_A", add_issue)
     rule_b = _parse_rule(getattr(episode, "rule_B", None), "rule_B", add_issue)
@@ -1237,6 +1263,13 @@ def validate_dataset(episodes: Iterable[Episode]) -> DatasetValidationResult:
             (_safe_value(getattr(episode, "template_id", None)) for episode in normalized_episodes),
             _TEMPLATE_ORDER,
         ),
+        template_family_counts=_count_in_canonical_order(
+            (
+                _safe_value(getattr(episode, "template_family", None))
+                for episode in normalized_episodes
+            ),
+            _TEMPLATE_FAMILY_ORDER,
+        ),
         transition_counts=_count_in_canonical_order(
             (_safe_value(getattr(episode, "transition", None)) for episode in normalized_episodes),
             _TRANSITION_ORDER,
@@ -1271,6 +1304,13 @@ def validate_dataset(episodes: Iterable[Episode]) -> DatasetValidationResult:
         code="template_balance",
         field_name="template usage",
         counts=summary.template_counts,
+        threshold=max(1, math.ceil(0.2 * len(normalized_episodes))),
+    )
+    _append_balance_issue(
+        issues,
+        code="template_family_balance",
+        field_name="template family usage",
+        counts=summary.template_family_counts,
         threshold=max(1, math.ceil(0.2 * len(normalized_episodes))),
     )
     _append_balance_issue(
@@ -1340,6 +1380,20 @@ def _parse_template_id(
         return parse_template_id(value)
     except (TypeError, ValueError):
         add_issue("invalid_template_id", "template_id must be one of: T1, T2")
+        return None
+
+
+def _parse_template_family(
+    value: object,
+    add_issue,
+) -> TemplateFamily | None:
+    try:
+        return parse_template_family(value)
+    except (TypeError, ValueError):
+        add_issue(
+            "invalid_template_family",
+            "template_family must be one of: canonical, observation_log",
+        )
         return None
 
 

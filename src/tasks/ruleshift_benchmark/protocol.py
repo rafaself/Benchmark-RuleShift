@@ -15,6 +15,7 @@ __all__ = [
     "RULES",
     "LABELS",
     "TEMPLATE_IDS",
+    "TEMPLATE_FAMILIES",
     "TRANSITIONS",
     "SPLITS",
     "DIFFICULTIES",
@@ -23,6 +24,7 @@ __all__ = [
     "RuleName",
     "InteractionLabel",
     "TemplateId",
+    "TemplateFamily",
     "Transition",
     "Split",
     "Difficulty",
@@ -33,6 +35,7 @@ __all__ = [
     "parse_rule",
     "parse_label",
     "parse_template_id",
+    "parse_template_family",
     "parse_transition",
     "parse_split",
     "parse_difficulty",
@@ -81,6 +84,11 @@ class InteractionLabel(StrEnum):
 class TemplateId(StrEnum):
     T1 = "T1"
     T2 = "T2"
+
+
+class TemplateFamily(StrEnum):
+    CANONICAL = "canonical"
+    OBSERVATION_LOG = "observation_log"
 
 
 class Transition(StrEnum):
@@ -142,6 +150,7 @@ EPISODE_LENGTH: Final[int] = LABELED_ITEM_COUNT + PROBE_COUNT
 RULES: Final[frozenset[RuleName]] = frozenset(RuleName)
 LABELS: Final[frozenset[InteractionLabel]] = frozenset(InteractionLabel)
 TEMPLATE_IDS: Final[frozenset[TemplateId]] = frozenset(TemplateId)
+TEMPLATE_FAMILIES: Final[frozenset[TemplateFamily]] = frozenset(TemplateFamily)
 TRANSITIONS: Final[frozenset[Transition]] = frozenset(Transition)
 SPLITS: Final[frozenset[Split]] = frozenset(Split)
 DIFFICULTIES: Final[frozenset[Difficulty]] = frozenset(Difficulty)
@@ -269,6 +278,10 @@ def parse_label(value: InteractionLabel | str) -> InteractionLabel:
 
 def parse_template_id(value: TemplateId | str) -> TemplateId:
     return _parse_enum(TemplateId, value, "template_id")
+
+
+def parse_template_family(value: TemplateFamily | str) -> TemplateFamily:
+    return _parse_enum(TemplateFamily, value, "template_family")
 
 
 def parse_transition(value: Transition | str) -> Transition:

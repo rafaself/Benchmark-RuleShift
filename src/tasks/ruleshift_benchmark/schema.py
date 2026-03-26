@@ -14,6 +14,7 @@ from tasks.ruleshift_benchmark.protocol import (
     Phase,
     RuleName,
     Split,
+    TemplateFamily,
     TemplateId,
     TEMPLATES,
     Transition,
@@ -23,6 +24,7 @@ from tasks.ruleshift_benchmark.protocol import (
     parse_phase,
     parse_rule,
     parse_split,
+    parse_template_family,
     parse_template_id,
     parse_transition,
 )
@@ -40,7 +42,7 @@ __all__ = [
 
 SPEC_VERSION: Final[str] = "v1"
 GENERATOR_VERSION: Final[str] = "R12"
-TEMPLATE_SET_VERSION: Final[str] = "v1"
+TEMPLATE_SET_VERSION: Final[str] = "v2"
 DIFFICULTY_VERSION: Final[str] = "R12"
 
 _PROBE_LABEL_ORDER: Final[tuple[InteractionLabel, ...]] = (
@@ -294,6 +296,7 @@ class Episode:
     split: Split
     difficulty: Difficulty
     template_id: TemplateId
+    template_family: TemplateFamily
     rule_A: RuleName
     rule_B: RuleName
     transition: Transition
@@ -318,6 +321,11 @@ class Episode:
         object.__setattr__(self, "split", parse_split(self.split))
         object.__setattr__(self, "difficulty", parse_difficulty(self.difficulty))
         object.__setattr__(self, "template_id", parse_template_id(self.template_id))
+        object.__setattr__(
+            self,
+            "template_family",
+            parse_template_family(self.template_family),
+        )
         object.__setattr__(self, "rule_A", parse_rule(self.rule_A))
         object.__setattr__(self, "rule_B", parse_rule(self.rule_B))
         object.__setattr__(self, "transition", parse_transition(self.transition))

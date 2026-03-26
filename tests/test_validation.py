@@ -110,12 +110,17 @@ def _synthetic_split_summary(
     accuracy: float,
     *,
     template_scores: tuple[tuple[str, float], ...],
+    template_family_scores: tuple[tuple[str, float], ...] = (
+        ("canonical", 0.5),
+        ("observation_log", 0.5),
+    ),
     difficulty_scores: tuple[tuple[str, float], ...],
 ) -> SplitBaselineAccuracySummary:
     return SplitBaselineAccuracySummary(
         split_name=split_name,
         accuracy=accuracy,
         by_template=template_scores,
+        by_template_family=template_family_scores,
         by_difficulty=difficulty_scores,
     )
 
@@ -126,6 +131,10 @@ def _synthetic_baseline_summary(
     split_scores: tuple[SplitBaselineAccuracySummary, ...],
     *,
     template_scores: tuple[tuple[str, float], ...] = (("T1", 0.5), ("T2", 0.5)),
+    template_family_scores: tuple[tuple[str, float], ...] = (
+        ("canonical", 0.5),
+        ("observation_log", 0.5),
+    ),
     difficulty_scores: tuple[tuple[str, float], ...] = (
         ("easy", 0.5),
         ("medium", 0.5),
@@ -136,6 +145,7 @@ def _synthetic_baseline_summary(
         overall_accuracy=overall_accuracy,
         by_split=split_scores,
         by_template=template_scores,
+        by_template_family=template_family_scores,
         by_difficulty=difficulty_scores,
     )
 
@@ -295,13 +305,14 @@ def test_validate_dataset_returns_deterministic_distribution_summary():
 
     assert result.summary == DatasetDistributionSummary(
         template_counts=(("T1", 1), ("T2", 1)),
+        template_family_counts=(("canonical", 1), ("observation_log", 1)),
         transition_counts=(("R_std_to_R_inv", 1), ("R_inv_to_R_std", 1)),
         probe_label_counts=(("attract", 4), ("repel", 4)),
         sign_pattern_counts=(("++", 2), ("--", 2), ("+-", 2), ("-+", 2)),
         version_values=(
             ("spec_version", ("v1",)),
             ("generator_version", ("R12",)),
-            ("template_set_version", ("v1",)),
+            ("template_set_version", ("v2",)),
             ("difficulty_version", ("R12",)),
         ),
     )
@@ -430,6 +441,7 @@ def test_validation_result_objects_are_stable_dataclasses():
     )
     summary = DatasetDistributionSummary(
         template_counts=(("T1", 1), ("T2", 1)),
+        template_family_counts=(("canonical", 1), ("observation_log", 1)),
         transition_counts=(("R_std_to_R_inv", 1), ("R_inv_to_R_std", 1)),
         probe_label_counts=(("attract", 4), ("repel", 4)),
         sign_pattern_counts=(("++", 2), ("--", 2), ("+-", 3), ("-+", 1)),

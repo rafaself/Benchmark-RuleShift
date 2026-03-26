@@ -14,6 +14,7 @@ from core.parser import (
     parse_binary_output,
     parse_narrative_audit_output,
 )
+from core.slices import SLICE_DIMENSIONS, ErrorType
 from core.splits import MANIFEST_VERSION, PARTITIONS, load_split_manifest
 from tasks.ruleshift_benchmark.protocol import PROBE_COUNT, InteractionLabel, parse_label
 from tasks.ruleshift_benchmark.schema import (
@@ -29,6 +30,7 @@ __all__ = [
     "BinaryResponse",
     "ConfidenceInterval",
     "KAGGLE_STAGING_MANIFEST_PATH",
+    "REQUIRED_SLICE_DIMENSIONS",
     "build_kaggle_payload",
     "compute_bootstrap_confidence_interval",
     "load_kaggle_staging_manifest",
@@ -40,6 +42,17 @@ __all__ = [
     "validate_kaggle_staging_manifest",
     "verify_remote_hashes",
 ]
+
+# The five slice dimensions every canonical payload must contain.
+REQUIRED_SLICE_DIMENSIONS: Final[tuple[str, ...]] = SLICE_DIMENSIONS
+
+# Column names in binary_df that carry episode metadata for slice computation.
+_SLICE_METADATA_COLS: Final[dict[str, str]] = {
+    "template": "template_id",
+    "difficulty": "difficulty",
+    "shift_position": "shift_position",
+    "transition_type": "transition_type",
+}
 
 _ARTIFACT_GROUPS: Final[tuple[str, ...]] = (
     "entry_points",
@@ -460,6 +473,12 @@ def validate_kaggle_payload(payload: dict[str, object]) -> None:
 
     if "slices" not in payload:
         raise ValueError("payload must contain 'slices'")
+    slices_val = payload["slices"]
+    if not isinstance(slices_val, dict):
+        raise ValueError("slices must be a dict")
+    for dim in REQUIRED_SLICE_DIMENSIONS:
+        if dim not in slices_val:
+            raise ValueError(f"slices is missing required dimension: {dim!r}")
 
     if "metadata" not in payload:
         raise ValueError("payload must contain 'metadata'")
@@ -730,8 +749,70 @@ def build_kaggle_payload(
             "binary_denominator": bin_den,
             "narrative_denominator": nar_den,
         },
-        "slices": {},
+        "slices": _build_payload_slices(binary_df),
         "metadata": {
             "benchmark_version": MANIFEST_VERSION,
         },
     }
+
+
+def _build_payload_slices(binary_df: Any) -> dict[str, object]:
+    """Build the mandatory slice dict from binary_df.
+
+    Dimensional accuracy slices (template, difficulty, shift_position,
+    transition_type) are computed from episode metadata columns when present;
+    otherwise the dimension key maps to an empty dict.  The error_type slice
+    is always computed from num_correct patterns as a stable proxy.
+    """
+    slices: dict[str, object] = {}
+
+    for dim, col in _SLICE_METADATA_COLS.items():
+        if col in binary_df.columns:
+            slices[dim] = _accuracy_by_column(binary_df, col)
+        else:
+            slices[dim] = {}
+
+    slices["error_type"] = _error_type_counts(binary_df)
+    return slices
+
+
+def _accuracy_by_column(df: Any, col: str) -> dict[str, object]:
+    """Group df by *col* and compute accuracy per group value."""
+    result: dict[str, object] = {}
+    for value, group in df.groupby(col, sort=True):
+        nc = int(group["num_correct"].sum())
+        tot = int(group["total"].sum())
+        result[str(value)] = {
+            "episode_count": len(group),
+            "correct_probes": nc,
+            "total_probes": tot,
+            "accuracy": nc / tot if tot > 0 else 0.0,
+        }
+    return result
+
+
+def _error_type_counts(df: Any) -> dict[str, int]:
+    """Classify failing episodes by error type using num_correct as a proxy.
+
+    Without label-level predictions only two categories are distinguishable:
+    - ``old_rule_persistence``: 0/total correct — consistent with applying the
+      pre-shift rule throughout (all probes are rule-disagreement probes, so the
+      old rule gives 0 correct probes).
+    - ``premature_switch``: 1 to total-1 correct — partial adaptation.
+
+    ``recency_overweight``, ``invalid_narrative``, and ``unknown`` require
+    label-level data not available in the aggregate payload DataFrame; they are
+    always 0 in this path.  The full classification is available in the panel
+    artifact where complete prediction data is present.
+    """
+    counts: dict[str, int] = {et.value: 0 for et in ErrorType}
+    for _, row in df.iterrows():
+        nc = int(row["num_correct"])
+        total = int(row["total"])
+        if nc >= total:
+            continue  # Correct — not an error.
+        if nc == 0:
+            counts[ErrorType.OLD_RULE_PERSISTENCE.value] += 1
+        else:
+            counts[ErrorType.PREMATURE_SWITCH.value] += 1
+    return counts

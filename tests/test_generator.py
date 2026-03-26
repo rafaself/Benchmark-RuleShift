@@ -13,6 +13,7 @@ from protocol import (
     ItemKind,
     Phase,
     Split,
+    TemplateFamily,
     TemplateId,
     Transition,
 )
@@ -42,6 +43,14 @@ def test_different_seeds_can_generate_different_episodes():
 def test_only_t1_and_t2_are_emitted():
     emitted_templates = {generate_episode(seed).template_id for seed in range(32)}
     assert emitted_templates == {TemplateId.T1, TemplateId.T2}
+
+
+def test_both_template_families_are_emitted():
+    emitted_families = {generate_episode(seed).template_family for seed in range(32)}
+    assert emitted_families == {
+        TemplateFamily.CANONICAL,
+        TemplateFamily.OBSERVATION_LOG,
+    }
 
 
 @pytest.mark.parametrize("seed", range(10))
@@ -87,6 +96,7 @@ def test_schema_fields_are_always_present():
         "split",
         "difficulty",
         "template_id",
+        "template_family",
         "rule_A",
         "rule_B",
         "transition",
@@ -234,6 +244,7 @@ def test_invalid_candidates_are_rejected_by_deterministic_resampling():
         random_choice.side_effect = (
             rsb_generator.RuleName.R_STD,
             TemplateId.T1,
+            TemplateFamily.CANONICAL,
         )
         with patch.object(
             rsb_generator,

@@ -35,7 +35,19 @@
     "binary_denominator": 128,
     "narrative_denominator": 128
   },
-  "slices": {},
+  "slices": {
+    "template": {},
+    "difficulty": {},
+    "shift_position": {},
+    "transition_type": {},
+    "error_type": {
+      "old_rule_persistence": 32,
+      "premature_switch": 0,
+      "recency_overweight": 0,
+      "invalid_narrative": 0,
+      "unknown": 0
+    }
+  },
   "metadata": {
     "benchmark_version": "R14"
   }

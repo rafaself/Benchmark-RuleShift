@@ -28,6 +28,7 @@ TaskMode = Literal["Binary", "Narrative"]
 
 _TASK_MODE_ORDER: Final[tuple[TaskMode, ...]] = ("Binary", "Narrative")
 _TEMPLATE_ORDER: Final[tuple[str, ...]] = ("T1", "T2")
+_TEMPLATE_FAMILY_ORDER: Final[tuple[str, ...]] = ("canonical", "observation_log")
 _DIFFICULTY_ORDER: Final[tuple[str, ...]] = ("easy", "medium", "hard")
 _RELEASE_SPLIT_ORDER: Final[tuple[str, ...]] = (
     "dev",
@@ -171,6 +172,7 @@ class AuditSourceSummary:
     is_baseline: bool
     overall: AuditSliceSummary
     by_template: tuple[tuple[str, AuditSliceSummary], ...]
+    by_template_family: tuple[tuple[str, AuditSliceSummary], ...]
     by_difficulty: tuple[tuple[str, AuditSliceSummary], ...]
     failure_patterns: tuple[HeuristicAlignmentSummary, ...]
 
@@ -203,6 +205,7 @@ class ReleaseAuditSourceSummary:
     overall: AuditSliceSummary
     by_split: tuple[tuple[str, AuditSliceSummary], ...]
     by_template: tuple[tuple[str, AuditSliceSummary], ...]
+    by_template_family: tuple[tuple[str, AuditSliceSummary], ...]
     by_difficulty: tuple[tuple[str, AuditSliceSummary], ...]
     failure_patterns: tuple[HeuristicAlignmentSummary, ...]
 
@@ -215,6 +218,7 @@ class MatchedModeComparisonSummary:
     covered_splits: tuple[str, ...]
     overall: ModeComparisonSummary
     by_template: tuple[tuple[str, ModeComparisonSummary], ...]
+    by_template_family: tuple[tuple[str, ModeComparisonSummary], ...]
     by_difficulty: tuple[tuple[str, ModeComparisonSummary], ...]
 
 
@@ -474,6 +478,10 @@ def serialize_release_r15_reaudit_report(
                     {"label": label, **_serialize_mode_comparison(slice_summary)}
                     for label, slice_summary in summary.by_template
                 ],
+                "by_template_family": [
+                    {"label": label, **_serialize_mode_comparison(slice_summary)}
+                    for label, slice_summary in summary.by_template_family
+                ],
                 "by_difficulty": [
                     {"label": label, **_serialize_mode_comparison(slice_summary)}
                     for label, slice_summary in summary.by_difficulty
@@ -503,6 +511,12 @@ def _build_source_summary(
             predictions=source.predictions,
             labels=_TEMPLATE_ORDER,
             key_fn=lambda episode: episode.template_id.value,
+        ),
+        by_template_family=_build_episode_slices(
+            episodes=episodes,
+            predictions=source.predictions,
+            labels=_TEMPLATE_FAMILY_ORDER,
+            key_fn=lambda episode: episode.template_family.value,
         ),
         by_difficulty=_build_episode_slices(
             episodes=episodes,
@@ -890,6 +904,7 @@ def _build_release_source_summary(
         overall=generic_summary.overall,
         by_split=tuple(by_split),
         by_template=generic_summary.by_template,
+        by_template_family=generic_summary.by_template_family,
         by_difficulty=generic_summary.by_difficulty,
         failure_patterns=generic_summary.failure_patterns,
     )
@@ -1038,6 +1053,13 @@ def _build_release_mode_comparisons(
                     narrative_predictions=combined_narrative_predictions,
                     labels=_TEMPLATE_ORDER,
                     key_fn=lambda episode: episode.template_id.value,
+                ),
+                by_template_family=_build_mode_slice_comparisons(
+                    episodes=combined_episodes,
+                    binary_predictions=combined_binary_predictions,
+                    narrative_predictions=combined_narrative_predictions,
+                    labels=_TEMPLATE_FAMILY_ORDER,
+                    key_fn=lambda episode: episode.template_family.value,
                 ),
                 by_difficulty=_build_mode_slice_comparisons(
                     episodes=combined_episodes,
@@ -1318,6 +1340,10 @@ def _serialize_release_source_summary(
         "by_template": [
             {"label": label, **_serialize_slice_summary(slice_summary)}
             for label, slice_summary in summary.by_template
+        ],
+        "by_template_family": [
+            {"label": label, **_serialize_slice_summary(slice_summary)}
+            for label, slice_summary in summary.by_template_family
         ],
         "by_difficulty": [
             {"label": label, **_serialize_slice_summary(slice_summary)}

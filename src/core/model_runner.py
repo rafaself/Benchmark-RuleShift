@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace as _dc_replace
 
 from core.metrics import MetricSummary, compute_metrics
 from core.model_execution import (
@@ -21,6 +21,7 @@ from core.parser import (
     parse_binary_output,
     parse_narrative_audit_output,
 )
+from core.slices import build_slice_report, compute_episode_slice_data
 from tasks.ruleshift_benchmark.protocol import InteractionLabel
 from tasks.ruleshift_benchmark.render import render_binary_prompt, render_narrative_prompt
 from tasks.ruleshift_benchmark.schema import Episode
@@ -99,6 +100,7 @@ def run_model_benchmark(
     )
     rows_by_mode = {result.mode: result.rows for result in mode_results}
 
+    binary_rows = rows_by_mode.get(ModelMode.BINARY, ())
     narrative_rows = rows_by_mode.get(ModelMode.NARRATIVE, ())
     narrative_results = tuple(
         row.narrative_result
@@ -106,20 +108,37 @@ def run_model_benchmark(
         if row.narrative_result is not None
     )
 
+    base_metrics = compute_metrics(
+        binary_predictions=tuple(row.parsed_prediction for row in binary_rows),
+        binary_targets=tuple(row.target for row in binary_rows),
+        narrative_results=narrative_results,
+    )
+
+    # Build per-episode slice data pairing binary rows with Episode objects.
+    # Narrative results are matched by episode_id so error classification can
+    # use NarrativeParsedResult when the narrative mode was also run.
+    narrative_result_by_episode: dict[str, NarrativeParsedResult] = {
+        row.episode_id: row.narrative_result
+        for row in narrative_rows
+        if row.narrative_result is not None
+    }
+    episode_slices = [
+        compute_episode_slice_data(
+            episode=episode,
+            prediction=binary_row.parsed_prediction,
+            narrative_result=narrative_result_by_episode.get(episode.episode_id),
+        )
+        for episode, binary_row in zip(normalized_episodes, binary_rows)
+    ]
+    slice_report = build_slice_report(episode_slices)
+    metrics = _dc_replace(base_metrics, slice_report=slice_report)
+
     return BenchmarkRunResult(
         provider_name=provider_name,
         model_name=model_name,
         config=normalized_config,
         mode_results=mode_results,
-        metrics=compute_metrics(
-            binary_predictions=tuple(
-                row.parsed_prediction for row in rows_by_mode.get(ModelMode.BINARY, ())
-            ),
-            binary_targets=tuple(
-                row.target for row in rows_by_mode.get(ModelMode.BINARY, ())
-            ),
-            narrative_results=narrative_results,
-        ),
+        metrics=metrics,
     )
 
 

@@ -2,15 +2,16 @@
   "random_baseline_seed": 11,
   "episodes": [
     {
-      "seed": 1036,
+      "seed": 1001,
       "payload": {
-        "episode_id": "ife-r12-1036",
+        "episode_id": "ife-r12-1001",
         "split": "dev",
         "difficulty": "easy",
         "template_id": "T1",
-        "rule_A": "R_inv",
-        "rule_B": "R_std",
-        "transition": "R_inv_to_R_std",
+        "template_family": "canonical",
+        "rule_A": "R_std",
+        "rule_B": "R_inv",
+        "transition": "R_std_to_R_inv",
         "pre_count": 2,
         "post_labeled_count": 3,
         "shift_after_position": 2,
@@ -20,56 +21,56 @@
             "position": 1,
             "phase": "pre",
             "kind": "labeled",
-            "q1": -2,
-            "q2": -2,
+            "q1": 1,
+            "q2": -3,
             "label": "attract"
           },
           {
             "position": 2,
             "phase": "pre",
             "kind": "labeled",
-            "q1": 3,
-            "q2": -2,
+            "q1": -1,
+            "q2": -1,
             "label": "repel"
           },
           {
             "position": 3,
             "phase": "post",
             "kind": "labeled",
-            "q1": -1,
-            "q2": -2,
+            "q1": 2,
+            "q2": -3,
             "label": "repel"
           },
           {
             "position": 4,
             "phase": "post",
             "kind": "labeled",
-            "q1": -1,
-            "q2": 2,
+            "q1": -3,
+            "q2": -1,
             "label": "attract"
           },
           {
             "position": 5,
             "phase": "post",
             "kind": "labeled",
-            "q1": -3,
-            "q2": -3,
+            "q1": 3,
+            "q2": -2,
             "label": "repel"
           },
           {
             "position": 6,
             "phase": "post",
             "kind": "probe",
-            "q1": 1,
-            "q2": 3,
+            "q1": 3,
+            "q2": 2,
             "label": null
           },
           {
             "position": 7,
             "phase": "post",
             "kind": "probe",
-            "q1": -2,
-            "q2": -3,
+            "q1": 1,
+            "q2": -2,
             "label": null
           },
           {
@@ -77,23 +78,23 @@
             "phase": "post",
             "kind": "probe",
             "q1": -2,
-            "q2": 3,
+            "q2": 2,
             "label": null
           },
           {
             "position": 9,
             "phase": "post",
             "kind": "probe",
-            "q1": 1,
+            "q1": -2,
             "q2": -1,
             "label": null
           }
         ],
         "probe_targets": [
-          "attract",
+          "repel",
           "repel",
           "attract",
-          "repel"
+          "attract"
         ],
         "probe_label_counts": [
           [
@@ -127,8 +128,8 @@
           {
             "position": 6,
             "is_disagreement_probe": true,
-            "old_rule_label": "attract",
-            "new_rule_label": "repel"
+            "old_rule_label": "repel",
+            "new_rule_label": "attract"
           },
           {
             "position": 7,
@@ -139,8 +140,8 @@
           {
             "position": 8,
             "is_disagreement_probe": true,
-            "old_rule_label": "repel",
-            "new_rule_label": "attract"
+            "old_rule_label": "attract",
+            "new_rule_label": "repel"
           },
           {
             "position": 9,
@@ -152,61 +153,61 @@
         "difficulty_version": "R12",
         "spec_version": "v1",
         "generator_version": "R12",
-        "template_set_version": "v1"
+        "template_set_version": "v2"
       },
       "render": {
-        "binary": "You are given labeled interactions between two electric charges.\nEach labeled line shows q1, q2, and the observed result.\nUse the full sequence to infer which sign combinations were revised by the later evidence, then answer the final unlabeled cases.\n\nLabeled examples:\n1. q1=-2, q2=-2 -> attract\n2. q1=+3, q2=-2 -> repel\n3. q1=-1, q2=-2 -> repel\n4. q1=-1, q2=+2 -> attract\n5. q1=-3, q2=-3 -> repel\n\nProbes:\n6. q1=+1, q2=+3 -> ?\n7. q1=-2, q2=-3 -> ?\n8. q1=-2, q2=+3 -> ?\n9. q1=+1, q2=-1 -> ?\n\nReturn exactly 4 labels in order, one per probe. Use only attract or repel.",
-        "narrative": "Two electric charges were observed interacting in the following sequence.\nUse the full sequence to infer which sign combinations were revised by the later evidence, then answer the unlabeled observations at the end.\n\nLabeled examples:\n1. A -2 charge and a -2 charge were observed to attract.\n2. A +3 charge and a -2 charge were observed to repel.\n3. A -1 charge and a -2 charge were observed to repel.\n4. A -1 charge and a +2 charge were observed to attract.\n5. A -3 charge and a -3 charge were observed to repel.\n\nProbes:\n6. A +1 charge and a +3 charge were observed to ?.\n7. A -2 charge and a -3 charge were observed to ?.\n8. A -2 charge and a +3 charge were observed to ?.\n9. A +1 charge and a -1 charge were observed to ?.\n\nReturn your analysis as a JSON object with exactly these four fields:\n  \"inferred_rule_before\": your inferred rule from the pre-shift examples (string),\n  \"shift_evidence\": which observations indicated the rule changed (string),\n  \"inferred_rule_after\": your inferred rule from the post-shift examples (string),\n  \"final_binary_answer\": list of exactly 4 labels in probe order (each \"attract\" or \"repel\").\nOutput only the JSON object."
+        "binary": "You are given labeled interactions between two electric charges.\nEach labeled line shows q1, q2, and the observed result.\nUse the full sequence to infer which sign combinations were revised by the later evidence, then answer the final unlabeled cases.\n\nLabeled examples:\n1. q1=+1, q2=-3 -> attract\n2. q1=-1, q2=-1 -> repel\n3. q1=+2, q2=-3 -> repel\n4. q1=-3, q2=-1 -> attract\n5. q1=+3, q2=-2 -> repel\n\nProbes:\n6. q1=+3, q2=+2 -> ?\n7. q1=+1, q2=-2 -> ?\n8. q1=-2, q2=+2 -> ?\n9. q1=-2, q2=-1 -> ?\n\nReturn exactly 4 labels in order, one per probe. Use only attract or repel.",
+        "narrative": "Two electric charges were observed interacting in the following sequence.\nUse the full sequence to infer which sign combinations were revised by the later evidence, then answer the unlabeled observations at the end.\n\nLabeled examples:\n1. A +1 charge and a -3 charge were observed to attract.\n2. A -1 charge and a -1 charge were observed to repel.\n3. A +2 charge and a -3 charge were observed to repel.\n4. A -3 charge and a -1 charge were observed to attract.\n5. A +3 charge and a -2 charge were observed to repel.\n\nProbes:\n6. A +3 charge and a +2 charge were observed to ?.\n7. A +1 charge and a -2 charge were observed to ?.\n8. A -2 charge and a +2 charge were observed to ?.\n9. A -2 charge and a -1 charge were observed to ?.\n\nReturn your analysis as a JSON object with exactly these four fields:\n  \"inferred_rule_before\": your inferred rule from the pre-shift examples (string),\n  \"shift_evidence\": which observations indicated the rule changed (string),\n  \"inferred_rule_after\": your inferred rule from the post-shift examples (string),\n  \"final_binary_answer\": list of exactly 4 labels in probe order (each \"attract\" or \"repel\").\nOutput only the JSON object."
       },
       "parser": {
-        "binary_text": "repel, attract, repel, repel",
+        "binary_text": "repel, repel, attract, attract",
         "binary_expected": {
           "status": "valid",
           "labels": [
             "repel",
-            "attract",
             "repel",
-            "repel"
+            "attract",
+            "attract"
           ]
         },
-        "narrative_text": "{\"inferred_rule_before\": \"opposite-sign attract, same-sign repel\", \"shift_evidence\": \"post-shift observations inverted the rule\", \"inferred_rule_after\": \"same-sign attract, opposite-sign repel\", \"final_binary_answer\": [\"repel\", \"attract\", \"repel\", \"repel\"]}",
+        "narrative_text": "{\"inferred_rule_before\": \"pre-shift rule hypothesis\", \"shift_evidence\": \"later labeled observations contradict the earlier rule\", \"inferred_rule_after\": \"post-shift rule hypothesis\", \"final_binary_answer\": [\"repel\", \"repel\", \"attract\", \"attract\"]}",
         "narrative_expected": {
           "status": "valid",
-          "inferred_rule_before": "opposite-sign attract, same-sign repel",
-          "shift_evidence": "post-shift observations inverted the rule",
-          "inferred_rule_after": "same-sign attract, opposite-sign repel",
+          "inferred_rule_before": "pre-shift rule hypothesis",
+          "shift_evidence": "later labeled observations contradict the earlier rule",
+          "inferred_rule_after": "post-shift rule hypothesis",
           "final_binary_answer": [
             "repel",
-            "attract",
             "repel",
-            "repel"
+            "attract",
+            "attract"
           ]
         }
       },
       "baselines": {
         "random": [
+          "attract",
           "repel",
-          "repel",
-          "repel",
-          "repel"
+          "attract",
+          "attract"
         ],
         "never_update": [
-          "attract",
-          "attract",
           "repel",
+          "attract",
+          "attract",
           "repel"
         ],
         "last_evidence": [
-          "repel",
-          "repel",
           "attract",
+          "repel",
+          "repel",
           "attract"
         ],
         "physics_prior": [
           "repel",
-          "repel",
           "attract",
-          "attract"
+          "attract",
+          "repel"
         ],
         "template_position": [
           "repel",
@@ -217,15 +218,16 @@
       }
     },
     {
-      "seed": 2103,
+      "seed": 1005,
       "payload": {
-        "episode_id": "ife-r12-2103",
-        "split": "public",
+        "episode_id": "ife-r12-1005",
+        "split": "dev",
         "difficulty": "medium",
         "template_id": "T2",
-        "rule_A": "R_std",
-        "rule_B": "R_inv",
-        "transition": "R_std_to_R_inv",
+        "template_family": "observation_log",
+        "rule_A": "R_inv",
+        "rule_B": "R_std",
+        "transition": "R_inv_to_R_std",
         "pre_count": 3,
         "post_labeled_count": 2,
         "shift_after_position": 3,
@@ -235,16 +237,16 @@
             "position": 1,
             "phase": "pre",
             "kind": "labeled",
-            "q1": 1,
-            "q2": -3,
+            "q1": 2,
+            "q2": 3,
             "label": "attract"
           },
           {
             "position": 2,
             "phase": "pre",
             "kind": "labeled",
-            "q1": -2,
-            "q2": -3,
+            "q1": 2,
+            "q2": -2,
             "label": "repel"
           },
           {
@@ -252,43 +254,27 @@
             "phase": "pre",
             "kind": "labeled",
             "q1": -2,
-            "q2": 1,
-            "label": "attract"
+            "q2": 2,
+            "label": "repel"
           },
           {
             "position": 4,
             "phase": "post",
             "kind": "labeled",
-            "q1": -2,
-            "q2": 3,
+            "q1": -1,
+            "q2": -3,
             "label": "repel"
           },
           {
             "position": 5,
             "phase": "post",
             "kind": "labeled",
-            "q1": 3,
-            "q2": 3,
+            "q1": -1,
+            "q2": 1,
             "label": "attract"
           },
           {
             "position": 6,
-            "phase": "post",
-            "kind": "probe",
-            "q1": 2,
-            "q2": -1,
-            "label": null
-          },
-          {
-            "position": 7,
-            "phase": "post",
-            "kind": "probe",
-            "q1": -2,
-            "q2": 2,
-            "label": null
-          },
-          {
-            "position": 8,
             "phase": "post",
             "kind": "probe",
             "q1": -3,
@@ -296,19 +282,35 @@
             "label": null
           },
           {
+            "position": 7,
+            "phase": "post",
+            "kind": "probe",
+            "q1": 1,
+            "q2": 3,
+            "label": null
+          },
+          {
+            "position": 8,
+            "phase": "post",
+            "kind": "probe",
+            "q1": -1,
+            "q2": 2,
+            "label": null
+          },
+          {
             "position": 9,
             "phase": "post",
             "kind": "probe",
-            "q1": 2,
-            "q2": 3,
+            "q1": 1,
+            "q2": -2,
             "label": null
           }
         ],
         "probe_targets": [
+          "repel",
           "attract",
-          "repel",
-          "repel",
-          "attract"
+          "attract",
+          "repel"
         ],
         "probe_label_counts": [
           [
@@ -367,43 +369,34 @@
         "difficulty_version": "R12",
         "spec_version": "v1",
         "generator_version": "R12",
-        "template_set_version": "v1"
+        "template_set_version": "v2"
       },
       "render": {
-        "binary": "You are given labeled interactions between two electric charges.\nEach labeled line shows q1, q2, and the observed result.\nUse the full sequence to infer which sign combinations were revised by the later evidence, then answer the final unlabeled cases.\n\nLabeled examples:\n1. q1=+1, q2=-3 -> attract\n2. q1=-2, q2=-3 -> repel\n3. q1=-2, q2=+1 -> attract\n4. q1=-2, q2=+3 -> repel\n5. q1=+3, q2=+3 -> attract\n\nProbes:\n6. q1=+2, q2=-1 -> ?\n7. q1=-2, q2=+2 -> ?\n8. q1=-3, q2=-3 -> ?\n9. q1=+2, q2=+3 -> ?\n\nReturn exactly 4 labels in order, one per probe. Use only attract or repel.",
-        "narrative": "Two electric charges were observed interacting in the following sequence.\nUse the full sequence to infer which sign combinations were revised by the later evidence, then answer the unlabeled observations at the end.\n\nLabeled examples:\n1. A +1 charge and a -3 charge were observed to attract.\n2. A -2 charge and a -3 charge were observed to repel.\n3. A -2 charge and a +1 charge were observed to attract.\n4. A -2 charge and a +3 charge were observed to repel.\n5. A +3 charge and a +3 charge were observed to attract.\n\nProbes:\n6. A +2 charge and a -1 charge were observed to ?.\n7. A -2 charge and a +2 charge were observed to ?.\n8. A -3 charge and a -3 charge were observed to ?.\n9. A +2 charge and a +3 charge were observed to ?.\n\nReturn your analysis as a JSON object with exactly these four fields:\n  \"inferred_rule_before\": your inferred rule from the pre-shift examples (string),\n  \"shift_evidence\": which observations indicated the rule changed (string),\n  \"inferred_rule_after\": your inferred rule from the post-shift examples (string),\n  \"final_binary_answer\": list of exactly 4 labels in probe order (each \"attract\" or \"repel\").\nOutput only the JSON object."
+        "binary": "Review the observation log for interactions between two electric charges.\nEach entry records q1, q2, and the observed outcome.\nUse the full log to infer which sign combinations were revised later, then answer the unlabeled probe entries.\n\nResolved log entries:\n[01] q1=+2 | q2=+3 | observed=attract\n[02] q1=+2 | q2=-2 | observed=repel\n[03] q1=-2 | q2=+2 | observed=repel\n[04] q1=-1 | q2=-3 | observed=repel\n[05] q1=-1 | q2=+1 | observed=attract\n\nUnresolved probe entries:\n[06] q1=-3 | q2=-3 | observed=?\n[07] q1=+1 | q2=+3 | observed=?\n[08] q1=-1 | q2=+2 | observed=?\n[09] q1=+1 | q2=-2 | observed=?\n\nReturn exactly 4 labels in order, one per probe. Use only attract or repel.",
+        "narrative": "An observation log recorded interactions between two electric charges over time.\nUse the full log to infer which sign combinations were revised by the later evidence, then answer the unlabeled observations at the end.\n\nResolved log entries:\n[01] charges(+2, +3) => observed attract.\n[02] charges(+2, -2) => observed repel.\n[03] charges(-2, +2) => observed repel.\n[04] charges(-1, -3) => observed repel.\n[05] charges(-1, +1) => observed attract.\n\nUnresolved probe entries:\n[06] charges(-3, -3) => observed ?.\n[07] charges(+1, +3) => observed ?.\n[08] charges(-1, +2) => observed ?.\n[09] charges(+1, -2) => observed ?.\n\nReturn your analysis as a JSON object with exactly these four fields:\n  \"inferred_rule_before\": your inferred rule from the pre-shift examples (string),\n  \"shift_evidence\": which observations indicated the rule changed (string),\n  \"inferred_rule_after\": your inferred rule from the post-shift examples (string),\n  \"final_binary_answer\": list of exactly 4 labels in probe order (each \"attract\" or \"repel\").\nOutput only the JSON object."
       },
       "parser": {
-        "binary_text": "attract, repel, attract, repel",
+        "binary_text": "repel, attract, attract, repel",
         "binary_expected": {
           "status": "valid",
           "labels": [
-            "attract",
             "repel",
+            "attract",
             "attract",
             "repel"
           ]
         },
-        "narrative_text": "{\"inferred_rule_before\": \"opposite-sign attract, same-sign repel\", \"shift_evidence\": \"post-shift observations inverted the rule\", \"inferred_rule_after\": \"same-sign attract, opposite-sign repel\", \"final_binary_answer\": [\"attract\", \"repel\", \"attract\", \"repel\"]}",
+        "narrative_text": "Reasoning without a valid final line.",
         "narrative_expected": {
-          "status": "valid",
-          "inferred_rule_before": "opposite-sign attract, same-sign repel",
-          "shift_evidence": "post-shift observations inverted the rule",
-          "inferred_rule_after": "same-sign attract, opposite-sign repel",
-          "final_binary_answer": [
-            "attract",
-            "repel",
-            "attract",
-            "repel"
-          ]
+          "status": "invalid_format"
         }
       },
       "baselines": {
         "random": [
-          "attract",
+          "repel",
           "repel",
           "attract",
-          "repel"
+          "attract"
         ],
         "never_update": [
           "attract",
@@ -418,10 +411,10 @@
           "attract"
         ],
         "physics_prior": [
-          "attract",
-          "attract",
           "repel",
-          "repel"
+          "repel",
+          "attract",
+          "attract"
         ],
         "template_position": [
           "repel",
@@ -434,10 +427,11 @@
   ],
   "metrics": {
     "expected": {
-      "post_shift_probe_accuracy": 0.375,
+      "post_shift_probe_accuracy": 1.0,
       "binary_parse_valid_rate": 1.0,
-      "narrative_schema_valid_rate": 1.0,
-      "narrative_parse_failure_count": 0
+      "narrative_schema_valid_rate": 0.5,
+      "narrative_parse_failure_count": 1,
+      "slice_report": null
     }
   }
 }
