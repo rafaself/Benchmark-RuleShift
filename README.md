@@ -2,7 +2,7 @@
 
 RuleShift Benchmark is a narrow Executive Functions benchmark for cognitive flexibility. It evaluates whether a model applies the post-shift rule to the final probes after sparse contradictory evidence. Electrostatics is only the controlled substrate. Binary is the only leaderboard-primary path; Narrative is supplemental audit output on the same frozen episodes and never changes the leaderboard score.
 
-This `README.md` is the main repo guide. Benchmark logic lives under `src/`. Kaggle packaging under `packaging/kaggle/` is downstream and must mirror, not redefine, benchmark behavior.
+This `README.md` is the main development source of truth and repo guide. Benchmark logic lives under `src/`. Kaggle packaging under `packaging/kaggle/` is downstream and must mirror, not redefine, benchmark behavior.
 
 ## Current Contract
 

@@ -68,7 +68,7 @@ def _make_good_task() -> dict:
 def _make_good_run() -> dict:
     """Build a minimal run artifact dict that passes all contract checks.
 
-    Mirrors the real artifact.json shape produced by the panel runner.
+    Mirrors the canonical benchmark run artifact shape consumed by the audit.
     """
     rows = [
         {

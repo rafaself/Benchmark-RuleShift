@@ -721,8 +721,8 @@ def _error_type_counts(df: Any) -> dict[str, int]:
 
     ``recency_overweight``, ``invalid_narrative``, and ``unknown`` require
     label-level data not available in the aggregate payload DataFrame; they are
-    always 0 in this path.  The full classification is available in the panel
-    artifact where complete prediction data is present.
+    always 0 in this path. The full classification is only available from a
+    richer run artifact that preserves complete prediction data.
     """
     counts: dict[str, int] = {et.value: 0 for et in ErrorType}
     for _, row in df.iterrows():

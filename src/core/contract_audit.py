@@ -4,7 +4,7 @@ Checks for drift between:
   1. Implemented benchmark state (code and frozen assets)
   2. Official Kaggle notebook + metadata
   3. Serialized task definition (materialized from notebook)
-  4. Serialized run artifact (artifact.json from panel runs)
+  4. Serialized run artifact (artifact.json from canonical benchmark runs)
   5. Canonical manifest / artifact hashes
 """
 
@@ -247,8 +247,8 @@ def is_known_bad_run_shape(run_json: dict[str, Any]) -> bool:
 def check_run_artifact(run_json: dict[str, Any]) -> list[str]:
     """Validate a serialized run artifact against the benchmark contract.
 
-    Handles both the local artifact format (``splits``/``rows``) and a
-    kbench-style format (``conversations``/``results``).
+    Handles both the canonical benchmark artifact format (``splits``/``rows``)
+    and a kbench-style format (``conversations``/``results``).
     """
     errors: list[str] = []
 
