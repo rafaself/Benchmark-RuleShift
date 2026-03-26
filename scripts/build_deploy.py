@@ -61,6 +61,10 @@ _PRIVATE_ONLY_FILENAMES: tuple[str, ...] = (
     "private_leaderboard.json",
     "private_episodes.json",
 )
+_PUBLIC_RUNTIME_SPLITS: tuple[str, ...] = (
+    "dev",
+    "public_leaderboard",
+)
 
 
 def _verify_no_private_in_runtime() -> None:
@@ -74,6 +78,27 @@ def _verify_no_private_in_runtime() -> None:
             "ERROR: private-only asset(s) found in deploy/kaggle-runtime/ — "
             "private data must not enter the public runtime package:\n"
             + "\n".join(f"  {p.relative_to(REPO_ROOT)}" for p in violations)
+        )
+
+
+def _verify_public_runtime_split_whitelist() -> None:
+    frozen_splits_dir = DEPLOY_RUNTIME_DIR / "src" / "frozen_splits"
+    if not frozen_splits_dir.exists():
+        sys.exit(
+            "ERROR: deploy/kaggle-runtime/src/frozen_splits/ is missing from the public runtime package"
+        )
+
+    shipped = {
+        path.name
+        for path in frozen_splits_dir.iterdir()
+        if path.is_file()
+    }
+    allowed = {f"{split_name}.json" for split_name in _PUBLIC_RUNTIME_SPLITS}
+    if shipped != allowed:
+        sys.exit(
+            "ERROR: deploy/kaggle-runtime/src/frozen_splits/ must contain only the public split manifests:\n"
+            f"  expected: {sorted(allowed)}\n"
+            f"  observed: {sorted(shipped)}"
         )
 
 
@@ -166,7 +191,7 @@ def build_kaggle_runtime() -> None:
     # src/frozen_splits/ -- dev and public_leaderboard only; private split is not shipped
     frozen_splits_dst = runtime_src / "frozen_splits"
     frozen_splits_dst.mkdir()
-    for split_name in ("dev", "public_leaderboard"):
+    for split_name in _PUBLIC_RUNTIME_SPLITS:
         src_file = SRC_DIR / "frozen_splits" / f"{split_name}.json"
         shutil.copy2(src_file, frozen_splits_dst / src_file.name)
         print(f"  src/frozen_splits/{src_file.name}")
@@ -231,6 +256,7 @@ def main() -> None:
 
     print("\nVerifying no private-only assets in deploy/kaggle-runtime/...")
     _verify_no_private_in_runtime()
+    _verify_public_runtime_split_whitelist()
 
     print("\nDone.")
     print(f"  {DEPLOY_NOTEBOOK_DIR}")

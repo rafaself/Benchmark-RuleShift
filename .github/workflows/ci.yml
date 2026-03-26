@@ -85,6 +85,9 @@ jobs:
       - name: Build deploy artifacts from repo
         run: python scripts/build_deploy.py
 
+      - name: Re-check private split isolation after public build
+        run: python scripts/check_public_private_isolation.py
+
       - name: Verify deploy/kaggle-notebook/ was produced
         run: |
           test -f deploy/kaggle-notebook/ruleshift_notebook_task.ipynb \

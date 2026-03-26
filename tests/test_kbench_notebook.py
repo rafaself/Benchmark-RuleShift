@@ -466,6 +466,13 @@ class TestNotebookSourceFidelity:
         assert 'frozen_splits["private_leaderboard"] = load_private_split(PRIVATE_DATASET_ROOT)' in joined
         assert "packaging/kaggle/private/private_episodes.json" not in joined
 
+    def test_notebook_defines_explicit_leaderboard_partition_boundary(self):
+        joined = "\n".join(_read_notebook_sources())
+        assert '_DEV_PARTITION = "dev"' in joined
+        assert '_LEADERBOARD_PARTITIONS = ("public_leaderboard", "private_leaderboard")' in joined
+        assert '_PUBLIC_RUNTIME_PARTITIONS = (_DEV_PARTITION, "public_leaderboard")' in joined
+        assert 'for _partition in _LEADERBOARD_PARTITIONS' in joined
+
     def test_binary_task_signature_matches_eval_df_columns(self):
         """The function params (excluding llm) must match eval_df column names."""
         import inspect
@@ -533,6 +540,13 @@ class TestNotebookEndToEnd:
         assert "dev" not in leaderboard_df["split"].values, (
             "leaderboard_df must never contain dev rows"
         )
+
+    def test_leaderboard_df_contains_only_public_and_private_rows(self, ns):
+        leaderboard_df = ns["leaderboard_df"]
+        assert set(leaderboard_df["split"]) == {
+            "public_leaderboard",
+            "private_leaderboard",
+        }
 
     def test_leaderboard_df_has_no_episode_overlap_with_dev_df(self, ns):
         dev_ids = set(ns["dev_df"]["episode_id"])

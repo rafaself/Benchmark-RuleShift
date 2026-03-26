@@ -71,6 +71,13 @@ Non-Kaggle execution surfaces:
 5. Keep Binary as the only leaderboard-primary path and treat Narrative as the required same-episode robustness companion on the same episode order and probe targets.
 6. Confirm that parsing, scoring, and report rendering complete end to end, with Post-shift Probe Accuracy as the headline metric.
 
+## Public And Private Packaging Boundary
+
+- Public deploy build: `scripts/build_deploy.py` builds only the public Kaggle notebook artifact and the public runtime dataset containing `dev.json` and `public_leaderboard.json`.
+- Private artifact generation: `scripts/generate_private_split_artifact.py` generates `private_episodes.json` offline from the fixed private seed list.
+- Private dataset packaging: `scripts/cd/build_private_dataset_package.py` packages only `private_episodes.json` plus private dataset metadata, outside the public repo tree.
+- The public publish flow must never package, version, or upload `private_episodes.json`.
+
 ## Reproducibility Notes
 
 - Resource paths are explicit and relative to the repo root.

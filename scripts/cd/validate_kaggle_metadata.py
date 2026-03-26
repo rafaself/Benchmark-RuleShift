@@ -15,6 +15,7 @@ _PRIVATE_ONLY_FILENAMES = (
     "private_leaderboard.json",
     "private_episodes.json",
 )
+_PUBLIC_RUNTIME_SPLITS = ("dev.json", "public_leaderboard.json")
 
 
 def _assert_no_private_artifacts(search_root: Path) -> None:
@@ -25,6 +26,24 @@ def _assert_no_private_artifacts(search_root: Path) -> None:
         raise AssertionError(
             "private-only artifact(s) found in public dataset payload: "
             + ", ".join(str(path) for path in violations)
+        )
+
+
+def _assert_public_runtime_split_whitelist(runtime_dir: Path) -> None:
+    frozen_splits_dir = runtime_dir / "src" / "frozen_splits"
+    if not frozen_splits_dir.exists():
+        raise AssertionError(f"missing public frozen_splits directory: {frozen_splits_dir}")
+
+    observed = {
+        path.name
+        for path in frozen_splits_dir.iterdir()
+        if path.is_file()
+    }
+    expected = set(_PUBLIC_RUNTIME_SPLITS)
+    if observed != expected:
+        raise AssertionError(
+            "public dataset payload must contain only the public split manifests: "
+            f"expected {sorted(expected)}, observed {sorted(observed)}"
         )
 
 
@@ -78,6 +97,10 @@ def preflight():
         _assert_no_private_artifacts(runtime_dir)
     except AssertionError as exc:
         errors.append(str(exc))
+    try:
+        _assert_public_runtime_split_whitelist(runtime_dir)
+    except AssertionError as exc:
+        errors.append(str(exc))
 
     if errors:
         print("Metadata validation FAILED:", file=sys.stderr)
@@ -110,6 +133,7 @@ def dataset():
     assert (runtime_dir / "src").is_dir(), f"missing: {runtime_dir / 'src'}"
     assert (runtime_dir / "packaging" / "kaggle" / "frozen_artifacts_manifest.json").exists()
     _assert_no_private_artifacts(runtime_dir)
+    _assert_public_runtime_split_whitelist(runtime_dir)
 
     print("Dataset payload verified.")
     print(f"Dataset id: {dm['id']}")

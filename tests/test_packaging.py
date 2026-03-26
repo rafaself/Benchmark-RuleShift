@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import subprocess
+import sys
 import tomllib
 
 from kaggle import (
@@ -175,6 +177,16 @@ def test_packaging_docs_describe_private_split_as_mount_only():
     assert "public partitions from the stored seed banks" in card_text
     assert "packaging/kaggle/private/private_episodes.json" not in notebook_text
     assert "resolve_private_dataset_root" in notebook_text
+
+
+def test_packaging_docs_describe_separate_private_flow():
+    usage_text = _USAGE_PATH.read_text(encoding="utf-8")
+
+    assert "Public And Private Packaging Boundary" in usage_text
+    assert "scripts/build_deploy.py" in usage_text
+    assert "scripts/generate_private_split_artifact.py" in usage_text
+    assert "scripts/cd/build_private_dataset_package.py" in usage_text
+    assert "must never package, version, or upload `private_episodes.json`" in usage_text
 
 
 def test_active_docs_label_frozen_artifacts_manifest_by_runtime_role():
@@ -406,6 +418,29 @@ def test_build_deploy_guardrail_rejects_private_asset_in_runtime(tmp_path):
         mod.REPO_ROOT = orig_repo
 
 
+def test_build_deploy_guardrail_rejects_non_public_split_whitelist(tmp_path):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("build_deploy", _BUILD_DEPLOY_DIR / "build_deploy.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    fake_runtime = tmp_path / "kaggle-runtime"
+    frozen_splits = fake_runtime / "src" / "frozen_splits"
+    frozen_splits.mkdir(parents=True)
+    (frozen_splits / "dev.json").write_text("{}", encoding="utf-8")
+    (frozen_splits / "public_leaderboard.json").write_text("{}", encoding="utf-8")
+    (frozen_splits / "extra.json").write_text("{}", encoding="utf-8")
+
+    orig_runtime = mod.DEPLOY_RUNTIME_DIR
+    mod.DEPLOY_RUNTIME_DIR = fake_runtime
+    try:
+        import pytest
+        with pytest.raises(SystemExit):
+            mod._verify_public_runtime_split_whitelist()
+    finally:
+        mod.DEPLOY_RUNTIME_DIR = orig_runtime
+
+
 def test_kaggle_runtime_deploy_does_not_contain_private_leaderboard():
     """Guardrail: private_leaderboard.json must never appear in the runtime package."""
     deploy_runtime = _REPO_ROOT / "deploy" / "kaggle-runtime"
@@ -461,3 +496,95 @@ def test_frozen_splits_runtime_package_contains_only_public_splits():
         f"Unexpected file(s) in runtime frozen_splits/: {unexpected}. "
         f"Only dev.json and public_leaderboard.json are permitted."
     )
+
+
+def test_private_dataset_packaging_script_builds_private_only_package(tmp_path):
+    seeds_path = tmp_path / "private_seeds.json"
+    seeds_path.write_text(json.dumps([33000, 33001, 33002]), encoding="utf-8")
+    artifact_root = tmp_path / "private-artifact"
+    artifact_path = artifact_root / "private_episodes.json"
+    private_package_dir = tmp_path / "private-package"
+
+    generate = subprocess.run(
+        [
+            sys.executable,
+            "scripts/generate_private_split_artifact.py",
+            "--benchmark-version",
+            "R14",
+            "--seeds-file",
+            str(seeds_path),
+            "--output",
+            str(artifact_path),
+        ],
+        cwd=_REPO_ROOT,
+        check=False,
+        text=True,
+        capture_output=True,
+    )
+    assert generate.returncode == 0, generate.stderr or generate.stdout
+
+    packaged = subprocess.run(
+        [
+            sys.executable,
+            "scripts/cd/build_private_dataset_package.py",
+            "--artifact",
+            str(artifact_path),
+            "--output-dir",
+            str(private_package_dir),
+            "--dataset-id",
+            "owner/ruleshift-private-runtime",
+        ],
+        cwd=_REPO_ROOT,
+        check=False,
+        text=True,
+        capture_output=True,
+    )
+    assert packaged.returncode == 0, packaged.stderr or packaged.stdout
+    assert Path(packaged.stdout.strip()) == private_package_dir
+    assert (private_package_dir / "private_episodes.json").is_file()
+    assert (private_package_dir / "dataset-metadata.json").is_file()
+    assert not (private_package_dir / "src").exists()
+    assert not (private_package_dir / "packaging").exists()
+
+
+def test_private_dataset_packaging_script_rejects_repo_output(tmp_path):
+    seeds_path = tmp_path / "private_seeds.json"
+    seeds_path.write_text(json.dumps([34000, 34001]), encoding="utf-8")
+    artifact_path = tmp_path / "private_episodes.json"
+
+    generate = subprocess.run(
+        [
+            sys.executable,
+            "scripts/generate_private_split_artifact.py",
+            "--benchmark-version",
+            "R14",
+            "--seeds-file",
+            str(seeds_path),
+            "--output",
+            str(artifact_path),
+        ],
+        cwd=_REPO_ROOT,
+        check=False,
+        text=True,
+        capture_output=True,
+    )
+    assert generate.returncode == 0, generate.stderr or generate.stdout
+
+    packaged = subprocess.run(
+        [
+            sys.executable,
+            "scripts/cd/build_private_dataset_package.py",
+            "--artifact",
+            str(artifact_path),
+            "--output-dir",
+            str(_REPO_ROOT / "deploy" / "private-runtime"),
+            "--dataset-id",
+            "owner/ruleshift-private-runtime",
+        ],
+        cwd=_REPO_ROOT,
+        check=False,
+        text=True,
+        capture_output=True,
+    )
+    assert packaged.returncode != 0
+    assert "outside the public repository tree" in (packaged.stderr or packaged.stdout)
