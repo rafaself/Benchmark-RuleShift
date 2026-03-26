@@ -8,7 +8,6 @@ import sys
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 _README_PATH = _REPO_ROOT / "README.md"
-_FROZEN_SPEC_PATH = _REPO_ROOT / "packaging" / "kaggle" / "FROZEN_BENCHMARK_SPEC.md"
 _CANONICAL_M1_REPORT_PATH = (
     _REPO_ROOT
     / "reports"
@@ -68,12 +67,11 @@ def test_readme_does_not_report_stale_m3_status():
     assert "- **M3**: Not started." not in text
 
 
-def test_frozen_spec_is_committed_and_scope_explicit():
-    text = _FROZEN_SPEC_PATH.read_text(encoding="utf-8")
+def test_readme_is_the_single_development_source_of_truth_doc():
+    text = _README_PATH.read_text(encoding="utf-8")
 
-    assert "NORMATIVE FROZEN SPECIFICATION" in text
-    assert "Benchmark scope: cognitive flexibility" in text
-    assert "Binary (`ruleshift_benchmark_v1_binary`) is the only leaderboard-facing" in text
+    assert "main development source of truth" in text
+    assert "FROZEN_BENCHMARK_SPEC.md" not in text
 
 
 def test_public_repo_does_not_commit_private_split_artifacts():

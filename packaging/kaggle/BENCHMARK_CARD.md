@@ -1,188 +1,37 @@
 # RuleShift Benchmark v1 Benchmark Card
 
-> **Status: SUPPORTING SUMMARY**
-> This benchmark card is a descriptive summary of the implemented RuleShift Benchmark v1 task.
-> For the normative frozen benchmark definition, use [`FROZEN_BENCHMARK_SPEC.md`](./FROZEN_BENCHMARK_SPEC.md).
-> For Kaggle submission and staging steps, use [`README.md`](./README.md).
+RuleShift Benchmark v1 is a narrow Executive Functions benchmark for cognitive flexibility. It uses electrostatics only as a controlled substrate for evaluating final post-shift rule application after sparse contradictory evidence in frozen episodes.
 
-## Summary
+A high Binary score is evidence that a model applied the post-shift rule to the final probes in the frozen episodes. It is not evidence of physics skill, broad adaptation ability, broad AGI capability, or general reasoning ability.
 
-RuleShift Benchmark v1 is a narrow Executive Functions benchmark for cognitive flexibility. It uses electrostatics only as a controlled substrate for evaluating final post-shift rule application after sparse contradictory evidence.
+The Binary task is the scored evaluation path for the benchmark.
 
-A high v1 Binary score is evidence that a model correctly applied the post-shift rule to the final probes after sparse contradictory evidence in the frozen episodes. It is not evidence of physics skill, broad adaptation ability, broad AGI capability, or general reasoning ability.
+## Scope
 
-This package is a Kaggle packaging layer over the implemented local benchmark. The implemented local benchmark under `src/` and the public frozen split manifests under `src/frozen_splits/` remain the runtime source of truth. The held-out private split is resolved only through the private split loader and an authorized private dataset mount. The single official Kaggle leaderboard notebook is `packaging/kaggle/ruleshift_notebook_task.ipynb`; `packaging/kaggle/staging/ruleshift_benchmark_v1_kaggle_staging.ipynb` is staging-only.
-
-## Current Benchmark Status
-
-- Scope: RuleShift Benchmark v1 remains a narrow cognitive-flexibility benchmark. Electrostatics is only the controlled substrate.
-- Leaderboard-primary path: Binary (`ruleshift_benchmark_v1_binary`) only.
-- Supplemental evidence: Narrative is same-episode robustness/audit evidence only. Only the final four labels are scored, and Narrative never changes the leaderboard score.
-- Current emitted difficulty labels in the shipped manifest and current audit fixtures: `easy`, `medium`, and `hard`. `reserved_difficulty_labels` is empty.
-- Report status: benchmark-state statements belong in the benchmark card, root README, and frozen manifests/audit fixtures. Preserved Gemini live reports are supporting evidence captures; `history/` paths are archival, and some retained live-report tables publish only `easy`/`medium` slices because they reflect older captured runs rather than current benchmark governance.
-
-## Task Paths
-
-- **Binary** (`ruleshift_benchmark_v1_binary`) is the only leaderboard-primary path. The Binary task is the scored evaluation path for the v1 claim.
-- **Narrative** is supplementary same-episode robustness evidence only. It is structured audit output over the same frozen episodes and probe targets as Binary, and only the final four labels are scored. Narrative results do not contribute to the leaderboard score.
-- Electrostatics is only the controlled substrate. The benchmark is not intended to measure physics skill as the primary target.
-
-Each episode contains:
-
-- 5 labeled items
-- 4 unlabeled probes
-- a pre-shift segment governed by `rule_A`
-- a post-shift segment governed by `rule_B`
-
-Current rule family:
-
-- `R_std`: same-sign charges repel, opposite-sign charges attract
-- `R_inv`: same-sign charges attract, opposite-sign charges repel
-
-## Headline Metric
-
-The sole headline metric is **Post-shift Probe Accuracy**: the fraction of final post-shift probe labels answered correctly under the post-shift rule in the Binary path.
-
-Narrative is reviewed only as same-episode robustness evidence and does not change the headline score.
-
-Aggregate accuracy remains available in the canonical payload `primary_result`.
-
-## Frozen Reporting Axes
-
-- The frozen `template_family` axis is `canonical` and `observation_log`.
-- Required benchmark-facing slices cover `template`, `template_family`, `difficulty`, `shift_position`, `transition_type`, and `error_type`.
-- Invariance reporting is diagnostic-only, reproducible when emitted, and does not change the Binary headline score.
-- Difficulty is part of the frozen methodology and is reported diagnostically without changing the Binary leaderboard task.
+- Binary as the only leaderboard-primary path: `ruleshift_benchmark_v1_binary`
+- Supplemental task: Narrative audit output and supplementary same-episode robustness evidence on the same frozen episodes and probe targets as Binary
+- Post-shift Probe Accuracy as the sole headline metric
+- Scored targets: only the final four labels are scored
+- Frozen rule family: `R_std`, `R_inv`
+- Current emitted difficulty labels: `easy`, `medium`, `hard`
+- Diagnostic reporting axes include `template_family`, difficulty, shift position, transition type, and error type
+- Invariance reporting is diagnostic-only
+- Official Kaggle submission surface: `packaging/kaggle/ruleshift_notebook_task.ipynb`
 
 ## Split Contract
 
-Frozen split names are exactly:
+- `dev`: local validation only
+- `public_leaderboard`: public leaderboard evaluation
+- `private_leaderboard`: held-out leaderboard evaluation from an authorized private dataset mount
 
-- `dev` — local validation only; never included in the official leaderboard evaluation
-- `public_leaderboard` — included in the official leaderboard evaluation
-- `private_leaderboard` — included in the official leaderboard evaluation (attached separately as a private dataset)
+The public repo and public Kaggle runtime package contain only the public splits. Private split generation, packaging, and isolation checks are defined in `PRIVATE_SPLIT_RUNBOOK.md`.
 
-The official leaderboard evaluation (`ruleshift_benchmark_v1_binary`) runs only over `public_leaderboard` and `private_leaderboard`.
+## Evidence And Limits
 
-## Private Evaluation
-
-Private evaluation uses a held-out private split that is not included in the public runtime package or the public repository.
-
-- The private split is fixed per benchmark version. The current private artifact uses `benchmark_version: R14` and is generated deterministically from a fixed private seed list.
-- The public runtime package contains only `dev.json` and `public_leaderboard.json`. It does not include `private_episodes.json` or any private seed bank.
-- At evaluation time the private artifact is loaded from an authorized private dataset mount only; there is no repo-local fallback.
-- The private split loader validates `benchmark_version`, `schema_version`, and `artifact_checksum` before any episode is used.
-- For generation and publication steps, see [`PRIVATE_SPLIT_RUNBOOK.md`](./PRIVATE_SPLIT_RUNBOOK.md).
-
-## Baselines
-
-Current baseline references carried into the package:
-
-- `random`
-- `never_update`
-- `last_evidence`
-- `physics_prior`
-- `template_position`
-
-These are benchmark sanity-check baselines used by the local validity and re-audit workflow. They are included to frame shortcut risk, not to claim any model leaderboard result.
-
-## Frozen Artifacts And Reproducibility
-
-This Kaggle package references frozen local artifacts rather than regenerating a new benchmark:
-
-- public split manifests: `src/frozen_splits/dev.json`, `src/frozen_splits/public_leaderboard.json`
-- held-out private split input: attached private dataset mount providing `private_episodes.json`
-- anti-shortcut gate evidence: `tests/fixtures/release_r13_validity_report.json`
-- empirical re-audit evidence: `tests/fixtures/release_r15_reaudit_report.json`
-- current public paired Gemini report alias: `reports/m1_binary_vs_narrative_robustness_report.md`
-- Kaggle runtime-contract manifest and integrity hashes: `packaging/kaggle/frozen_artifacts_manifest.json`
-
-Version metadata currently frozen by the package:
-
-- split manifest version: `R14`
-- spec version: `v1`
-- generator version: `R13`
-- template set version: `v2`
-- difficulty version: `R13`
-
-## Current Implementation State
-
-Current emitted difficulty labels are `easy`, `medium`, and `hard`. Difficulty is generation-defined and reported diagnostically without changing the Binary leaderboard task.
-
-The benchmark currently claims:
-
-- a reproducible Binary benchmark and Narrative companion over the same frozen split manifests and probe targets
-- a reproducible Binary benchmark and Narrative companion over the same frozen split manifests and probe targets, with Narrative retained as structured audit output only
-- Binary as the only leaderboard-primary path
-- Post-shift Probe Accuracy as the sole headline metric
-- the frozen `template_family` axis and diagnostic-only invariance reporting
-- deterministic local replay for the public partitions from the stored seed banks
-- local validity and audit evidence tied to the current implemented benchmark
-
-The benchmark explicitly does **not** claim:
-
-- physics skill as the primary measured ability
-- full executive-function decomposition
-- broad adaptation ability
-- broad AGI capability
-- general reasoning ability
-- human-level performance
-- cross-provider readiness or cross-provider equivalence
-- online detection latency
-- switch cost measurement
-- recovery length
-- immediate post-shift drop
-- any expansion beyond the current cognitive flexibility benchmark
-
-## Current Readiness Status
-
-- the active v1 readiness evidence path is Gemini;
-- the current public paired Gemini report surface is `reports/m1_binary_vs_narrative_robustness_report.md`, a convenience mirror of `reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md`, which currently contains the committed paired `gemini-2.5-flash-lite` run;
-- the earlier paired `gemini-2.5-flash` report at `reports/live/gemini-first-panel/binary-vs-narrative/history/report__20260323_120000.md` is retained as historical live evidence and provenance material;
-- the direct Flash vs Flash-Lite comparison is preserved as supplemental comparison material at `reports/live/gemini-first-panel/comparison/latest/report.md`, not as an official Kaggle submission path;
-- Anthropic and OpenAI integrations already exist locally, but they are outside the current v1 readiness gate;
-- current v1 readiness does not require cross-provider evidence.
-
-## Deferred Work Boundary
-
-Current v1 readiness remains the Gemini-only gate above. The following work is preserved but deferred beyond the current v1 readiness decision and beyond the current Kaggle staging claim:
-
-- post-v1 empirical expansion: Anthropic live evidence, OpenAI live evidence, cross-provider comparison, and broader run-store expansion beyond the current provenance contract
-- longer-term scientific-validity strengthening: human pilot, independent rerun, and protocol extensions needed for adaptation-lag or recovery claims
-
-Anthropic and OpenAI integrations remain available as local-only in-repo execution surfaces. They are preserved assets for later empirical expansion, not blockers for the current v1 package.
-
-## Current Evidence
-
-### R13 anti-shortcut validity gate
-
-The packaged anti-shortcut validity evidence is the local `R13` gate report. It reports **PASS**: the best `private_leaderboard` critical-baseline subset gaps are `0.103175` for both template and emitted difficulty, above the required `0.100000`.
-
-### R15 empirical re-audit
-
-The packaged empirical re-audit is the local `R15` report over the refreshed `R14` frozen splits. It reports that the **recency shortcut was materially reduced** relative to the earlier blocker surface: `last_evidence` peaks at `0.500000` on `public_leaderboard`, so recency no longer looks like the dominant shortcut failure mode in that report.
-
-### M1 live Gemini evidence
-
-The current public paired Gemini report mirror is `reports/m1_binary_vs_narrative_robustness_report.md`, which mirrors `reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md` and currently contains the committed paired `gemini-2.5-flash-lite` run. The earlier paired `gemini-2.5-flash` report remains preserved at `reports/live/gemini-first-panel/binary-vs-narrative/history/report__20260323_120000.md` as historical live evidence. That historical report was resynced in M6 from the original legacy capture; current local runners now require pinned model IDs, but the legacy capture did not record provider-served model-version, token-usage, or duration fields.
-
-- Binary accuracy: 0.781250
-- Narrative accuracy: 0.458333
-- Binary -> Narrative delta: 0.322917
-- Binary parse-valid: 1.000000
-- Narrative parse-valid: 0.937500
-
-Binary substantially exceeds all heuristic baselines. Narrative is meaningfully lower than Binary on the same frozen episodes, indicating a real surface-form robustness gap. A small Narrative provider/runtime contamination note (overall rate = 0.041667) was observed in the live run and must be disclosed separately from parse/format and adaptation outcomes.
-
-### M2 staging dry-run readiness
-
-M2 confirms that packaged frozen artifacts load, manifest validation passes, and the staging notebook completes end to end in both Binary and Narrative modes. M2 is packaging-validation evidence only, not live model-evaluation evidence.
-
-## Limitations
-
-- The package does not bundle model predictions or Kaggle submission outputs.
-- Current readiness evidence is Gemini-only; the package does not require Anthropic or OpenAI evidence for v1 readiness.
-- Narrative is supplementary evidence only and does not contribute to the leaderboard score.
-- No claim should depend on explanation quality or formatting compliance.
-- No claim here upgrades the local evidence beyond the bundled R13, R15, and committed Gemini evidence surfaces.
-- Local validation remains authoritative if any staging notebook output diverges from the frozen evidence.
+- Current benchmark validity is anchored by the committed R13 anti-shortcut gate and R15 re-audit artifacts.
+- R13 anti-shortcut validity gate remains the main shortcut-risk check.
+- R15 empirical re-audit indicates the recency shortcut was materially reduced.
+- Reference baselines: `random`, `never_update`, `last_evidence`, `physics_prior`, `template_position`.
+- Current readiness evidence is Gemini-only.
+- Narrative is diagnostic-only and never changes the leaderboard score.
+- The benchmark does **not** claim physics skill, full executive-function decomposition, switch cost, recovery length, immediate post-shift drop, online detection latency, or broad AGI capability.

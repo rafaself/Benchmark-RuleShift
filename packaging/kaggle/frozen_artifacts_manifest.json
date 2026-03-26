@@ -36,7 +36,8 @@
     }
   },
   "source_of_truth": [
-    "packaging/kaggle/FROZEN_BENCHMARK_SPEC.md is the frozen benchmark-definition document for the current cognitive-flexibility benchmark.",
+    "README.md is the main development source of truth for the current benchmark and workflow.",
+    "packaging/kaggle/BENCHMARK_CARD.md is the benchmark-facing summary for the Kaggle surface.",
     "Local validation and audit outputs produced from the implemented code under src/ remain authoritative.",
     "Kaggle staging replays frozen manifests and locally produced evidence; it does not redefine the benchmark."
   ],

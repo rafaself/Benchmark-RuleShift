@@ -26,10 +26,7 @@ _STAGING_DIR = _KAGGLE_DIR / "staging"
 _ARCHIVE_DIR = _KAGGLE_DIR / "archive"
 _STAGING_NOTEBOOK_PATH = _STAGING_DIR / "ruleshift_benchmark_v1_kaggle_staging.ipynb"
 _KERNEL_METADATA_PATH = _KAGGLE_DIR / "kernel-metadata.json"
-_SPEC_PATH = _KAGGLE_DIR / "FROZEN_BENCHMARK_SPEC.md"
 _CARD_PATH = _KAGGLE_DIR / "BENCHMARK_CARD.md"
-_USAGE_PATH = _KAGGLE_DIR / "README.md"
-_PACKAGING_NOTE_PATH = _ARCHIVE_DIR / "PACKAGING_NOTE.md"
 
 
 def _read_notebook_sources(path: Path) -> str:
@@ -89,7 +86,6 @@ def test_official_kaggle_submission_flow_is_consistent_across_surface():
     manifest = load_kaggle_staging_manifest()
     kernel_metadata = _load_kernel_metadata()
     readme_text = _REPO_ROOT.joinpath("README.md").read_text(encoding="utf-8")
-    usage_text = _USAGE_PATH.read_text(encoding="utf-8")
     card_text = _CARD_PATH.read_text(encoding="utf-8")
 
     official_notebook_relpath = "packaging/kaggle/ruleshift_notebook_task.ipynb"
@@ -105,20 +101,14 @@ def test_official_kaggle_submission_flow_is_consistent_across_surface():
     assert official_entry_points == (official_notebook_relpath,)
     assert kernel_metadata["code_file"] == official_notebook_name
     assert official_notebook_relpath in readme_text
-    assert official_notebook_name in usage_text
     assert official_notebook_relpath in card_text
-    assert "No other notebook or local runtime path is an official Kaggle leaderboard submission surface." in usage_text
 
 
 def test_non_official_packaged_paths_are_explicitly_marked_non_active():
-    usage_text = _USAGE_PATH.read_text(encoding="utf-8")
     card_text = _CARD_PATH.read_text(encoding="utf-8")
-    packaging_note_text = _PACKAGING_NOTE_PATH.read_text(encoding="utf-8")
 
-    assert "`staging/ruleshift_benchmark_v1_kaggle_staging.ipynb`: optional package-validation and dry-run notebook" in usage_text
-    assert "staging-only" in card_text
-    assert "ARCHIVE RELEASE NOTE" in packaging_note_text
-    assert "not an authoritative benchmark contract or an operational runbook" in packaging_note_text
+    assert "staging" not in card_text.lower()
+    assert not any(_ARCHIVE_DIR.iterdir())
 
 
 def test_kaggle_directory_layout_separates_active_staging_and_archive_files():
@@ -126,77 +116,55 @@ def test_kaggle_directory_layout_separates_active_staging_and_archive_files():
 
     assert top_level_files == [
         "BENCHMARK_CARD.md",
-        "FROZEN_BENCHMARK_SPEC.md",
         "PRIVATE_SPLIT_RUNBOOK.md",
-        "README.md",
         "frozen_artifacts_manifest.json",
         "kernel-metadata.json",
         "ruleshift_notebook_task.ipynb",
     ]
     assert _STAGING_NOTEBOOK_PATH.is_file()
-    assert _PACKAGING_NOTE_PATH.is_file()
+    assert _ARCHIVE_DIR.is_dir()
 
 
 def test_kaggle_runbook_documents_the_minimum_runtime_subset():
-    usage_text = _USAGE_PATH.read_text(encoding="utf-8")
+    readme_text = _REPO_ROOT.joinpath("README.md").read_text(encoding="utf-8")
 
     required_runtime_paths = (
         "packaging/kaggle/ruleshift_notebook_task.ipynb",
-        "packaging/kaggle/kernel-metadata.json",
-        "packaging/kaggle/frozen_artifacts_manifest.json",
         "src/",
         "src/frozen_splits/dev.json",
         "src/frozen_splits/public_leaderboard.json",
     )
-    non_runtime_paths = (
-        "FROZEN_BENCHMARK_SPEC.md",
-        "BENCHMARK_CARD.md",
-        "this runbook",
-        "staging notebooks",
-        "archive files",
-        "reports/",
-        "tests/fixtures/",
-    )
 
-    assert "minimum packaged subset" in usage_text.lower()
-    assert "kaggle runtime-contract manifest" in usage_text.lower()
-    assert "upload the minimum runtime package needed by the official notebook" in usage_text.lower()
     for path in required_runtime_paths:
-        assert path in usage_text
-    for path in non_runtime_paths:
-        assert path in usage_text
-    assert "keeping `src/`, `tests/fixtures/`, `reports/`, and `packaging/kaggle/` together" not in usage_text
-    assert "src/frozen_splits/private_leaderboard.json" not in usage_text
-    assert "packaging/kaggle/private/private_episodes.json" not in usage_text
+        assert path in readme_text
+    assert "src/frozen_splits/private_leaderboard.json" not in readme_text
+    assert "private_episodes.json" in readme_text
 
 
 def test_packaging_docs_describe_private_split_as_mount_only():
-    usage_text = _USAGE_PATH.read_text(encoding="utf-8")
+    readme_text = _REPO_ROOT.joinpath("README.md").read_text(encoding="utf-8")
     card_text = _CARD_PATH.read_text(encoding="utf-8")
     notebook_text = _read_notebook_sources(_KBENCH_NOTEBOOK_PATH)
 
-    assert "authorized private dataset mount" in usage_text
-    assert "repo-local default" not in usage_text
+    assert "authorized private dataset mount" in readme_text
+    assert "private dataset mount" in card_text
     assert "src/frozen_splits/private_leaderboard.json" not in card_text
-    assert "public partitions from the stored seed banks" in card_text
     assert "packaging/kaggle/private/private_episodes.json" not in notebook_text
     assert "resolve_private_dataset_root" in notebook_text
 
 
 def test_packaging_docs_describe_separate_private_flow():
-    usage_text = _USAGE_PATH.read_text(encoding="utf-8")
+    runbook_text = (_KAGGLE_DIR / "PRIVATE_SPLIT_RUNBOOK.md").read_text(encoding="utf-8")
 
-    assert "Public And Private Packaging Boundary" in usage_text
-    assert "scripts/build_deploy.py" in usage_text
-    assert "scripts/generate_private_split_artifact.py" in usage_text
-    assert "scripts/cd/build_private_dataset_package.py" in usage_text
-    assert "must never package, version, or upload `private_episodes.json`" in usage_text
+    assert "scripts/build_deploy.py" in runbook_text
+    assert "scripts/generate_private_split_artifact.py" in runbook_text
+    assert "scripts/cd/build_private_dataset_package.py" in runbook_text
+    assert "Never commit the artifact" in runbook_text
 
 
 def test_active_docs_label_frozen_artifacts_manifest_by_runtime_role():
     texts = (
         _REPO_ROOT.joinpath("README.md").read_text(encoding="utf-8"),
-        _USAGE_PATH.read_text(encoding="utf-8"),
         _CARD_PATH.read_text(encoding="utf-8"),
     )
     joined = "\n".join(texts).lower()
@@ -259,57 +227,39 @@ def test_benchmark_card_matches_current_implementation_state():
     assert "R15 empirical re-audit" in text
 
 
-def test_frozen_spec_exists_and_docs_point_to_it():
-    spec_text = _SPEC_PATH.read_text(encoding="utf-8")
+def test_docs_do_not_reference_removed_parallel_sources():
     readme_text = _REPO_ROOT.joinpath("README.md").read_text(encoding="utf-8")
     card_text = _CARD_PATH.read_text(encoding="utf-8")
-    usage_text = _USAGE_PATH.read_text(encoding="utf-8")
+    runbook_text = (_KAGGLE_DIR / "PRIVATE_SPLIT_RUNBOOK.md").read_text(encoding="utf-8")
 
-    assert "NORMATIVE FROZEN SPECIFICATION" in spec_text
-    assert "Benchmark scope: cognitive flexibility" in spec_text
-    assert "Binary (`ruleshift_benchmark_v1_binary`) is the only leaderboard-facing" in spec_text
-    assert "Narrative is structured audit output and same-episode robustness evidence only." in spec_text
-    assert "Template-family axis: `canonical`, `observation_log`" in spec_text
-    assert "Invariance reporting is diagnostic-only." in spec_text
-    assert "private dataset mount" in spec_text
-    assert "FROZEN_BENCHMARK_SPEC.md" in readme_text
-    assert "FROZEN_BENCHMARK_SPEC.md" in card_text
-    assert "FROZEN_BENCHMARK_SPEC.md" in usage_text
+    for text in (readme_text, card_text, runbook_text):
+        assert "FROZEN_BENCHMARK_SPEC.md" not in text
+        assert "packaging/kaggle/README.md" not in text
+        assert "src/README.md" not in text
 
 
 def test_active_docs_identify_one_official_packaged_readiness_anchor():
     texts = (
         _REPO_ROOT.joinpath("README.md").read_text(encoding="utf-8"),
-        _USAGE_PATH.read_text(encoding="utf-8"),
         _CARD_PATH.read_text(encoding="utf-8"),
     )
     joined = "\n".join(texts)
     lowered = joined.lower()
-    anchor_path = "reports/m1_binary_vs_narrative_robustness_report.md"
-    source_report_path = (
-        "reports/live/gemini-first-panel/binary-vs-narrative/history/"
-        "report__20260323_120000.md"
-    )
-    latest_report_path = "reports/live/gemini-first-panel/binary-vs-narrative/latest/report.md"
-    comparison_report_path = "reports/live/gemini-first-panel/comparison/latest/report.md"
 
-    assert "gemini-2.5-flash" in joined
-    assert joined.count(anchor_path) >= 3
-    assert joined.count(source_report_path) >= 3
-    assert joined.count(latest_report_path) >= 1
-    assert joined.count(comparison_report_path) >= 1
-    assert "single current packaged readiness anchor" in lowered
-    assert "not a second active readiness anchor" in lowered
-    assert "supporting comparison material" in lowered
-    assert "current paired Gemini Flash-Lite run is canonical".lower() not in lowered
-    assert "direct Flash vs Flash-Lite comparison is canonical".lower() not in lowered
-    assert f"current Gemini evidence anchor: `{latest_report_path}`".lower() not in lowered
+    assert "Current readiness evidence is Gemini-only." in joined
+    assert "reports/live/gemini-first-panel" not in joined
+    assert "m1_binary_vs_narrative_robustness_report.md" not in joined
+    assert "supporting comparison material" not in lowered
 
 
 def test_packaging_docs_do_not_claim_unsupported_features():
     text = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in (_REPO_ROOT / "README.md", _CARD_PATH, _USAGE_PATH)
+        for path in (
+            _REPO_ROOT / "README.md",
+            _CARD_PATH,
+            _KAGGLE_DIR / "PRIVATE_SPLIT_RUNBOOK.md",
+        )
     )
     lowered = text.lower()
 
@@ -349,19 +299,19 @@ def test_packaging_docs_do_not_claim_unsupported_features():
 
 
 def test_kaggle_packaging_text_keeps_optional_provider_sdks_out_of_base_path():
-    text = _USAGE_PATH.read_text(encoding="utf-8").lower()
+    text = _REPO_ROOT.joinpath("README.md").read_text(encoding="utf-8").lower()
 
-    assert "optional local-only provider sdks" in text
-    assert "no production dependency installation is needed" in text
+    assert "optional local provider runs require the matching extra" in text
+    assert "production dependency installation" not in text
 
 
 def test_kaggle_staging_path_does_not_depend_on_openai_runtime():
     notebook_text = _read_notebook_sources(_STAGING_NOTEBOOK_PATH).lower()
-    usage_text = _USAGE_PATH.read_text(encoding="utf-8").lower()
+    readme_text = _REPO_ROOT.joinpath("README.md").read_text(encoding="utf-8").lower()
 
     assert "openai_api_key" not in notebook_text
     assert "ife openai-panel" not in notebook_text
-    assert "openai_api_key" not in usage_text
+    assert "openai_api_key" not in readme_text
 
 
 def test_official_kbench_notebook_imports_package_owned_benchmark_logic():
