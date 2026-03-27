@@ -109,19 +109,17 @@ jobs:
           pip install -e .
 
       - name: Install Kaggle CLI (pinned)
-        run: pip install "kaggle==${{ env.KAGGLE_CLI_VERSION }}"
+        run: pip install "kaggle==${KAGGLE_CLI_VERSION}"
 
       # ── Guard: dataset id must equal the canonical value ─────────────────────
       # Prevents a mistyped input from creating a second dataset under a new slug.
       - name: Verify dataset_id matches canonical value
+        env:
+          DATASET_ID: ${{ inputs.dataset_id }}
         run: |
-          if [ "${{ inputs.dataset_id }}" != "${{ env.CANONICAL_DATASET_ID }}" ]; then
-            echo "ERROR: dataset_id '${{ inputs.dataset_id }}' does not match" \
-                 "canonical id '${{ env.CANONICAL_DATASET_ID }}'."
+          if [ "$DATASET_ID" != "$CANONICAL_DATASET_ID" ]; then
+            echo "ERROR: dataset_id does not match canonical id."
             echo "The dataset id must remain stable across releases."
-            echo "To publish under a new slug, update CANONICAL_DATASET_ID in the workflow"
-            echo "and the matching constant in scripts/cd/build_runtime_dataset_package.py"
-            echo "in the same commit."
             exit 1
           fi
 
@@ -129,7 +127,7 @@ jobs:
       - name: Build runtime dataset package
         run: |
           python scripts/cd/build_runtime_dataset_package.py \
-            --output-dir "${{ env.PACKAGE_DIR }}"
+            --output-dir "$PACKAGE_DIR"
 
       # Overwrite dataset-metadata.json with the caller-supplied title while
       # keeping the id locked to the canonical value.  The build script already
@@ -142,11 +140,10 @@ jobs:
           import json, os
           from pathlib import Path
 
-          meta_path = Path("${{ env.PACKAGE_DIR }}") / "dataset-metadata.json"
+          meta_path = Path(os.environ["PACKAGE_DIR"]) / "dataset-metadata.json"
           meta = json.loads(meta_path.read_text(encoding="utf-8"))
           meta["title"] = os.environ["DATASET_TITLE"]
           meta_path.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
-          print(f"dataset-metadata.json: id={meta['id']!r}  title={meta['title']!r}")
           EOF
 
       # ── Publish ───────────────────────────────────────────────────────────────
@@ -159,24 +156,27 @@ jobs:
         run: |
           set +x
           mkdir -p ~/.kaggle
-          cat > ~/.kaggle/kaggle.json <<EOF
+          cat > ~/.kaggle/kaggle.json <<-EOF
           {"username":"${KAGGLE_USERNAME}","key":"${KAGGLE_API_TOKEN}"}
           EOF
           chmod 600 ~/.kaggle/kaggle.json
 
       - name: Publish dataset (create or new version)
+        env:
+          DATASET_ID: ${{ inputs.dataset_id }}
+          RELEASE_MESSAGE: ${{ inputs.release_message }}
         run: |
-          if kaggle datasets status "${{ inputs.dataset_id }}" >/dev/null 2>&1; then
+          if kaggle datasets status "$DATASET_ID" >/dev/null 2>&1; then
             echo "Dataset exists — creating new version."
             kaggle datasets version \
-              --path "${{ env.PACKAGE_DIR }}" \
-              --message "${{ inputs.release_message }}" \
+              --path "$PACKAGE_DIR" \
+              --message "$RELEASE_MESSAGE" \
               --dir-mode tar \
               --quiet
           else
             echo "Dataset not found — creating for the first time."
             kaggle datasets create \
-              --path "${{ env.PACKAGE_DIR }}" \
+              --path "$PACKAGE_DIR" \
               --dir-mode tar \
               --quiet
           fi

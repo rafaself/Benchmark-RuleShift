@@ -119,7 +119,7 @@ jobs:
           pip install -e .
 
       - name: Install Kaggle CLI (pinned)
-        run: pip install "kaggle==${{ env.KAGGLE_CLI_VERSION }}"
+        run: pip install "kaggle==${KAGGLE_CLI_VERSION}"
 
       # ── Guards ────────────────────────────────────────────────────────────────
       # Both guards run before the build so no artifacts are produced when
@@ -127,24 +127,20 @@ jobs:
       # dataset slug.
 
       - name: Verify kernel_id matches canonical value
+        env:
+          KERNEL_ID: ${{ inputs.kernel_id }}
         run: |
-          if [ "${{ inputs.kernel_id }}" != "${{ env.CANONICAL_KERNEL_ID }}" ]; then
-            echo "ERROR: kernel_id '${{ inputs.kernel_id }}' does not match" \
-                 "canonical id '${{ env.CANONICAL_KERNEL_ID }}'."
-            echo "The kernel id must remain stable across releases."
-            echo "To publish under a new slug, update CANONICAL_KERNEL_ID in the workflow"
-            echo "and _KERNEL_ID in scripts/cd/build_kernel_package.py in the same commit."
+          if [ "$KERNEL_ID" != "$CANONICAL_KERNEL_ID" ]; then
+            echo "ERROR: kernel_id does not match canonical id."
             exit 1
           fi
 
       - name: Verify runtime_dataset_slug matches canonical value
+        env:
+          RUNTIME_DATASET_SLUG: ${{ inputs.runtime_dataset_slug }}
         run: |
-          if [ "${{ inputs.runtime_dataset_slug }}" != "${{ env.CANONICAL_RUNTIME_DATASET_SLUG }}" ]; then
-            echo "ERROR: runtime_dataset_slug '${{ inputs.runtime_dataset_slug }}' does not match" \
-                 "canonical slug '${{ env.CANONICAL_RUNTIME_DATASET_SLUG }}'."
-            echo "The runtime dataset slug must reference the published runtime package."
-            echo "To point to a different dataset, update CANONICAL_RUNTIME_DATASET_SLUG in"
-            echo "the workflow and the matching default in kernel-metadata.json in the same commit."
+          if [ "$RUNTIME_DATASET_SLUG" != "$CANONICAL_RUNTIME_DATASET_SLUG" ]; then
+            echo "ERROR: runtime_dataset_slug does not match canonical slug."
             exit 1
           fi
 
@@ -152,10 +148,12 @@ jobs:
       # The build script copies the notebook verbatim and generates
       # kernel-metadata.json with dataset_sources set to runtime_dataset_slug.
       - name: Build kernel bundle
+        env:
+          RUNTIME_DATASET_SLUG: ${{ inputs.runtime_dataset_slug }}
         run: |
           python scripts/cd/build_kernel_package.py \
-            --runtime-dataset-slug "${{ inputs.runtime_dataset_slug }}" \
-            --output-dir "${{ env.BUNDLE_DIR }}"
+            --runtime-dataset-slug "$RUNTIME_DATASET_SLUG" \
+            --output-dir "$BUNDLE_DIR"
 
       # Patch only the title field. The id and all other fields are owned by
       # the build script and must not be changed here.
@@ -167,12 +165,10 @@ jobs:
           import json, os
           from pathlib import Path
 
-          meta_path = Path("${{ env.BUNDLE_DIR }}") / "kernel-metadata.json"
+          meta_path = Path(os.environ["BUNDLE_DIR"]) / "kernel-metadata.json"
           meta = json.loads(meta_path.read_text(encoding="utf-8"))
           meta["title"] = os.environ["KERNEL_TITLE"]
           meta_path.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
-          print(f"kernel-metadata.json: id={meta['id']!r}  title={meta['title']!r}")
-          print(f"  dataset_sources={meta['dataset_sources']!r}")
           EOF
 
       # ── Push ──────────────────────────────────────────────────────────────────
@@ -186,7 +182,7 @@ jobs:
         run: |
           set +x
           mkdir -p ~/.kaggle
-          cat > ~/.kaggle/kaggle.json <<EOF
+          cat > ~/.kaggle/kaggle.json <<-EOF
           {"username":"${KAGGLE_USERNAME}","key":"${KAGGLE_API_TOKEN}"}
           EOF
           chmod 600 ~/.kaggle/kaggle.json
@@ -194,7 +190,7 @@ jobs:
       - name: Push kernel bundle
         run: |
           kaggle kernels push \
-            --path "${{ env.BUNDLE_DIR }}"
+            --path "$BUNDLE_DIR"
 
       - name: Revoke Kaggle credentials
         if: always()
