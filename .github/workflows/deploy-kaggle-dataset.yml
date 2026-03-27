@@ -3,24 +3,13 @@ name: Deploy — Kaggle Runtime Dataset
 on:
   workflow_dispatch:
     inputs:
-      dataset_id:
-        description: >
-          Kaggle dataset id (owner/slug). Must match the canonical id in
-          packaging/kaggle/dataset-metadata.json. Providing a different value
-          aborts the job before any upload occurs.
-        required: true
-        default: "KAGGLE_USERNAME/ruleshift-runtime"
       release_message:
         description: "Version note written to Kaggle on new-version uploads"
         required: true
 
-  # Called by the orchestrator workflow.
+  # Called by deploy-kaggle.yml.
   workflow_call:
     inputs:
-      dataset_id:
-        description: "Kaggle dataset id (owner/slug)"
-        required: true
-        type: string
       release_message:
         description: "Version note for the new dataset version"
         required: true
@@ -29,8 +18,7 @@ on:
       KAGGLE_API_TOKEN:
         required: true
 
-# Only one deploy may run at a time; a queued run is cancelled, not queued,
-# if a newer one arrives for the same environment.
+# Only one deploy may run at a time; a queued run is not cancelled.
 concurrency:
   group: deploy-kaggle-dataset
   cancel-in-progress: false
@@ -38,9 +26,6 @@ concurrency:
 env:
   KAGGLE_CLI_VERSION: "2.0.0"
   PACKAGE_DIR: /tmp/ruleshift-runtime-package
-  # Canonical slug baked into build_runtime_dataset_package.py.
-  # The input is validated against this value; it is never allowed to diverge.
-  CANONICAL_DATASET_ID: "${{ vars.KAGGLE_USERNAME }}/ruleshift-runtime"
 
 jobs:
   # ── Job 1: validate ──────────────────────────────────────────────────────────
@@ -103,18 +88,6 @@ jobs:
       - name: Install Kaggle CLI (pinned)
         run: pip install "kaggle==${KAGGLE_CLI_VERSION}"
 
-      # ── Guard: dataset id must equal the canonical value ─────────────────────
-      # Prevents a mistyped input from creating a second dataset under a new slug.
-      - name: Verify dataset_id matches canonical value
-        env:
-          DATASET_ID: ${{ inputs.dataset_id }}
-        run: |
-          if [ "$DATASET_ID" != "$CANONICAL_DATASET_ID" ]; then
-            echo "ERROR: dataset_id does not match canonical id."
-            echo "The dataset id must remain stable across releases."
-            exit 1
-          fi
-
       # ── Build ─────────────────────────────────────────────────────────────────
       - name: Build runtime dataset package
         run: |
@@ -152,11 +125,12 @@ jobs:
 
       - name: Publish dataset (create or new version)
         env:
-          DATASET_ID: ${{ inputs.dataset_id }}
           RELEASE_MESSAGE: ${{ inputs.release_message }}
           KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
         run: |
           set -euo pipefail
+
+          DATASET_ID=$(python -c "import json; print(json.load(open('packaging/kaggle/dataset-metadata.json'))['id'])")
 
           status_file="$(mktemp)"
           trap 'rm -f "$status_file"' EXIT

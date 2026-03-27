@@ -1,14 +1,12 @@
-name: Deploy — Kaggle Orchestrator
+name: Deploy — Kaggle
 
-# Convenience entrypoint for deploying dataset, notebook, or both in one
-# trigger.  This workflow contains NO build, validation, or publish logic.
-# All of that lives in the dedicated workflows it calls:
+# Single entry point for Kaggle deployments.  All build, validation, and
+# publish logic lives in the dedicated reusable workflows called below:
 #
 #   dataset  → .github/workflows/deploy-kaggle-dataset.yml
 #   notebook → .github/workflows/deploy-kaggle-notebook.yml
 #
-# Those workflows remain the primary deployment path and can be triggered
-# independently at any time.
+# Those workflows can also be triggered independently at any time.
 
 on:
   workflow_dispatch:
@@ -21,8 +19,12 @@ on:
           - dataset
           - notebook
           - all
+      release_message:
+        description: "Version note for dataset uploads (required when target = dataset or all)"
+        required: true
+
 concurrency:
-  group: deploy-kaggle-orchestrator
+  group: deploy-kaggle
   cancel-in-progress: false
 
 jobs:
@@ -33,8 +35,7 @@ jobs:
     if: inputs.target == 'dataset' || inputs.target == 'all'
     uses: ./.github/workflows/deploy-kaggle-dataset.yml
     with:
-      dataset_id: "${{ vars.KAGGLE_USERNAME }}/ruleshift-runtime"
-      release_message: "Orchestrated release"
+      release_message: ${{ inputs.release_message }}
     secrets:
       KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
 
@@ -57,7 +58,5 @@ jobs:
       (needs.deploy-dataset.result == 'success' || needs.deploy-dataset.result == 'skipped')
     needs: [deploy-dataset]
     uses: ./.github/workflows/deploy-kaggle-notebook.yml
-    with:
-      kernel_id: "${{ vars.KAGGLE_USERNAME }}/ruleshift-notebook-task"
     secrets:
       KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}

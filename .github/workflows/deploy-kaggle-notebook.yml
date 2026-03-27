@@ -2,22 +2,9 @@ name: Deploy — Kaggle Notebook
 
 on:
   workflow_dispatch:
-    inputs:
-      kernel_id:
-        description: >
-          Kaggle kernel id (owner/slug). Must match the canonical id in
-          packaging/kaggle/kernel-metadata.json. Providing a different value
-          aborts the job before any push occurs.
-        required: true
-        default: "KAGGLE_USERNAME/ruleshift-notebook-task"
 
-  # Called by the orchestrator workflow.
+  # Called by deploy-kaggle.yml.
   workflow_call:
-    inputs:
-      kernel_id:
-        description: "Kaggle kernel id (owner/slug)"
-        required: true
-        type: string
     secrets:
       KAGGLE_API_TOKEN:
         required: true
@@ -29,9 +16,6 @@ concurrency:
 env:
   KAGGLE_CLI_VERSION: "2.0.0"
   BUNDLE_DIR: /tmp/ruleshift-kernel-bundle
-  # Canonical kernel id in packaging/kaggle/kernel-metadata.json.
-  # The input is validated against this value before any push.
-  CANONICAL_KERNEL_ID: "${{ vars.KAGGLE_USERNAME }}/ruleshift-notebook-task"
 
 jobs:
   # ── Job 1: validate ──────────────────────────────────────────────────────────
@@ -97,19 +81,6 @@ jobs:
 
       - name: Install Kaggle CLI (pinned)
         run: pip install "kaggle==${KAGGLE_CLI_VERSION}"
-
-      # ── Guard ─────────────────────────────────────────────────────────────────
-      # Runs before the build so no artifact is produced when the input would
-      # cause a push to the wrong kernel.
-
-      - name: Verify kernel_id matches canonical value
-        env:
-          KERNEL_ID: ${{ inputs.kernel_id }}
-        run: |
-          if [ "$KERNEL_ID" != "$CANONICAL_KERNEL_ID" ]; then
-            echo "ERROR: kernel_id does not match canonical id."
-            exit 1
-          fi
 
       # ── Build ─────────────────────────────────────────────────────────────────
       # The build script copies the notebook and kernel-metadata.json verbatim
