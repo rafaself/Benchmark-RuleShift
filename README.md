@@ -53,8 +53,43 @@ make integrity
 ## Kaggle And Private Split Workflow
 
 - Benchmark-facing summary: `packaging/kaggle/BENCHMARK_CARD.md`
+- Kaggle deployment runbook: `packaging/kaggle/DEPLOY_RUNBOOK.md`
 - Private split handling: `packaging/kaggle/PRIVATE_SPLIT_RUNBOOK.md`
 - Official Kaggle submission surface: `packaging/kaggle/ruleshift_notebook_task.ipynb`
+- Canonical Kaggle dataset metadata: `packaging/kaggle/dataset-metadata.json`
+- Canonical Kaggle notebook metadata: `packaging/kaggle/kernel-metadata.json`
 - Kaggle runtime-contract manifest: `packaging/kaggle/frozen_artifacts_manifest.json`
 
 The public runtime package includes only the public code and frozen public split manifests. Never place `private_episodes.json`, private seeds, or any repo-local private fallback in public repo paths or public packaging outputs.
+
+Kaggle deployment reads the checked-in metadata files directly. `KAGGLE_API_TOKEN` is the only required deployment secret. `KAGGLE_USERNAME`, runtime dataset slug inputs, and other deploy-time metadata overrides are not part of the current workflow.
+
+## Kaggle Deploy Flow
+
+The active workflows are:
+
+- `.github/workflows/deploy-kaggle-dataset.yml`
+- `.github/workflows/deploy-kaggle-notebook.yml`
+- `.github/workflows/deploy-kaggle.yml`
+
+Deploy sequence:
+
+- Dataset deploy builds the public runtime package with `scripts/cd/build_runtime_dataset_package.py` and publishes the dataset identified by `packaging/kaggle/dataset-metadata.json`.
+- Notebook deploy builds the notebook bundle with `scripts/cd/build_kernel_package.py` and pushes the notebook identified by `packaging/kaggle/kernel-metadata.json`.
+- Combined deploy runs through `.github/workflows/deploy-kaggle.yml` with `target=all`, which deploys dataset first and notebook second.
+
+Before deploy, run:
+
+```bash
+python scripts/check_public_private_isolation.py
+python -m pytest tests/test_packaging.py -v
+python -m pytest tests/test_cd_build.py -v
+python -m pytest tests/test_kbench_notebook.py -v
+```
+
+For optional local artifact checks, build the same outputs CI deploys:
+
+```bash
+python scripts/cd/build_runtime_dataset_package.py --output-dir /tmp/ruleshift-runtime-package
+python scripts/cd/build_kernel_package.py --output-dir /tmp/ruleshift-kernel-bundle
+```

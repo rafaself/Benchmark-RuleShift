@@ -13,11 +13,17 @@ forbidden file is detected in the source tree before copying.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import shutil
 import sys
 from pathlib import Path
+
+from _kaggle_build_audit import (
+    assert_dataset_metadata_matches_canonical,
+    assert_sorted_unique_resource_paths,
+    sha256,
+    write_audit_manifest,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 _KAGGLE_DIR = REPO_ROOT / "packaging" / "kaggle"
@@ -62,16 +68,6 @@ def _check_no_private_artifacts(src_dir: Path, frozen_manifests_path: Path) -> N
         raise SystemExit("Private data detected — aborting build.")
 
 
-# ---------------------------------------------------------------------------
-# Integrity verification
-# ---------------------------------------------------------------------------
-
-def _sha256(path: Path) -> str:
-    h = hashlib.sha256()
-    h.update(path.read_bytes())
-    return h.hexdigest()
-
-
 def _verify_split_manifest_hashes(
     manifest: dict, output_dir: Path
 ) -> None:
@@ -80,7 +76,7 @@ def _verify_split_manifest_hashes(
         dest = output_dir / entry["path"]
         if not dest.is_file():
             raise FileNotFoundError(f"Expected split manifest not found in output: {dest}")
-        actual = _sha256(dest)
+        actual = sha256(dest)
         expected = entry["sha256"]
         if actual != expected:
             raise ValueError(
@@ -93,7 +89,7 @@ def _verify_split_manifest_hashes(
 # Build
 # ---------------------------------------------------------------------------
 
-def _build(output_dir: Path) -> None:
+def _build(output_dir: Path, audit_manifest_path: Path | None = None) -> None:
     src_dir = REPO_ROOT / "src"
     frozen_manifests_path = _KAGGLE_DIR / "frozen_artifacts_manifest.json"
 
@@ -137,10 +133,28 @@ def _build(output_dir: Path) -> None:
         for p in sorted(output_dir.rglob("*"))
         if p.is_file() and p.name != "dataset-metadata.json"
     ]
-    (output_dir / "dataset-metadata.json").write_text(
+    packaged_metadata_path = output_dir / "dataset-metadata.json"
+    packaged_metadata_path.write_text(
         json.dumps(dataset_metadata, indent=2) + "\n",
         encoding="utf-8",
     )
+
+    packaged_metadata = json.loads(packaged_metadata_path.read_text(encoding="utf-8"))
+    assert_dataset_metadata_matches_canonical(
+        canonical=json.loads(_DATASET_METADATA_PATH.read_text(encoding="utf-8")),
+        packaged=packaged_metadata,
+    )
+    assert_sorted_unique_resource_paths(packaged_metadata)
+
+    if audit_manifest_path is not None:
+        write_audit_manifest(
+            manifest_path=audit_manifest_path,
+            artifact_kind="runtime_dataset_package",
+            canonical_metadata_path=_DATASET_METADATA_PATH,
+            packaged_metadata_path=packaged_metadata_path,
+            metadata_contract="canonical_fields_plus_resources",
+            output_dir=output_dir,
+        )
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -153,13 +167,21 @@ def _build_parser() -> argparse.ArgumentParser:
         required=True,
         help="Output directory for the runtime package.",
     )
+    parser.add_argument(
+        "--audit-manifest-path",
+        type=Path,
+        help="Optional path for a JSON audit manifest describing the built package.",
+    )
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = _build_parser().parse_args(argv)
     output_dir = args.output_dir.resolve()
-    _build(output_dir)
+    audit_manifest_path = (
+        args.audit_manifest_path.resolve() if args.audit_manifest_path is not None else None
+    )
+    _build(output_dir, audit_manifest_path=audit_manifest_path)
     print(output_dir)
     return 0
 

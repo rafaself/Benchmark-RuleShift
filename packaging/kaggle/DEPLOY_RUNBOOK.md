@@ -1,102 +1,98 @@
 # Kaggle Deployment Runbook
 
-## Required Secrets and Variables
+## Canonical Metadata
 
-| Name | Type | Purpose |
-|---|---|---|
-| `KAGGLE_API_TOKEN` | Repository secret | Authenticates all `kaggle` CLI calls |
-| `KAGGLE_USERNAME` | Repository variable | Kaggle account username (owner prefix for dataset/kernel ids) |
+The checked-in metadata files are the only source of truth for Kaggle deploys:
 
-Set at: **GitHub → Settings → Secrets and variables → Actions**
+- `packaging/kaggle/dataset-metadata.json`
+- `packaging/kaggle/kernel-metadata.json`
 
----
+Current canonical ids:
 
-## Canonical Values
+- Runtime dataset: `raptorengineer/ruleshift-runtime`
+- Notebook: `raptorengineer/ruleshift-notebook-task`
 
-These values are locked. Do not change them without a coordinated update to both the workflow and the matching build script constant.
+The deploy workflows read these files directly. They do not accept runtime inputs for ids, titles, dataset sources, or usernames.
 
-| Artifact | Canonical id |
-|---|---|
-| Runtime dataset | `$KAGGLE_USERNAME/ruleshift-runtime` |
-| Notebook kernel | `$KAGGLE_USERNAME/ruleshift-notebook-task` |
+## Required Secret
 
----
+`KAGGLE_API_TOKEN` is the only required deployment secret.
 
-## Deploy Dataset Only
+Set it in GitHub Actions secrets. The workflows authenticate the Kaggle CLI with `KAGGLE_API_TOKEN` directly; they do not use `KAGGLE_USERNAME` or `kaggle.json`.
 
-**Workflow:** `deploy-kaggle-dataset.yml`
-**Trigger:** Actions → Deploy — Kaggle Runtime Dataset → Run workflow
+## Local Validation Before Deploy
 
-| Input | Value |
-|---|---|
-| `environment` | `staging` or `production` |
-| `dataset_id` | `$KAGGLE_USERNAME/ruleshift-runtime` |
-| `dataset_title` | `RuleShift Runtime` |
-| `release_message` | Describe the change (e.g. `R16 split manifests`) |
+Run the same checks the deploy workflows rely on:
 
-**Behavior:**
-1. Runs validation gates (isolation check, packaging tests, CD build tests).
-2. Builds the runtime package via `scripts/cd/build_runtime_dataset_package.py`.
-3. Checks whether the dataset exists on Kaggle.
-   - First time: `kaggle datasets create`
-   - Subsequent: `kaggle datasets version -m <release_message>`
+```bash
+python scripts/check_public_private_isolation.py
+python -m pytest tests/test_packaging.py -v
+python -m pytest tests/test_cd_build.py -v
+python -m pytest tests/test_kbench_notebook.py -v
+```
 
----
+If you want a broader local pass first, also run:
 
-## Deploy Notebook Only
+```bash
+make validity
+make reaudit
+make integrity
+```
 
-**Prerequisite:** The runtime dataset (`$KAGGLE_USERNAME/ruleshift-runtime`) must already be published.
+Optional local build checks:
 
-**Workflow:** `deploy-kaggle-notebook.yml`
-**Trigger:** Actions → Deploy — Kaggle Notebook → Run workflow
+```bash
+python scripts/cd/build_runtime_dataset_package.py --output-dir /tmp/ruleshift-runtime-package
+python scripts/cd/build_kernel_package.py --output-dir /tmp/ruleshift-kernel-bundle
+```
 
-| Input | Value |
-|---|---|
-| `environment` | `staging` or `production` |
-| `kernel_id` | `$KAGGLE_USERNAME/ruleshift-notebook-task` |
-| `runtime_dataset_slug` | `$KAGGLE_USERNAME/ruleshift-runtime` |
+## Dataset Deploy
 
-**Behavior:**
-1. Runs validation gates (isolation check, packaging tests, CD build tests, notebook smoke tests).
-2. Builds the kernel bundle via `scripts/cd/build_kernel_package.py --runtime-dataset-slug`, using the checked-in `packaging/kaggle/kernel-metadata.json` title as the canonical notebook title.
-3. Runs `kaggle kernels push` (always an upsert — creates on first push, updates on subsequent).
+Workflow: `.github/workflows/deploy-kaggle-dataset.yml`
 
----
+Manual input:
 
-## Deploy Both (Dataset then Notebook)
+- `release_message`: Kaggle version note for a new dataset upload
 
-**Workflow:** `deploy-kaggle-orchestrator.yml`
-**Trigger:** Actions → Deploy — Kaggle Orchestrator → Run workflow
+Behavior:
 
-| Input | Value |
-|---|---|
-| `target` | `all` |
-| `environment` | `staging` or `production` |
+1. Runs `scripts/check_public_private_isolation.py`.
+2. Runs `tests/test_packaging.py` and `tests/test_cd_build.py`.
+3. Builds the dataset package with `scripts/cd/build_runtime_dataset_package.py`.
+4. Reads `packaging/kaggle/dataset-metadata.json` for the canonical dataset id.
+5. Publishes with:
+   - `kaggle datasets create` if the dataset does not exist yet
+   - `kaggle datasets version -m <release_message>` otherwise
 
-No other inputs. All canonical values are hardcoded in the orchestrator.
+## Notebook Deploy
 
-**Behavior:**
-1. Runs dataset deployment to completion.
-2. On success, runs notebook deployment.
-3. If dataset deployment fails, notebook deployment does not start.
+Prerequisite: the runtime dataset referenced by `packaging/kaggle/kernel-metadata.json` must already exist on Kaggle.
 
----
+Workflow: `.github/workflows/deploy-kaggle-notebook.yml`
 
-## Deploying Individual Targets via Orchestrator
+Manual inputs: none
 
-Set `target` to `dataset` or `notebook` to deploy only that artifact.
-`target=notebook` does **not** trigger dataset deployment first.
+Behavior:
 
----
+1. Runs `scripts/check_public_private_isolation.py`.
+2. Runs `tests/test_packaging.py`, `tests/test_cd_build.py`, and `tests/test_kbench_notebook.py`.
+3. Builds the notebook bundle with `scripts/cd/build_kernel_package.py`.
+4. Copies `packaging/kaggle/ruleshift_notebook_task.ipynb` and `packaging/kaggle/kernel-metadata.json` verbatim into the bundle.
+5. Publishes with `kaggle kernels push`.
 
-## Expected Workflow Behavior
+## Combined Deploy
 
-| Condition | Result |
-|---|---|
-| `dataset_id` or `kernel_id` input differs from canonical value | Job aborts before build, no artifact is produced |
-| Private artifact detected in `src/` during build | Build script aborts, deploy job fails |
-| Validation gates fail | Deploy job never starts (`needs: validate`) |
-| Dataset does not yet exist on Kaggle | `kaggle datasets create` is used automatically |
-| Kaggle credentials file left on runner after failure | Removed by `Revoke Kaggle credentials` step (`if: always()`) |
-| Two orchestrated deploys triggered for the same environment | Second run waits; it is not cancelled |
-| Direct trigger of a dedicated workflow while orchestrator is running | Not blocked — concurrency groups are independent |
+Workflow: `.github/workflows/deploy-kaggle.yml`
+
+Manual inputs:
+
+- `target`: `dataset`, `notebook`, or `all`
+- `release_message`: required by the workflow; used by dataset deploys
+
+Behavior:
+
+- `target=dataset`: runs only the dataset workflow.
+- `target=notebook`: runs only the notebook workflow.
+- `target=all`: runs dataset first, then notebook only if dataset succeeds.
+
+This workflow is the single manual entrypoint for a full Kaggle release sequence.

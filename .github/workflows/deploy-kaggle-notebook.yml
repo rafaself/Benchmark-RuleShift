@@ -16,6 +16,7 @@ concurrency:
 env:
   KAGGLE_CLI_VERSION: "2.0.0"
   BUNDLE_DIR: /tmp/ruleshift-kernel-bundle
+  AUDIT_MANIFEST_PATH: /tmp/ruleshift-kernel-bundle.audit.json
 
 jobs:
   # ── Job 1: validate ──────────────────────────────────────────────────────────
@@ -88,7 +89,19 @@ jobs:
       - name: Build kernel bundle
         run: |
           python scripts/cd/build_kernel_package.py \
-            --output-dir "$BUNDLE_DIR"
+            --output-dir "$BUNDLE_DIR" \
+            --audit-manifest-path "$AUDIT_MANIFEST_PATH"
+
+      - name: Upload kernel build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kaggle-kernel-bundle
+          path: |
+            ${{ env.BUNDLE_DIR }}
+            ${{ env.AUDIT_MANIFEST_PATH }}
+          if-no-files-found: warn
+          retention-days: 14
 
       # ── Push ──────────────────────────────────────────────────────────────────
       # Authenticate with the recommended API token flow. The Kaggle CLI

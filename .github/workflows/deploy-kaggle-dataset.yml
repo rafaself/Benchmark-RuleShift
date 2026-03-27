@@ -26,6 +26,7 @@ concurrency:
 env:
   KAGGLE_CLI_VERSION: "2.0.0"
   PACKAGE_DIR: /tmp/ruleshift-runtime-package
+  AUDIT_MANIFEST_PATH: /tmp/ruleshift-runtime-package.audit.json
 
 jobs:
   # ── Job 1: validate ──────────────────────────────────────────────────────────
@@ -92,7 +93,19 @@ jobs:
       - name: Build runtime dataset package
         run: |
           python scripts/cd/build_runtime_dataset_package.py \
-            --output-dir "$PACKAGE_DIR"
+            --output-dir "$PACKAGE_DIR" \
+            --audit-manifest-path "$AUDIT_MANIFEST_PATH"
+
+      - name: Upload runtime dataset build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kaggle-runtime-package
+          path: |
+            ${{ env.PACKAGE_DIR }}
+            ${{ env.AUDIT_MANIFEST_PATH }}
+          if-no-files-found: warn
+          retention-days: 14
 
       # ── Publish ───────────────────────────────────────────────────────────────
       # Authenticate with the recommended API token flow. The Kaggle CLI

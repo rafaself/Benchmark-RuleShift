@@ -12,11 +12,16 @@ file checked into the repository; no fields are generated at build time.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import shutil
 import sys
 from pathlib import Path
+
+from _kaggle_build_audit import (
+    assert_kernel_metadata_matches_canonical,
+    sha256,
+    write_audit_manifest,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 _KAGGLE_DIR = REPO_ROOT / "packaging" / "kaggle"
@@ -27,18 +32,9 @@ _REQUIRED_FIELDS = ("id", "title", "code_file", "dataset_sources")
 
 
 # ---------------------------------------------------------------------------
-# Integrity
-# ---------------------------------------------------------------------------
-
-def _sha256(path: Path) -> str:
-    h = hashlib.sha256()
-    h.update(path.read_bytes())
-    return h.hexdigest()
-
-
 def _verify_notebook_hash(notebook_src: Path, manifest: dict) -> None:
     declared = manifest["entry_points"]["kbench_notebook"]["sha256"]
-    actual = _sha256(notebook_src)
+    actual = sha256(notebook_src)
     if actual != declared:
         raise ValueError(
             f"Notebook hash mismatch — source file may have changed without "
@@ -52,7 +48,7 @@ def _verify_notebook_hash(notebook_src: Path, manifest: dict) -> None:
 # Build
 # ---------------------------------------------------------------------------
 
-def _build(output_dir: Path) -> None:
+def _build(output_dir: Path, audit_manifest_path: Path | None = None) -> None:
     if not _MANIFEST_PATH.is_file():
         raise FileNotFoundError(f"frozen_artifacts_manifest.json not found at {_MANIFEST_PATH}")
     if not _KERNEL_METADATA_PATH.is_file():
@@ -82,7 +78,24 @@ def _build(output_dir: Path) -> None:
     shutil.copy2(notebook_src, output_dir / notebook_filename)
 
     # Copy canonical kernel-metadata.json verbatim
-    shutil.copy2(_KERNEL_METADATA_PATH, output_dir / "kernel-metadata.json")
+    packaged_metadata_path = output_dir / "kernel-metadata.json"
+    shutil.copy2(_KERNEL_METADATA_PATH, packaged_metadata_path)
+
+    packaged_metadata = json.loads(packaged_metadata_path.read_text(encoding="utf-8"))
+    assert_kernel_metadata_matches_canonical(
+        canonical=kernel_metadata,
+        packaged=packaged_metadata,
+    )
+
+    if audit_manifest_path is not None:
+        write_audit_manifest(
+            manifest_path=audit_manifest_path,
+            artifact_kind="kernel_bundle",
+            canonical_metadata_path=_KERNEL_METADATA_PATH,
+            packaged_metadata_path=packaged_metadata_path,
+            metadata_contract="byte_identical_metadata_copy",
+            output_dir=output_dir,
+        )
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -95,13 +108,21 @@ def _build_parser() -> argparse.ArgumentParser:
         required=True,
         help="Output directory for the kernel bundle.",
     )
+    parser.add_argument(
+        "--audit-manifest-path",
+        type=Path,
+        help="Optional path for a JSON audit manifest describing the built bundle.",
+    )
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = _build_parser().parse_args(argv)
     output_dir = args.output_dir.resolve()
-    _build(output_dir)
+    audit_manifest_path = (
+        args.audit_manifest_path.resolve() if args.audit_manifest_path is not None else None
+    )
+    _build(output_dir, audit_manifest_path=audit_manifest_path)
     print(output_dir)
     return 0
 
