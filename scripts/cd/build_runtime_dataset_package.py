@@ -17,11 +17,13 @@ import hashlib
 import json
 import shutil
 import sys
+import os
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-_DATASET_ID = "raptorengineer/ruleshift-runtime"
+_KAGGLE_USERNAME = os.environ["KAGGLE_USERNAME"]
+_DATASET_ID = f"{_KAGGLE_USERNAME}/ruleshift-runtime"
 _DATASET_TITLE = "RuleShift Runtime"
 _LICENSE = "CC0-1.0"
 

@@ -28,6 +28,7 @@ Checks:
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -35,7 +36,8 @@ from pathlib import Path
 import pytest
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
-_RUNTIME_DATASET_SLUG = "raptorengineer/ruleshift-runtime"
+_KAGGLE_USERNAME = os.environ["KAGGLE_USERNAME"]
+_RUNTIME_DATASET_SLUG = f"{_KAGGLE_USERNAME}/ruleshift-runtime"
 _FORBIDDEN_FILENAMES = ("private_leaderboard.json", "private_episodes.json")
 
 
@@ -180,7 +182,7 @@ class TestKernelBundle:
 
     def test_kernel_metadata_id(self, bundle_dir: Path):
         meta = json.loads((bundle_dir / "kernel-metadata.json").read_text(encoding="utf-8"))
-        assert meta["id"] == "raptorengineer/ruleshift-notebook-task"
+        assert meta["id"] == f"{_KAGGLE_USERNAME}/ruleshift-notebook-task"
 
     def test_kernel_metadata_code_file_matches_notebook(self, bundle_dir: Path):
         meta = json.loads((bundle_dir / "kernel-metadata.json").read_text(encoding="utf-8"))

@@ -1,5 +1,5 @@
 {
-  "id": "raptorengineer/ruleshift-notebook-task",
+  "id": "KAGGLE_USERNAME/ruleshift-notebook-task",
   "title": "RuleShift Notebook Task",
   "code_file": "ruleshift_notebook_task.ipynb",
   "language": "python",
@@ -8,7 +8,7 @@
   "enable_gpu": false,
   "enable_tpu": false,
   "enable_internet": false,
-  "dataset_sources": ["raptorengineer/ruleshift-runtime"],
+  "dataset_sources": ["KAGGLE_USERNAME/ruleshift-runtime"],
   "competition_sources": [],
   "kernel_sources": []
 }

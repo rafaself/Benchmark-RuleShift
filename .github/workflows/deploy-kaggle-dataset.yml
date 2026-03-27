@@ -9,7 +9,7 @@ on:
           into the build script. Providing a different value aborts the job
           before any upload occurs.
         required: true
-        default: "raptorengineer/ruleshift-runtime"
+        default: "KAGGLE_USERNAME/ruleshift-runtime"
       dataset_title:
         description: "Human-readable dataset title written into dataset-metadata.json"
         required: true
@@ -48,7 +48,7 @@ env:
   PACKAGE_DIR: /tmp/ruleshift-runtime-package
   # Canonical slug baked into build_runtime_dataset_package.py.
   # The input is validated against this value; it is never allowed to diverge.
-  CANONICAL_DATASET_ID: "raptorengineer/ruleshift-runtime"
+  CANONICAL_DATASET_ID: "${{ vars.KAGGLE_USERNAME }}/ruleshift-runtime"
 
 jobs:
   # ── Job 1: validate ──────────────────────────────────────────────────────────

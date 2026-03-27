@@ -17,13 +17,15 @@ import hashlib
 import json
 import shutil
 import sys
+import os
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 _KAGGLE_DIR = REPO_ROOT / "packaging" / "kaggle"
 _MANIFEST_PATH = _KAGGLE_DIR / "frozen_artifacts_manifest.json"
 
-_KERNEL_ID = "raptorengineer/ruleshift-notebook-task"
+_KAGGLE_USERNAME = os.environ["KAGGLE_USERNAME"]
+_KERNEL_ID = f"{_KAGGLE_USERNAME}/ruleshift-notebook-task"
 _KERNEL_TITLE = "RuleShift Notebook Task \u2014 Cognitive Flexibility Benchmark"
 
 
@@ -105,7 +107,7 @@ def _build_parser() -> argparse.ArgumentParser:
         required=True,
         help=(
             "Fully qualified Kaggle dataset slug for the runtime package "
-            "(e.g. raptorengineer/ruleshift-runtime). "
+            "(e.g. KAGGLE_USERNAME/ruleshift-runtime). "
             "Injected into kernel-metadata.json as dataset_sources."
         ),
     )

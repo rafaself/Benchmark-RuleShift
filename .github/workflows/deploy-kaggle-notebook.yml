@@ -9,7 +9,7 @@ on:
           the build script. Providing a different value aborts the job before
           any push occurs.
         required: true
-        default: "raptorengineer/ruleshift-notebook-task"
+        default: "KAGGLE_USERNAME/ruleshift-notebook-task"
       kernel_title:
         description: "Human-readable kernel title written into kernel-metadata.json"
         required: true
@@ -20,7 +20,7 @@ on:
           kernel-metadata.json as dataset_sources. Must reference an already
           published dataset. Does not modify notebook content.
         required: true
-        default: "raptorengineer/ruleshift-runtime"
+        default: "KAGGLE_USERNAME/ruleshift-runtime"
 
   # Called by the orchestrator workflow.
   workflow_call:
@@ -50,11 +50,11 @@ env:
   BUNDLE_DIR: /tmp/ruleshift-kernel-bundle
   # Canonical kernel slug baked into build_kernel_package.py.
   # The input is validated against this value before any push.
-  CANONICAL_KERNEL_ID: "raptorengineer/ruleshift-notebook-task"
+  CANONICAL_KERNEL_ID: "${{ vars.KAGGLE_USERNAME }}/ruleshift-notebook-task"
   # Canonical runtime dataset slug referenced by kernel-metadata.json.
   # The input is validated against this value so the notebook always
   # references the correct, already-deployed runtime package.
-  CANONICAL_RUNTIME_DATASET_SLUG: "raptorengineer/ruleshift-runtime"
+  CANONICAL_RUNTIME_DATASET_SLUG: "${{ vars.KAGGLE_USERNAME }}/ruleshift-runtime"
 
 jobs:
   # ── Job 1: validate ──────────────────────────────────────────────────────────

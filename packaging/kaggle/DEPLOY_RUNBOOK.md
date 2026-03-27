@@ -1,12 +1,13 @@
 # Kaggle Deployment Runbook
 
-## Required Secrets
+## Required Secrets and Variables
 
-| Secret | Scope | Purpose |
+| Name | Type | Purpose |
 |---|---|---|
 | `KAGGLE_API_TOKEN` | Repository secret | Authenticates all `kaggle` CLI calls |
+| `KAGGLE_USERNAME` | Repository variable | Kaggle account username (owner prefix for dataset/kernel ids) |
 
-Set at: **GitHub → Settings → Secrets and variables → Actions → Repository secrets**
+Set at: **GitHub → Settings → Secrets and variables → Actions**
 
 ---
 
@@ -16,8 +17,8 @@ These values are locked. Do not change them without a coordinated update to both
 
 | Artifact | Canonical id |
 |---|---|
-| Runtime dataset | `raptorengineer/ruleshift-runtime` |
-| Notebook kernel | `raptorengineer/ruleshift-notebook-task` |
+| Runtime dataset | `$KAGGLE_USERNAME/ruleshift-runtime` |
+| Notebook kernel | `$KAGGLE_USERNAME/ruleshift-notebook-task` |
 
 ---
 
@@ -29,7 +30,7 @@ These values are locked. Do not change them without a coordinated update to both
 | Input | Value |
 |---|---|
 | `environment` | `staging` or `production` |
-| `dataset_id` | `raptorengineer/ruleshift-runtime` |
+| `dataset_id` | `$KAGGLE_USERNAME/ruleshift-runtime` |
 | `dataset_title` | `RuleShift Runtime` |
 | `release_message` | Describe the change (e.g. `R16 split manifests`) |
 
@@ -44,7 +45,7 @@ These values are locked. Do not change them without a coordinated update to both
 
 ## Deploy Notebook Only
 
-**Prerequisite:** The runtime dataset (`raptorengineer/ruleshift-runtime`) must already be published.
+**Prerequisite:** The runtime dataset (`$KAGGLE_USERNAME/ruleshift-runtime`) must already be published.
 
 **Workflow:** `deploy-kaggle-notebook.yml`
 **Trigger:** Actions → Deploy — Kaggle Notebook → Run workflow
@@ -52,9 +53,9 @@ These values are locked. Do not change them without a coordinated update to both
 | Input | Value |
 |---|---|
 | `environment` | `staging` or `production` |
-| `kernel_id` | `raptorengineer/ruleshift-notebook-task` |
+| `kernel_id` | `$KAGGLE_USERNAME/ruleshift-notebook-task` |
 | `kernel_title` | `RuleShift Notebook Task — Cognitive Flexibility Benchmark` |
-| `runtime_dataset_slug` | `raptorengineer/ruleshift-runtime` |
+| `runtime_dataset_slug` | `$KAGGLE_USERNAME/ruleshift-runtime` |
 
 **Behavior:**
 1. Runs validation gates (isolation check, packaging tests, CD build tests, notebook smoke tests).
