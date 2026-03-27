@@ -120,6 +120,7 @@ def test_kaggle_directory_layout_contains_only_official_entry_surfaces():
 
     assert top_level_files == [
         "BENCHMARK_CARD.md",
+        "DEPLOY_RUNBOOK.md",
         "PRIVATE_SPLIT_RUNBOOK.md",
         "frozen_artifacts_manifest.json",
         "kernel-metadata.json",
