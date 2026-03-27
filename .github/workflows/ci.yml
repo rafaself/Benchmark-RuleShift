@@ -45,6 +45,13 @@ jobs:
       - name: Run packaging tests
         run: python -m pytest tests/test_packaging.py -v
 
+      # ── deployment build validation ──────────────────────────────────────────
+      # Invokes both CD build scripts and inspects their output artifacts:
+      # runtime dataset package (no private data, correct metadata) and kernel
+      # bundle (notebook byte-identical to source, slug injected, %choose intact).
+      - name: Run CD build validation tests
+        run: python -m pytest tests/test_cd_build.py -v
+
       # ── notebook smoke tests ─────────────────────────────────────────────────
       # Validates the official Kaggle notebook's bootstrap, imports, task
       # registration, dry-run evaluation, and scoring contract — using the
