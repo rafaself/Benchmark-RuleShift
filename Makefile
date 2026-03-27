@@ -1,7 +1,7 @@
 PYTHON ?= .venv/bin/python
 CLI := PYTHONPATH=src $(PYTHON) -m core.cli
 
-.PHONY: help test validity reaudit integrity evidence-pass notebook-check contract-audit compliance-check
+.PHONY: help test validity reaudit integrity evidence-pass notebook-check contract-audit compliance-check update-hashes
 
 help:
 	@printf "Available targets:\n"
@@ -13,6 +13,7 @@ help:
 	@printf "  make notebook-check\n"
 	@printf "  make contract-audit\n"
 	@printf "  make compliance-check\n"
+	@printf "  make update-hashes\n"
 
 test:
 	$(CLI) test
@@ -38,3 +39,6 @@ contract-audit:
 compliance-check:
 	$(PYTHON) scripts/check_public_private_isolation.py
 	$(PYTHON) -m pytest tests/test_kbench_notebook.py::TestNotebookEndToEnd -v
+
+update-hashes:
+	$(PYTHON) scripts/update_manifest_hashes.py
