@@ -1,5 +1,9 @@
 # Kaggle Deployment Runbook
 
+## Licensing
+
+The published Kaggle dataset (`raptorengineer/ruleshift-runtime`) is dedicated to the public domain under CC0 1.0, as declared in `dataset-metadata.json`. Repository source code (scripts, notebooks, CI/CD workflows) is licensed under Apache 2.0 and is not affected by this CC0 declaration.
+
 ## Canonical Metadata
 
 The checked-in metadata files are the only source of truth for Kaggle deploys:

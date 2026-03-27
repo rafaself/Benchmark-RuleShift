@@ -93,3 +93,12 @@ For optional local artifact checks, build the same outputs CI deploys:
 python scripts/cd/build_runtime_dataset_package.py --output-dir /tmp/ruleshift-runtime-package
 python scripts/cd/build_kernel_package.py --output-dir /tmp/ruleshift-kernel-bundle
 ```
+
+## Licensing
+
+This repository uses a split licensing model:
+
+- **Source code** — all Python source files, scripts, CI/CD workflows, tests, and notebook source code in this repository are licensed under the [Apache License 2.0](LICENSE).
+- **Dataset and data artifacts** — benchmark datasets and data artifacts published as Kaggle datasets (the `raptorengineer/ruleshift-runtime` dataset and any derived data releases) are dedicated to the public domain under [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/).
+
+The notebook source file (`packaging/kaggle/ruleshift_notebook_task.ipynb`) is source code and remains Apache-2.0 licensed. It is only treated as a data artifact if explicitly published as part of a CC0 data release.
