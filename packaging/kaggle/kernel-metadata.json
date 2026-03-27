@@ -1,6 +1,5 @@
 {
   "id": "raptorengineer/ruleshift-notebook-task",
-  "title": "RuleShift Notebook Task — Cognitive Flexibility Benchmark",
   "code_file": "ruleshift_notebook_task.ipynb",
   "language": "python",
   "kernel_type": "notebook",
