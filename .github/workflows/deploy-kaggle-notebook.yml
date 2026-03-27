@@ -181,10 +181,14 @@ jobs:
       # kernel-metadata.json determines which kernel is targeted.
       - name: Configure Kaggle credentials
         env:
+          KAGGLE_USERNAME: ${{ vars.KAGGLE_USERNAME }}
           KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
         run: |
+          set +x
           mkdir -p ~/.kaggle
-          echo "$KAGGLE_API_TOKEN" > ~/.kaggle/kaggle.json
+          cat > ~/.kaggle/kaggle.json <<EOF
+          {"username":"${KAGGLE_USERNAME}","key":"${KAGGLE_API_TOKEN}"}
+          EOF
           chmod 600 ~/.kaggle/kaggle.json
 
       - name: Push kernel bundle
