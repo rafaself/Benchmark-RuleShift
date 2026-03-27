@@ -5,9 +5,9 @@ Produces a directory ready for `kaggle kernels push` containing:
   - ruleshift_notebook_task.ipynb  (copied verbatim)
   - kernel-metadata.json           (generated)
 
-The notebook is never modified. kernel-metadata.json is generated fresh
-from the canonical values in frozen_artifacts_manifest.json, with
-dataset_sources injected from --runtime-dataset-slug.
+The notebook is never modified. kernel-metadata.json is generated fresh,
+using the checked-in kernel metadata as the canonical source for the human-
+readable title and injecting dataset_sources from --runtime-dataset-slug.
 """
 
 from __future__ import annotations
@@ -81,7 +81,8 @@ def _build(output_dir: Path, runtime_dataset_slug: str) -> None:
     # Copy notebook verbatim — no content mutation
     shutil.copy2(notebook_src, output_dir / notebook_filename)
 
-    # Generate kernel-metadata.json
+    # Generate kernel-metadata.json from canonical repo metadata plus the
+    # runtime dataset slug provided for this deployment.
     kernel_metadata = {
         "id": _KERNEL_ID,
         "title": kernel_title,

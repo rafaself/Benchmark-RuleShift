@@ -10,10 +10,6 @@ on:
           any push occurs.
         required: true
         default: "KAGGLE_USERNAME/ruleshift-notebook-task"
-      kernel_title:
-        description: "Human-readable kernel title written into kernel-metadata.json"
-        required: true
-        default: "RuleShift Notebook Task — Cognitive Flexibility Benchmark"
       runtime_dataset_slug:
         description: >
           Kaggle dataset slug for the runtime package injected into
@@ -27,10 +23,6 @@ on:
     inputs:
       kernel_id:
         description: "Kaggle kernel id (owner/slug)"
-        required: true
-        type: string
-      kernel_title:
-        description: "Human-readable kernel title"
         required: true
         type: string
       runtime_dataset_slug:
@@ -154,22 +146,6 @@ jobs:
           python scripts/cd/build_kernel_package.py \
             --runtime-dataset-slug "$RUNTIME_DATASET_SLUG" \
             --output-dir "$BUNDLE_DIR"
-
-      # Patch only the title field. The id and all other fields are owned by
-      # the build script and must not be changed here.
-      - name: Patch kernel-metadata.json title
-        env:
-          KERNEL_TITLE: ${{ inputs.kernel_title }}
-        run: |
-          python - <<'EOF'
-          import json, os
-          from pathlib import Path
-
-          meta_path = Path(os.environ["BUNDLE_DIR"]) / "kernel-metadata.json"
-          meta = json.loads(meta_path.read_text(encoding="utf-8"))
-          meta["title"] = os.environ["KERNEL_TITLE"]
-          meta_path.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
-          EOF
 
       # ── Push ──────────────────────────────────────────────────────────────────
       # Authenticate with the recommended API token flow. The Kaggle CLI

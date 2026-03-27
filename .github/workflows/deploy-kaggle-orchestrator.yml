@@ -60,7 +60,6 @@ jobs:
     uses: ./.github/workflows/deploy-kaggle-notebook.yml
     with:
       kernel_id: "${{ vars.KAGGLE_USERNAME }}/ruleshift-notebook-task"
-      kernel_title: "RuleShift Notebook Task — Cognitive Flexibility Benchmark"
       runtime_dataset_slug: "${{ vars.KAGGLE_USERNAME }}/ruleshift-runtime"
     secrets:
       KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}

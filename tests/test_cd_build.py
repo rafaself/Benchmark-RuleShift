@@ -39,6 +39,9 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 _KAGGLE_USERNAME = os.environ["KAGGLE_USERNAME"]
 _RUNTIME_DATASET_SLUG = f"{_KAGGLE_USERNAME}/ruleshift-runtime"
 _FORBIDDEN_FILENAMES = ("private_leaderboard.json", "private_episodes.json")
+_CANONICAL_KERNEL_TITLE = json.loads(
+    (_REPO_ROOT / "packaging" / "kaggle" / "kernel-metadata.json").read_text(encoding="utf-8")
+)["title"]
 
 
 # ---------------------------------------------------------------------------
@@ -183,6 +186,10 @@ class TestKernelBundle:
     def test_kernel_metadata_id(self, bundle_dir: Path):
         meta = json.loads((bundle_dir / "kernel-metadata.json").read_text(encoding="utf-8"))
         assert meta["id"] == f"{_KAGGLE_USERNAME}/ruleshift-notebook-task"
+
+    def test_kernel_metadata_title_matches_canonical_metadata(self, bundle_dir: Path):
+        meta = json.loads((bundle_dir / "kernel-metadata.json").read_text(encoding="utf-8"))
+        assert meta["title"] == _CANONICAL_KERNEL_TITLE
 
     def test_kernel_metadata_code_file_matches_notebook(self, bundle_dir: Path):
         meta = json.loads((bundle_dir / "kernel-metadata.json").read_text(encoding="utf-8"))

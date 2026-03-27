@@ -54,12 +54,11 @@ These values are locked. Do not change them without a coordinated update to both
 |---|---|
 | `environment` | `staging` or `production` |
 | `kernel_id` | `$KAGGLE_USERNAME/ruleshift-notebook-task` |
-| `kernel_title` | `RuleShift Notebook Task — Cognitive Flexibility Benchmark` |
 | `runtime_dataset_slug` | `$KAGGLE_USERNAME/ruleshift-runtime` |
 
 **Behavior:**
 1. Runs validation gates (isolation check, packaging tests, CD build tests, notebook smoke tests).
-2. Builds the kernel bundle via `scripts/cd/build_kernel_package.py --runtime-dataset-slug`.
+2. Builds the kernel bundle via `scripts/cd/build_kernel_package.py --runtime-dataset-slug`, using the checked-in `packaging/kaggle/kernel-metadata.json` title as the canonical notebook title.
 3. Runs `kaggle kernels push` (always an upsert — creates on first push, updates on subsequent).
 
 ---

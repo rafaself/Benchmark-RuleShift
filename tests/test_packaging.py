@@ -102,6 +102,7 @@ def test_official_kaggle_submission_flow_is_consistent_across_surface():
     assert manifest["entry_points"]["kernel_metadata"]["path"] == "packaging/kaggle/kernel-metadata.json"
     assert official_entry_points == (official_notebook_relpath,)
     assert kernel_metadata["code_file"] == official_notebook_name
+    assert kernel_metadata["title"] == "RuleShift Notebook Task - Cognitive Flexibility Benchmark"
     assert official_notebook_relpath in readme_text
     assert official_notebook_relpath in card_text
 
