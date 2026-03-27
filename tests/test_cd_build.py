@@ -5,11 +5,18 @@ the produced artifacts.  These tests are intentionally coarser than the
 packaging unit tests: they validate the *built output*, not the source files.
 
 Checks:
+  Canonical metadata (source-of-truth regression)
+    - no placeholder values (KAGGLE_USERNAME must not appear)
+    - id fields are owner/slug format
+    - kernel dataset_sources references the canonical dataset id
+    - removed identity arguments are rejected by the build scripts
+
   Runtime dataset package (build_runtime_dataset_package.py)
     - script exits 0
     - exact top-level file set (dataset-metadata.json + src/ + packaging/)
     - dataset-metadata.json id/title/licenses match canonical dataset-metadata.json
     - dataset-metadata.json resources list is non-empty and consistent
+    - packaged metadata contains no placeholder values
     - src/frozen_splits/ contains dev.json and public_leaderboard.json only
     - no private artifact appears anywhere in the output tree
     - packaging/kaggle/frozen_artifacts_manifest.json is present
@@ -19,6 +26,7 @@ Checks:
     - exact file set (kernel-metadata.json + notebook)
     - notebook is byte-identical to the source
     - kernel-metadata.json is content-identical to canonical kernel-metadata.json
+    - packaged metadata contains no placeholder values
     - last code cell in copied notebook contains %choose ruleshift_benchmark_v1_binary
 """
 
@@ -63,6 +71,53 @@ def _files_in(directory: Path) -> set[str]:
 
 def _top_level_names(directory: Path) -> set[str]:
     return {p.name for p in directory.iterdir()}
+
+
+# ---------------------------------------------------------------------------
+# Canonical metadata — source-of-truth regression tests
+# ---------------------------------------------------------------------------
+
+
+def test_canonical_metadata_contains_no_placeholders():
+    """Fail if KAGGLE_USERNAME is reintroduced as a value in either metadata file."""
+    for name, meta_dict in [
+        ("kernel-metadata.json", _CANONICAL_KERNEL_METADATA),
+        ("dataset-metadata.json", _CANONICAL_DATASET_METADATA),
+    ]:
+        assert "KAGGLE_USERNAME" not in json.dumps(meta_dict), (
+            f"{name} contains the placeholder string 'KAGGLE_USERNAME'"
+        )
+
+
+def test_canonical_metadata_ids_are_owner_slug():
+    """Both id fields must be owner/slug — no template tokens, no missing owner."""
+    for name, meta_dict in [
+        ("kernel-metadata.json", _CANONICAL_KERNEL_METADATA),
+        ("dataset-metadata.json", _CANONICAL_DATASET_METADATA),
+    ]:
+        id_value = meta_dict.get("id", "")
+        parts = id_value.split("/")
+        assert len(parts) == 2 and all(parts), (
+            f"{name} id must be owner/slug format, got {id_value!r}"
+        )
+
+
+def test_kernel_dataset_sources_reference_canonical_dataset():
+    """Canonical cross-reference: kernel dataset_sources must include the dataset id."""
+    assert _CANONICAL_DATASET_METADATA["id"] in _CANONICAL_KERNEL_METADATA["dataset_sources"], (
+        "kernel-metadata.json dataset_sources and dataset-metadata.json id are out of sync"
+    )
+
+
+def test_build_script_rejects_removed_runtime_slug_argument(tmp_path: Path):
+    """Regression: --runtime-dataset-slug must no longer be accepted by the kernel build script."""
+    result = _run(
+        "scripts/cd/build_kernel_package.py",
+        ["--runtime-dataset-slug", "owner/slug", "--output-dir", str(tmp_path)],
+    )
+    assert result.returncode != 0, (
+        "build_kernel_package.py accepted --runtime-dataset-slug, which must have been removed"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -144,6 +199,11 @@ class TestRuntimeDatasetPackage:
         pyc_files = [p for p in package_dir.rglob("*.pyc")]
         assert not pyc_files, f"Compiled bytecode found in output: {pyc_files}"
 
+    def test_package_dataset_metadata_contains_no_placeholders(self, package_dir: Path):
+        """KAGGLE_USERNAME must not appear in the packaged dataset-metadata.json."""
+        text = (package_dir / "dataset-metadata.json").read_text(encoding="utf-8")
+        assert "KAGGLE_USERNAME" not in text
+
 
 # ---------------------------------------------------------------------------
 # Kernel bundle
@@ -180,6 +240,11 @@ class TestKernelBundle:
     def test_kernel_metadata_matches_canonical(self, bundle_dir: Path):
         built = json.loads((bundle_dir / "kernel-metadata.json").read_text(encoding="utf-8"))
         assert built == _CANONICAL_KERNEL_METADATA
+
+    def test_kernel_bundle_metadata_contains_no_placeholders(self, bundle_dir: Path):
+        """KAGGLE_USERNAME must not appear in the packaged kernel-metadata.json."""
+        text = (bundle_dir / "kernel-metadata.json").read_text(encoding="utf-8")
+        assert "KAGGLE_USERNAME" not in text
 
     def test_kernel_metadata_id(self, bundle_dir: Path):
         meta = json.loads((bundle_dir / "kernel-metadata.json").read_text(encoding="utf-8"))

@@ -187,6 +187,111 @@ class TestContractAuditPositive:
             f"errors: {report['errors']}"
         )
 
+    def test_expected_dataset_sources_derived_from_canonical_metadata(self):
+        """EXPECTED_DATASET_SOURCES must equal dataset_sources in canonical kernel-metadata.json.
+
+        Regression: must not be derived from KAGGLE_USERNAME or any runtime env var.
+        """
+        from core.contract_audit import EXPECTED_DATASET_SOURCES
+
+        kernel_meta = json.loads(
+            (_REPO_ROOT / "packaging" / "kaggle" / "kernel-metadata.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        assert list(EXPECTED_DATASET_SOURCES) == kernel_meta["dataset_sources"], (
+            "EXPECTED_DATASET_SOURCES diverged from canonical kernel-metadata.json. "
+            "It must not be derived from KAGGLE_USERNAME or any runtime value."
+        )
+
+
+# ── canonical metadata structure ─────────────────────────────────
+
+
+class TestCanonicalMetadataStructure:
+    """Validates the canonical Kaggle metadata files that are the repository source of truth.
+
+    These tests catch placeholder reintroduction, missing required fields, and
+    cross-reference drift between kernel-metadata.json and dataset-metadata.json.
+    """
+
+    _KERNEL_META = json.loads(
+        (_REPO_ROOT / "packaging" / "kaggle" / "kernel-metadata.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    _DATASET_META = json.loads(
+        (_REPO_ROOT / "packaging" / "kaggle" / "dataset-metadata.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    def test_canonical_files_exist(self):
+        assert (_REPO_ROOT / "packaging" / "kaggle" / "kernel-metadata.json").is_file()
+        assert (_REPO_ROOT / "packaging" / "kaggle" / "dataset-metadata.json").is_file()
+
+    def test_kernel_metadata_has_required_fields(self):
+        for field in ("id", "title", "code_file", "dataset_sources"):
+            assert self._KERNEL_META.get(field), (
+                f"kernel-metadata.json missing required field {field!r}"
+            )
+        assert isinstance(self._KERNEL_META["dataset_sources"], list)
+        assert len(self._KERNEL_META["dataset_sources"]) > 0
+
+    def test_dataset_metadata_has_required_fields(self):
+        for field in ("id", "title", "licenses"):
+            assert self._DATASET_META.get(field), (
+                f"dataset-metadata.json missing required field {field!r}"
+            )
+        assert isinstance(self._DATASET_META["licenses"], list)
+        assert len(self._DATASET_META["licenses"]) > 0
+
+    def test_metadata_ids_are_owner_slug_format(self):
+        """id fields must be owner/slug — no template tokens, no missing owner."""
+        for name, meta in [
+            ("kernel-metadata.json", self._KERNEL_META),
+            ("dataset-metadata.json", self._DATASET_META),
+        ]:
+            parts = meta.get("id", "").split("/")
+            assert len(parts) == 2 and all(parts), (
+                f"{name} id must be owner/slug format, got {meta.get('id')!r}"
+            )
+
+    def test_canonical_metadata_contains_no_placeholders(self):
+        """Fail if KAGGLE_USERNAME is reintroduced as a value in either metadata file."""
+        for name, meta in [
+            ("kernel-metadata.json", self._KERNEL_META),
+            ("dataset-metadata.json", self._DATASET_META),
+        ]:
+            assert "KAGGLE_USERNAME" not in json.dumps(meta), (
+                f"{name} contains the placeholder string 'KAGGLE_USERNAME'"
+            )
+
+    def test_kernel_dataset_sources_reference_canonical_dataset(self):
+        """kernel-metadata.json dataset_sources must include the canonical dataset id."""
+        assert self._DATASET_META["id"] in self._KERNEL_META["dataset_sources"], (
+            "kernel dataset_sources and dataset-metadata.json id are out of sync"
+        )
+
+
+# ── negative test: canonical metadata placeholder detection ──────
+
+
+class TestNegativeCanonicalMetadataPlaceholders:
+    """Verify that contract validation catches placeholder values in dataset_sources."""
+
+    def test_check_notebook_metadata_rejects_placeholder_dataset_source(self, monkeypatch):
+        """Regression: if EXPECTED_DATASET_SOURCES contained a placeholder owner, the
+        contract audit should flag it as missing from the canonical metadata file."""
+        monkeypatch.setattr(
+            "core.contract_audit.EXPECTED_DATASET_SOURCES",
+            ("KAGGLE_USERNAME/ruleshift-runtime",),
+        )
+        errors = check_notebook_metadata(_REPO_ROOT)
+        assert any("dataset_sources" in e for e in errors), (
+            "check_notebook_metadata did not flag the placeholder dataset source"
+        )
+
 
 # ── negative test: wrong task name ──────────────────────────────
 
