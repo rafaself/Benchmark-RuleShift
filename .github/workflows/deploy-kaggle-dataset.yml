@@ -44,7 +44,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  KAGGLE_CLI_VERSION: "1.8.4"
+  KAGGLE_CLI_VERSION: "2.0.0"
   PACKAGE_DIR: /tmp/ruleshift-runtime-package
   # Canonical slug baked into build_runtime_dataset_package.py.
   # The input is validated against this value; it is never allowed to diverge.
@@ -147,26 +147,46 @@ jobs:
           EOF
 
       # ── Publish ───────────────────────────────────────────────────────────────
-      # Use `kaggle datasets status` to decide create vs version.
-      # The command exits non-zero when the dataset does not yet exist.
-      - name: Configure Kaggle credentials
+      # Authenticate with the recommended API token flow. The Kaggle CLI
+      # accepts KAGGLE_API_TOKEN directly, so CI does not need kaggle.json.
+      - name: Verify Kaggle CLI installation and authentication
         env:
-          KAGGLE_USERNAME: ${{ vars.KAGGLE_USERNAME }}
           KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
         run: |
-          set +x
-          mkdir -p ~/.kaggle
-          cat > ~/.kaggle/kaggle.json <<-EOF
-          {"username":"${KAGGLE_USERNAME}","key":"${KAGGLE_API_TOKEN}"}
-          EOF
-          chmod 600 ~/.kaggle/kaggle.json
+          set -euo pipefail
+
+          output_file="$(mktemp)"
+          trap 'rm -f "$output_file"' EXIT
+
+          kaggle --version
+
+          if kaggle datasets list -m >"$output_file" 2>&1; then
+            echo "Kaggle CLI authentication preflight passed."
+            exit 0
+          fi
+
+          output="$(cat "$output_file")"
+          echo "ERROR: Kaggle CLI authentication preflight failed."
+          if printf '%s' "$output" | grep -Eqi '401|403|unauth|forbidden|auth|login|token|credential|permission|access denied'; then
+            echo "KAGGLE_API_TOKEN was rejected or lacks the required permissions."
+          else
+            echo "The Kaggle CLI could not complete an authenticated request."
+          fi
+          printf '%s\n' "$output"
+          exit 1
 
       - name: Publish dataset (create or new version)
         env:
           DATASET_ID: ${{ inputs.dataset_id }}
           RELEASE_MESSAGE: ${{ inputs.release_message }}
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
         run: |
-          if kaggle datasets status "$DATASET_ID" >/dev/null 2>&1; then
+          set -euo pipefail
+
+          status_file="$(mktemp)"
+          trap 'rm -f "$status_file"' EXIT
+
+          if kaggle datasets status "$DATASET_ID" >"$status_file" 2>&1; then
             echo "Dataset exists — creating new version."
             kaggle datasets version \
               --path "$PACKAGE_DIR" \
@@ -174,13 +194,23 @@ jobs:
               --dir-mode tar \
               --quiet
           else
-            echo "Dataset not found — creating for the first time."
-            kaggle datasets create \
-              --path "$PACKAGE_DIR" \
-              --dir-mode tar \
-              --quiet
-          fi
+            status_output="$(cat "$status_file")"
 
-      - name: Revoke Kaggle credentials
-        if: always()
-        run: rm -f ~/.kaggle/kaggle.json
+            if printf '%s' "$status_output" | grep -Eqi '401|403|unauth|forbidden|auth|login|token|credential|permission|access denied'; then
+              echo "ERROR: Kaggle authentication/authorization failed while checking dataset status."
+              printf '%s\n' "$status_output"
+              exit 1
+            fi
+
+            if printf '%s' "$status_output" | grep -Eqi '404|not found|does not exist|could not find'; then
+              echo "Dataset not found — creating for the first time."
+              kaggle datasets create \
+                --path "$PACKAGE_DIR" \
+                --dir-mode tar \
+                --quiet
+            else
+              echo "ERROR: Unable to determine dataset status from Kaggle CLI output."
+              printf '%s\n' "$status_output"
+              exit 1
+            fi
+          fi

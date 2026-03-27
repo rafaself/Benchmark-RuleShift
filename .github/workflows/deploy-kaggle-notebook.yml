@@ -46,7 +46,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  KAGGLE_CLI_VERSION: "1.8.4"
+  KAGGLE_CLI_VERSION: "2.0.0"
   BUNDLE_DIR: /tmp/ruleshift-kernel-bundle
   # Canonical kernel slug baked into build_kernel_package.py.
   # The input is validated against this value before any push.
@@ -172,26 +172,37 @@ jobs:
           EOF
 
       # ── Push ──────────────────────────────────────────────────────────────────
-      # `kaggle kernels push` is always an upsert: it creates the kernel on
-      # first push and updates it on subsequent pushes.  The id field in
-      # kernel-metadata.json determines which kernel is targeted.
-      - name: Configure Kaggle credentials
+      # Authenticate with the recommended API token flow. The Kaggle CLI
+      # accepts KAGGLE_API_TOKEN directly, so CI does not need kaggle.json.
+      - name: Verify Kaggle CLI installation and authentication
         env:
-          KAGGLE_USERNAME: ${{ vars.KAGGLE_USERNAME }}
           KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
         run: |
-          set +x
-          mkdir -p ~/.kaggle
-          cat > ~/.kaggle/kaggle.json <<-EOF
-          {"username":"${KAGGLE_USERNAME}","key":"${KAGGLE_API_TOKEN}"}
-          EOF
-          chmod 600 ~/.kaggle/kaggle.json
+          set -euo pipefail
+
+          output_file="$(mktemp)"
+          trap 'rm -f "$output_file"' EXIT
+
+          kaggle --version
+
+          if kaggle kernels list -m --page-size 1 >"$output_file" 2>&1; then
+            echo "Kaggle CLI authentication preflight passed."
+            exit 0
+          fi
+
+          output="$(cat "$output_file")"
+          echo "ERROR: Kaggle CLI authentication preflight failed."
+          if printf '%s' "$output" | grep -Eqi '401|403|unauth|forbidden|auth|login|token|credential|permission|access denied'; then
+            echo "KAGGLE_API_TOKEN was rejected or lacks the required permissions."
+          else
+            echo "The Kaggle CLI could not complete an authenticated request."
+          fi
+          printf '%s\n' "$output"
+          exit 1
 
       - name: Push kernel bundle
+        env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
         run: |
           kaggle kernels push \
             --path "$BUNDLE_DIR"
-
-      - name: Revoke Kaggle credentials
-        if: always()
-        run: rm -f ~/.kaggle/kaggle.json
