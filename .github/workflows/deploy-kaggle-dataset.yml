@@ -5,15 +5,11 @@ on:
     inputs:
       dataset_id:
         description: >
-          Kaggle dataset id (owner/slug). Must match the canonical id baked
-          into the build script. Providing a different value aborts the job
-          before any upload occurs.
+          Kaggle dataset id (owner/slug). Must match the canonical id in
+          packaging/kaggle/dataset-metadata.json. Providing a different value
+          aborts the job before any upload occurs.
         required: true
         default: "KAGGLE_USERNAME/ruleshift-runtime"
-      dataset_title:
-        description: "Human-readable dataset title written into dataset-metadata.json"
-        required: true
-        default: "RuleShift Runtime"
       release_message:
         description: "Version note written to Kaggle on new-version uploads"
         required: true
@@ -23,10 +19,6 @@ on:
     inputs:
       dataset_id:
         description: "Kaggle dataset id (owner/slug)"
-        required: true
-        type: string
-      dataset_title:
-        description: "Human-readable dataset title"
         required: true
         type: string
       release_message:
@@ -128,23 +120,6 @@ jobs:
         run: |
           python scripts/cd/build_runtime_dataset_package.py \
             --output-dir "$PACKAGE_DIR"
-
-      # Overwrite dataset-metadata.json with the caller-supplied title while
-      # keeping the id locked to the canonical value.  The build script already
-      # wrote the correct id; this step only updates the title field.
-      - name: Patch dataset-metadata.json title
-        env:
-          DATASET_TITLE: ${{ inputs.dataset_title }}
-        run: |
-          python - <<'EOF'
-          import json, os
-          from pathlib import Path
-
-          meta_path = Path(os.environ["PACKAGE_DIR"]) / "dataset-metadata.json"
-          meta = json.loads(meta_path.read_text(encoding="utf-8"))
-          meta["title"] = os.environ["DATASET_TITLE"]
-          meta_path.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
-          EOF
 
       # ── Publish ───────────────────────────────────────────────────────────────
       # Authenticate with the recommended API token flow. The Kaggle CLI

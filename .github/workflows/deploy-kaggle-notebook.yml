@@ -5,28 +5,17 @@ on:
     inputs:
       kernel_id:
         description: >
-          Kaggle kernel id (owner/slug). Must match the canonical id baked into
-          the build script. Providing a different value aborts the job before
-          any push occurs.
+          Kaggle kernel id (owner/slug). Must match the canonical id in
+          packaging/kaggle/kernel-metadata.json. Providing a different value
+          aborts the job before any push occurs.
         required: true
         default: "KAGGLE_USERNAME/ruleshift-notebook-task"
-      runtime_dataset_slug:
-        description: >
-          Kaggle dataset slug for the runtime package injected into
-          kernel-metadata.json as dataset_sources. Must reference an already
-          published dataset. Does not modify notebook content.
-        required: true
-        default: "KAGGLE_USERNAME/ruleshift-runtime"
 
   # Called by the orchestrator workflow.
   workflow_call:
     inputs:
       kernel_id:
         description: "Kaggle kernel id (owner/slug)"
-        required: true
-        type: string
-      runtime_dataset_slug:
-        description: "Kaggle dataset slug injected into kernel-metadata.json as dataset_sources"
         required: true
         type: string
     secrets:
@@ -40,13 +29,9 @@ concurrency:
 env:
   KAGGLE_CLI_VERSION: "2.0.0"
   BUNDLE_DIR: /tmp/ruleshift-kernel-bundle
-  # Canonical kernel slug baked into build_kernel_package.py.
+  # Canonical kernel id in packaging/kaggle/kernel-metadata.json.
   # The input is validated against this value before any push.
   CANONICAL_KERNEL_ID: "${{ vars.KAGGLE_USERNAME }}/ruleshift-notebook-task"
-  # Canonical runtime dataset slug referenced by kernel-metadata.json.
-  # The input is validated against this value so the notebook always
-  # references the correct, already-deployed runtime package.
-  CANONICAL_RUNTIME_DATASET_SLUG: "${{ vars.KAGGLE_USERNAME }}/ruleshift-runtime"
 
 jobs:
   # ── Job 1: validate ──────────────────────────────────────────────────────────
@@ -113,10 +98,9 @@ jobs:
       - name: Install Kaggle CLI (pinned)
         run: pip install "kaggle==${KAGGLE_CLI_VERSION}"
 
-      # ── Guards ────────────────────────────────────────────────────────────────
-      # Both guards run before the build so no artifacts are produced when
-      # an input would cause a push to the wrong kernel or reference a wrong
-      # dataset slug.
+      # ── Guard ─────────────────────────────────────────────────────────────────
+      # Runs before the build so no artifact is produced when the input would
+      # cause a push to the wrong kernel.
 
       - name: Verify kernel_id matches canonical value
         env:
@@ -127,24 +111,12 @@ jobs:
             exit 1
           fi
 
-      - name: Verify runtime_dataset_slug matches canonical value
-        env:
-          RUNTIME_DATASET_SLUG: ${{ inputs.runtime_dataset_slug }}
-        run: |
-          if [ "$RUNTIME_DATASET_SLUG" != "$CANONICAL_RUNTIME_DATASET_SLUG" ]; then
-            echo "ERROR: runtime_dataset_slug does not match canonical slug."
-            exit 1
-          fi
-
       # ── Build ─────────────────────────────────────────────────────────────────
-      # The build script copies the notebook verbatim and generates
-      # kernel-metadata.json with dataset_sources set to runtime_dataset_slug.
+      # The build script copies the notebook and kernel-metadata.json verbatim
+      # from packaging/kaggle — no fields are generated at build time.
       - name: Build kernel bundle
-        env:
-          RUNTIME_DATASET_SLUG: ${{ inputs.runtime_dataset_slug }}
         run: |
           python scripts/cd/build_kernel_package.py \
-            --runtime-dataset-slug "$RUNTIME_DATASET_SLUG" \
             --output-dir "$BUNDLE_DIR"
 
       # ── Push ──────────────────────────────────────────────────────────────────

@@ -3,11 +3,10 @@
 
 Produces a directory ready for `kaggle kernels push` containing:
   - ruleshift_notebook_task.ipynb  (copied verbatim)
-  - kernel-metadata.json           (generated)
+  - kernel-metadata.json           (copied verbatim from packaging/kaggle)
 
-The notebook is never modified. kernel-metadata.json is generated fresh,
-using the checked-in kernel metadata as the canonical source for the human-
-readable title and injecting dataset_sources from --runtime-dataset-slug.
+The notebook is never modified. kernel-metadata.json is the canonical
+file checked into the repository; no fields are generated at build time.
 """
 
 from __future__ import annotations
@@ -17,17 +16,14 @@ import hashlib
 import json
 import shutil
 import sys
-import os
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 _KAGGLE_DIR = REPO_ROOT / "packaging" / "kaggle"
 _MANIFEST_PATH = _KAGGLE_DIR / "frozen_artifacts_manifest.json"
-
 _KERNEL_METADATA_PATH = _KAGGLE_DIR / "kernel-metadata.json"
 
-_KAGGLE_USERNAME = os.environ["KAGGLE_USERNAME"]
-_KERNEL_ID = f"{_KAGGLE_USERNAME}/ruleshift-notebook-task"
+_REQUIRED_FIELDS = ("id", "title", "code_file", "dataset_sources")
 
 
 # ---------------------------------------------------------------------------
@@ -56,14 +52,18 @@ def _verify_notebook_hash(notebook_src: Path, manifest: dict) -> None:
 # Build
 # ---------------------------------------------------------------------------
 
-def _build(output_dir: Path, runtime_dataset_slug: str) -> None:
+def _build(output_dir: Path) -> None:
     if not _MANIFEST_PATH.is_file():
         raise FileNotFoundError(f"frozen_artifacts_manifest.json not found at {_MANIFEST_PATH}")
     if not _KERNEL_METADATA_PATH.is_file():
         raise FileNotFoundError(f"kernel-metadata.json not found at {_KERNEL_METADATA_PATH}")
 
     manifest = json.loads(_MANIFEST_PATH.read_text(encoding="utf-8"))
-    kernel_title = json.loads(_KERNEL_METADATA_PATH.read_text(encoding="utf-8"))["title"]
+    kernel_metadata = json.loads(_KERNEL_METADATA_PATH.read_text(encoding="utf-8"))
+
+    missing = [f for f in _REQUIRED_FIELDS if not kernel_metadata.get(f)]
+    if missing:
+        raise ValueError(f"kernel-metadata.json is missing required fields: {missing}")
 
     notebook_relpath = manifest["entry_points"]["kbench_notebook"]["path"]
     notebook_src = REPO_ROOT / notebook_relpath
@@ -81,40 +81,13 @@ def _build(output_dir: Path, runtime_dataset_slug: str) -> None:
     # Copy notebook verbatim — no content mutation
     shutil.copy2(notebook_src, output_dir / notebook_filename)
 
-    # Generate kernel-metadata.json from canonical repo metadata plus the
-    # runtime dataset slug provided for this deployment.
-    kernel_metadata = {
-        "id": _KERNEL_ID,
-        "title": kernel_title,
-        "code_file": notebook_filename,
-        "language": "python",
-        "kernel_type": "notebook",
-        "is_private": True,
-        "enable_gpu": False,
-        "enable_tpu": False,
-        "enable_internet": False,
-        "dataset_sources": [runtime_dataset_slug],
-        "competition_sources": [],
-        "kernel_sources": [],
-    }
-    (output_dir / "kernel-metadata.json").write_text(
-        json.dumps(kernel_metadata, indent=2) + "\n",
-        encoding="utf-8",
-    )
+    # Copy canonical kernel-metadata.json verbatim
+    shutil.copy2(_KERNEL_METADATA_PATH, output_dir / "kernel-metadata.json")
 
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Build the Kaggle notebook deployment bundle.",
-    )
-    parser.add_argument(
-        "--runtime-dataset-slug",
-        required=True,
-        help=(
-            "Fully qualified Kaggle dataset slug for the runtime package "
-            "(e.g. KAGGLE_USERNAME/ruleshift-runtime). "
-            "Injected into kernel-metadata.json as dataset_sources."
-        ),
     )
     parser.add_argument(
         "--output-dir",
@@ -128,7 +101,7 @@ def _build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = _build_parser().parse_args(argv)
     output_dir = args.output_dir.resolve()
-    _build(output_dir, args.runtime_dataset_slug)
+    _build(output_dir)
     print(output_dir)
     return 0
 

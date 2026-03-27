@@ -8,7 +8,7 @@ Checks:
   Runtime dataset package (build_runtime_dataset_package.py)
     - script exits 0
     - exact top-level file set (dataset-metadata.json + src/ + packaging/)
-    - dataset-metadata.json has correct id, title, license
+    - dataset-metadata.json id/title/licenses match canonical dataset-metadata.json
     - dataset-metadata.json resources list is non-empty and consistent
     - src/frozen_splits/ contains dev.json and public_leaderboard.json only
     - no private artifact appears anywhere in the output tree
@@ -18,17 +18,13 @@ Checks:
     - script exits 0
     - exact file set (kernel-metadata.json + notebook)
     - notebook is byte-identical to the source
-    - kernel-metadata.json fields: id, code_file, language, kernel_type,
-      is_private, enable_gpu, enable_tpu, enable_internet
-    - dataset_sources contains the slug passed via --runtime-dataset-slug
-    - competition_sources and kernel_sources are empty lists
+    - kernel-metadata.json is content-identical to canonical kernel-metadata.json
     - last code cell in copied notebook contains %choose ruleshift_benchmark_v1_binary
 """
 
 from __future__ import annotations
 
 import json
-import os
 import subprocess
 import sys
 from pathlib import Path
@@ -36,12 +32,13 @@ from pathlib import Path
 import pytest
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
-_KAGGLE_USERNAME = os.environ["KAGGLE_USERNAME"]
-_RUNTIME_DATASET_SLUG = f"{_KAGGLE_USERNAME}/ruleshift-runtime"
-_FORBIDDEN_FILENAMES = ("private_leaderboard.json", "private_episodes.json")
-_CANONICAL_KERNEL_TITLE = json.loads(
+_CANONICAL_KERNEL_METADATA = json.loads(
     (_REPO_ROOT / "packaging" / "kaggle" / "kernel-metadata.json").read_text(encoding="utf-8")
-)["title"]
+)
+_CANONICAL_DATASET_METADATA = json.loads(
+    (_REPO_ROOT / "packaging" / "kaggle" / "dataset-metadata.json").read_text(encoding="utf-8")
+)
+_FORBIDDEN_FILENAMES = ("private_leaderboard.json", "private_episodes.json")
 
 
 # ---------------------------------------------------------------------------
@@ -98,15 +95,15 @@ class TestRuntimeDatasetPackage:
 
     def test_dataset_metadata_id(self, package_dir: Path):
         meta = json.loads((package_dir / "dataset-metadata.json").read_text(encoding="utf-8"))
-        assert meta["id"] == _RUNTIME_DATASET_SLUG
+        assert meta["id"] == _CANONICAL_DATASET_METADATA["id"]
 
     def test_dataset_metadata_title(self, package_dir: Path):
         meta = json.loads((package_dir / "dataset-metadata.json").read_text(encoding="utf-8"))
-        assert isinstance(meta["title"], str) and meta["title"]
+        assert meta["title"] == _CANONICAL_DATASET_METADATA["title"]
 
     def test_dataset_metadata_license(self, package_dir: Path):
         meta = json.loads((package_dir / "dataset-metadata.json").read_text(encoding="utf-8"))
-        assert meta["licenses"] == [{"name": "CC0-1.0"}]
+        assert meta["licenses"] == _CANONICAL_DATASET_METADATA["licenses"]
 
     def test_dataset_metadata_resources_non_empty(self, package_dir: Path):
         meta = json.loads((package_dir / "dataset-metadata.json").read_text(encoding="utf-8"))
@@ -159,10 +156,7 @@ class TestKernelBundle:
         out = tmp_path_factory.mktemp("kernel-bundle")
         result = _run(
             "scripts/cd/build_kernel_package.py",
-            [
-                "--runtime-dataset-slug", _RUNTIME_DATASET_SLUG,
-                "--output-dir", str(out),
-            ],
+            ["--output-dir", str(out)],
         )
         assert result.returncode == 0, result.stderr or result.stdout
         assert Path(result.stdout.strip()) == out
@@ -183,13 +177,17 @@ class TestKernelBundle:
         assert hashlib.sha256(source.read_bytes()).hexdigest() == \
                hashlib.sha256(dest.read_bytes()).hexdigest()
 
+    def test_kernel_metadata_matches_canonical(self, bundle_dir: Path):
+        built = json.loads((bundle_dir / "kernel-metadata.json").read_text(encoding="utf-8"))
+        assert built == _CANONICAL_KERNEL_METADATA
+
     def test_kernel_metadata_id(self, bundle_dir: Path):
         meta = json.loads((bundle_dir / "kernel-metadata.json").read_text(encoding="utf-8"))
-        assert meta["id"] == f"{_KAGGLE_USERNAME}/ruleshift-notebook-task"
+        assert meta["id"] == _CANONICAL_KERNEL_METADATA["id"]
 
     def test_kernel_metadata_title_matches_canonical_metadata(self, bundle_dir: Path):
         meta = json.loads((bundle_dir / "kernel-metadata.json").read_text(encoding="utf-8"))
-        assert meta["title"] == _CANONICAL_KERNEL_TITLE
+        assert meta["title"] == _CANONICAL_KERNEL_METADATA["title"]
 
     def test_kernel_metadata_code_file_matches_notebook(self, bundle_dir: Path):
         meta = json.loads((bundle_dir / "kernel-metadata.json").read_text(encoding="utf-8"))
@@ -214,13 +212,9 @@ class TestKernelBundle:
         assert meta["enable_tpu"] is False
         assert meta["enable_internet"] is False
 
-    def test_kernel_metadata_dataset_sources_contains_slug(self, bundle_dir: Path):
+    def test_kernel_metadata_dataset_sources(self, bundle_dir: Path):
         meta = json.loads((bundle_dir / "kernel-metadata.json").read_text(encoding="utf-8"))
-        assert _RUNTIME_DATASET_SLUG in meta["dataset_sources"]
-
-    def test_kernel_metadata_dataset_sources_single_entry(self, bundle_dir: Path):
-        meta = json.loads((bundle_dir / "kernel-metadata.json").read_text(encoding="utf-8"))
-        assert meta["dataset_sources"] == [_RUNTIME_DATASET_SLUG]
+        assert meta["dataset_sources"] == _CANONICAL_KERNEL_METADATA["dataset_sources"]
 
     def test_kernel_metadata_competition_and_kernel_sources_empty(self, bundle_dir: Path):
         meta = json.loads((bundle_dir / "kernel-metadata.json").read_text(encoding="utf-8"))
@@ -242,14 +236,3 @@ class TestKernelBundle:
             f"Last code cell in bundled notebook must contain exactly "
             f"'%choose ruleshift_benchmark_v1_binary', got: {magic_lines!r}"
         )
-
-    def test_kernel_package_slug_injection(self, tmp_path: Path):
-        """Passing a different slug produces a kernel-metadata.json with that slug."""
-        custom_slug = "owner/custom-runtime-slug"
-        result = _run(
-            "scripts/cd/build_kernel_package.py",
-            ["--runtime-dataset-slug", custom_slug, "--output-dir", str(tmp_path)],
-        )
-        assert result.returncode == 0, result.stderr or result.stdout
-        meta = json.loads((tmp_path / "kernel-metadata.json").read_text(encoding="utf-8"))
-        assert meta["dataset_sources"] == [custom_slug]

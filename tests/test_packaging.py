@@ -123,6 +123,7 @@ def test_kaggle_directory_layout_contains_only_official_entry_surfaces():
         "BENCHMARK_CARD.md",
         "DEPLOY_RUNBOOK.md",
         "PRIVATE_SPLIT_RUNBOOK.md",
+        "dataset-metadata.json",
         "frozen_artifacts_manifest.json",
         "kernel-metadata.json",
         "ruleshift_notebook_task.ipynb",

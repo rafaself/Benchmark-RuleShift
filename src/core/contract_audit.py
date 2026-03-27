@@ -11,7 +11,6 @@ Checks for drift between:
 from __future__ import annotations
 
 import json
-import os
 import re
 from pathlib import Path
 from typing import Any, Final
@@ -49,7 +48,12 @@ CANONICAL_TASK_ID: Final[str] = "ruleshift_benchmark_v1"
 CANONICAL_TASK_NAME: Final[str] = "RuleShift Benchmark v1"
 CANONICAL_BINARY_TASK_NAME: Final[str] = "ruleshift_benchmark_v1_binary"
 CANONICAL_NARRATIVE_TASK_NAME: Final[str] = "ruleshift_benchmark_v1_narrative"
-EXPECTED_DATASET_SOURCES: Final[tuple[str, ...]] = (f"{os.environ['KAGGLE_USERNAME']}/ruleshift-runtime",)
+_KERNEL_METADATA_PATH: Final[Path] = (
+    Path(__file__).resolve().parents[2] / "packaging" / "kaggle" / "kernel-metadata.json"
+)
+EXPECTED_DATASET_SOURCES: Final[tuple[str, ...]] = tuple(
+    json.loads(_KERNEL_METADATA_PATH.read_text(encoding="utf-8"))["dataset_sources"]
+)
 EXPECTED_SPLITS: Final[tuple[str, ...]] = PARTITIONS
 EXPECTED_EPISODES_PER_SPLIT: Final[int] = 16
 EXPECTED_PROBE_COUNT: Final[int] = 4

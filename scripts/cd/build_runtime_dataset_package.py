@@ -4,7 +4,7 @@
 Produces a clean directory ready for Kaggle dataset upload containing:
   - src/           (benchmark logic + frozen public split manifests)
   - packaging/kaggle/frozen_artifacts_manifest.json
-  - dataset-metadata.json  (generated)
+  - dataset-metadata.json  (from packaging/kaggle, augmented with resources)
 
 Private artifacts are explicitly forbidden. The script aborts if any
 forbidden file is detected in the source tree before copying.
@@ -17,15 +17,13 @@ import hashlib
 import json
 import shutil
 import sys
-import os
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+_KAGGLE_DIR = REPO_ROOT / "packaging" / "kaggle"
+_DATASET_METADATA_PATH = _KAGGLE_DIR / "dataset-metadata.json"
 
-_KAGGLE_USERNAME = os.environ["KAGGLE_USERNAME"]
-_DATASET_ID = f"{_KAGGLE_USERNAME}/ruleshift-runtime"
-_DATASET_TITLE = "RuleShift Runtime"
-_LICENSE = "CC0-1.0"
+_REQUIRED_FIELDS = ("id", "title", "licenses")
 
 _FORBIDDEN_FILENAMES = frozenset(
     (
@@ -97,12 +95,19 @@ def _verify_split_manifest_hashes(
 
 def _build(output_dir: Path) -> None:
     src_dir = REPO_ROOT / "src"
-    frozen_manifests_path = REPO_ROOT / "packaging" / "kaggle" / "frozen_artifacts_manifest.json"
+    frozen_manifests_path = _KAGGLE_DIR / "frozen_artifacts_manifest.json"
 
     if not src_dir.is_dir():
         raise FileNotFoundError(f"src/ not found at {src_dir}")
     if not frozen_manifests_path.is_file():
         raise FileNotFoundError(f"frozen_artifacts_manifest.json not found at {frozen_manifests_path}")
+    if not _DATASET_METADATA_PATH.is_file():
+        raise FileNotFoundError(f"dataset-metadata.json not found at {_DATASET_METADATA_PATH}")
+
+    dataset_metadata = json.loads(_DATASET_METADATA_PATH.read_text(encoding="utf-8"))
+    missing = [f for f in _REQUIRED_FIELDS if not dataset_metadata.get(f)]
+    if missing:
+        raise ValueError(f"dataset-metadata.json is missing required fields: {missing}")
 
     _check_no_private_artifacts(src_dir, frozen_manifests_path)
 
@@ -126,17 +131,12 @@ def _build(output_dir: Path) -> None:
     manifest = json.loads(frozen_manifests_path.read_text(encoding="utf-8"))
     _verify_split_manifest_hashes(manifest, output_dir)
 
-    # Generate dataset-metadata.json
-    dataset_metadata = {
-        "id": _DATASET_ID,
-        "title": _DATASET_TITLE,
-        "licenses": [{"name": _LICENSE}],
-        "resources": [
-            {"path": str(p.relative_to(output_dir))}
-            for p in sorted(output_dir.rglob("*"))
-            if p.is_file() and p.name != "dataset-metadata.json"
-        ],
-    }
+    # Write dataset-metadata.json: canonical fields + resources list
+    dataset_metadata["resources"] = [
+        {"path": str(p.relative_to(output_dir))}
+        for p in sorted(output_dir.rglob("*"))
+        if p.is_file() and p.name != "dataset-metadata.json"
+    ]
     (output_dir / "dataset-metadata.json").write_text(
         json.dumps(dataset_metadata, indent=2) + "\n",
         encoding="utf-8",
