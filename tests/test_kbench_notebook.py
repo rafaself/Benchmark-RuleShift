@@ -19,6 +19,7 @@ The kbench_shim module stands in for kaggle_benchmarks locally.
 from __future__ import annotations
 
 import json
+import inspect
 import sys
 from pathlib import Path
 
@@ -647,6 +648,17 @@ class TestNotebookEndToEnd:
             "leaderboard membership is set at construction time, not by split values"
         )
 
+    def test_binary_eval_df_matches_binary_task_signature(self, ns):
+        _binary_eval_df = ns["_binary_eval_df"]
+        binary_task = ns["ruleshift_benchmark_v1_binary"]
+        expected_columns = {
+            name for name in inspect.signature(binary_task.fn).parameters if name != "llm"
+        }
+        assert set(_binary_eval_df.columns) == expected_columns, (
+            "_binary_eval_df must contain exactly the Binary task parameters; "
+            "unexpected columns cause kaggle_benchmarks signature binding failures"
+        )
+
     def test_official_binary_result_count_matches_leaderboard(self, ns):
         result_df = ns["binary_results"].as_dataframe()
         assert len(result_df) == len(ns["leaderboard_df"]), (
@@ -696,6 +708,17 @@ class TestNotebookEndToEnd:
         dev_binary_df = _dev_binary_results.as_dataframe()
         assert len(dev_binary_df) == len(ns["dev_df"]), (
             "Dev binary validation row count must equal dev_df row count"
+        )
+
+    def test_dev_binary_eval_df_matches_binary_task_signature(self, ns):
+        _dev_binary_eval_df = ns["_dev_binary_eval_df"]
+        binary_task = ns["ruleshift_benchmark_v1_binary"]
+        expected_columns = {
+            name for name in inspect.signature(binary_task.fn).parameters if name != "llm"
+        }
+        assert set(_dev_binary_eval_df.columns) == expected_columns, (
+            "_dev_binary_eval_df must contain exactly the Binary task parameters; "
+            "dev validation should exercise the same binding contract as Kaggle"
         )
 
     def test_dev_narrative_validation_count_matches_dev_df(self, ns):
