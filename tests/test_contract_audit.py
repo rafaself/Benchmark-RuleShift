@@ -20,6 +20,7 @@ from core.contract_audit import (
     check_manifest_hashes,
     check_notebook_metadata,
     check_run_artifact,
+    check_split_episode_counts,
     check_task_artifact,
     is_known_bad_run_shape,
     materialize_task_definition,
@@ -59,8 +60,8 @@ def _make_good_task() -> dict:
         ],
         "chosen_task": CANONICAL_BINARY_TASK_NAME,
         "splits": list(EXPECTED_SPLITS),
-        "episodes_per_split": 16,
-        "total_episodes": 48,
+        "episodes_per_split": 18,
+        "total_episodes": 54,
         "probe_count": 4,
     }
 
@@ -92,7 +93,7 @@ def _make_good_run() -> dict:
                 },
             },
         }
-        for i in range(16)
+        for i in range(18)
     ]
 
     return {
@@ -102,17 +103,17 @@ def _make_good_run() -> dict:
         "model_name": "test-model",
         "prompt_modes": ["binary", "narrative"],
         "splits": [
-            {"split_name": "dev", "episode_count": 16, "rows": rows},
-            {"split_name": "public_leaderboard", "episode_count": 16, "rows": rows},
-            {"split_name": "private_leaderboard", "episode_count": 16, "rows": rows},
+            {"split_name": "dev", "episode_count": 18, "rows": rows},
+            {"split_name": "public_leaderboard", "episode_count": 18, "rows": rows},
+            {"split_name": "private_leaderboard", "episode_count": 18, "rows": rows},
         ],
         "execution_summary": [
             {
                 "scope_type": "overall",
                 "scope_label": "all",
                 "mode": "Binary",
-                "episode_count": 48,
-                "completed_count": 48,
+                "episode_count": 54,
+                "completed_count": 54,
             }
         ],
         "diagnostic_summary": [
@@ -120,8 +121,8 @@ def _make_good_run() -> dict:
                 "scope_type": "overall",
                 "scope_label": "all",
                 "mode": "Binary",
-                "episode_count": 48,
-                "correct_count": 48,
+                "episode_count": 54,
+                "correct_count": 54,
                 "correct_rate": 1.0,
             }
         ],
@@ -203,6 +204,60 @@ class TestContractAuditPositive:
             "EXPECTED_DATASET_SOURCES diverged from canonical kernel-metadata.json. "
             "It must not be derived from KAGGLE_USERNAME or any runtime value."
         )
+
+    def test_split_episode_counts_use_supplied_repo_root(self, tmp_path):
+        manifests_dir = tmp_path / "src" / "frozen_splits"
+        manifests_dir.mkdir(parents=True)
+
+        for partition in ("dev", "public_leaderboard"):
+            payload = json.loads(
+                (_REPO_ROOT / "src" / "frozen_splits" / f"{partition}.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            payload["seeds"] = payload["seeds"][:1]
+            (manifests_dir / f"{partition}.json").write_text(
+                json.dumps(payload, indent=2) + "\n",
+                encoding="utf-8",
+            )
+
+        errors = check_split_episode_counts(tmp_path)
+
+        assert errors == [
+            "dev manifest has 1 seeds but EXPECTED_EPISODES_PER_SPLIT is 18",
+            "public_leaderboard manifest has 1 seeds but EXPECTED_EPISODES_PER_SPLIT is 18",
+        ]
+
+    def test_full_contract_audit_reports_split_manifest_load_failures(self, monkeypatch, tmp_path):
+        artifact_path = tmp_path / "artifact.json"
+        artifact_path.write_text("{}", encoding="utf-8")
+
+        monkeypatch.setattr("core.contract_audit.check_notebook_metadata", lambda repo_root=None: [])
+        monkeypatch.setattr(
+            "core.contract_audit.materialize_task_definition",
+            lambda repo_root=None: _make_good_task(),
+        )
+        monkeypatch.setattr("core.contract_audit.check_task_artifact", lambda task_json: [])
+        monkeypatch.setattr("core.contract_audit.check_manifest_hashes", lambda repo_root=None: [])
+        monkeypatch.setattr(
+            "core.contract_audit.find_latest_run_artifact",
+            lambda repo_root=None: artifact_path,
+        )
+        monkeypatch.setattr("core.contract_audit.check_run_artifact", lambda run_json: [])
+
+        def fake_load_split_manifest(partition: str, repo_root=None):
+            raise FileNotFoundError(f"{partition}.json missing")
+
+        monkeypatch.setattr("core.splits.load_split_manifest", fake_load_split_manifest)
+
+        report = run_contract_audit(_REPO_ROOT)
+
+        assert report["passed"] is False
+        assert report["checks"]["split_episode_counts"]["passed"] is False
+        assert report["checks"]["split_episode_counts"]["errors"] == [
+            "dev manifest could not be loaded: dev.json missing",
+            "public_leaderboard manifest could not be loaded: public_leaderboard.json missing",
+        ]
 
 
 # ── canonical metadata structure ─────────────────────────────────

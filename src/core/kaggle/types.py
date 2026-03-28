@@ -76,7 +76,66 @@ def parse_binary_response(response: object) -> ParsedPrediction:
     if isinstance(response, str):
         return parse_binary_output(response)
 
+    # Dict/mapping path: LLM SDKs (including Kaggle Benchmarks) commonly
+    # return structured schema responses as plain dicts or mapping-like
+    # objects rather than the exact dataclass type.
+    binary_response = _try_coerce_to_binary_response(response)
+    if binary_response is not None:
+        return ParsedPrediction(
+            labels=tuple(parse_label(label) for label in binary_response.as_tuple()),
+            status=ParseStatus.VALID,
+        )
+
     return ParsedPrediction(labels=(), status=ParseStatus.INVALID)
+
+
+_BINARY_RESPONSE_FIELDS: tuple[str, ...] = (
+    "probe_6", "probe_7", "probe_8", "probe_9",
+)
+
+
+def _try_coerce_to_binary_response(response: object) -> BinaryResponse | None:
+    """Attempt to construct a BinaryResponse from a dict, mapping, or
+    attribute-bearing object that matches the expected schema fields.
+
+    Returns None if the response cannot be coerced.
+    """
+    values: dict[str, object] = {}
+
+    if isinstance(response, dict):
+        values = response
+    elif hasattr(response, "__getitem__") and hasattr(response, "keys"):
+        # Mapping-like wrapper (e.g. MappingProxyType, Pydantic model dict view)
+        try:
+            values = {k: response[k] for k in _BINARY_RESPONSE_FIELDS}
+        except (KeyError, TypeError):
+            return None
+    elif all(hasattr(response, field) for field in _BINARY_RESPONSE_FIELDS):
+        # Attribute-bearing wrapper (e.g. Pydantic model, named tuple)
+        values = {field: getattr(response, field) for field in _BINARY_RESPONSE_FIELDS}
+    else:
+        return None
+
+    try:
+        labels = tuple(
+            Label(_extract_label_value(values[field]))
+            for field in _BINARY_RESPONSE_FIELDS
+        )
+        return BinaryResponse(*labels)
+    except (KeyError, TypeError, ValueError):
+        return None
+
+
+def _extract_label_value(value: object) -> str:
+    """Extract a string label value from a field that may be a str, Enum, or
+    object with a .value attribute."""
+    if isinstance(value, str):
+        return value
+    if isinstance(value, Enum):
+        return value.value
+    if hasattr(value, "value"):
+        return str(value.value)
+    return str(value)
 
 
 def parse_narrative_response(response: object) -> NarrativeParsedResult:
@@ -86,11 +145,43 @@ def parse_narrative_response(response: object) -> NarrativeParsedResult:
     if isinstance(response, str):
         return parse_narrative_audit_output(response)
 
+    # Some SDKs wrap even plain-text responses in an object with .text or
+    # ["text"].  Extract the text and parse normally.
+    text = _try_extract_text(response)
+    if text is not None:
+        return parse_narrative_audit_output(text)
+
     return NarrativeParsedResult(
         output=None,
         status=NarrativeParseStatus.INVALID_FORMAT,
-        failure_detail="unsupported response type",
+        failure_detail=f"unsupported response type: {type(response).__name__}",
     )
+
+
+def _try_extract_text(response: object) -> str | None:
+    """Attempt to extract a text string from a wrapper object or dict."""
+    # Dict with a "text" or "content" key
+    if isinstance(response, dict):
+        for key in ("text", "content"):
+            value = response.get(key)
+            if isinstance(value, str):
+                return value
+        return None
+
+    # Object with a .text or .content attribute
+    for attr in ("text", "content"):
+        value = getattr(response, attr, None)
+        if isinstance(value, str):
+            return value
+
+    # If it has a __str__ that returns something non-trivial, use it
+    # (but only for non-builtin types to avoid "{'key': 'value'}" strings)
+    if not isinstance(response, (dict, list, tuple, set, frozenset)):
+        text = str(response)
+        if text and text != repr(response):
+            return text
+
+    return None
 
 
 def score_episode(

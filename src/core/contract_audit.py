@@ -32,6 +32,7 @@ __all__ = [
     "check_manifest_hashes",
     "check_notebook_metadata",
     "check_run_artifact",
+    "check_split_episode_counts",
     "check_task_artifact",
     "find_latest_run_artifact",
     "is_known_bad_run_shape",
@@ -55,7 +56,7 @@ EXPECTED_DATASET_SOURCES: Final[tuple[str, ...]] = tuple(
     json.loads(_KERNEL_METADATA_PATH.read_text(encoding="utf-8"))["dataset_sources"]
 )
 EXPECTED_SPLITS: Final[tuple[str, ...]] = PARTITIONS
-EXPECTED_EPISODES_PER_SPLIT: Final[int] = 16
+EXPECTED_EPISODES_PER_SPLIT: Final[int] = 18
 EXPECTED_PROBE_COUNT: Final[int] = 4
 
 
@@ -210,6 +211,12 @@ def check_task_artifact(task_json: dict[str, Any]) -> list[str]:
     if task_json.get("probe_count") != EXPECTED_PROBE_COUNT:
         errors.append(f"probe_count must be {EXPECTED_PROBE_COUNT}")
 
+    if task_json.get("episodes_per_split") != EXPECTED_EPISODES_PER_SPLIT:
+        errors.append(
+            f"episodes_per_split must be {EXPECTED_EPISODES_PER_SPLIT}, "
+            f"got {task_json.get('episodes_per_split')!r}"
+        )
+
     return errors
 
 
@@ -322,6 +329,31 @@ def check_manifest_hashes(repo_root: Path | str | None = None) -> list[str]:
     return errors
 
 
+def check_split_episode_counts(repo_root: Path | str | None = None) -> list[str]:
+    """Validate that EXPECTED_EPISODES_PER_SPLIT matches actual frozen manifests.
+
+    This cross-check prevents contract drift where the constant is updated
+    without updating the frozen split seed banks, or vice versa.
+    """
+    root = _repo_root(repo_root)
+    from core.splits import PUBLIC_PARTITIONS, load_split_manifest
+
+    errors: list[str] = []
+    for partition in PUBLIC_PARTITIONS:
+        try:
+            manifest = load_split_manifest(partition, repo_root=root)
+        except (FileNotFoundError, OSError, json.JSONDecodeError, TypeError, ValueError) as exc:
+            errors.append(f"{partition} manifest could not be loaded: {exc}")
+            continue
+        actual = len(manifest.seeds)
+        if actual != EXPECTED_EPISODES_PER_SPLIT:
+            errors.append(
+                f"{partition} manifest has {actual} seeds but "
+                f"EXPECTED_EPISODES_PER_SPLIT is {EXPECTED_EPISODES_PER_SPLIT}"
+            )
+    return errors
+
+
 # ── artifact finder ──────────────────────────────────────────────
 
 
@@ -412,7 +444,10 @@ def run_contract_audit(
     # 4. Manifest / hashes
     manifest_errors = check_manifest_hashes(root)
 
-    all_errors = notebook_errors + task_errors + run_errors + manifest_errors
+    # 5. Split episode counts vs constant
+    split_count_errors = check_split_episode_counts(root)
+
+    all_errors = notebook_errors + task_errors + run_errors + manifest_errors + split_count_errors
 
     return {
         "audit": "p0_contract",
@@ -435,6 +470,10 @@ def run_contract_audit(
             "manifest_hashes": {
                 "passed": len(manifest_errors) == 0,
                 "errors": manifest_errors,
+            },
+            "split_episode_counts": {
+                "passed": len(split_count_errors) == 0,
+                "errors": split_count_errors,
             },
         },
         "error_count": len(all_errors),

@@ -67,7 +67,7 @@ _MANIFEST_FIELD_ORDER: Final[tuple[str, ...]] = (
     "difficulty_version",
     "seeds",
 )
-_MANIFEST_DIR: Final[Path] = Path(__file__).resolve().parents[1] / "frozen_splits"
+_DEFAULT_MANIFEST_DIR: Final[Path] = Path(__file__).resolve().parents[1] / "frozen_splits"
 _PARTITION_TO_EPISODE_SPLIT: Final[dict[str, Split]] = {
     "dev": Split.DEV,
     "public_leaderboard": Split.PUBLIC,
@@ -99,6 +99,12 @@ def _is_plain_int(value: object) -> bool:
 
 def _is_nonempty_string(value: object) -> bool:
     return isinstance(value, str) and bool(value)
+
+
+def _manifest_dir(repo_root: Path | str | None = None) -> Path:
+    if repo_root is None:
+        return _DEFAULT_MANIFEST_DIR
+    return Path(repo_root).resolve() / "src" / "frozen_splits"
 
 
 @dataclass(frozen=True, slots=True)
@@ -206,11 +212,14 @@ class FrozenSplitAudit:
     issues: tuple[ValidationIssue, ...]
 
 
-def load_split_manifest(partition: str) -> FrozenSplitManifest:
+def load_split_manifest(
+    partition: str,
+    repo_root: Path | str | None = None,
+) -> FrozenSplitManifest:
     if partition not in PARTITIONS:
         raise ValueError(f"unknown partition: {partition}")
 
-    manifest_path = _MANIFEST_DIR / f"{partition}.json"
+    manifest_path = _manifest_dir(repo_root) / f"{partition}.json"
     if partition == "private_leaderboard" and not manifest_path.is_file():
         return _load_private_split_manifest()
 

@@ -169,9 +169,9 @@ def _register_binary_task():
     ) -> tuple[int, int]:
         try:
             response = llm.prompt(prompt_binary, schema=BinaryResponse)
-            parsed_prediction = parse_binary_response(response)
         except Exception:
-            parsed_prediction = parse_binary_response(None)
+            response = None
+        parsed_prediction = parse_binary_response(response)
         predictions = (
             tuple(label.value for label in parsed_prediction.labels)
             if parsed_prediction.status is ParseStatus.VALID
@@ -194,9 +194,9 @@ def _make_narrative_fn():
     ) -> tuple[int, int]:
         try:
             response = llm.prompt(prompt_narrative)
-            parsed_result = parse_narrative_response(response)
         except Exception:
-            parsed_result = parse_narrative_response(None)
+            response = None
+        parsed_result = parse_narrative_response(response)
         predictions = (
             tuple(label.value for label in parsed_result.output.final_decision)
             if parsed_result.status is NarrativeParseStatus.VALID and parsed_result.output is not None
