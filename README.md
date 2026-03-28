@@ -103,6 +103,8 @@ See `packaging/kaggle/PRIVATE_SPLIT_RUNBOOK.md` for the artifact generation work
 
 The public runtime package includes only the public code and frozen public split manifests. Never place `private_episodes.json`, private seeds, or any repo-local private fallback in public repo paths or public packaging outputs.
 
+See `reports/ARTIFACT_POLICY.md` for the canonical artifact policy: which files are normative inputs, which are transient local outputs, and which are legacy archival materials.
+
 Kaggle deployment reads the checked-in metadata files directly. `KAGGLE_API_TOKEN` is the only required deployment secret. `KAGGLE_USERNAME`, runtime dataset slug inputs, and other deploy-time metadata overrides are not part of the current workflow.
 
 ## Kaggle Deploy Flow

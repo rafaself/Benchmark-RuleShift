@@ -6,3 +6,7 @@ __pycache__/
 deploy/
 src/frozen_splits/private_leaderboard.json
 packaging/kaggle/private/
+# Transient local outputs — never canonical, never commit
+benchmark_result.json
+reports/live/
+reports/local/
