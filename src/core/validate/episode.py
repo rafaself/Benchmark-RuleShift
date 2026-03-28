@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, fields, is_dataclass
-import json
 import re
-from typing import Iterable
 
 from tasks.ruleshift_benchmark.generator import generate_episode
 from tasks.ruleshift_benchmark.protocol import (

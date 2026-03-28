@@ -8,7 +8,40 @@ on:
   workflow_dispatch:
 
 jobs:
-  # ── Job 1: validate ──────────────────────────────────────────────────────────
+  # ── Job 1: quality ───────────────────────────────────────────────────────────
+  # Lint (Ruff) and narrow static type-check (mypy) on contract-critical files.
+  quality:
+    name: Quality (lint + types)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dev dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Install project (editable)
+        run: pip install -e .
+
+      - name: Lint (Ruff)
+        run: ruff check src/ scripts/
+
+      - name: Type-check (mypy)
+        run: |
+          mypy src/core/splits.py src/core/private_split.py src/core/cli.py \
+               src/core/validate/gate.py \
+               scripts/cd/build_runtime_dataset_package.py \
+               scripts/cd/build_kernel_package.py
+
+  # ── Job 2: validate ──────────────────────────────────────────────────────────
   # Installs the project, runs the full test suite, and checks all canonical
   # validation commands against the single in-repo benchmark and packaging paths.
   validate:

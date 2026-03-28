@@ -82,6 +82,8 @@ See `packaging/kaggle/PRIVATE_SPLIT_RUNBOOK.md` for the artifact generation work
 | Command | Purpose | Requirement | Environment |
 |---|---|---|---|
 | `make test` | Run the test suite | public-safe | any |
+| `make lint` | Ruff lint check | public-safe | any |
+| `make type-check` | mypy type check (narrow scope) | public-safe | any |
 | `make contract-audit` | P0 public artifact contract audit | public-safe | any |
 | `make doctor` | Report environment status | public-safe | any |
 | `make compliance-check` | Public/private isolation + notebook | public-safe | any |

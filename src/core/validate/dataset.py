@@ -6,7 +6,6 @@ from typing import Iterable
 
 from tasks.ruleshift_benchmark.protocol import (
     LABELED_ITEM_COUNT,
-    PROBE_COUNT,
     InteractionLabel,
     TEMPLATES,
     TemplateFamily,

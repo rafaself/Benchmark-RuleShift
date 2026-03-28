@@ -19,7 +19,7 @@ import json
 import os
 from pathlib import Path
 import hashlib
-from typing import Final
+from typing import Any, Final, Mapping
 
 from core.splits import FrozenSplitEpisode, MANIFEST_VERSION
 from tasks.ruleshift_benchmark.schema import (
@@ -279,7 +279,7 @@ def _normalize_generated_private_episode(seed: int) -> dict[str, object]:
     return normalize_episode_payload(generate_episode(seed, split=Split.PRIVATE))
 
 
-def _compute_private_artifact_checksum(payload: dict[str, object]) -> str:
+def _compute_private_artifact_checksum(payload: Mapping[str, Any]) -> str:
     encoded = json.dumps(
         payload,
         sort_keys=True,

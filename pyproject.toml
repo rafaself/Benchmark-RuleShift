@@ -20,6 +20,20 @@ ruleshift-benchmark-evidence-pass = "core.cli:evidence_pass_entrypoint"
 ruleshift-benchmark-contract-audit = "core.cli:contract_audit_entrypoint"
 ruleshift-benchmark-doctor = "core.cli:doctor_entrypoint"
 
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+
+[tool.ruff.lint.per-file-ignores]
+"scripts/cd/build_private_dataset_package.py" = ["E402"]
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+no_strict_optional = true
+
 [tool.setuptools]
 package-dir = {"" = "src"}
 

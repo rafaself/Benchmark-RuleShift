@@ -443,7 +443,7 @@ def _normalize_validity_episodes_by_split(
     if isinstance(episodes_by_split, tuple):
         provided = dict(episodes_by_split)
     else:
-        provided = dict(episodes_by_split)
+        provided = dict(episodes_by_split)  # type: ignore[arg-type]
 
     normalized: list[tuple[str, tuple[Episode, ...]]] = []
     for split_name in gate.report_splits:

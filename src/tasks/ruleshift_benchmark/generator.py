@@ -6,7 +6,6 @@ from tasks.ruleshift_benchmark.protocol import (
     CASE_SPACE,
     LABELED_ITEM_COUNT,
     Difficulty,
-    DifficultyProfileId,
     InteractionLabel,
     ItemKind,
     Phase,
@@ -20,7 +19,6 @@ from tasks.ruleshift_benchmark.protocol import (
 from tasks.ruleshift_benchmark.rules import label
 from tasks.ruleshift_benchmark.schema import (
     DIFFICULTY_VERSION,
-    DifficultyFactors,
     Episode,
     EpisodeItem,
     ProbeMetadata,
@@ -189,7 +187,6 @@ def _has_both_probe_labels(probe_targets: tuple[InteractionLabel, ...]) -> bool:
 
 
 def _has_full_probe_sign_pattern_coverage(items: tuple[EpisodeItem, ...]) -> bool:
-    probe_items = items[LABELED_ITEM_COUNT:]
     return _build_probe_sign_pattern_counts(items) == tuple(
         (pattern, 1) for pattern in _PROBE_SIGN_PATTERN_ORDER
     )

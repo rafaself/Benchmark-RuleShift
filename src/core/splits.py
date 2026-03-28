@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 from pathlib import Path
-from typing import Final
+from typing import Any, Final, cast
 
 from core.validate import (
     DatasetDistributionSummary,
@@ -276,14 +276,14 @@ def _load_private_split_manifest() -> FrozenSplitManifest:
     payload = load_private_split_manifest_info()
     return FrozenSplitManifest(
         partition="private_leaderboard",
-        episode_split=payload["episode_split"],
-        manifest_version=payload["benchmark_version"],
-        seed_bank_version=payload["artifact_checksum"],
+        episode_split=cast(Any, payload["episode_split"]),
+        manifest_version=cast(str, payload["benchmark_version"]),
+        seed_bank_version=cast(str, payload["artifact_checksum"]),
         spec_version=SPEC_VERSION,
         generator_version=GENERATOR_VERSION,
         template_set_version=TEMPLATE_SET_VERSION,
         difficulty_version=DIFFICULTY_VERSION,
-        seeds=tuple(payload["seeds"]),
+        seeds=tuple(cast(Any, payload["seeds"])),
     )
 
 
@@ -600,7 +600,7 @@ def _collect_overlap_issues(
 def _build_overlap_issues(
     *,
     code: str,
-    groups: dict[object, list[str]],
+    groups: dict[Any, list[str]],
     formatter,
 ) -> tuple[ValidationIssue, ...]:
     duplicates = []

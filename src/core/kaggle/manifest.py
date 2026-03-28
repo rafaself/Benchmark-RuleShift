@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 from typing import Final
 
-from core.splits import MANIFEST_VERSION, PARTITIONS, load_split_manifest
+from core.splits import MANIFEST_VERSION, load_split_manifest
 from tasks.ruleshift_benchmark.schema import (
     DIFFICULTY_VERSION,
     GENERATOR_VERSION,

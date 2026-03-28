@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Final, Iterable, Literal, Mapping
+from typing import Final, Iterable, Literal
 
 from core.parser import ParseStatus, ParsedPrediction
 from tasks.ruleshift_benchmark.baselines import BaselineRunResult
