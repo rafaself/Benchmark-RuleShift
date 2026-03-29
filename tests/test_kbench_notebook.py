@@ -898,6 +898,37 @@ class TestNotebookEndToEnd:
         assert required_fields.issubset(manifest)
         assert manifest["run_id"] == "test-run"
 
+    def test_notebook_writes_episode_results_ledger(self, ns):
+        ledger_path = ns["RUN_EPISODE_LEDGER_PATH"]
+        assert ledger_path.name == "episode_results.jsonl"
+        assert ledger_path.is_file()
+        assert ledger_path.parent == ns["RUN_OUTPUT_DIR"]
+
+        records = [
+            json.loads(line)
+            for line in ledger_path.read_text(encoding="utf-8").splitlines()
+        ]
+        assert len(records) == 2 * (len(ns["dev_df"]) + len(ns["leaderboard_df"]))
+
+        required_fields = {
+            "run_id",
+            "episode_id",
+            "split",
+            "task_mode",
+            "provider",
+            "model",
+            "call_status",
+            "parse_status",
+            "latency_ms",
+            "prediction",
+            "target",
+            "score",
+            "exception_ref",
+        }
+        for record in records:
+            assert required_fields.issubset(record)
+            assert record["run_id"] == "test-run"
+
     # ── 12: %choose boundary ─────────────────────────────────────────────────
 
     def test_choose_cell_is_last_and_selects_binary(self):

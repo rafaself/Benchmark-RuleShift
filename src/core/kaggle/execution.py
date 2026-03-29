@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from time import monotonic
+from core.kaggle.episode_ledger import EpisodeResultLedgerWriter
+from core.kaggle.run_logging import EXCEPTIONS_LOG_FILENAME
 from core.kaggle.run_logging import BenchmarkRunLogger
 from core.kaggle.types import (
     BinaryResponse,
@@ -47,9 +50,11 @@ def run_binary_episode(
     prompt_binary: str,
     probe_targets: tuple,
     logger: BenchmarkRunLogger,
+    ledger: EpisodeResultLedgerWriter | None = None,
     phase: str,
     task_mode: str,
     episode_id: str | None,
+    split: str | None = None,
 ) -> BinaryEpisodeExecution:
     logger.log_episode_started(
         phase=phase,
@@ -61,6 +66,7 @@ def run_binary_episode(
         task_mode=task_mode,
         episode_id=episode_id,
     )
+    call_started_at = monotonic()
 
     try:
         response = llm.prompt(prompt_binary, schema=BinaryResponse)
@@ -68,9 +74,13 @@ def run_binary_episode(
         return _binary_operational_failure(
             exc,
             logger=logger,
+            ledger=ledger,
             phase=phase,
             task_mode=task_mode,
             episode_id=episode_id,
+            split=split,
+            target=probe_targets,
+            latency_ms=_duration_ms(call_started_at),
             failure_stage="provider_call",
         )
 
@@ -86,9 +96,13 @@ def run_binary_episode(
         return _binary_operational_failure(
             exc,
             logger=logger,
+            ledger=ledger,
             phase=phase,
             task_mode=task_mode,
             episode_id=episode_id,
+            split=split,
+            target=probe_targets,
+            latency_ms=_duration_ms(call_started_at),
             failure_stage="response_parse",
         )
 
@@ -120,9 +134,13 @@ def run_binary_episode(
         return _binary_operational_failure(
             exc,
             logger=logger,
+            ledger=ledger,
             phase=phase,
             task_mode=task_mode,
             episode_id=episode_id,
+            split=split,
+            target=probe_targets,
+            latency_ms=_duration_ms(call_started_at),
             failure_stage="episode_scoring",
         )
 
@@ -135,6 +153,19 @@ def run_binary_episode(
         num_correct=score[0],
         total=score[1],
     )
+    if ledger is not None:
+        ledger.write_record(
+            episode_id=episode_id,
+            split=split,
+            task_mode=task_mode,
+            call_status="completed",
+            parse_status=parsed_prediction.status.value,
+            latency_ms=_duration_ms(call_started_at),
+            prediction=_binary_prediction_payload(parsed_prediction),
+            target=_labels_payload(probe_targets),
+            score=_score_payload(score),
+            exception_ref=None,
+        )
     return BinaryEpisodeExecution(
         parsed_prediction=parsed_prediction,
         score=score,
@@ -148,9 +179,11 @@ def run_narrative_episode(
     prompt_narrative: str,
     probe_targets: tuple,
     logger: BenchmarkRunLogger,
+    ledger: EpisodeResultLedgerWriter | None = None,
     phase: str,
     task_mode: str,
     episode_id: str | None,
+    split: str | None = None,
 ) -> NarrativeEpisodeExecution:
     logger.log_episode_started(
         phase=phase,
@@ -162,6 +195,7 @@ def run_narrative_episode(
         task_mode=task_mode,
         episode_id=episode_id,
     )
+    call_started_at = monotonic()
 
     try:
         response = llm.prompt(prompt_narrative)
@@ -169,9 +203,13 @@ def run_narrative_episode(
         return _narrative_operational_failure(
             exc,
             logger=logger,
+            ledger=ledger,
             phase=phase,
             task_mode=task_mode,
             episode_id=episode_id,
+            split=split,
+            target=probe_targets,
+            latency_ms=_duration_ms(call_started_at),
             failure_stage="provider_call",
         )
 
@@ -187,9 +225,13 @@ def run_narrative_episode(
         return _narrative_operational_failure(
             exc,
             logger=logger,
+            ledger=ledger,
             phase=phase,
             task_mode=task_mode,
             episode_id=episode_id,
+            split=split,
+            target=probe_targets,
+            latency_ms=_duration_ms(call_started_at),
             failure_stage="response_parse",
         )
 
@@ -222,9 +264,13 @@ def run_narrative_episode(
         return _narrative_operational_failure(
             exc,
             logger=logger,
+            ledger=ledger,
             phase=phase,
             task_mode=task_mode,
             episode_id=episode_id,
+            split=split,
+            target=probe_targets,
+            latency_ms=_duration_ms(call_started_at),
             failure_stage="episode_scoring",
         )
 
@@ -237,6 +283,19 @@ def run_narrative_episode(
         num_correct=score[0],
         total=score[1],
     )
+    if ledger is not None:
+        ledger.write_record(
+            episode_id=episode_id,
+            split=split,
+            task_mode=task_mode,
+            call_status="completed",
+            parse_status=parsed_result.status.value,
+            latency_ms=_duration_ms(call_started_at),
+            prediction=_narrative_prediction_payload(parsed_result),
+            target=_labels_payload(probe_targets),
+            score=_score_payload(score),
+            exception_ref=None,
+        )
     return NarrativeEpisodeExecution(
         parsed_result=parsed_result,
         score=score,
@@ -248,12 +307,16 @@ def _binary_operational_failure(
     exc: BaseException,
     *,
     logger: BenchmarkRunLogger,
+    ledger: EpisodeResultLedgerWriter | None,
     phase: str,
     task_mode: str,
     episode_id: str | None,
+    split: str | None,
+    target: tuple,
+    latency_ms: int | None,
     failure_stage: str,
 ) -> BinaryEpisodeExecution:
-    _log_operational_failure(
+    exception_ref = _log_operational_failure(
         exc,
         logger=logger,
         phase=phase,
@@ -272,6 +335,19 @@ def _binary_operational_failure(
         total=score[1],
         failure_stage=failure_stage,
     )
+    if ledger is not None:
+        ledger.write_record(
+            episode_id=episode_id,
+            split=split,
+            task_mode=task_mode,
+            call_status="failed" if failure_stage == "provider_call" else "completed",
+            parse_status=OPERATIONAL_FAILURE_STATUS,
+            latency_ms=latency_ms,
+            prediction=None,
+            target=_labels_payload(target),
+            score=_score_payload(score),
+            exception_ref=exception_ref,
+        )
     return BinaryEpisodeExecution(
         parsed_prediction=ParsedPrediction.skipped_provider_failure(),
         score=score,
@@ -283,12 +359,16 @@ def _narrative_operational_failure(
     exc: BaseException,
     *,
     logger: BenchmarkRunLogger,
+    ledger: EpisodeResultLedgerWriter | None,
     phase: str,
     task_mode: str,
     episode_id: str | None,
+    split: str | None,
+    target: tuple,
+    latency_ms: int | None,
     failure_stage: str,
 ) -> NarrativeEpisodeExecution:
-    _log_operational_failure(
+    exception_ref = _log_operational_failure(
         exc,
         logger=logger,
         phase=phase,
@@ -307,6 +387,19 @@ def _narrative_operational_failure(
         total=score[1],
         failure_stage=failure_stage,
     )
+    if ledger is not None:
+        ledger.write_record(
+            episode_id=episode_id,
+            split=split,
+            task_mode=task_mode,
+            call_status="failed" if failure_stage == "provider_call" else "completed",
+            parse_status=OPERATIONAL_FAILURE_STATUS,
+            latency_ms=latency_ms,
+            prediction=None,
+            target=_labels_payload(target),
+            score=_score_payload(score),
+            exception_ref=exception_ref,
+        )
     return NarrativeEpisodeExecution(
         parsed_result=NarrativeParsedResult.skipped_provider_failure(),
         score=score,
@@ -322,7 +415,7 @@ def _log_operational_failure(
     task_mode: str,
     episode_id: str | None,
     failure_stage: str,
-) -> None:
+) -> str:
     detail = _format_operational_failure_detail(failure_stage, exc)
     if failure_stage == "provider_call":
         logger.log_provider_call_failed(
@@ -334,7 +427,7 @@ def _log_operational_failure(
             failure_stage=failure_stage,
             detail=detail,
         )
-    logger.log_exception(
+    exception_record = logger.log_exception(
         exc,
         phase=phase,
         task_mode=task_mode,
@@ -351,6 +444,7 @@ def _log_operational_failure(
         failure_stage=failure_stage,
         detail=detail,
     )
+    return f"{EXCEPTIONS_LOG_FILENAME}#{exception_record['timestamp']}"
 
 
 def _format_operational_failure_detail(
@@ -361,3 +455,41 @@ def _format_operational_failure_detail(
         f"Operational failure during {failure_stage}: "
         f"{type(exc).__name__}: {exc}"
     )
+
+
+def _duration_ms(started_at: float) -> int:
+    return max(0, int((monotonic() - started_at) * 1000))
+
+
+def _binary_prediction_payload(
+    parsed_prediction: ParsedPrediction,
+) -> list[str] | None:
+    if parsed_prediction.status is not ParseStatus.VALID:
+        return None
+    return [label.value for label in parsed_prediction.labels]
+
+
+def _narrative_prediction_payload(
+    parsed_result: NarrativeParsedResult,
+) -> list[str] | None:
+    if parsed_result.status is not NarrativeParseStatus.VALID:
+        return None
+    if parsed_result.output is None:
+        return None
+    return [label.value for label in parsed_result.output.final_decision]
+
+
+def _labels_payload(labels: tuple | None) -> list[str] | None:
+    if labels is None:
+        return None
+    return [
+        str(getattr(label, "value", label))
+        for label in labels
+    ]
+
+
+def _score_payload(score: tuple[int, int]) -> dict[str, int]:
+    return {
+        "num_correct": score[0],
+        "total": score[1],
+    }
