@@ -3,10 +3,10 @@ import pytest
 
 from core.kaggle import (
     build_kaggle_payload,
-    compute_bootstrap_confidence_interval,
     normalize_count_result_df,
     validate_kaggle_payload,
 )
+from core.kaggle.payload import compute_bootstrap_confidence_interval
 
 
 def _make_binary_df(rows: list[dict] | None = None) -> pd.DataFrame:

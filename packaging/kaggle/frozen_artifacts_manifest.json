@@ -9,7 +9,7 @@
   "entry_points": {
     "kbench_notebook": {
       "path": "packaging/kaggle/ruleshift_notebook_task.ipynb",
-      "sha256": "4bace79058bd9c898cbcb5bedee8fea9f2b4627dd0e6250cb58cb96b9b672ad9"
+      "sha256": "47c8ba7942d6bee34c5fa77a5c661684af90de91967c8acdb63d61a58e950c3b"
     },
     "kernel_metadata": {
       "path": "packaging/kaggle/kernel-metadata.json",

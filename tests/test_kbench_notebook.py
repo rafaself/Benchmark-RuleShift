@@ -65,20 +65,25 @@ def test_notebook_source_keeps_binary_only_leaderboard_surface():
 
     assert '@kbench.task(\n    name="ruleshift_benchmark_v1_binary"' in source
     assert '@kbench.task(\n    name="ruleshift_benchmark_v1_narrative"' not in source
-    assert "discover_private_dataset_root" in source
-    assert 'frozen_splits["private_leaderboard"] = load_private_split(PRIVATE_DATASET_ROOT)' in source
+    assert "load_leaderboard_dataframe" in source
+    assert "run_binary_task" in source
     assert "packaging/kaggle/private/private_episodes.json" not in source
+    assert "NotebookStatus" not in source
+    assert "discover_private_dataset_root" not in source
+    assert "load_private_split" not in source
+    assert "run_narrative_episode" not in source
+    assert "write_diagnostics_summary" not in source
+    assert "write_run_manifest" not in source
+    assert "benchmark_result.json" not in source
+    assert "dev_df" not in source
     assert "%choose ruleshift_benchmark_v1_binary" in source
 
 
 def test_notebook_executes_end_to_end_with_private_mount():
     ns = _execute_notebook_cells()
 
-    assert set(ns["frozen_splits"]) == {"dev", "public_leaderboard", "private_leaderboard"}
-    assert (ns["dev_df"]["split"] == "dev").all()
-    assert "dev" not in set(ns["leaderboard_df"]["split"])
+    assert set(ns["frozen_splits"]) == {"public_leaderboard", "private_leaderboard"}
     assert set(ns["leaderboard_df"]["split"]) == {"public_leaderboard", "private_leaderboard"}
-    assert set(ns["dev_df"]["episode_id"]).isdisjoint(set(ns["leaderboard_df"]["episode_id"]))
 
     registry = kbench.get_registry()
     assert set(registry) == {"ruleshift_benchmark_v1_binary"}
@@ -95,11 +100,10 @@ def test_notebook_executes_end_to_end_with_private_mount():
     }
     assert ns["payload"]["total_episodes"] == len(ns["leaderboard_df"])
     assert ns["payload"]["split"] == "frozen_leaderboard"
-
-    assert ns["RUN_LOG_PATH"].is_file()
-    assert ns["DIAGNOSTICS_SUMMARY_PATH"].is_file()
-    assert ns["RUN_MANIFEST_PATH"].is_file()
-    assert ns["RUN_EPISODE_LEDGER_PATH"].is_file()
+    assert "RUN_LOG_PATH" not in ns
+    assert "DIAGNOSTICS_SUMMARY_PATH" not in ns
+    assert "RUN_MANIFEST_PATH" not in ns
+    assert "RUN_EPISODE_LEDGER_PATH" not in ns
 
 
 def test_notebook_executes_public_only_without_private_mount(monkeypatch: pytest.MonkeyPatch):
@@ -107,7 +111,7 @@ def test_notebook_executes_public_only_without_private_mount(monkeypatch: pytest
     ns = _execute_notebook_cells()
 
     assert ns["PRIVATE_DATASET_ROOT"] is None
-    assert set(ns["frozen_splits"]) == {"dev", "public_leaderboard"}
+    assert set(ns["frozen_splits"]) == {"public_leaderboard"}
     assert set(ns["leaderboard_df"]["split"]) == {"public_leaderboard"}
     assert ns["payload"]["total_episodes"] == len(ns["leaderboard_df"])
     assert ns["payload"]["split"] == "public_leaderboard"

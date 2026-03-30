@@ -7,36 +7,30 @@ from pathlib import Path
 
 import pytest
 
-from core.kaggle import (
+from core.kaggle.manifest import (
     RUN_MANIFEST_FILENAME,
-    BenchmarkRunLogger,
-    build_run_context,
     write_run_manifest,
 )
-from core.kaggle import run_manifest as run_manifest_module
+from core.kaggle import manifest as manifest_module
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 def _write_manifest(tmp_path: Path) -> dict[str, object]:
-    context = build_run_context(
-        repo_root=_REPO_ROOT,
+    manifest_path = write_run_manifest(
         run_id="run-manifest-001",
         output_dir=tmp_path / "manifest-run",
+        repo_root=_REPO_ROOT,
+        started_at="2026-03-30T00:00:00Z",
+        finished_at="2026-03-30T00:01:00Z",
     )
-    logger = BenchmarkRunLogger(context)
-    logger.log_run_started(output_dir=str(context.output_dir))
-    logger.log_run_finished(output_dir=str(context.output_dir), total_exceptions=0)
-
-    manifest_path = write_run_manifest(context=context, repo_root=_REPO_ROOT)
-
-    assert manifest_path == context.output_dir / RUN_MANIFEST_FILENAME
+    assert manifest_path == (tmp_path / "manifest-run" / RUN_MANIFEST_FILENAME)
     return json.loads(manifest_path.read_text(encoding="utf-8"))
 
 
 def test_write_run_manifest_uses_ci_commit_when_available(tmp_path, monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setenv("GITHUB_SHA", "ci-commit-sha")
-    monkeypatch.setattr(run_manifest_module.subprocess, "run", _unexpected_git_call)
+    monkeypatch.setattr(manifest_module.subprocess, "run", _unexpected_git_call)
 
     manifest = _write_manifest(tmp_path)
 
@@ -53,13 +47,13 @@ def test_write_run_manifest_uses_ci_commit_when_available(tmp_path, monkeypatch:
     assert manifest["runtime_dataset_version"] is None
     assert manifest["provider"] == "unknown"
     assert manifest["model"] == "unknown"
-    assert isinstance(manifest["started_at"], str) and manifest["started_at"]
-    assert isinstance(manifest["finished_at"], str) and manifest["finished_at"]
+    assert manifest["started_at"] == "2026-03-30T00:00:00Z"
+    assert manifest["finished_at"] == "2026-03-30T00:01:00Z"
 
 
 def test_write_run_manifest_uses_local_git_commit_when_ci_sha_missing(tmp_path, monkeypatch: pytest.MonkeyPatch):
     monkeypatch.delenv("GITHUB_SHA", raising=False)
-    monkeypatch.setattr(run_manifest_module.subprocess, "run", _successful_git_rev_parse)
+    monkeypatch.setattr(manifest_module.subprocess, "run", _successful_git_rev_parse)
 
     manifest = _write_manifest(tmp_path)
 
@@ -68,7 +62,7 @@ def test_write_run_manifest_uses_local_git_commit_when_ci_sha_missing(tmp_path, 
 
 def test_write_run_manifest_allows_non_git_execution(tmp_path, monkeypatch: pytest.MonkeyPatch):
     monkeypatch.delenv("GITHUB_SHA", raising=False)
-    monkeypatch.setattr(run_manifest_module.subprocess, "run", _failing_git_rev_parse)
+    monkeypatch.setattr(manifest_module.subprocess, "run", _failing_git_rev_parse)
 
     manifest = _write_manifest(tmp_path)
 

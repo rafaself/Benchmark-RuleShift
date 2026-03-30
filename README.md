@@ -27,13 +27,16 @@ The official contract does not include narrative result requirements, comparison
 The public runtime package includes only:
 
 - `src/core/kaggle/`
-- `src/core/parser.py`
-- `src/core/metrics.py`
-- `src/core/slices.py`
 - `src/core/splits.py`
 - `src/core/private_split.py`
 - `src/tasks/ruleshift_benchmark/{generator.py,protocol.py,render.py,rules.py,schema.py}`
 - `src/frozen_splits/{dev.json,public_leaderboard.json}`
+
+Within `src/core/kaggle/`, the official release path is limited to:
+
+- `runner.py`
+- `payload.py`
+- `manifest.py`
 
 The checked-in public split manifests are:
 
