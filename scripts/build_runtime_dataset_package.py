@@ -12,27 +12,25 @@ forbidden file is detected in the source tree before copying.
 
 from __future__ import annotations
 
-import argparse
-import hashlib
 import json
 import shutil
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-_KAGGLE_DIR = REPO_ROOT / "packaging" / "kaggle"
-_DATASET_METADATA_PATH = _KAGGLE_DIR / "dataset-metadata.json"
+from _package_build import KAGGLE_DIR, REPO_ROOT, build_output_parser, load_required_json, reset_output_dir, sha256
 
-_REQUIRED_FIELDS = ("id", "title", "licenses")
+DATASET_METADATA_PATH = KAGGLE_DIR / "dataset-metadata.json"
 
-_FORBIDDEN_FILENAMES = frozenset(
+REQUIRED_FIELDS = ("id", "title", "licenses")
+
+FORBIDDEN_FILENAMES = frozenset(
     (
         "private_leaderboard.json",
         "private_episodes.json",
     )
 )
-_IGNORED_DIRS = frozenset((".git", ".venv", ".pytest_cache", "__pycache__"))
-_RUNTIME_SOURCE_RELPATHS = (
+IGNORED_DIRS = frozenset((".git", ".venv", ".pytest_cache", "__pycache__"))
+RUNTIME_SOURCE_RELPATHS = (
     "src/core/__init__.py",
     "src/core/kaggle/__init__.py",
     "src/core/kaggle/diagnostics_summary.py",
@@ -66,43 +64,37 @@ _RUNTIME_SOURCE_RELPATHS = (
 )
 
 
-# ---------------------------------------------------------------------------
-# Safety gate
-# ---------------------------------------------------------------------------
-
 def _check_no_private_artifacts(src_dir: Path, frozen_manifests_path: Path) -> None:
     """Abort if any private artifact is present in the source tree."""
     errors: list[str] = []
 
     for search_root in (src_dir,):
-        for name in _FORBIDDEN_FILENAMES:
+        for name in FORBIDDEN_FILENAMES:
             for hit in search_root.rglob(name):
-                if any(part in _IGNORED_DIRS for part in hit.parts):
+                if any(part in IGNORED_DIRS for part in hit.parts):
                     continue
                 errors.append(f"forbidden private artifact in src: {hit.relative_to(REPO_ROOT)}")
 
     manifest = json.loads(frozen_manifests_path.read_text(encoding="utf-8"))
     if "private_leaderboard" in manifest.get("frozen_split_manifests", {}):
         errors.append(
-            "frozen_artifacts_manifest.json references private_leaderboard — "
+            "frozen_artifacts_manifest.json references private_leaderboard - "
             "must not be included in the public package"
         )
 
     if errors:
         for msg in errors:
             print(f"ERROR: {msg}", file=sys.stderr)
-        raise SystemExit("Private data detected — aborting build.")
+        raise SystemExit("Private data detected - aborting build.")
 
 
-def _verify_split_manifest_hashes(
-    manifest: dict, output_dir: Path
-) -> None:
+def _verify_split_manifest_hashes(manifest: dict, output_dir: Path) -> None:
     """Verify copied frozen split manifests match hashes declared in frozen_artifacts_manifest."""
     for partition, entry in manifest.get("frozen_split_manifests", {}).items():
         dest = output_dir / entry["path"]
         if not dest.is_file():
             raise FileNotFoundError(f"Expected split manifest not found in output: {dest}")
-        actual = _sha256(dest)
+        actual = sha256(dest)
         expected = entry["sha256"]
         if actual != expected:
             raise ValueError(
@@ -112,26 +104,15 @@ def _verify_split_manifest_hashes(
 
 
 def _copy_runtime_source_subset(output_dir: Path) -> None:
-    missing_sources = [
-        relpath for relpath in _RUNTIME_SOURCE_RELPATHS
-        if not (REPO_ROOT / relpath).is_file()
-    ]
+    missing_sources = [relpath for relpath in RUNTIME_SOURCE_RELPATHS if not (REPO_ROOT / relpath).is_file()]
     if missing_sources:
-        raise FileNotFoundError(
-            "Missing runtime source files: " + ", ".join(missing_sources)
-        )
+        raise FileNotFoundError("Missing runtime source files: " + ", ".join(missing_sources))
 
-    for relpath in _RUNTIME_SOURCE_RELPATHS:
+    for relpath in RUNTIME_SOURCE_RELPATHS:
         source = REPO_ROOT / relpath
         destination = output_dir / relpath
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, destination)
-
-
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    digest.update(path.read_bytes())
-    return digest.hexdigest()
 
 
 def _assert_dataset_metadata_matches_canonical(
@@ -168,48 +149,34 @@ def _assert_sorted_unique_resource_paths(packaged: dict[str, object]) -> None:
         raise ValueError("resources paths must be unique")
 
 
-# ---------------------------------------------------------------------------
-# Build
-# ---------------------------------------------------------------------------
-
 def _build(output_dir: Path) -> None:
     src_dir = REPO_ROOT / "src"
-    frozen_manifests_path = _KAGGLE_DIR / "frozen_artifacts_manifest.json"
+    frozen_manifests_path = KAGGLE_DIR / "frozen_artifacts_manifest.json"
 
     if not src_dir.is_dir():
         raise FileNotFoundError(f"src/ not found at {src_dir}")
     if not frozen_manifests_path.is_file():
         raise FileNotFoundError(f"frozen_artifacts_manifest.json not found at {frozen_manifests_path}")
-    if not _DATASET_METADATA_PATH.is_file():
-        raise FileNotFoundError(f"dataset-metadata.json not found at {_DATASET_METADATA_PATH}")
 
-    dataset_metadata = json.loads(_DATASET_METADATA_PATH.read_text(encoding="utf-8"))
-    missing = [f for f in _REQUIRED_FIELDS if not dataset_metadata.get(f)]
-    if missing:
-        raise ValueError(f"dataset-metadata.json is missing required fields: {missing}")
+    dataset_metadata = load_required_json(DATASET_METADATA_PATH, required_fields=REQUIRED_FIELDS)
 
     _check_no_private_artifacts(src_dir, frozen_manifests_path)
 
-    if output_dir.exists():
-        shutil.rmtree(output_dir)
-    output_dir.mkdir(parents=True)
+    reset_output_dir(output_dir)
 
     _copy_runtime_source_subset(output_dir)
 
-    # Copy frozen_artifacts_manifest.json into packaging/kaggle/ mirror
     manifest_dest_dir = output_dir / "packaging" / "kaggle"
     manifest_dest_dir.mkdir(parents=True)
     shutil.copy2(frozen_manifests_path, manifest_dest_dir / "frozen_artifacts_manifest.json")
 
-    # Verify split manifest hashes against what was just copied
     manifest = json.loads(frozen_manifests_path.read_text(encoding="utf-8"))
     _verify_split_manifest_hashes(manifest, output_dir)
 
-    # Write dataset-metadata.json: canonical fields + resources list
     dataset_metadata["resources"] = [
-        {"path": str(p.relative_to(output_dir))}
-        for p in sorted(output_dir.rglob("*"))
-        if p.is_file() and p.name != "dataset-metadata.json"
+        {"path": str(path.relative_to(output_dir))}
+        for path in sorted(output_dir.rglob("*"))
+        if path.is_file() and path.name != "dataset-metadata.json"
     ]
     packaged_metadata_path = output_dir / "dataset-metadata.json"
     packaged_metadata_path.write_text(
@@ -218,28 +185,19 @@ def _build(output_dir: Path) -> None:
     )
 
     packaged_metadata = json.loads(packaged_metadata_path.read_text(encoding="utf-8"))
+    canonical_dataset_metadata = load_required_json(DATASET_METADATA_PATH, required_fields=REQUIRED_FIELDS)
     _assert_dataset_metadata_matches_canonical(
-        canonical=json.loads(_DATASET_METADATA_PATH.read_text(encoding="utf-8")),
+        canonical=canonical_dataset_metadata,
         packaged=packaged_metadata,
     )
     _assert_sorted_unique_resource_paths(packaged_metadata)
 
 
-def _build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        description="Build the public Kaggle runtime dataset package.",
-    )
-    parser.add_argument(
-        "--output-dir",
-        type=Path,
-        required=True,
-        help="Output directory for the runtime package.",
-    )
-    return parser
-
-
 def main(argv: list[str] | None = None) -> int:
-    args = _build_parser().parse_args(argv)
+    args = build_output_parser(
+        description="Build the public Kaggle runtime dataset package.",
+        help_text="Output directory for the runtime package.",
+    ).parse_args(argv)
     output_dir = args.output_dir.resolve()
     _build(output_dir)
     print(output_dir)

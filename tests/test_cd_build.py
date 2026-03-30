@@ -79,7 +79,7 @@ def test_canonical_metadata_is_runtime_ready():
 @pytest.fixture(scope="module")
 def runtime_package(tmp_path_factory: pytest.TempPathFactory) -> Path:
     out = tmp_path_factory.mktemp("runtime-package")
-    result = _run("scripts/cd/build_runtime_dataset_package.py", ["--output-dir", str(out)])
+    result = _run("scripts/build_runtime_dataset_package.py", ["--output-dir", str(out)])
     assert result.returncode == 0, result.stderr or result.stdout
     assert Path(result.stdout.strip()) == out
     return out
@@ -120,7 +120,7 @@ def test_runtime_dataset_metadata_preserves_canonical_fields_and_exact_resources
 @pytest.fixture(scope="module")
 def kernel_bundle(tmp_path_factory: pytest.TempPathFactory) -> Path:
     out = tmp_path_factory.mktemp("kernel-bundle")
-    result = _run("scripts/cd/build_kernel_package.py", ["--output-dir", str(out)])
+    result = _run("scripts/build_kernel_package.py", ["--output-dir", str(out)])
     assert result.returncode == 0, result.stderr or result.stdout
     assert Path(result.stdout.strip()) == out
     return out

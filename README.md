@@ -8,7 +8,7 @@ RuleShift Benchmark is a narrow Executive Functions benchmark for cognitive flex
 - `src/core/`: runtime split loading, parser/metrics/slices, Kaggle payload helpers, and run diagnostics.
 - `src/frozen_splits/`: public frozen manifests for `dev` and `public_leaderboard`.
 - `packaging/kaggle/`: official notebook, runtime metadata, and the public packaging manifest.
-- `scripts/cd/`: the two public build scripts used to package the runtime dataset and notebook bundle.
+- `scripts/`: the public build scripts and shared packaging helpers for the runtime dataset and notebook bundle.
 
 The public runtime package includes only:
 
@@ -49,13 +49,13 @@ python3 -m pytest tests/test_private_split.py -v
 Build the public Kaggle runtime dataset:
 
 ```bash
-python3 scripts/cd/build_runtime_dataset_package.py --output-dir /tmp/ruleshift-runtime-package
+python3 scripts/build_runtime_dataset_package.py --output-dir /tmp/ruleshift-runtime-package
 ```
 
 Build the Kaggle notebook bundle:
 
 ```bash
-python3 scripts/cd/build_kernel_package.py --output-dir /tmp/ruleshift-kernel-bundle
+python3 scripts/build_kernel_package.py --output-dir /tmp/ruleshift-kernel-bundle
 ```
 
 ## Private Evaluation Mount

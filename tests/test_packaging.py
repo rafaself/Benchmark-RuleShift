@@ -79,8 +79,8 @@ def test_pyproject_keeps_default_install_surface_runtime_only():
 def test_readme_describes_runtime_surface_without_maintainer_or_benchmark_card_weight():
     readme_text = _REPO_ROOT.joinpath("README.md").read_text(encoding="utf-8")
 
-    assert "scripts/cd/build_runtime_dataset_package.py" in readme_text
-    assert "scripts/cd/build_kernel_package.py" in readme_text
+    assert "scripts/build_runtime_dataset_package.py" in readme_text
+    assert "scripts/build_kernel_package.py" in readme_text
     assert "src/frozen_splits/dev.json" in readme_text
     assert "src/frozen_splits/public_leaderboard.json" in readme_text
     assert "packaging/kaggle/BENCHMARK_CARD.md" not in readme_text
