@@ -144,3 +144,24 @@ def test_summarize_exceptions_reports_clean_and_non_clean_runs(tmp_path):
         "official_binary_evaluation": 2,
         "official_narrative_evaluation": 1,
     }
+
+
+def test_reinitializing_logger_for_same_run_does_not_duplicate_handler_writes(tmp_path):
+    context = build_run_context(
+        repo_root=tmp_path,
+        llm=_LLMIdentityStub(),
+        run_id="run-reinit-001",
+        output_dir=tmp_path / "reinit-run",
+    )
+    BenchmarkRunLogger(context)
+    logger = BenchmarkRunLogger(context)
+
+    logger.log_run_started(output_dir=str(context.output_dir))
+
+    records = [
+        json.loads(line)
+        for line in (tmp_path / "reinit-run" / BENCHMARK_LOG_FILENAME).read_text(encoding="utf-8").splitlines()
+    ]
+
+    assert len(records) == 1
+    assert records[0]["event"] == "run_started"

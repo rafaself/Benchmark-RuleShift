@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+import json
+import logging
+import os
 import traceback as _tb
+from pathlib import Path
 from typing import Any
 
 from core.kaggle.run_context import (
@@ -11,7 +15,6 @@ from core.kaggle.run_context import (
 )
 from core.kaggle.run_log_io import (
     ExceptionSummary,
-    append_jsonl_record,
     summarize_exception_log,
     timestamp_utc,
 )
@@ -50,6 +53,75 @@ LIFECYCLE_EVENTS = frozenset(
     }
 )
 
+_LOGGER_BASE_NAME = "ruleshift"
+_RESERVED_LOG_RECORD_FIELDS = frozenset(
+    logging.makeLogRecord({}).__dict__.keys()
+)
+_RESERVED_LOG_RECORD_FIELDS |= frozenset({"message", "asctime"})
+
+
+class _JsonLinesFormatter(logging.Formatter):
+    def format(self, record: logging.LogRecord) -> str:
+        payload: dict[str, Any] = {
+            key: value
+            for key, value in record.__dict__.items()
+            if key not in _RESERVED_LOG_RECORD_FIELDS and not key.startswith("_")
+        }
+        payload.setdefault("timestamp", timestamp_utc())
+        payload.setdefault("level", record.levelname.lower())
+        return json.dumps(payload, ensure_ascii=True, sort_keys=True)
+
+
+class _FsyncFileHandler(logging.FileHandler):
+    def emit(self, record: logging.LogRecord) -> None:
+        super().emit(record)
+        if self.stream is None:
+            return
+        self.flush()
+        os.fsync(self.stream.fileno())
+
+
+class _ContextAdapter(logging.LoggerAdapter):
+    def bind(self, **extra: Any) -> "_ContextAdapter":
+        merged = dict(self.extra)
+        merged.update(extra)
+        return _ContextAdapter(self.logger, merged)
+
+    def process(self, msg: Any, kwargs: dict[str, Any]) -> tuple[Any, dict[str, Any]]:
+        merged = dict(self.extra)
+        merged.update(kwargs.pop("extra", {}))
+        kwargs["extra"] = merged
+        return msg, kwargs
+
+
+def _logger_key(path: Path) -> str:
+    return str(path.resolve()).replace(os.sep, "_")
+
+
+def _configure_file_logger(*, suffix: str, path: Path) -> logging.Logger:
+    base_logger = logging.getLogger(_LOGGER_BASE_NAME)
+    logger = base_logger.getChild(f"{suffix}.{_logger_key(path)}")
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    resolved_path = path.resolve()
+    for handler in logger.handlers:
+        if isinstance(handler, logging.FileHandler) and Path(handler.baseFilename).resolve() == resolved_path:
+            return logger
+
+    handler = _FsyncFileHandler(resolved_path, mode="a", encoding="utf-8", delay=True)
+    handler.setLevel(logging.INFO)
+    handler.setFormatter(_JsonLinesFormatter())
+    logger.addHandler(handler)
+    return logger
+
+
+def _levelno(level: str) -> int:
+    levelno = logging.getLevelName(level.upper())
+    if isinstance(levelno, int):
+        return levelno
+    raise ValueError(f"unsupported log level: {level}")
+
 
 class BenchmarkRunLogger:
     def __init__(self, context: BenchmarkRunContext) -> None:
@@ -57,6 +129,39 @@ class BenchmarkRunLogger:
         self.context.output_dir.mkdir(parents=True, exist_ok=True)
         self.log_path = self.context.output_dir / BENCHMARK_LOG_FILENAME
         self.exceptions_path = self.context.output_dir / EXCEPTIONS_LOG_FILENAME
+        self._benchmark_adapter = _ContextAdapter(
+            _configure_file_logger(suffix="benchmark", path=self.log_path),
+            {
+                "run_id": self.context.run_id,
+                "provider": self.context.provider,
+                "model": self.context.model,
+            },
+        )
+        self._exceptions_adapter = _ContextAdapter(
+            _configure_file_logger(suffix="exceptions", path=self.exceptions_path),
+            {
+                "run_id": self.context.run_id,
+                "provider": self.context.provider,
+                "model": self.context.model,
+            },
+        )
+
+    def _adapter(
+        self,
+        *,
+        phase: str,
+        task_mode: str,
+        episode_id: str | None,
+        status: str,
+        exceptions: bool = False,
+    ) -> _ContextAdapter:
+        adapter = self._exceptions_adapter if exceptions else self._benchmark_adapter
+        return adapter.bind(
+            phase=phase,
+            episode_id=episode_id,
+            task_mode=task_mode,
+            status=status,
+        )
 
     def log(
         self,
@@ -82,7 +187,16 @@ class BenchmarkRunLogger:
             "status": status,
         }
         record.update(extra_fields)
-        append_jsonl_record(self.log_path, record)
+        self._adapter(
+            phase=phase,
+            task_mode=task_mode,
+            episode_id=episode_id,
+            status=status,
+        ).log(
+            _levelno(level),
+            event,
+            extra={"event": event, "timestamp": record["timestamp"], **extra_fields},
+        )
         return record
 
     def log_lifecycle(
@@ -388,7 +502,23 @@ class BenchmarkRunLogger:
             "traceback": tb_text,
         }
         full_record.update(extra_fields)
-        append_jsonl_record(self.exceptions_path, full_record)
+        self._adapter(
+            phase=phase,
+            task_mode=task_mode,
+            episode_id=episode_id,
+            status="exception",
+            exceptions=True,
+        ).error(
+            "exception",
+            extra={
+                "event": "exception",
+                "timestamp": full_record["timestamp"],
+                "exception_type": full_record["exception_type"],
+                "exception_message": full_record["exception_message"],
+                "traceback": tb_text,
+                **extra_fields,
+            },
+        )
         self.log(
             phase=phase,
             event="exception",

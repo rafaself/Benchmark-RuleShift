@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-import json
-import os
-from pathlib import Path
 from typing import Any
 
 from core.kaggle.run_logging import BenchmarkRunContext
+from core.kaggle.run_log_io import append_jsonl_record
 
 __all__ = [
     "EPISODE_RESULTS_FILENAME",
@@ -57,10 +55,5 @@ class EpisodeResultLedgerWriter:
             "score": score,
             "exception_ref": exception_ref,
         }
-        serialized = json.dumps(record, ensure_ascii=True, sort_keys=True)
-        with self.path.open("a", encoding="utf-8") as handle:
-            handle.write(serialized)
-            handle.write("\n")
-            handle.flush()
-            os.fsync(handle.fileno())
+        append_jsonl_record(self.path, record)
         return record
