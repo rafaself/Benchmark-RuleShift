@@ -17,17 +17,25 @@ from tasks.ruleshift_benchmark.protocol import (
     Transition,
 )
 from tasks.ruleshift_benchmark.rules import label
+from tasks.ruleshift_benchmark.schema_derivations import (
+    PROBE_SIGN_PATTERN_ORDER,
+    build_contradiction_count_post,
+    build_effective_probe_targets,
+    build_probe_label_counts,
+    build_probe_metadata,
+    build_probe_sign_pattern_counts,
+    build_updated_sign_patterns,
+    derive_difficulty_factors,
+    derive_difficulty_profile,
+    has_both_probe_labels,
+    has_mixed_polarity_sign_patterns,
+    is_global_rule_probe_block,
+)
 from tasks.ruleshift_benchmark.schema import (
     DIFFICULTY_VERSION,
     Episode,
     EpisodeItem,
     ProbeMetadata,
-    _build_effective_probe_targets,
-    _build_updated_sign_patterns,
-    derive_difficulty_factors,
-    _has_mixed_polarity_sign_patterns,
-    _is_global_rule_probe_block,
-    derive_difficulty_profile,
 )
 
 TEMPLATE_CHOICES: tuple[TemplateId, ...] = (
@@ -44,11 +52,6 @@ TRANSITION_CHOICES: tuple[Transition, ...] = (
     Transition.R_STD_TO_R_INV,
     Transition.R_INV_TO_R_STD,
 )
-_PROBE_LABEL_ORDER: tuple[InteractionLabel, ...] = (
-    InteractionLabel.ATTRACT,
-    InteractionLabel.REPEL,
-)
-_PROBE_SIGN_PATTERN_ORDER: tuple[str, ...] = ("++", "--", "+-", "-+")
 _DIFFICULTY_ORDER: tuple[Difficulty, ...] = (
     Difficulty.EASY,
     Difficulty.MEDIUM,
@@ -65,16 +68,6 @@ def _sample_pairs(
     total_items: int,
 ) -> tuple[tuple[int, int], ...]:
     return tuple(rng.sample(CASE_SPACE, k=total_items))
-
-
-def _probe_sign_pattern(q1: int, q2: int) -> str:
-    if q1 > 0 and q2 > 0:
-        return "++"
-    if q1 < 0 and q2 < 0:
-        return "--"
-    if q1 > 0 and q2 < 0:
-        return "+-"
-    return "-+"
 
 
 def _build_items(
@@ -121,8 +114,8 @@ def _build_probe_targets(
     rule_b: RuleName,
 ) -> tuple[InteractionLabel, ...]:
     probe_items = items[LABELED_ITEM_COUNT:]
-    updated_sign_patterns = _build_updated_sign_patterns(items[pre_count:LABELED_ITEM_COUNT])
-    return _build_effective_probe_targets(
+    updated_sign_patterns = build_updated_sign_patterns(items[pre_count:LABELED_ITEM_COUNT])
+    return build_effective_probe_targets(
         probe_items,
         rule_a,
         rule_b,
@@ -136,59 +129,16 @@ def _build_probe_metadata(
     rule_b: RuleName,
 ) -> tuple[ProbeMetadata, ...]:
     probe_items = items[LABELED_ITEM_COUNT:]
-    return tuple(
-        ProbeMetadata(
-            position=item.position,
-            is_disagreement_probe=label(RuleName.R_STD, item.q1, item.q2)
-            != label(RuleName.R_INV, item.q1, item.q2),
-            old_rule_label=label(rule_a, item.q1, item.q2),
-            new_rule_label=label(rule_b, item.q1, item.q2),
-        )
-        for item in probe_items
+    return build_probe_metadata(
+        probe_items,
+        rule_a,
+        rule_b,
     )
-
-
-def _build_contradiction_count_post(
-    items: tuple[EpisodeItem, ...],
-    pre_count: int,
-    rule_a: RuleName,
-    rule_b: RuleName,
-) -> int:
-    return sum(
-        label(rule_a, item.q1, item.q2) != label(rule_b, item.q1, item.q2)
-        for item in items[pre_count:LABELED_ITEM_COUNT]
-    )
-
-
-def _build_probe_label_counts(
-    probe_targets: tuple[InteractionLabel, ...],
-) -> tuple[tuple[InteractionLabel, int], ...]:
-    return tuple(
-        (target_label, probe_targets.count(target_label))
-        for target_label in _PROBE_LABEL_ORDER
-    )
-
-
-def _build_probe_sign_pattern_counts(
-    items: tuple[EpisodeItem, ...],
-) -> tuple[tuple[str, int], ...]:
-    probe_items = items[LABELED_ITEM_COUNT:]
-    return tuple(
-        (
-            pattern,
-            sum(_probe_sign_pattern(item.q1, item.q2) == pattern for item in probe_items),
-        )
-        for pattern in _PROBE_SIGN_PATTERN_ORDER
-    )
-
-
-def _has_both_probe_labels(probe_targets: tuple[InteractionLabel, ...]) -> bool:
-    return len(set(probe_targets)) >= 2
 
 
 def _has_full_probe_sign_pattern_coverage(items: tuple[EpisodeItem, ...]) -> bool:
-    return _build_probe_sign_pattern_counts(items) == tuple(
-        (pattern, 1) for pattern in _PROBE_SIGN_PATTERN_ORDER
+    return build_probe_sign_pattern_counts(items[LABELED_ITEM_COUNT:]) == tuple(
+        (pattern, 1) for pattern in PROBE_SIGN_PATTERN_ORDER
     )
 
 
@@ -201,14 +151,14 @@ def _is_valid_candidate(
     probe_targets: tuple[InteractionLabel, ...],
 ) -> bool:
     probe_items = items[LABELED_ITEM_COUNT:]
-    updated_sign_patterns = _build_updated_sign_patterns(items[pre_count:LABELED_ITEM_COUNT])
+    updated_sign_patterns = build_updated_sign_patterns(items[pre_count:LABELED_ITEM_COUNT])
     return (
         contradiction_count_post >= 1
-        and _has_mixed_polarity_sign_patterns(updated_sign_patterns)
+        and has_mixed_polarity_sign_patterns(updated_sign_patterns)
         and _has_full_probe_sign_pattern_coverage(items)
-        and _has_both_probe_labels(probe_targets)
-        and not _is_global_rule_probe_block(probe_items, probe_targets, rule_a)
-        and not _is_global_rule_probe_block(probe_items, probe_targets, rule_b)
+        and has_both_probe_labels(probe_targets)
+        and not is_global_rule_probe_block(probe_items, probe_targets, rule_a)
+        and not is_global_rule_probe_block(probe_items, probe_targets, rule_b)
     )
 
 
@@ -255,8 +205,8 @@ def generate_episode(seed: int, split: Split | str = Split.DEV) -> Episode:
         sampled_pairs = _sample_pairs(rng, template.total_items)
         items = _build_items(sampled_pairs, template.pre_count, rule_a, rule_b)
         probe_targets = _build_probe_targets(items, template.pre_count, rule_a, rule_b)
-        contradiction_count_post = _build_contradiction_count_post(
-            items,
+        contradiction_count_post = build_contradiction_count_post(
+            items[:LABELED_ITEM_COUNT],
             template.pre_count,
             rule_a,
             rule_b,
@@ -275,8 +225,8 @@ def generate_episode(seed: int, split: Split | str = Split.DEV) -> Episode:
             )
             if difficulty is target_difficulty:
                 break
-    probe_label_counts = _build_probe_label_counts(probe_targets)
-    probe_sign_pattern_counts = _build_probe_sign_pattern_counts(items)
+    probe_label_counts = build_probe_label_counts(probe_targets)
+    probe_sign_pattern_counts = build_probe_sign_pattern_counts(items[LABELED_ITEM_COUNT:])
     probe_metadata = _build_probe_metadata(items, rule_a, rule_b)
 
     return Episode(

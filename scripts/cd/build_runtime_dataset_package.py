@@ -38,10 +38,13 @@ _RUNTIME_SOURCE_RELPATHS = (
     "src/core/kaggle/diagnostics_summary.py",
     "src/core/kaggle/episode_ledger.py",
     "src/core/kaggle/execution.py",
+    "src/core/kaggle/execution_artifacts.py",
     "src/core/kaggle/failure_categories.py",
     "src/core/kaggle/manifest.py",
     "src/core/kaggle/notebook_status.py",
     "src/core/kaggle/payload.py",
+    "src/core/kaggle/run_context.py",
+    "src/core/kaggle/run_log_io.py",
     "src/core/kaggle/run_logging.py",
     "src/core/kaggle/run_manifest.py",
     "src/core/kaggle/types.py",
@@ -59,6 +62,7 @@ _RUNTIME_SOURCE_RELPATHS = (
     "src/tasks/ruleshift_benchmark/render.py",
     "src/tasks/ruleshift_benchmark/rules.py",
     "src/tasks/ruleshift_benchmark/schema.py",
+    "src/tasks/ruleshift_benchmark/schema_derivations.py",
 )
 
 

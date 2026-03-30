@@ -39,6 +39,61 @@ class _ValidBinaryLLM:
         return "attract, repel, attract, repel"
 
 
+def test_run_binary_episode_records_successful_prediction_payloads(tmp_path):
+    context = build_run_context(
+        repo_root=tmp_path,
+        llm=_ValidBinaryLLM(),
+        run_id="run-binary-success",
+        output_dir=tmp_path / "binary-success",
+    )
+    logger = BenchmarkRunLogger(context)
+    ledger = EpisodeResultLedgerWriter(context)
+
+    result = run_binary_episode(
+        llm=_ValidBinaryLLM(),
+        prompt_binary="prompt",
+        probe_targets=("attract", "repel", "attract", "repel"),
+        logger=logger,
+        ledger=ledger,
+        phase="official_binary_evaluation",
+        task_mode="binary",
+        episode_id="ep-000",
+        split="dev",
+    )
+
+    assert result.status == ParseStatus.VALID.value
+    assert result.score == (4, 4)
+    assert result.parsed_prediction.status is ParseStatus.VALID
+
+    ledger_records = [
+        json.loads(line)
+        for line in (tmp_path / "binary-success" / EPISODE_RESULTS_FILENAME)
+        .read_text(encoding="utf-8")
+        .splitlines()
+    ]
+    assert ledger_records == [
+        {
+            "run_id": "run-binary-success",
+            "episode_id": "ep-000",
+            "split": "dev",
+            "task_mode": "binary",
+            "provider": "shim-provider",
+            "model": "shim-model",
+            "call_status": "completed",
+            "parse_status": "valid",
+            "outcome_kind": "scored_model_result",
+            "failure_category": None,
+            "latency_ms": ledger_records[0]["latency_ms"],
+            "prediction": ["attract", "repel", "attract", "repel"],
+            "target": ["attract", "repel", "attract", "repel"],
+            "score": {"num_correct": 4, "total": 4},
+            "exception_ref": None,
+        }
+    ]
+    assert isinstance(ledger_records[0]["latency_ms"], int)
+    assert ledger_records[0]["latency_ms"] >= 0
+
+
 def test_run_binary_episode_marks_provider_exceptions_as_operational_failures(tmp_path):
     context = build_run_context(
         repo_root=tmp_path,

@@ -8,13 +8,11 @@ from tasks.ruleshift_benchmark.protocol import (
     Difficulty,
     DifficultyProfileId,
     EPISODE_LENGTH,
-    FactorLevel,
     LABELED_ITEM_COUNT,
     PROBE_COUNT,
     InteractionLabel,
     ItemKind,
     Phase,
-    RuleName,
     Split,
     TemplateFamily,
     TemplateId,
@@ -22,7 +20,6 @@ from tasks.ruleshift_benchmark.protocol import (
     Transition,
     parse_difficulty,
     parse_difficulty_profile_id,
-    parse_factor_level,
     parse_item_kind,
     parse_label,
     parse_phase,
@@ -32,7 +29,22 @@ from tasks.ruleshift_benchmark.protocol import (
     parse_template_id,
     parse_transition,
 )
-from tasks.ruleshift_benchmark.rules import label
+from tasks.ruleshift_benchmark.schema_derivations import (
+    PROBE_LABEL_ORDER,
+    PROBE_SIGN_PATTERN_ORDER,
+    DifficultyFactors,
+    build_contradiction_count_post,
+    build_effective_probe_targets,
+    build_probe_label_counts,
+    build_probe_metadata,
+    build_probe_sign_pattern_counts,
+    build_updated_sign_patterns,
+    derive_difficulty_factors,
+    derive_difficulty_profile,
+    has_both_probe_labels,
+    has_mixed_polarity_sign_patterns,
+    is_global_rule_probe_block,
+)
 
 __all__ = [
     "SPEC_VERSION",
@@ -52,349 +64,20 @@ GENERATOR_VERSION: Final[str] = "R13"
 TEMPLATE_SET_VERSION: Final[str] = "v2"
 DIFFICULTY_VERSION: Final[str] = "R13"
 
-_PROBE_LABEL_ORDER: Final[tuple[InteractionLabel, ...]] = (
-    InteractionLabel.ATTRACT,
-    InteractionLabel.REPEL,
-)
-_PROBE_SIGN_PATTERN_ORDER: Final[tuple[str, ...]] = ("++", "--", "+-", "-+")
-_FACTOR_LEVEL_SCORE: Final[dict[FactorLevel, int]] = {
-    FactorLevel.LOW: 0,
-    FactorLevel.MEDIUM: 1,
-    FactorLevel.HIGH: 2,
-}
-_EASY_DIFFICULTY_SCORE_MAX: Final[int] = 3
-_HARD_DIFFICULTY_SCORE_MIN: Final[int] = 6
-
 
 def _is_plain_int(value: object) -> bool:
     return isinstance(value, int) and not isinstance(value, bool)
-
-
-def _probe_sign_pattern(q1: int, q2: int) -> str:
-    if q1 > 0 and q2 > 0:
-        return "++"
-    if q1 < 0 and q2 < 0:
-        return "--"
-    if q1 > 0 and q2 < 0:
-        return "+-"
-    return "-+"
-
-
-def _is_same_sign_pattern(pattern: str) -> bool:
-    return pattern in {"++", "--"}
-
-
-def _build_updated_sign_patterns(
-    post_labeled_items: tuple["EpisodeItem", ...],
-) -> frozenset[str]:
-    return frozenset(_probe_sign_pattern(item.q1, item.q2) for item in post_labeled_items)
-
-
-def _has_mixed_polarity_sign_patterns(patterns: frozenset[str]) -> bool:
-    return (
-        len(patterns) == 2
-        and any(_is_same_sign_pattern(pattern) for pattern in patterns)
-        and any(not _is_same_sign_pattern(pattern) for pattern in patterns)
-    )
-
-
-def _effective_probe_label(
-    rule_a: RuleName,
-    rule_b: RuleName,
-    q1: int,
-    q2: int,
-    updated_sign_patterns: frozenset[str],
-) -> InteractionLabel:
-    active_rule = (
-        rule_b
-        if _probe_sign_pattern(q1, q2) in updated_sign_patterns
-        else rule_a
-    )
-    return label(active_rule, q1, q2)
-
-
-def _build_effective_probe_targets(
-    probe_items: tuple["EpisodeItem", ...],
-    rule_a: RuleName,
-    rule_b: RuleName,
-    updated_sign_patterns: frozenset[str],
-) -> tuple[InteractionLabel, ...]:
-    return tuple(
-        _effective_probe_label(
-            rule_a,
-            rule_b,
-            item.q1,
-            item.q2,
-            updated_sign_patterns,
-        )
-        for item in probe_items
-    )
-
-
-def _is_global_rule_probe_block(
-    probe_items: tuple["EpisodeItem", ...],
-    probe_targets: tuple[InteractionLabel, ...],
-    rule_name: RuleName,
-) -> bool:
-    return probe_targets == tuple(
-        label(rule_name, item.q1, item.q2) for item in probe_items
-    )
-
-
-def _build_probe_label_counts(
-    probe_targets: tuple[InteractionLabel, ...],
-) -> tuple[tuple[InteractionLabel, int], ...]:
-    return tuple(
-        (target_label, probe_targets.count(target_label))
-        for target_label in _PROBE_LABEL_ORDER
-    )
-
-
-def _build_probe_sign_pattern_counts(
-    probe_items: tuple["EpisodeItem", ...],
-) -> tuple[tuple[str, int], ...]:
-    return tuple(
-        (
-            pattern,
-            sum(_probe_sign_pattern(item.q1, item.q2) == pattern for item in probe_items),
-        )
-        for pattern in _PROBE_SIGN_PATTERN_ORDER
-    )
-
-
-def _build_contradiction_count_post(
-    labeled_items: tuple["EpisodeItem", ...],
-    pre_count: int,
-    rule_a: RuleName,
-    rule_b: RuleName,
-) -> int:
-    return sum(
-        label(rule_a, item.q1, item.q2) != label(rule_b, item.q1, item.q2)
-        for item in labeled_items[pre_count:]
-    )
-
-
-def _has_both_probe_labels(probe_targets: tuple[InteractionLabel, ...]) -> bool:
-    return len(set(probe_targets)) >= 2
-
-
-def _count_probe_rule_switches(
-    probe_items: tuple["EpisodeItem", ...],
-    updated_sign_patterns: frozenset[str],
-) -> int:
-    active_rules = tuple(
-        "new"
-        if _probe_sign_pattern(item.q1, item.q2) in updated_sign_patterns
-        else "old"
-        for item in probe_items
-    )
-    return sum(
-        left != right for left, right in zip(active_rules, active_rules[1:])
-    )
-
-
-def _build_post_sign_pattern_counts(
-    post_labeled_items: tuple["EpisodeItem", ...],
-) -> dict[str, int]:
-    counts: dict[str, int] = {}
-    for item in post_labeled_items:
-        pattern = _probe_sign_pattern(item.q1, item.q2)
-        counts[pattern] = counts.get(pattern, 0) + 1
-    return counts
-
-
-def _probe_pattern_overlap_count(
-    probe_items: tuple["EpisodeItem", ...],
-    patterns: frozenset[str],
-) -> int:
-    return sum(
-        _probe_sign_pattern(item.q1, item.q2) in patterns
-        for item in probe_items
-    )
-
-
-def _retained_probe_overlap_count(
-    probe_items: tuple["EpisodeItem", ...],
-    *,
-    updated_sign_patterns: frozenset[str],
-    pre_sign_patterns: frozenset[str],
-) -> int:
-    return sum(
-        _probe_sign_pattern(item.q1, item.q2) not in updated_sign_patterns
-        and _probe_sign_pattern(item.q1, item.q2) in pre_sign_patterns
-        for item in probe_items
-    )
-
-
-def _distance_factor_for_final_probe(
-    *,
-    probe_items: tuple["EpisodeItem", ...],
-    post_labeled_items: tuple["EpisodeItem", ...],
-    updated_sign_patterns: frozenset[str],
-) -> FactorLevel:
-    final_probe = probe_items[-1]
-    final_pattern = _probe_sign_pattern(final_probe.q1, final_probe.q2)
-    if final_pattern not in updated_sign_patterns:
-        return FactorLevel.HIGH
-
-    matching_positions = tuple(
-        item.position
-        for item in post_labeled_items
-        if _probe_sign_pattern(item.q1, item.q2) == final_pattern
-    )
-    last_position = max(matching_positions)
-    if last_position == LABELED_ITEM_COUNT:
-        return FactorLevel.LOW
-    if last_position == LABELED_ITEM_COUNT - 1:
-        return FactorLevel.MEDIUM
-    return FactorLevel.HIGH
-
-
-def _clarity_factor_for_probe_block(
-    *,
-    probe_items: tuple["EpisodeItem", ...],
-    post_labeled_items: tuple["EpisodeItem", ...],
-    updated_sign_patterns: frozenset[str],
-) -> FactorLevel:
-    post_pattern_counts = _build_post_sign_pattern_counts(post_labeled_items)
-    final_pattern = _probe_sign_pattern(probe_items[-1].q1, probe_items[-1].q2)
-    if max(post_pattern_counts.values()) >= 2 and final_pattern in updated_sign_patterns:
-        return FactorLevel.HIGH
-    if max(post_pattern_counts.values()) >= 2:
-        return FactorLevel.MEDIUM
-    return FactorLevel.LOW
-
-
-@dataclass(frozen=True, slots=True)
-class DifficultyFactors:
-    conflict_strength: FactorLevel
-    post_shift_evidence_clarity: FactorLevel
-    probe_ambiguity: FactorLevel
-    evidence_to_final_probe_distance: FactorLevel
-    pre_shift_distractor_pressure: FactorLevel
-
-    def __post_init__(self) -> None:
-        object.__setattr__(
-            self,
-            "conflict_strength",
-            parse_factor_level(self.conflict_strength),
-        )
-        object.__setattr__(
-            self,
-            "post_shift_evidence_clarity",
-            parse_factor_level(self.post_shift_evidence_clarity),
-        )
-        object.__setattr__(
-            self,
-            "probe_ambiguity",
-            parse_factor_level(self.probe_ambiguity),
-        )
-        object.__setattr__(
-            self,
-            "evidence_to_final_probe_distance",
-            parse_factor_level(self.evidence_to_final_probe_distance),
-        )
-        object.__setattr__(
-            self,
-            "pre_shift_distractor_pressure",
-            parse_factor_level(self.pre_shift_distractor_pressure),
-        )
-
-
-def derive_difficulty_factors(
-    items: tuple["EpisodeItem", ...],
-    pre_count: int,
-) -> DifficultyFactors:
-    labeled_items = items[:LABELED_ITEM_COUNT]
-    post_labeled_items = labeled_items[pre_count:]
-    probe_items = items[LABELED_ITEM_COUNT:]
-    pre_sign_patterns = frozenset(
-        _probe_sign_pattern(item.q1, item.q2) for item in labeled_items[:pre_count]
-    )
-    updated_sign_patterns = _build_updated_sign_patterns(post_labeled_items)
-    switch_count = _count_probe_rule_switches(probe_items, updated_sign_patterns)
-    retained_overlap_count = _retained_probe_overlap_count(
-        probe_items,
-        updated_sign_patterns=updated_sign_patterns,
-        pre_sign_patterns=pre_sign_patterns,
-    )
-    probe_pre_overlap_count = _probe_pattern_overlap_count(probe_items, pre_sign_patterns)
-
-    if switch_count <= 1:
-        conflict_strength = FactorLevel.LOW
-    elif switch_count == 2:
-        conflict_strength = FactorLevel.MEDIUM
-    else:
-        conflict_strength = FactorLevel.HIGH
-
-    if retained_overlap_count == 0:
-        probe_ambiguity = FactorLevel.LOW
-    elif retained_overlap_count == 1:
-        probe_ambiguity = FactorLevel.MEDIUM
-    else:
-        probe_ambiguity = FactorLevel.HIGH
-
-    if probe_pre_overlap_count <= 1:
-        distractor_pressure = FactorLevel.LOW
-    elif probe_pre_overlap_count == 2:
-        distractor_pressure = FactorLevel.MEDIUM
-    else:
-        distractor_pressure = FactorLevel.HIGH
-
-    return DifficultyFactors(
-        conflict_strength=conflict_strength,
-        post_shift_evidence_clarity=_clarity_factor_for_probe_block(
-            probe_items=probe_items,
-            post_labeled_items=post_labeled_items,
-            updated_sign_patterns=updated_sign_patterns,
-        ),
-        probe_ambiguity=probe_ambiguity,
-        evidence_to_final_probe_distance=_distance_factor_for_final_probe(
-            probe_items=probe_items,
-            post_labeled_items=post_labeled_items,
-            updated_sign_patterns=updated_sign_patterns,
-        ),
-        pre_shift_distractor_pressure=distractor_pressure,
-    )
-
-
-def derive_difficulty_profile(
-    factors: DifficultyFactors,
-) -> tuple[Difficulty, DifficultyProfileId]:
-    clarity_load = {
-        FactorLevel.HIGH: FactorLevel.LOW,
-        FactorLevel.MEDIUM: FactorLevel.MEDIUM,
-        FactorLevel.LOW: FactorLevel.HIGH,
-    }[factors.post_shift_evidence_clarity]
-    difficulty_score = sum(
-        _FACTOR_LEVEL_SCORE[level]
-        for level in (
-            factors.conflict_strength,
-            clarity_load,
-            factors.probe_ambiguity,
-            factors.evidence_to_final_probe_distance,
-            factors.pre_shift_distractor_pressure,
-        )
-    )
-
-    if difficulty_score <= _EASY_DIFFICULTY_SCORE_MAX:
-        return Difficulty.EASY, DifficultyProfileId.EASY_ANCHORED
-
-    if difficulty_score >= _HARD_DIFFICULTY_SCORE_MIN:
-        return Difficulty.HARD, DifficultyProfileId.HARD_INTERLEAVED
-
-    return Difficulty.MEDIUM, DifficultyProfileId.MEDIUM_BALANCED
 
 
 def _normalize_probe_label_counts(
     probe_label_counts: tuple[tuple[InteractionLabel, int], ...],
 ) -> tuple[tuple[InteractionLabel, int], ...]:
     normalized_probe_label_counts = tuple(probe_label_counts)
-    if len(normalized_probe_label_counts) != len(_PROBE_LABEL_ORDER):
+    if len(normalized_probe_label_counts) != len(PROBE_LABEL_ORDER):
         raise ValueError("probe_label_counts must contain canonical attract/repel counts")
 
     normalized_pairs: list[tuple[InteractionLabel, int]] = []
-    expected_labels = _PROBE_LABEL_ORDER
+    expected_labels = PROBE_LABEL_ORDER
     for index, expected_label in enumerate(expected_labels):
         pair = normalized_probe_label_counts[index]
         if not isinstance(pair, tuple) or len(pair) != 2:
@@ -414,13 +97,13 @@ def _normalize_probe_sign_pattern_counts(
     probe_sign_pattern_counts: tuple[tuple[str, int], ...],
 ) -> tuple[tuple[str, int], ...]:
     normalized_probe_sign_pattern_counts = tuple(probe_sign_pattern_counts)
-    if len(normalized_probe_sign_pattern_counts) != len(_PROBE_SIGN_PATTERN_ORDER):
+    if len(normalized_probe_sign_pattern_counts) != len(PROBE_SIGN_PATTERN_ORDER):
         raise ValueError(
             "probe_sign_pattern_counts must contain canonical sign-pattern counts"
         )
 
     normalized_pairs: list[tuple[str, int]] = []
-    for index, expected_pattern in enumerate(_PROBE_SIGN_PATTERN_ORDER):
+    for index, expected_pattern in enumerate(PROBE_SIGN_PATTERN_ORDER):
         pair = normalized_probe_sign_pattern_counts[index]
         if not isinstance(pair, tuple) or len(pair) != 2:
             raise TypeError(
@@ -603,12 +286,12 @@ class Episode:
         if any(item.phase is not Phase.POST for item in probe_items):
             raise ValueError("probe items must use the post phase")
 
-        updated_sign_patterns = _build_updated_sign_patterns(post_labeled_items)
+        updated_sign_patterns = build_updated_sign_patterns(post_labeled_items)
         if len(updated_sign_patterns) != 2:
             raise ValueError(
                 "post-shift labeled items must cover exactly two distinct sign patterns"
             )
-        if not _has_mixed_polarity_sign_patterns(updated_sign_patterns):
+        if not has_mixed_polarity_sign_patterns(updated_sign_patterns):
             raise ValueError(
                 "post-shift labeled items must cover one same-sign and one opposite-sign pattern"
             )
@@ -648,7 +331,7 @@ class Episode:
         if actual_probe_positions != expected_probe_positions:
             raise ValueError("probe_metadata positions must match probe item positions")
 
-        expected_probe_targets = _build_effective_probe_targets(
+        expected_probe_targets = build_effective_probe_targets(
             probe_items,
             self.rule_A,
             self.rule_B,
@@ -658,33 +341,28 @@ class Episode:
             raise ValueError(
                 "probe_targets must match slice-local derived labels for probe items"
             )
-        if not _has_both_probe_labels(normalized_probe_targets):
+        if not has_both_probe_labels(normalized_probe_targets):
             raise ValueError("probe_targets must contain at least two distinct labels")
-        if _is_global_rule_probe_block(probe_items, normalized_probe_targets, self.rule_A):
+        if is_global_rule_probe_block(probe_items, normalized_probe_targets, self.rule_A):
             raise ValueError(
                 "probe_targets must not collapse to the global rule_A probe block"
             )
-        if _is_global_rule_probe_block(probe_items, normalized_probe_targets, self.rule_B):
+        if is_global_rule_probe_block(probe_items, normalized_probe_targets, self.rule_B):
             raise ValueError(
                 "probe_targets must not collapse to the global rule_B probe block"
             )
 
-        expected_probe_metadata = tuple(
-            ProbeMetadata(
-                position=item.position,
-                is_disagreement_probe=label(RuleName.R_STD, item.q1, item.q2)
-                != label(RuleName.R_INV, item.q1, item.q2),
-                old_rule_label=label(self.rule_A, item.q1, item.q2),
-                new_rule_label=label(self.rule_B, item.q1, item.q2),
-            )
-            for item in probe_items
+        expected_probe_metadata = build_probe_metadata(
+            probe_items,
+            self.rule_A,
+            self.rule_B,
         )
         if normalized_probe_metadata != expected_probe_metadata:
             raise ValueError(
                 "probe_metadata must match the derived rule labels for probe items"
             )
 
-        expected_contradiction_count_post = _build_contradiction_count_post(
+        expected_contradiction_count_post = build_contradiction_count_post(
             labeled_items,
             self.pre_count,
             self.rule_A,
@@ -697,19 +375,19 @@ class Episode:
         if self.contradiction_count_post < 1:
             raise ValueError("contradiction_count_post must be at least 1")
 
-        expected_probe_label_counts = _build_probe_label_counts(normalized_probe_targets)
+        expected_probe_label_counts = build_probe_label_counts(normalized_probe_targets)
         if normalized_probe_label_counts != expected_probe_label_counts:
             raise ValueError(
                 "probe_label_counts must match canonical label counts for probe_targets"
             )
 
-        expected_probe_sign_pattern_counts = _build_probe_sign_pattern_counts(probe_items)
+        expected_probe_sign_pattern_counts = build_probe_sign_pattern_counts(probe_items)
         if normalized_probe_sign_pattern_counts != expected_probe_sign_pattern_counts:
             raise ValueError(
                 "probe_sign_pattern_counts must match canonical sign-pattern counts for probe items"
             )
         if normalized_probe_sign_pattern_counts != tuple(
-            (pattern, 1) for pattern in _PROBE_SIGN_PATTERN_ORDER
+            (pattern, 1) for pattern in PROBE_SIGN_PATTERN_ORDER
         ):
             raise ValueError(
                 "probe_sign_pattern_counts must cover each sign pattern exactly once"
