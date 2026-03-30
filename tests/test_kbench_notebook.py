@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -42,6 +43,22 @@ def _execute_notebook_cells() -> dict:
         if filtered.strip():
             exec(compile(filtered, f"<{cell['id']}>", "exec"), ns)  # noqa: S102
     return ns
+
+
+def _execute_choose_magic() -> object:
+    notebook = json.loads(_NOTEBOOK_PATH.read_text(encoding="utf-8"))
+    choose_cell = next(
+        cell
+        for cell in reversed(notebook["cells"])
+        if cell.get("cell_type") == "code" and "%choose" in "".join(cell.get("source", ()))
+    )
+    choose_line = next(
+        line.strip()
+        for line in "".join(choose_cell.get("source", ())).splitlines()
+        if line.strip().startswith("%choose ")
+    )
+    chosen_task = choose_line.split(maxsplit=1)[1]
+    return kbench.choose(chosen_task)
 
 
 @pytest.fixture(autouse=True)
@@ -115,6 +132,51 @@ def test_notebook_executes_end_to_end_with_private_mount():
     assert "DIAGNOSTICS_SUMMARY_PATH" not in ns
     assert "RUN_MANIFEST_PATH" not in ns
     assert "RUN_EPISODE_LEDGER_PATH" not in ns
+
+    artifact_paths = [path.name for path in kbench.list_artifacts()]
+    assert artifact_paths == [
+        "ruleshift_benchmark_v1_binary.run.json",
+        "ruleshift_benchmark_v1_binary.task.json",
+    ]
+    assert all("row" not in name for name in artifact_paths)
+
+    task_artifact = json.loads(kbench.list_artifacts()[1].read_text(encoding="utf-8"))
+    run_artifact = json.loads(kbench.list_artifacts()[0].read_text(encoding="utf-8"))
+    assert task_artifact["task_name"] == "ruleshift_benchmark_v1_binary"
+    assert task_artifact["artifact_scope"] == "intermediate"
+    assert run_artifact["task_name"] == "ruleshift_benchmark_v1_binary"
+    assert run_artifact["run_type"] == "dataset_evaluation"
+    assert run_artifact["result"] == ns["payload"]
+    assert run_artifact["total_episodes"] == len(ns["leaderboard_df"])
+
+
+def test_choose_publishes_only_aggregate_artifacts():
+    ns = _execute_notebook_cells()
+
+    published_payload = _execute_choose_magic()
+
+    assert published_payload == ns["payload"]
+    artifact_paths = [path.name for path in kbench.list_artifacts()]
+    assert artifact_paths == [
+        "published.run.json",
+        "published.task.json",
+        "ruleshift_benchmark_v1_binary.run.json",
+        "ruleshift_benchmark_v1_binary.task.json",
+    ]
+
+    published_task = json.loads((Path(os.environ["RULESHIFT_RUN_OUTPUT_DIR"]) / "published.task.json").read_text(encoding="utf-8"))
+    published_run = json.loads((Path(os.environ["RULESHIFT_RUN_OUTPUT_DIR"]) / "published.run.json").read_text(encoding="utf-8"))
+    assert published_task["task_name"] == "ruleshift_benchmark_v1_binary"
+    assert published_task["artifact_scope"] == "published"
+    assert published_run["task_name"] == "ruleshift_benchmark_v1_binary"
+    assert published_run["artifact_scope"] == "published"
+    assert published_run["run_type"] == "dataset_evaluation"
+    assert published_run["result"] == ns["payload"]
+    assert published_run["result"]["total_episodes"] == len(ns["leaderboard_df"])
+    assert published_run["result"]["split"] == "frozen_leaderboard"
+    assert "row" not in published_task["task_name"]
+    assert "conversations" not in published_run["result"]
+    assert "results" not in published_run["result"]
 
 
 def test_notebook_executes_public_only_without_private_mount(monkeypatch: pytest.MonkeyPatch):
