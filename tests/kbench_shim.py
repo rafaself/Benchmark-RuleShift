@@ -63,8 +63,11 @@ class _TaskHandle:
 
     name: str
     description: str
-    fn: Callable[..., tuple[int, int]]
+    fn: Callable[..., Any]
+    store_task: bool = True
     _registered: bool = field(default=True, init=False)
+    evaluate_call_count: int = field(default=0, init=False)
+    last_evaluation_data: pd.DataFrame | None = field(default=None, init=False)
 
     def evaluate(
         self,
@@ -72,6 +75,8 @@ class _TaskHandle:
         llm: list[_LLMStub],
         evaluation_data: pd.DataFrame,
     ) -> _ResultSet:
+        self.evaluate_call_count += 1
+        self.last_evaluation_data = evaluation_data.copy()
         rows: list[_EvalRow] = []
         stub = llm[0]
         for _, row in evaluation_data.iterrows():
@@ -88,7 +93,7 @@ class _TaskHandle:
             rows.append(_EvalRow(score=score, kwargs=kwargs))
         return _ResultSet(rows)
 
-    def __call__(self, *args: Any, **kwargs: Any) -> tuple[int, int]:
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
         return self.fn(*args, **kwargs)
 
 
@@ -100,12 +105,14 @@ def task(
     *,
     name: str,
     description: str,
-) -> Callable[[Callable[..., tuple[int, int]]], _TaskHandle]:
+    store_task: bool = True,
+) -> Callable[[Callable[..., Any]], _TaskHandle]:
     """Decorator matching the kaggle_benchmarks @kbench.task API."""
 
-    def decorator(fn: Callable[..., tuple[int, int]]) -> _TaskHandle:
-        handle = _TaskHandle(name=name, description=description, fn=fn)
-        _registry[name] = handle
+    def decorator(fn: Callable[..., Any]) -> _TaskHandle:
+        handle = _TaskHandle(name=name, description=description, fn=fn, store_task=store_task)
+        if store_task:
+            _registry[name] = handle
         return handle
 
     return decorator

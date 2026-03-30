@@ -63,10 +63,13 @@ def _run_output_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
 def test_notebook_source_keeps_binary_only_leaderboard_surface():
     source = _read_notebook_sources()
 
+    assert 'name="ruleshift_benchmark_v1_binary_row"' in source
+    assert "store_task=False" in source
     assert '@kbench.task(\n    name="ruleshift_benchmark_v1_binary"' in source
     assert '@kbench.task(\n    name="ruleshift_benchmark_v1_narrative"' not in source
     assert "load_leaderboard_dataframe" in source
     assert "run_binary_task" in source
+    assert "_ruleshift_benchmark_v1_binary_row.evaluate(" in source
     assert "packaging/kaggle/private/private_episodes.json" not in source
     assert "NotebookStatus" not in source
     assert "discover_private_dataset_root" not in source
@@ -87,6 +90,14 @@ def test_notebook_executes_end_to_end_with_private_mount():
 
     registry = kbench.get_registry()
     assert set(registry) == {"ruleshift_benchmark_v1_binary"}
+    assert "_ruleshift_benchmark_v1_binary_row" in ns
+    assert ns["_ruleshift_benchmark_v1_binary_row"].store_task is False
+    assert ns["_ruleshift_benchmark_v1_binary_row"].evaluate_call_count == 1
+    assert ns["_ruleshift_benchmark_v1_binary_row"].last_evaluation_data is not None
+    assert set(ns["_ruleshift_benchmark_v1_binary_row"].last_evaluation_data["split"]) == {
+        "public_leaderboard",
+        "private_leaderboard",
+    }
 
     validate_kaggle_payload(ns["payload"])
     assert set(ns["payload"]) == {
