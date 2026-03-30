@@ -1,9 +1,6 @@
 from __future__ import annotations
 
-import json
 import logging
-import os
-import traceback as _tb
 from pathlib import Path
 from typing import Any
 
@@ -14,7 +11,9 @@ from core.kaggle.run_context import (
     build_run_context,
 )
 from core.kaggle.run_log_io import (
+    DurableFileHandler,
     ExceptionSummary,
+    JsonLinesFormatter,
     summarize_exception_log,
     timestamp_utc,
 )
@@ -54,53 +53,31 @@ LIFECYCLE_EVENTS = frozenset(
 )
 
 _LOGGER_BASE_NAME = "ruleshift"
-_RESERVED_LOG_RECORD_FIELDS = frozenset(
-    logging.makeLogRecord({}).__dict__.keys()
-)
-_RESERVED_LOG_RECORD_FIELDS |= frozenset({"message", "asctime"})
-
-
-class _JsonLinesFormatter(logging.Formatter):
-    def format(self, record: logging.LogRecord) -> str:
-        payload: dict[str, Any] = {
-            key: value
-            for key, value in record.__dict__.items()
-            if key not in _RESERVED_LOG_RECORD_FIELDS and not key.startswith("_")
-        }
-        payload.setdefault("timestamp", timestamp_utc())
-        payload.setdefault("level", record.levelname.lower())
-        return json.dumps(payload, ensure_ascii=True, sort_keys=True)
-
-
-class _FsyncFileHandler(logging.FileHandler):
-    def emit(self, record: logging.LogRecord) -> None:
-        super().emit(record)
-        if self.stream is None:
-            return
-        self.flush()
-        os.fsync(self.stream.fileno())
 
 
 class _ContextAdapter(logging.LoggerAdapter):
     def bind(self, **extra: Any) -> "_ContextAdapter":
-        merged = dict(self.extra)
-        merged.update(extra)
-        return _ContextAdapter(self.logger, merged)
+        return _ContextAdapter(self.logger, {**self.extra, **extra})
 
     def process(self, msg: Any, kwargs: dict[str, Any]) -> tuple[Any, dict[str, Any]]:
-        merged = dict(self.extra)
-        merged.update(kwargs.pop("extra", {}))
-        kwargs["extra"] = merged
+        payload = dict(self.extra)
+        payload.update(kwargs.pop("payload", {}))
+        payload.update(kwargs.pop("extra", {}))
+        kwargs["extra"] = {"payload": payload}
         return msg, kwargs
 
 
-def _logger_key(path: Path) -> str:
-    return str(path.resolve()).replace(os.sep, "_")
+def _logger_name(*, channel: str, path: Path) -> str:
+    return f"{_LOGGER_BASE_NAME}.{channel}.{path.resolve()}"
 
 
-def _configure_file_logger(*, suffix: str, path: Path) -> logging.Logger:
-    base_logger = logging.getLogger(_LOGGER_BASE_NAME)
-    logger = base_logger.getChild(f"{suffix}.{_logger_key(path)}")
+def _configure_jsonl_logger(
+    *,
+    channel: str,
+    path: Path,
+    include_traceback: bool = False,
+) -> logging.Logger:
+    logger = logging.getLogger(_logger_name(channel=channel, path=path))
     logger.setLevel(logging.INFO)
     logger.propagate = False
 
@@ -109,9 +86,9 @@ def _configure_file_logger(*, suffix: str, path: Path) -> logging.Logger:
         if isinstance(handler, logging.FileHandler) and Path(handler.baseFilename).resolve() == resolved_path:
             return logger
 
-    handler = _FsyncFileHandler(resolved_path, mode="a", encoding="utf-8", delay=True)
+    handler = DurableFileHandler(resolved_path, mode="a", encoding="utf-8", delay=True)
     handler.setLevel(logging.INFO)
-    handler.setFormatter(_JsonLinesFormatter())
+    handler.setFormatter(JsonLinesFormatter(include_traceback=include_traceback))
     logger.addHandler(handler)
     return logger
 
@@ -129,21 +106,23 @@ class BenchmarkRunLogger:
         self.context.output_dir.mkdir(parents=True, exist_ok=True)
         self.log_path = self.context.output_dir / BENCHMARK_LOG_FILENAME
         self.exceptions_path = self.context.output_dir / EXCEPTIONS_LOG_FILENAME
+
+        base_context = {
+            "run_id": self.context.run_id,
+            "provider": self.context.provider,
+            "model": self.context.model,
+        }
         self._benchmark_adapter = _ContextAdapter(
-            _configure_file_logger(suffix="benchmark", path=self.log_path),
-            {
-                "run_id": self.context.run_id,
-                "provider": self.context.provider,
-                "model": self.context.model,
-            },
+            _configure_jsonl_logger(channel="benchmark", path=self.log_path),
+            base_context,
         )
         self._exceptions_adapter = _ContextAdapter(
-            _configure_file_logger(suffix="exceptions", path=self.exceptions_path),
-            {
-                "run_id": self.context.run_id,
-                "provider": self.context.provider,
-                "model": self.context.model,
-            },
+            _configure_jsonl_logger(
+                channel="exceptions",
+                path=self.exceptions_path,
+                include_traceback=True,
+            ),
+            base_context,
         )
 
     def _adapter(
@@ -163,6 +142,36 @@ class BenchmarkRunLogger:
             status=status,
         )
 
+    def _emit(
+        self,
+        adapter: _ContextAdapter,
+        *,
+        event: str,
+        level: str,
+        exc_info: Any = None,
+        **extra_fields: Any,
+    ) -> dict[str, Any]:
+        timestamp = timestamp_utc()
+        payload = {
+            **adapter.extra,
+            "timestamp": timestamp,
+            "event": event,
+            "level": level,
+            **extra_fields,
+        }
+        adapter.log(
+            _levelno(level),
+            event,
+            payload={
+                "timestamp": timestamp,
+                "event": event,
+                "level": level,
+                **extra_fields,
+            },
+            exc_info=exc_info,
+        )
+        return payload
+
     def log(
         self,
         *,
@@ -174,30 +183,17 @@ class BenchmarkRunLogger:
         episode_id: str | None,
         **extra_fields: Any,
     ) -> dict[str, Any]:
-        record: dict[str, Any] = {
-            "timestamp": timestamp_utc(),
-            "run_id": self.context.run_id,
-            "phase": phase,
-            "event": event,
-            "level": level,
-            "episode_id": episode_id,
-            "task_mode": task_mode,
-            "provider": self.context.provider,
-            "model": self.context.model,
-            "status": status,
-        }
-        record.update(extra_fields)
-        self._adapter(
-            phase=phase,
-            task_mode=task_mode,
-            episode_id=episode_id,
-            status=status,
-        ).log(
-            _levelno(level),
-            event,
-            extra={"event": event, "timestamp": record["timestamp"], **extra_fields},
+        return self._emit(
+            self._adapter(
+                phase=phase,
+                task_mode=task_mode,
+                episode_id=episode_id,
+                status=status,
+            ),
+            event=event,
+            level=level,
+            **extra_fields,
         )
-        return record
 
     def log_lifecycle(
         self,
@@ -223,26 +219,10 @@ class BenchmarkRunLogger:
         )
 
     def log_run_started(self, **extra_fields: Any) -> dict[str, Any]:
-        return self.log_lifecycle(
-            phase="run",
-            event="run_started",
-            level="info",
-            status="started",
-            task_mode="notebook",
-            episode_id=None,
-            **extra_fields,
-        )
+        return self.log_lifecycle(phase="run", event="run_started", status="started", task_mode="notebook", episode_id=None, **extra_fields)
 
     def log_bootstrap_started(self, **extra_fields: Any) -> dict[str, Any]:
-        return self.log_lifecycle(
-            phase="bootstrap",
-            event="bootstrap_started",
-            level="info",
-            status="started",
-            task_mode="notebook",
-            episode_id=None,
-            **extra_fields,
-        )
+        return self.log_lifecycle(phase="bootstrap", event="bootstrap_started", status="started", task_mode="notebook", episode_id=None, **extra_fields)
 
     def log_bootstrap_finished(
         self,
@@ -251,15 +231,7 @@ class BenchmarkRunLogger:
         level: str = "info",
         **extra_fields: Any,
     ) -> dict[str, Any]:
-        return self.log_lifecycle(
-            phase="bootstrap",
-            event="bootstrap_finished",
-            level=level,
-            status=status,
-            task_mode="notebook",
-            episode_id=None,
-            **extra_fields,
-        )
+        return self.log_lifecycle(phase="bootstrap", event="bootstrap_finished", level=level, status=status, task_mode="notebook", episode_id=None, **extra_fields)
 
     def log_phase_started(
         self,
@@ -268,15 +240,7 @@ class BenchmarkRunLogger:
         task_mode: str = "notebook",
         **extra_fields: Any,
     ) -> dict[str, Any]:
-        return self.log_lifecycle(
-            phase=phase,
-            event="phase_started",
-            level="info",
-            status="started",
-            task_mode=task_mode,
-            episode_id=None,
-            **extra_fields,
-        )
+        return self.log_lifecycle(phase=phase, event="phase_started", status="started", task_mode=task_mode, episode_id=None, **extra_fields)
 
     def log_phase_finished(
         self,
@@ -287,15 +251,7 @@ class BenchmarkRunLogger:
         level: str = "info",
         **extra_fields: Any,
     ) -> dict[str, Any]:
-        return self.log_lifecycle(
-            phase=phase,
-            event="phase_finished",
-            level=level,
-            status=status,
-            task_mode=task_mode,
-            episode_id=None,
-            **extra_fields,
-        )
+        return self.log_lifecycle(phase=phase, event="phase_finished", level=level, status=status, task_mode=task_mode, episode_id=None, **extra_fields)
 
     def log_episode_started(
         self,
@@ -305,15 +261,7 @@ class BenchmarkRunLogger:
         episode_id: str | None,
         **extra_fields: Any,
     ) -> dict[str, Any]:
-        return self.log_lifecycle(
-            phase=phase,
-            event="episode_started",
-            level="info",
-            status="started",
-            task_mode=task_mode,
-            episode_id=episode_id,
-            **extra_fields,
-        )
+        return self.log_lifecycle(phase=phase, event="episode_started", status="started", task_mode=task_mode, episode_id=episode_id, **extra_fields)
 
     def log_provider_call_started(
         self,
@@ -323,15 +271,7 @@ class BenchmarkRunLogger:
         episode_id: str | None,
         **extra_fields: Any,
     ) -> dict[str, Any]:
-        return self.log_lifecycle(
-            phase=phase,
-            event="provider_call_started",
-            level="info",
-            status="started",
-            task_mode=task_mode,
-            episode_id=episode_id,
-            **extra_fields,
-        )
+        return self.log_lifecycle(phase=phase, event="provider_call_started", status="started", task_mode=task_mode, episode_id=episode_id, **extra_fields)
 
     def log_provider_call_succeeded(
         self,
@@ -341,15 +281,7 @@ class BenchmarkRunLogger:
         episode_id: str | None,
         **extra_fields: Any,
     ) -> dict[str, Any]:
-        return self.log_lifecycle(
-            phase=phase,
-            event="provider_call_succeeded",
-            level="info",
-            status="completed",
-            task_mode=task_mode,
-            episode_id=episode_id,
-            **extra_fields,
-        )
+        return self.log_lifecycle(phase=phase, event="provider_call_succeeded", status="completed", task_mode=task_mode, episode_id=episode_id, **extra_fields)
 
     def log_provider_call_failed(
         self,
@@ -361,15 +293,7 @@ class BenchmarkRunLogger:
         status: str = "failed",
         **extra_fields: Any,
     ) -> dict[str, Any]:
-        return self.log_lifecycle(
-            phase=phase,
-            event="provider_call_failed",
-            level=level,
-            status=status,
-            task_mode=task_mode,
-            episode_id=episode_id,
-            **extra_fields,
-        )
+        return self.log_lifecycle(phase=phase, event="provider_call_failed", level=level, status=status, task_mode=task_mode, episode_id=episode_id, **extra_fields)
 
     def log_response_parsed(
         self,
@@ -380,15 +304,7 @@ class BenchmarkRunLogger:
         status: str = "valid",
         **extra_fields: Any,
     ) -> dict[str, Any]:
-        return self.log_lifecycle(
-            phase=phase,
-            event="response_parsed",
-            level="info",
-            status=status,
-            task_mode=task_mode,
-            episode_id=episode_id,
-            **extra_fields,
-        )
+        return self.log_lifecycle(phase=phase, event="response_parsed", status=status, task_mode=task_mode, episode_id=episode_id, **extra_fields)
 
     def log_response_parse_failed(
         self,
@@ -400,15 +316,7 @@ class BenchmarkRunLogger:
         level: str = "warning",
         **extra_fields: Any,
     ) -> dict[str, Any]:
-        return self.log_lifecycle(
-            phase=phase,
-            event="response_parse_failed",
-            level=level,
-            status=status,
-            task_mode=task_mode,
-            episode_id=episode_id,
-            **extra_fields,
-        )
+        return self.log_lifecycle(phase=phase, event="response_parse_failed", level=level, status=status, task_mode=task_mode, episode_id=episode_id, **extra_fields)
 
     def log_episode_scored(
         self,
@@ -420,26 +328,10 @@ class BenchmarkRunLogger:
         level: str = "info",
         **extra_fields: Any,
     ) -> dict[str, Any]:
-        return self.log_lifecycle(
-            phase=phase,
-            event="episode_scored",
-            level=level,
-            status=status,
-            task_mode=task_mode,
-            episode_id=episode_id,
-            **extra_fields,
-        )
+        return self.log_lifecycle(phase=phase, event="episode_scored", level=level, status=status, task_mode=task_mode, episode_id=episode_id, **extra_fields)
 
     def log_payload_built(self, **extra_fields: Any) -> dict[str, Any]:
-        return self.log_lifecycle(
-            phase="canonical_payload",
-            event="payload_built",
-            level="info",
-            status="completed",
-            task_mode="notebook",
-            episode_id=None,
-            **extra_fields,
-        )
+        return self.log_lifecycle(phase="canonical_payload", event="payload_built", status="completed", task_mode="notebook", episode_id=None, **extra_fields)
 
     def log_run_finished(
         self,
@@ -448,15 +340,7 @@ class BenchmarkRunLogger:
         level: str = "info",
         **extra_fields: Any,
     ) -> dict[str, Any]:
-        return self.log_lifecycle(
-            phase="run",
-            event="run_finished",
-            level=level,
-            status=status,
-            task_mode="notebook",
-            episode_id=None,
-            **extra_fields,
-        )
+        return self.log_lifecycle(phase="run", event="run_finished", level=level, status=status, task_mode="notebook", episode_id=None, **extra_fields)
 
     def log_run_invalidated(
         self,
@@ -466,15 +350,7 @@ class BenchmarkRunLogger:
         level: str = "error",
         **extra_fields: Any,
     ) -> dict[str, Any]:
-        return self.log_lifecycle(
-            phase=phase,
-            event="run_invalidated",
-            level=level,
-            status=status,
-            task_mode="notebook",
-            episode_id=None,
-            **extra_fields,
-        )
+        return self.log_lifecycle(phase=phase, event="run_invalidated", level=level, status=status, task_mode="notebook", episode_id=None, **extra_fields)
 
     def log_exception(
         self,
@@ -485,39 +361,22 @@ class BenchmarkRunLogger:
         episode_id: str | None = None,
         **extra_fields: Any,
     ) -> dict[str, Any]:
-        tb_text = "".join(_tb.format_exception(type(exc), exc, exc.__traceback__))
-        full_record: dict[str, Any] = {
-            "timestamp": timestamp_utc(),
-            "run_id": self.context.run_id,
-            "phase": phase,
-            "event": "exception",
-            "level": "error",
-            "episode_id": episode_id,
-            "task_mode": task_mode,
-            "provider": self.context.provider,
-            "model": self.context.model,
-            "status": "exception",
-            "exception_type": type(exc).__name__,
-            "exception_message": str(exc),
-            "traceback": tb_text,
-        }
-        full_record.update(extra_fields)
-        self._adapter(
-            phase=phase,
-            task_mode=task_mode,
-            episode_id=episode_id,
-            status="exception",
-            exceptions=True,
-        ).error(
-            "exception",
-            extra={
-                "event": "exception",
-                "timestamp": full_record["timestamp"],
-                "exception_type": full_record["exception_type"],
-                "exception_message": full_record["exception_message"],
-                "traceback": tb_text,
-                **extra_fields,
-            },
+        exception_type = type(exc).__name__
+        exception_message = str(exc)
+        exception_record = self._emit(
+            self._adapter(
+                phase=phase,
+                task_mode=task_mode,
+                episode_id=episode_id,
+                status="exception",
+                exceptions=True,
+            ),
+            event="exception",
+            level="error",
+            exc_info=(type(exc), exc, exc.__traceback__),
+            exception_type=exception_type,
+            exception_message=exception_message,
+            **extra_fields,
         )
         self.log(
             phase=phase,
@@ -526,13 +385,12 @@ class BenchmarkRunLogger:
             status="exception",
             task_mode=task_mode,
             episode_id=episode_id,
-            exception_type=type(exc).__name__,
-            exception_message=str(exc),
+            exception_type=exception_type,
+            exception_message=exception_message,
         )
-        return full_record
+        return exception_record
 
     def summarize_exceptions(self) -> ExceptionSummary:
-        """Read exceptions.jsonl, count by phase, and emit a summary event."""
         summary = summarize_exception_log(self.exceptions_path)
         self.log(
             phase="run",

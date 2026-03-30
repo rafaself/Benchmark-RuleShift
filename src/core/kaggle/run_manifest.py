@@ -10,6 +10,7 @@ from core.kaggle.manifest import (
     load_kaggle_staging_manifest,
     resolve_kaggle_artifact_path,
 )
+from core.kaggle.run_log_io import read_jsonl_records
 from core.kaggle.run_logging import (
     BENCHMARK_LOG_FILENAME,
     BenchmarkRunContext,
@@ -41,7 +42,7 @@ def build_run_manifest(
     runtime_dataset_metadata = _read_json_file(root / "packaging" / "kaggle" / "dataset-metadata.json")
     runtime_kernel_metadata = _read_json_file(root / "packaging" / "kaggle" / "kernel-metadata.json")
     notebook_path = _resolve_notebook_path(kaggle_manifest, repo_root=root)
-    log_records = _read_jsonl_records(context.output_dir / BENCHMARK_LOG_FILENAME)
+    log_records = read_jsonl_records(context.output_dir / BENCHMARK_LOG_FILENAME)
 
     return {
         "run_id": context.run_id,
@@ -138,23 +139,6 @@ def _read_json_file(path: Path) -> dict[str, Any]:
     if isinstance(payload, dict):
         return payload
     return {}
-
-
-def _read_jsonl_records(path: Path) -> list[dict[str, Any]]:
-    if not path.exists():
-        return []
-
-    records: list[dict[str, Any]] = []
-    for line in path.read_text(encoding="utf-8").splitlines():
-        if not line.strip():
-            continue
-        try:
-            record = json.loads(line)
-        except json.JSONDecodeError:
-            continue
-        if isinstance(record, dict):
-            records.append(record)
-    return records
 
 
 def _find_event_timestamp(

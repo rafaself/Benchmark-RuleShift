@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from core.kaggle.episode_ledger import EPISODE_RESULTS_FILENAME
+from core.kaggle.run_log_io import read_jsonl_records
 from core.kaggle.run_logging import (
     BENCHMARK_LOG_FILENAME,
     EXCEPTIONS_LOG_FILENAME,
@@ -33,9 +34,9 @@ def build_diagnostics_summary(
     values are unavailable at finalization time, later releases can backfill a
     durable source of truth without changing the artifact shape.
     """
-    log_records = _read_jsonl_records(context.output_dir / BENCHMARK_LOG_FILENAME)
-    exception_records = _read_jsonl_records(context.output_dir / EXCEPTIONS_LOG_FILENAME)
-    episode_records = _read_jsonl_records(context.output_dir / EPISODE_RESULTS_FILENAME)
+    log_records = read_jsonl_records(context.output_dir / BENCHMARK_LOG_FILENAME)
+    exception_records = read_jsonl_records(context.output_dir / EXCEPTIONS_LOG_FILENAME)
+    episode_records = read_jsonl_records(context.output_dir / EPISODE_RESULTS_FILENAME)
     invalidation_reasons = _collect_invalidation_reasons(log_records)
 
     return {
@@ -75,23 +76,6 @@ def write_diagnostics_summary(
         json.dump(summary, handle, indent=2, sort_keys=True)
         handle.write("\n")
     return summary_path
-
-
-def _read_jsonl_records(path: Path) -> list[dict[str, Any]]:
-    if not path.exists():
-        return []
-
-    records: list[dict[str, Any]] = []
-    for line in path.read_text(encoding="utf-8").splitlines():
-        if not line.strip():
-            continue
-        try:
-            record = json.loads(line)
-        except json.JSONDecodeError:
-            continue
-        if isinstance(record, dict):
-            records.append(record)
-    return records
 
 
 def _collect_invalidation_reasons(log_records: list[dict[str, Any]]) -> list[str]:
