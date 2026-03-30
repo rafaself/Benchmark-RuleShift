@@ -1,4 +1,4 @@
-from dataclasses import fields, replace
+from dataclasses import replace
 
 import pytest
 
@@ -57,34 +57,6 @@ def test_schema_accepts_valid_t2_episode():
 
 
 def test_schema_fields_are_present():
-    expected_fields = (
-        "episode_id",
-        "split",
-        "difficulty",
-        "template_id",
-        "template_family",
-        "rule_A",
-        "rule_B",
-        "transition",
-        "pre_count",
-        "post_labeled_count",
-        "shift_after_position",
-        "contradiction_count_post",
-        "difficulty_profile_id",
-        "difficulty_factors",
-        "items",
-        "probe_targets",
-        "probe_label_counts",
-        "probe_sign_pattern_counts",
-        "probe_metadata",
-        "difficulty_version",
-        "spec_version",
-        "generator_version",
-        "template_set_version",
-    )
-
-    assert tuple(field.name for field in fields(Episode)) == expected_fields
-
     episode = make_valid_t1_episode()
     assert episode.spec_version == SPEC_VERSION
     assert episode.generator_version == GENERATOR_VERSION

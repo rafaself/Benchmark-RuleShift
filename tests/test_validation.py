@@ -6,12 +6,20 @@ from pathlib import Path
 
 import pytest
 
-from tasks.ruleshift_benchmark.baselines import (
+from maintainer.baselines import (
     last_evidence_baseline,
     never_update_baseline,
     physics_prior_baseline,
     random_baseline,
     template_position_baseline,
+)
+from maintainer.validate import (
+    BaselineAccuracySummary,
+    BenchmarkValidityReport,
+    SplitBaselineAccuracySummary,
+    run_benchmark_validity_report,
+    serialize_benchmark_validity_report,
+    validate_benchmark_validity,
 )
 from tasks.ruleshift_benchmark.generator import generate_episode
 from core.metrics import MetricSummary, compute_metrics
@@ -27,18 +35,12 @@ from tasks.ruleshift_benchmark.render import render_binary_prompt, render_narrat
 from tasks.ruleshift_benchmark.rules import label
 from tasks.ruleshift_benchmark.schema import DifficultyFactors, Episode, EpisodeItem, ProbeMetadata
 from core.validate import (
-    BaselineAccuracySummary,
-    BenchmarkValidityReport,
     DatasetDistributionSummary,
     DatasetValidationResult,
     EpisodeValidationResult,
     RegenerationCheck,
-    SplitBaselineAccuracySummary,
     ValidationIssue,
     normalize_episode_payload,
-    run_benchmark_validity_report,
-    serialize_benchmark_validity_report,
-    validate_benchmark_validity,
     validate_dataset,
     validate_episode,
 )

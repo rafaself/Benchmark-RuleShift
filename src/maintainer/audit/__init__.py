@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from core.audit.core import (
+from maintainer.audit.core import (
     AuditReport,
     AuditSliceSummary,
     AuditSource,
@@ -13,8 +13,8 @@ from core.audit.core import (
     ReleaseAuditSourceSummary,
     run_audit,
 )
-from core.audit.release import run_release_r15_reaudit
-from core.audit.reporting import serialize_release_r15_reaudit_report
+from maintainer.audit.release import run_release_r15_reaudit
+from maintainer.audit.reporting import serialize_release_r15_reaudit_report
 
 __all__ = [
     "AuditSource",

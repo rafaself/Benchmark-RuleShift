@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from core.contract_audit import (
+from maintainer.contract_audit import (
     CANONICAL_BINARY_TASK_NAME,
     CANONICAL_NARRATIVE_TASK_NAME,
     CANONICAL_TASK_ID,
@@ -193,7 +193,7 @@ class TestContractAuditPositive:
 
         Regression: must not be derived from KAGGLE_USERNAME or any runtime env var.
         """
-        from core.contract_audit import EXPECTED_DATASET_SOURCES
+        from maintainer.contract_audit import EXPECTED_DATASET_SOURCES
 
         kernel_meta = json.loads(
             (_REPO_ROOT / "packaging" / "kaggle" / "kernel-metadata.json").read_text(
@@ -232,18 +232,18 @@ class TestContractAuditPositive:
         artifact_path = tmp_path / "artifact.json"
         artifact_path.write_text("{}", encoding="utf-8")
 
-        monkeypatch.setattr("core.contract_audit.check_notebook_metadata", lambda repo_root=None: [])
+        monkeypatch.setattr("maintainer.contract_audit.check_notebook_metadata", lambda repo_root=None: [])
         monkeypatch.setattr(
-            "core.contract_audit.materialize_task_definition",
+            "maintainer.contract_audit.materialize_task_definition",
             lambda repo_root=None: _make_good_task(),
         )
-        monkeypatch.setattr("core.contract_audit.check_task_artifact", lambda task_json: [])
-        monkeypatch.setattr("core.contract_audit.check_manifest_hashes", lambda repo_root=None: [])
+        monkeypatch.setattr("maintainer.contract_audit.check_task_artifact", lambda task_json: [])
+        monkeypatch.setattr("maintainer.contract_audit.check_manifest_hashes", lambda repo_root=None: [])
         monkeypatch.setattr(
-            "core.contract_audit.find_latest_run_artifact",
+            "maintainer.contract_audit.find_latest_run_artifact",
             lambda repo_root=None: artifact_path,
         )
-        monkeypatch.setattr("core.contract_audit.check_run_artifact", lambda run_json: [])
+        monkeypatch.setattr("maintainer.contract_audit.check_run_artifact", lambda run_json: [])
 
         def fake_load_split_manifest(partition: str, repo_root=None):
             raise FileNotFoundError(f"{partition}.json missing")
@@ -339,7 +339,7 @@ class TestNegativeCanonicalMetadataPlaceholders:
         """Regression: if EXPECTED_DATASET_SOURCES contained a placeholder owner, the
         contract audit should flag it as missing from the canonical metadata file."""
         monkeypatch.setattr(
-            "core.contract_audit.EXPECTED_DATASET_SOURCES",
+            "maintainer.contract_audit.EXPECTED_DATASET_SOURCES",
             ("KAGGLE_USERNAME/ruleshift-runtime",),
         )
         errors = check_notebook_metadata(_REPO_ROOT)
@@ -421,7 +421,7 @@ class TestNegativeManifestHashMismatch:
             raise ValueError("sha256 mismatch: expected abc123, got def456")
 
         monkeypatch.setattr(
-            "core.contract_audit.validate_kaggle_staging_manifest",
+            "maintainer.contract_audit.validate_kaggle_staging_manifest",
             fake_validate,
         )
         errors = check_manifest_hashes(_REPO_ROOT)
@@ -433,7 +433,7 @@ class TestNegativeManifestHashMismatch:
             raise FileNotFoundError("kbench_notebook points to missing file")
 
         monkeypatch.setattr(
-            "core.contract_audit.validate_kaggle_staging_manifest",
+            "maintainer.contract_audit.validate_kaggle_staging_manifest",
             fake_validate,
         )
         errors = check_manifest_hashes(_REPO_ROOT)

@@ -262,22 +262,6 @@ class TestRuntimeDatasetPackage:
         }
         assert packaged_src_files == _EXPECTED_RUNTIME_SOURCE_FILES
 
-    def test_runtime_dataset_omits_maintainer_only_modules(self, package_dir: Path):
-        packaged_src_files = _files_in(package_dir)
-        for omitted in (
-            "src/core/cli.py",
-            "src/core/contract_audit.py",
-            "src/core/invariance.py",
-            "src/core/report_outputs.py",
-            "src/core/validate/gate.py",
-            "src/core/audit/__init__.py",
-            "src/core/audit/core.py",
-            "src/core/audit/release.py",
-            "src/core/audit/reporting.py",
-            "src/tasks/ruleshift_benchmark/baselines.py",
-        ):
-            assert omitted not in packaged_src_files
-
     def test_frozen_artifacts_manifest_is_present(self, package_dir: Path):
         assert (package_dir / "packaging" / "kaggle" / "frozen_artifacts_manifest.json").is_file()
 

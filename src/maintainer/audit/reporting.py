@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from core.audit.core import (
+from maintainer.audit.core import (
     AuditSliceSummary,
     BaselineComparisonSummary,
     ModeComparisonSummary,

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Final, Iterable, Literal
 
 from core.parser import ParseStatus, ParsedPrediction
-from tasks.ruleshift_benchmark.baselines import BaselineRunResult
+from maintainer.baselines import BaselineRunResult
 from tasks.ruleshift_benchmark.protocol import (
     PROBE_COUNT,
     TemplateFamily,

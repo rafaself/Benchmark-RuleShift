@@ -7,21 +7,21 @@ import subprocess
 import sys
 from typing import Any
 
-from core.audit import run_release_r15_reaudit, serialize_release_r15_reaudit_report
-from core.contract_audit import run_contract_audit
+from maintainer.audit import run_release_r15_reaudit, serialize_release_r15_reaudit_report
+from maintainer.contract_audit import run_contract_audit
+from maintainer.report_outputs import write_text_with_timestamped_snapshot
+from maintainer.validate import (
+    R13_VALIDITY_GATE,
+    run_benchmark_validity_report,
+    serialize_benchmark_validity_report,
+)
 from core.kaggle import validate_kaggle_staging_manifest
-from core.report_outputs import write_text_with_timestamped_snapshot
 from core.splits import (
     PARTITIONS,
     assert_no_partition_overlap,
     audit_frozen_splits,
     load_all_frozen_splits,
     load_split_manifest,
-)
-from core.validate import (
-    R13_VALIDITY_GATE,
-    run_benchmark_validity_report,
-    serialize_benchmark_validity_report,
 )
 
 _PRIVATE_REQUIRED_ERROR = (

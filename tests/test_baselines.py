@@ -1,6 +1,6 @@
 from functools import partial
 
-from tasks.ruleshift_benchmark.baselines import (
+from maintainer.baselines import (
     physics_prior_baseline,
     last_evidence_baseline,
     never_update_baseline,

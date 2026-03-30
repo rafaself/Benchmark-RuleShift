@@ -8,7 +8,7 @@ import sys
 
 import pytest
 
-from core import cli
+from maintainer import cli
 from core.private_split import PRIVATE_DATASET_ROOT_ENV_VAR
 
 
@@ -67,7 +67,7 @@ def test_integrity_command_can_write_output_file(
         return path, snapshot_path
 
     monkeypatch.setattr(
-        "core.cli.write_text_with_timestamped_snapshot",
+        "maintainer.cli.write_text_with_timestamped_snapshot",
         fake_write_text_with_timestamped_snapshot,
     )
     monkeypatch.setattr(

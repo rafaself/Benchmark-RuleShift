@@ -1,5 +1,5 @@
 PYTHON ?= .venv/bin/python
-CLI := PYTHONPATH=src $(PYTHON) -m core.cli
+CLI := PYTHONPATH=src $(PYTHON) -m maintainer.cli
 
 .PHONY: help test doctor contract-audit compliance-check notebook-check validity reaudit integrity evidence-pass update-hashes lint type-check
 
@@ -54,8 +54,8 @@ lint:
 	$(PYTHON) -m ruff check src/ scripts/
 
 type-check:
-	$(PYTHON) -m mypy src/core/splits.py src/core/private_split.py src/core/cli.py \
-	    src/core/validate/gate.py \
+	$(PYTHON) -m mypy src/core/splits.py src/core/private_split.py src/maintainer/cli.py \
+	    src/maintainer/validate/gate.py \
 	    scripts/cd/build_runtime_dataset_package.py \
 	    scripts/cd/build_kernel_package.py
 

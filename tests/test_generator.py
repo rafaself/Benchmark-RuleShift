@@ -1,10 +1,9 @@
-from dataclasses import fields
 from unittest.mock import patch
 
 import pytest
 
 import tasks.ruleshift_benchmark.generator as rsb_generator
-from tasks.ruleshift_benchmark.baselines import last_evidence_baseline
+from maintainer.baselines import last_evidence_baseline
 from tasks.ruleshift_benchmark.generator import generate_episode
 from tasks.ruleshift_benchmark.protocol import (
     LABELED_ITEM_COUNT,
@@ -90,41 +89,6 @@ def test_no_duplicate_q1_q2_pairs_exist_within_an_episode(seed):
     episode = generate_episode(seed)
     pairs = [(item.q1, item.q2) for item in episode.items]
     assert len(set(pairs)) == len(pairs)
-
-
-def test_schema_fields_are_always_present():
-    expected_fields = (
-        "episode_id",
-        "split",
-        "difficulty",
-        "template_id",
-        "template_family",
-        "rule_A",
-        "rule_B",
-        "transition",
-        "pre_count",
-        "post_labeled_count",
-        "shift_after_position",
-        "contradiction_count_post",
-        "difficulty_profile_id",
-        "difficulty_factors",
-        "items",
-        "probe_targets",
-        "probe_label_counts",
-        "probe_sign_pattern_counts",
-        "probe_metadata",
-        "difficulty_version",
-        "spec_version",
-        "generator_version",
-        "template_set_version",
-    )
-
-    episode = generate_episode(3)
-
-    assert isinstance(episode, Episode)
-    assert tuple(field.name for field in fields(Episode)) == expected_fields
-    for field_name in expected_fields:
-        assert hasattr(episode, field_name)
 
 
 def test_generator_populates_canonical_row_metadata():

@@ -36,8 +36,9 @@ When a label is ambiguous on its own, prefer the role-explicit phrase: `benchmar
 
 ## Repository Layout
 
-- `src/tasks/ruleshift_benchmark/`: task-specific rules, schema, generation, rendering, and baselines.
-- `src/core/`: parsing, metrics, validation, audits, split loading, and runtime plumbing.
+- `src/tasks/ruleshift_benchmark/`: task-specific runtime rules, schema, generation, rendering, and protocol definitions.
+- `src/core/`: Kaggle runtime primitives, split loading, parsing, metrics, and payload plumbing.
+- `src/maintainer/`: maintainer-only CLI, audits, contract checks, validation gates, and evidence baselines.
 - `src/frozen_splits/`: public frozen manifests for `dev` and `public_leaderboard`, stored at `src/frozen_splits/dev.json` and `src/frozen_splits/public_leaderboard.json`.
 - `packaging/kaggle/`: Kaggle-facing materials only.
 - `scripts/`: operational helpers that validate isolation or build private-only artifacts without redefining benchmark semantics.
@@ -127,7 +128,7 @@ The public runtime package includes only the notebook-required source subset:
 - `src/tasks/ruleshift_benchmark/{generator.py,protocol.py,render.py,rules.py,schema.py}`
 - `src/frozen_splits/{dev.json,public_leaderboard.json}`
 
-Maintainer-only audit, CLI, report, and release-validation modules stay in the repository but are not staged into the public Kaggle runtime dataset. Never place `private_episodes.json`, private seeds, or any repo-local private fallback in public repo paths or public packaging outputs.
+Maintainer-only audit, CLI, report, validation-gate, contract-audit, and baseline modules now live under `src/maintainer/` and are not staged into the public Kaggle runtime dataset. Never place `private_episodes.json`, private seeds, or any repo-local private fallback in public repo paths or public packaging outputs.
 
 Kaggle deployment reads the checked-in metadata files directly. `KAGGLE_API_TOKEN` is the only required deployment secret. `KAGGLE_USERNAME`, runtime dataset slug inputs, and other deploy-time metadata overrides are not part of the current workflow.
 

@@ -272,7 +272,7 @@ def _parse_private_episodes(payload: object) -> tuple[FrozenSplitEpisode, ...]:
 
 
 def _normalize_generated_private_episode(seed: int) -> dict[str, object]:
-    from core.validate import normalize_episode_payload
+    from core.validate.episode import normalize_episode_payload
     from tasks.ruleshift_benchmark.generator import generate_episode
     from tasks.ruleshift_benchmark.protocol import Split
 

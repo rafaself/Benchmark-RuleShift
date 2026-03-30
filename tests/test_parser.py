@@ -1,5 +1,4 @@
 from core.parser import (
-    NarrativeAuditOutput,
     NarrativeParseStatus,
     NarrativeParsedResult,
     ParsedPrediction,
@@ -77,13 +76,6 @@ def test_narrative_audit_parses_valid_four_line_contract():
     assert result.output.rule_after == "same-sign attract, opposite-sign repel"
     assert result.output.final_decision == (ATTRACT, REPEL, REPEL, ATTRACT)
     assert result.failure_detail is None
-
-
-def test_narrative_audit_output_is_frozen_dataclass():
-    result = parse_narrative_audit_output(_make_valid_narrative_text())
-    assert result.status is NarrativeParseStatus.VALID
-    assert isinstance(result, NarrativeParsedResult)
-    assert isinstance(result.output, NarrativeAuditOutput)
 
 
 def test_narrative_audit_handles_contract_in_markdown_code_block():

@@ -206,14 +206,14 @@ def test_pyproject_exposes_local_console_entrypoints():
 
     assert pyproject["project"]["name"] == "ruleshift-benchmark"
     assert pyproject["project"]["scripts"] == {
-        "ruleshift-benchmark": "core.cli:entrypoint",
-        "ruleshift-benchmark-test": "core.cli:test_entrypoint",
-        "ruleshift-benchmark-validity": "core.cli:validity_entrypoint",
-        "ruleshift-benchmark-reaudit": "core.cli:reaudit_entrypoint",
-        "ruleshift-benchmark-integrity": "core.cli:integrity_entrypoint",
-        "ruleshift-benchmark-evidence-pass": "core.cli:evidence_pass_entrypoint",
-        "ruleshift-benchmark-contract-audit": "core.cli:contract_audit_entrypoint",
-        "ruleshift-benchmark-doctor": "core.cli:doctor_entrypoint",
+        "ruleshift-benchmark": "maintainer.cli:entrypoint",
+        "ruleshift-benchmark-test": "maintainer.cli:test_entrypoint",
+        "ruleshift-benchmark-validity": "maintainer.cli:validity_entrypoint",
+        "ruleshift-benchmark-reaudit": "maintainer.cli:reaudit_entrypoint",
+        "ruleshift-benchmark-integrity": "maintainer.cli:integrity_entrypoint",
+        "ruleshift-benchmark-evidence-pass": "maintainer.cli:evidence_pass_entrypoint",
+        "ruleshift-benchmark-contract-audit": "maintainer.cli:contract_audit_entrypoint",
+        "ruleshift-benchmark-doctor": "maintainer.cli:doctor_entrypoint",
     }
     assert pyproject["project"]["dependencies"] == []
     assert "optional-dependencies" not in pyproject["project"]

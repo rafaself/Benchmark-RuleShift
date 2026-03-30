@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Final, Iterable, Mapping
 
-from core.audit import AuditSource, AuditSourceSummary, run_audit
-from tasks.ruleshift_benchmark.baselines import (
+from maintainer.audit import AuditSource, AuditSourceSummary, run_audit
+from maintainer.baselines import (
     BaselineFn,
     last_evidence_baseline,
     never_update_baseline,

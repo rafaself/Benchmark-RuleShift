@@ -407,7 +407,7 @@ class TestSplitEpisodeCountContract:
     manifests. This would have caught the 16→18 drift."""
 
     def test_expected_episodes_matches_manifests(self):
-        from core.contract_audit import EXPECTED_EPISODES_PER_SPLIT, check_split_episode_counts
+        from maintainer.contract_audit import EXPECTED_EPISODES_PER_SPLIT, check_split_episode_counts
 
         errors = check_split_episode_counts()
         assert errors == [], (
@@ -416,7 +416,7 @@ class TestSplitEpisodeCountContract:
         )
 
     def test_expected_episodes_equals_manifest_seed_count(self):
-        from core.contract_audit import EXPECTED_EPISODES_PER_SPLIT
+        from maintainer.contract_audit import EXPECTED_EPISODES_PER_SPLIT
         from core.splits import PUBLIC_PARTITIONS, load_split_manifest
 
         for partition in PUBLIC_PARTITIONS:

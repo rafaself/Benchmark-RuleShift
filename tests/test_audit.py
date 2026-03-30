@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from core.audit import (
+from maintainer.audit import (
     AuditSliceSummary,
     AuditSource,
     HeuristicAlignmentSummary,
@@ -11,7 +11,7 @@ from core.audit import (
     run_release_r15_reaudit,
     serialize_release_r15_reaudit_report,
 )
-from tasks.ruleshift_benchmark.baselines import (
+from maintainer.baselines import (
     last_evidence_baseline,
     never_update_baseline,
     physics_prior_baseline,

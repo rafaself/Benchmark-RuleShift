@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Final, Iterable, Mapping
 
-from core.audit.core import (
+from maintainer.audit.core import (
     AuditSliceSummary,
     AuditSource,
     AuditSourceSummary,
@@ -235,7 +235,7 @@ def _build_release_baseline_sources_by_split(
     *,
     random_baseline_seed: int,
 ) -> dict[str, dict[str, AuditSource]]:
-    from tasks.ruleshift_benchmark.baselines import (
+    from maintainer.baselines import (
         last_evidence_baseline,
         never_update_baseline,
         physics_prior_baseline,
