@@ -84,6 +84,22 @@ Build the Kaggle notebook bundle:
 python3 scripts/build_kernel_package.py --output-dir /tmp/ruleshift-kernel-bundle
 ```
 
+## Local Kaggle-like Runtime
+
+For a Docker-based local runtime that uses the Kaggle Python image and mounts this repository into the container for development/debugging, see [docs/local-kaggle-validation.md](/home/rafa/dev/Challenges/ch-executive-functions-1/docs/local-kaggle-validation.md).
+
+## Safe Deploy Gate
+
+Run the local gate before any Kaggle runtime packaging or publish action:
+
+```bash
+docker compose -f docker-compose.kaggle-local.yml run --rm kaggle-local ./scripts/pre_deploy_check.sh
+```
+
+That gate checks the local Kaggle-like environment, runs the preflight path, runs the targeted schema/runtime regression tests, and rebuilds the public Kaggle artifacts to catch manifest/metadata drift before release.
+
+For the hosted Kaggle full-run checklist and post-run evidence capture, see [docs/kaggle-full-run-checklist.md](/home/rafa/dev/Challenges/ch-executive-functions-1/docs/kaggle-full-run-checklist.md).
+
 ## Private Evaluation Mount
 
 The notebook can optionally load a mounted private dataset for `private_leaderboard`. The public repository does not generate or package that artifact; it only discovers and reads an attached `private_episodes.json`.
