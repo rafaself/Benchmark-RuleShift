@@ -6,7 +6,7 @@ from pydantic import TypeAdapter
 import pytest
 
 from core.kaggle import KaggleExecutionError, load_leaderboard_dataframe, run_binary_task
-from core.kaggle.runner import BinaryResponse, Label
+from core.kaggle.runner import BinaryResponse, Label, normalize_binary_response
 
 
 class _RaisingLLM:
@@ -43,6 +43,26 @@ class _SchemaAwareLLM:
             probe_7=Label.repel,
             probe_8=Label.attract,
             probe_9=Label.repel,
+        )
+
+
+class _StringFieldBinaryResponseLLM:
+    def prompt(self, *_args, **_kwargs):
+        return BinaryResponse(
+            probe_6="attract",
+            probe_7="repel",
+            probe_8="attract",
+            probe_9="repel",
+        )
+
+
+class _InvalidBinaryResponseLLM:
+    def prompt(self, *_args, **_kwargs):
+        return BinaryResponse(
+            probe_6="invalid_label",
+            probe_7="repel",
+            probe_8="attract",
+            probe_9="repel",
         )
 
 
@@ -84,6 +104,41 @@ def test_run_binary_task_scores_minimal_valid_binary_response():
     assert llm.last_schema is BinaryResponse
 
 
+def test_binary_response_as_tuple_accepts_enum_fields():
+    response = BinaryResponse(
+        probe_6=Label.attract,
+        probe_7=Label.repel,
+        probe_8=Label.attract,
+        probe_9=Label.repel,
+    )
+
+    assert response.as_tuple() == ("attract", "repel", "attract", "repel")
+
+
+def test_binary_response_as_tuple_accepts_string_fields():
+    response = BinaryResponse(
+        probe_6="attract",
+        probe_7="repel",
+        probe_8="attract",
+        probe_9="repel",
+    )
+
+    assert response.as_tuple() == ("attract", "repel", "attract", "repel")
+    assert normalize_binary_response(response) == ("attract", "repel", "attract", "repel")
+
+
+def test_binary_response_as_tuple_rejects_invalid_string_fields():
+    response = BinaryResponse(
+        probe_6="invalid_label",
+        probe_7="repel",
+        probe_8="attract",
+        probe_9="repel",
+    )
+
+    with pytest.raises(ValueError, match=r"probe_6"):
+        response.as_tuple()
+
+
 def test_run_binary_task_scores_valid_string_and_mapping_responses():
     targets = ("attract", "repel", "attract", "repel")
 
@@ -97,6 +152,30 @@ def test_run_binary_task_scores_valid_string_and_mapping_responses():
         prompt_binary="prompt",
         probe_targets=targets,
     ) == (4, 4)
+
+
+def test_run_binary_task_scores_binary_response_with_string_fields():
+    targets = ("attract", "repel", "attract", "repel")
+
+    assert run_binary_task(
+        llm=_StringFieldBinaryResponseLLM(),
+        prompt_binary="prompt",
+        probe_targets=targets,
+    ) == (4, 4)
+
+
+def test_run_binary_task_raises_for_invalid_binary_response_fields():
+    targets = ("attract", "repel", "attract", "repel")
+
+    with pytest.raises(
+        KaggleExecutionError,
+        match=r"invalid binary response.*probe_6.*invalid_label",
+    ):
+        run_binary_task(
+            llm=_InvalidBinaryResponseLLM(),
+            prompt_binary="prompt",
+            probe_targets=targets,
+        )
 
 
 def test_binary_response_matches_structured_output_schema_contract():

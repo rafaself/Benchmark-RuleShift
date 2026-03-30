@@ -33,10 +33,10 @@ class BinaryResponse:
 
     def as_tuple(self) -> tuple[str, str, str, str]:
         return (
-            self.probe_6.value,
-            self.probe_7.value,
-            self.probe_8.value,
-            self.probe_9.value,
+            _coerce_binary_label(self.probe_6, field_name="probe_6"),
+            _coerce_binary_label(self.probe_7, field_name="probe_7"),
+            _coerce_binary_label(self.probe_8, field_name="probe_8"),
+            _coerce_binary_label(self.probe_9, field_name="probe_9"),
         )
 
 
@@ -120,7 +120,10 @@ def run_binary_task(
     except Exception as exc:
         raise KaggleExecutionError("llm.prompt failed before producing a scoreable response") from exc
 
-    normalized_response = normalize_binary_response(response)
+    try:
+        normalized_response = normalize_binary_response(response)
+    except ValueError as exc:
+        raise KaggleExecutionError(f"llm.prompt returned an invalid binary response: {exc}") from exc
     if normalized_response is None:
         raise KaggleExecutionError(
             f"llm.prompt returned an unscoreable response of type {type(response).__name__}"
@@ -204,12 +207,20 @@ def _try_coerce_to_binary_response(response: object) -> BinaryResponse | None:
 
     try:
         labels = tuple(
-            Label(_extract_label_value(values[field]))
+            Label(_coerce_binary_label(values[field], field_name=field))
             for field in ("probe_6", "probe_7", "probe_8", "probe_9")
         )
-    except (KeyError, TypeError, ValueError):
+    except (KeyError, TypeError):
         return None
     return BinaryResponse(*labels)
+
+
+def _coerce_binary_label(value: object, *, field_name: str) -> str:
+    raw_value = _extract_label_value(value)
+    try:
+        return parse_label(raw_value).value
+    except ValueError as exc:
+        raise ValueError(f"invalid binary response field {field_name}: {raw_value!r}") from exc
 
 
 def _extract_label_value(value: object) -> str:
