@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -20,6 +21,13 @@ _WORKFLOW_EXPECTED_SCRIPTS = {
     ".github/workflows/deploy-kaggle-dataset.yml": "scripts/build_runtime_dataset_package.py",
     ".github/workflows/deploy-kaggle-notebook.yml": "scripts/build_kernel_package.py",
 }
+_WORKFLOW_FILES = tuple(
+    sorted(path.relative_to(_REPO_ROOT).as_posix() for path in (_REPO_ROOT / ".github" / "workflows").glob("*.yml"))
+)
+_PINNED_ACTIONS = {
+    "actions/checkout": "08eba0b27e820071cde6df949e0beb9ba4906955",
+    "actions/setup-python": "a26af69be951a213d495a4c3e4e4022e16d87065",
+}
 _EXPECTED_RUNTIME_SOURCE_FILES = {
     "src/core/__init__.py",
     "src/core/kaggle/__init__.py",
@@ -37,7 +45,6 @@ _EXPECTED_RUNTIME_SOURCE_FILES = {
     "src/tasks/ruleshift_benchmark/render.py",
     "src/tasks/ruleshift_benchmark/rules.py",
     "src/tasks/ruleshift_benchmark/schema.py",
-    "src/tasks/ruleshift_benchmark/schema_derivations.py",
 }
 
 
@@ -72,6 +79,34 @@ def test_deploy_workflows_reference_canonical_build_scripts():
         workflow_text = (_REPO_ROOT / workflow_path).read_text(encoding="utf-8")
         assert expected_script in workflow_text
         assert "scripts/cd/" not in workflow_text
+
+
+def test_only_lean_deploy_workflows_remain_and_are_hardened():
+    assert _WORKFLOW_FILES == (
+        ".github/workflows/deploy-kaggle-dataset.yml",
+        ".github/workflows/deploy-kaggle-notebook.yml",
+    )
+
+    for workflow_path in _WORKFLOW_FILES:
+        workflow_text = (_REPO_ROOT / workflow_path).read_text(encoding="utf-8")
+
+        assert "workflow_call:" not in workflow_text
+        assert "permissions:\n  contents: read" in workflow_text
+        assert "concurrency:" in workflow_text
+        assert "cancel-in-progress: false" in workflow_text
+        assert 'python-version: "3.11"' in workflow_text
+        assert "cache: pip" in workflow_text
+        assert "cache-dependency-path: requirements-dev.txt" in workflow_text
+        assert "pip install -r requirements-dev.txt" in workflow_text
+        assert "pip install -e ." in workflow_text
+        assert "pip install \"kaggle==${KAGGLE_CLI_VERSION}\"" in workflow_text
+        assert "actions/upload-artifact" not in workflow_text
+
+        for action_name, sha in _PINNED_ACTIONS.items():
+            assert f"uses: {action_name}@{sha}" in workflow_text
+
+        unpinned_actions = re.findall(r"uses:\s+([^@\s]+)@([^\s]+)", workflow_text)
+        assert all(len(ref) == 40 for _, ref in unpinned_actions)
 
 
 @pytest.fixture(scope="module")

@@ -47,7 +47,6 @@ RUNTIME_SOURCE_RELPATHS = (
     "src/tasks/ruleshift_benchmark/render.py",
     "src/tasks/ruleshift_benchmark/rules.py",
     "src/tasks/ruleshift_benchmark/schema.py",
-    "src/tasks/ruleshift_benchmark/schema_derivations.py",
 )
 
 

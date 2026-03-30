@@ -17,8 +17,13 @@ from tasks.ruleshift_benchmark.protocol import (
     Transition,
 )
 from tasks.ruleshift_benchmark.rules import label
-from tasks.ruleshift_benchmark.schema_derivations import (
+from tasks.ruleshift_benchmark.schema import (
+    DEFAULT_GENERATION_MAX_ATTEMPTS,
+    DIFFICULTY_VERSION,
     PROBE_SIGN_PATTERN_ORDER,
+    Episode,
+    EpisodeItem,
+    ProbeMetadata,
     build_contradiction_count_post,
     build_effective_probe_targets,
     build_probe_label_counts,
@@ -30,12 +35,6 @@ from tasks.ruleshift_benchmark.schema_derivations import (
     has_both_probe_labels,
     has_mixed_polarity_sign_patterns,
     is_global_rule_probe_block,
-)
-from tasks.ruleshift_benchmark.schema import (
-    DIFFICULTY_VERSION,
-    Episode,
-    EpisodeItem,
-    ProbeMetadata,
 )
 
 TEMPLATE_CHOICES: tuple[TemplateId, ...] = (
@@ -182,9 +181,18 @@ def _target_transition_for_seed(seed: int) -> Transition:
     return TRANSITION_CHOICES[(seed // stride) % len(TRANSITION_CHOICES)]
 
 
-def generate_episode(seed: int, split: Split | str = Split.DEV) -> Episode:
+def generate_episode(
+    seed: int,
+    split: Split | str = Split.DEV,
+    *,
+    max_attempts: int = DEFAULT_GENERATION_MAX_ATTEMPTS,
+) -> Episode:
     if not _is_plain_int(seed):
         raise TypeError("seed must be an int")
+    if not _is_plain_int(max_attempts):
+        raise TypeError("max_attempts must be an int")
+    if max_attempts < 1:
+        raise ValueError("max_attempts must be at least 1")
 
     rng = random.Random(seed)
     target_difficulty = _target_difficulty_for_seed(seed)
@@ -201,7 +209,7 @@ def generate_episode(seed: int, split: Split | str = Split.DEV) -> Episode:
     template_family = target_template_family
     template = TEMPLATES[template_id]
 
-    while True:
+    for _attempt in range(max_attempts):
         sampled_pairs = _sample_pairs(rng, template.total_items)
         items = _build_items(sampled_pairs, template.pre_count, rule_a, rule_b)
         probe_targets = _build_probe_targets(items, template.pre_count, rule_a, rule_b)
@@ -225,6 +233,12 @@ def generate_episode(seed: int, split: Split | str = Split.DEV) -> Episode:
             )
             if difficulty is target_difficulty:
                 break
+    else:
+        raise RuntimeError(
+            "generate_episode exhausted max_attempts "
+            f"for seed={seed}, split={split}, max_attempts={max_attempts}"
+        )
+
     probe_label_counts = build_probe_label_counts(probe_targets)
     probe_sign_pattern_counts = build_probe_sign_pattern_counts(items[LABELED_ITEM_COUNT:])
     probe_metadata = _build_probe_metadata(items, rule_a, rule_b)

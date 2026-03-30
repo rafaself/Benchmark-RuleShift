@@ -75,6 +75,42 @@ def test_generator_populates_canonical_metadata_fields():
     )
 
 
+def test_generator_raises_when_bounded_attempts_are_exhausted():
+    invalid_candidate = (
+        (1, 1),
+        (-1, 1),
+        (-2, -2),
+        (2, -2),
+        (1, 2),
+        (2, 3),
+        (-3, -2),
+        (3, -1),
+        (-2, 3),
+    )
+
+    with patch.object(rsb_generator, "_target_difficulty_for_seed", return_value=rsb_generator.Difficulty.HARD):
+        with patch.object(rsb_generator, "_target_template_for_seed", return_value=TemplateId.T1):
+            with patch.object(
+                rsb_generator,
+                "_target_template_family_for_seed",
+                return_value=TemplateFamily.CANONICAL,
+            ):
+                with patch.object(
+                    rsb_generator,
+                    "_target_transition_for_seed",
+                    return_value=Transition.R_STD_TO_R_INV,
+                ):
+                    with patch.object(
+                        rsb_generator,
+                        "_sample_pairs",
+                        return_value=invalid_candidate,
+                    ) as sample_pairs:
+                        with pytest.raises(RuntimeError, match="exhausted max_attempts"):
+                            generate_episode(1, max_attempts=2)
+
+    assert sample_pairs.call_count == 2
+
+
 def test_invalid_candidates_are_rejected_by_deterministic_resampling():
     invalid_candidate = (
         (1, 1),

@@ -1,13 +1,14 @@
 # RuleShift Benchmark
 
-RuleShift Benchmark is a narrow Executive Functions benchmark for cognitive flexibility. The public repository is trimmed to the runtime path needed for Kaggle notebook execution, Kaggle runtime dataset execution, benchmark correctness, output generation, and essential run diagnosability.
+RuleShift Benchmark is a narrow Executive Functions benchmark for cognitive flexibility. The public repository is trimmed to the maintained Kaggle release path only: the official notebook, the official binary task, the official payload, frozen split loading, packaging, and deploy workflows.
 
 ## Runtime Surface
 
 - `src/tasks/ruleshift_benchmark/`: benchmark rules, schema, generation, rendering, and protocol definitions.
-- `src/core/`: runtime split loading, parser/metrics/slices, Kaggle payload helpers, and run diagnostics.
+- `src/core/`: Kaggle runtime helpers plus public/private frozen split loading.
 - `src/frozen_splits/`: public frozen manifests for `dev` and `public_leaderboard`.
 - `packaging/kaggle/`: official notebook, runtime metadata, and the public packaging manifest.
+- `.github/workflows/`: the two official Kaggle deploy workflows.
 - `scripts/`: the public build scripts and shared packaging helpers for the runtime dataset and notebook bundle.
 
 ## Official Kaggle Contract
@@ -24,7 +25,7 @@ The Kaggle release path has one official benchmark contract, emitted by the note
 
 The official contract does not include narrative result requirements, comparison fields, diagnostics summary fields, slice fields, or extra release-only metadata.
 
-The public runtime package includes only:
+The public runtime dataset package includes only:
 
 - `src/core/kaggle/`
 - `src/core/splits.py`
@@ -37,6 +38,11 @@ Within `src/core/kaggle/`, the official release path is limited to:
 - `runner.py`
 - `payload.py`
 - `manifest.py`
+
+The repo keeps exactly two deploy workflows:
+
+- `.github/workflows/deploy-kaggle-dataset.yml`
+- `.github/workflows/deploy-kaggle-notebook.yml`
 
 The checked-in public split manifests are:
 
@@ -52,12 +58,15 @@ python3 -m pip install -r requirements-dev.txt
 python3 -m pip install -e .
 ```
 
-Run the runtime-facing validation set:
+Run the release-path validation set:
 
 ```bash
 python3 -m pytest tests/test_packaging.py -v
 python3 -m pytest tests/test_cd_build.py -v
 python3 -m pytest tests/test_kbench_notebook.py -v
+python3 -m pytest tests/test_kaggle_execution.py -v
+python3 -m pytest tests/test_kaggle_payload.py -v
+python3 -m pytest tests/test_run_manifest.py -v
 python3 -m pytest tests/test_private_split.py -v
 ```
 
@@ -92,4 +101,4 @@ export RULESHIFT_PRIVATE_DATASET_ROOT=/path/to/private-dataset
 - `packaging/kaggle/dataset-metadata.json`
 - `packaging/kaggle/frozen_artifacts_manifest.json`
 
-`README.md` is the checked-in description of the current public runtime surface.
+`README.md` is the checked-in description of the final maintained public release surface.

@@ -1,13 +1,10 @@
-name: Deploy — Kaggle Notebook
+name: Deploy - Kaggle Notebook
 
 on:
   workflow_dispatch:
 
-  # Called by deploy-kaggle.yml.
-  workflow_call:
-    secrets:
-      KAGGLE_API_TOKEN:
-        required: true
+permissions:
+  contents: read
 
 concurrency:
   group: deploy-kaggle-notebook
@@ -18,107 +15,42 @@ env:
   BUNDLE_DIR: /tmp/ruleshift-kernel-bundle
 
 jobs:
-  # ── Job 1: validate ──────────────────────────────────────────────────────────
-  # Runs the same gates as CI so a deploy from an unmerged branch cannot
-  # bypass them.  Notebook smoke tests are included because the notebook
-  # is the artifact being deployed.
-  validate:
-    name: Validate
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install dev dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements-dev.txt
-
-      - name: Install project (editable, no optional provider SDKs)
-        run: pip install -e .
-
-      - name: Run reduced notebook validation suite
-        run: python -m pytest tests/test_packaging.py tests/test_cd_build.py tests/test_kbench_notebook.py tests/test_private_split.py -v
-
-  # ── Job 2: deploy ─────────────────────────────────────────────────────────────
   deploy:
     name: Deploy notebook
     runs-on: ubuntu-latest
-    needs: validate
     environment: production
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
       - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
 
-      - name: Install project (editable, no optional provider SDKs)
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
           pip install -e .
+          pip install "kaggle==${KAGGLE_CLI_VERSION}"
 
-      - name: Install Kaggle CLI (pinned)
-        run: pip install "kaggle==${KAGGLE_CLI_VERSION}"
-
-      # ── Build ─────────────────────────────────────────────────────────────────
-      # The build script copies the notebook and kernel-metadata.json verbatim
-      # from packaging/kaggle — no fields are generated at build time.
       - name: Build kernel bundle
         run: |
           python scripts/build_kernel_package.py \
             --output-dir "$BUNDLE_DIR"
 
-      - name: Upload kernel build artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: kaggle-kernel-bundle
-          path: ${{ env.BUNDLE_DIR }}
-          if-no-files-found: warn
-          retention-days: 14
+      - name: Validate kernel bundle
+        run: python -m pytest tests/test_cd_build.py tests/test_packaging.py tests/test_kbench_notebook.py -v
 
-      # ── Push ──────────────────────────────────────────────────────────────────
-      # Authenticate with the recommended API token flow. The Kaggle CLI
-      # accepts KAGGLE_API_TOKEN directly, so CI does not need kaggle.json.
-      - name: Verify Kaggle CLI installation and authentication
+      - name: Publish notebook
         env:
           KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
         run: |
           set -euo pipefail
-
-          output_file="$(mktemp)"
-          trap 'rm -f "$output_file"' EXIT
-
           kaggle --version
-
-          if kaggle kernels list -m --page-size 1 >"$output_file" 2>&1; then
-            echo "Kaggle CLI authentication preflight passed."
-            exit 0
-          fi
-
-          output="$(cat "$output_file")"
-          echo "ERROR: Kaggle CLI authentication preflight failed."
-          if printf '%s' "$output" | grep -Eqi '401|403|unauth|forbidden|auth|login|token|credential|permission|access denied'; then
-            echo "KAGGLE_API_TOKEN was rejected or lacks the required permissions."
-          else
-            echo "The Kaggle CLI could not complete an authenticated request."
-          fi
-          printf '%s\n' "$output"
-          exit 1
-
-      - name: Push kernel bundle
-        env:
-          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
-        run: |
           kaggle kernels push \
             --path "$BUNDLE_DIR"

@@ -6,7 +6,7 @@ from tasks.ruleshift_benchmark.protocol import (
 )
 from tasks.ruleshift_benchmark.schema import Episode, EpisodeItem
 
-__all__ = ["render_binary_prompt", "render_narrative_prompt"]
+__all__ = ["render_binary_prompt"]
 
 _BINARY_INTROS = {
     TemplateFamily.CANONICAL: (
@@ -27,32 +27,7 @@ _BINARY_INTROS = {
         "then complete the pending rows."
     ),
 }
-_NARRATIVE_INTROS = {
-    TemplateFamily.CANONICAL: (
-        "Two electric charges were observed interacting in the following sequence.\n"
-        "Use the full sequence to infer which sign combinations were revised by the later evidence, "
-        "then answer the unlabeled observations at the end."
-    ),
-    TemplateFamily.OBSERVATION_LOG: (
-        "An observation log recorded interactions between two electric charges over time.\n"
-        "Use the full log to infer which sign combinations were revised by the later evidence, "
-        "then answer the unlabeled observations at the end."
-    ),
-    TemplateFamily.CASE_LEDGER: (
-        "A case ledger recorded interactions between two electric charges across successive rows.\n"
-        "Use the full ledger to infer which sign combinations were revised by the later evidence, "
-        "then answer the unlabeled observations at the end."
-    ),
-}
 _BINARY_OUTRO = "Return exactly 4 labels in order, one per probe. Use only attract or repel."
-_NARRATIVE_OUTRO = (
-    "Narrative is supplemental audit evidence only. Binary remains the official leaderboard task.\n"
-    "Return exactly these 4 lines and nothing else:\n"
-    "rule_before: <short pre-shift rule>\n"
-    "shift_evidence: <short shift evidence>\n"
-    "rule_after: <short post-shift rule>\n"
-    "final_decision: attract, repel, repel, attract"
-)
 
 
 def render_binary_prompt(episode: Episode) -> str:
@@ -73,24 +48,6 @@ def render_binary_prompt(episode: Episode) -> str:
     )
 
 
-def render_narrative_prompt(episode: Episode) -> str:
-    labeled_items, probe_items = _partition_items(episode)
-    line_renderer = _narrative_line_renderer(episode.template_family)
-    return "\n".join(
-        (
-            _NARRATIVE_INTROS[episode.template_family],
-            "",
-            _narrative_labeled_heading(episode.template_family),
-            *(line_renderer(item) for item in labeled_items),
-            "",
-            _narrative_probe_heading(episode.template_family),
-            *(line_renderer(item) for item in probe_items),
-            "",
-            _NARRATIVE_OUTRO,
-        )
-    )
-
-
 def _partition_items(episode: Episode) -> tuple[tuple[EpisodeItem, ...], tuple[EpisodeItem, ...]]:
     labeled_items = episode.items[:LABELED_ITEM_COUNT]
     probe_items = episode.items[LABELED_ITEM_COUNT:]
@@ -105,16 +62,6 @@ def _binary_line_renderer(
     if template_family is TemplateFamily.CASE_LEDGER:
         return _render_binary_ledger_line
     return _render_binary_line
-
-
-def _narrative_line_renderer(
-    template_family: TemplateFamily,
-):
-    if template_family is TemplateFamily.OBSERVATION_LOG:
-        return _render_narrative_log_line
-    if template_family is TemplateFamily.CASE_LEDGER:
-        return _render_narrative_ledger_line
-    return _render_narrative_line
 
 
 def _binary_labeled_heading(template_family: TemplateFamily) -> str:
@@ -133,33 +80,10 @@ def _binary_probe_heading(template_family: TemplateFamily) -> str:
     return "Probes:"
 
 
-def _narrative_labeled_heading(template_family: TemplateFamily) -> str:
-    if template_family is TemplateFamily.OBSERVATION_LOG:
-        return "Resolved log entries:"
-    if template_family is TemplateFamily.CASE_LEDGER:
-        return "Confirmed ledger rows:"
-    return "Labeled examples:"
-
-
-def _narrative_probe_heading(template_family: TemplateFamily) -> str:
-    if template_family is TemplateFamily.OBSERVATION_LOG:
-        return "Unresolved probe entries:"
-    if template_family is TemplateFamily.CASE_LEDGER:
-        return "Pending ledger rows:"
-    return "Probes:"
-
-
 def _render_binary_line(item: EpisodeItem) -> str:
     return (
         f"{item.position}. q1={_format_charge(item.q1)}, "
         f"q2={_format_charge(item.q2)} -> {_render_outcome(item)}"
-    )
-
-
-def _render_narrative_line(item: EpisodeItem) -> str:
-    return (
-        f"{item.position}. A {_format_charge(item.q1)} charge and a {_format_charge(item.q2)} "
-        f"charge were observed to {_render_outcome(item)}."
     )
 
 
@@ -170,24 +94,10 @@ def _render_binary_log_line(item: EpisodeItem) -> str:
     )
 
 
-def _render_narrative_log_line(item: EpisodeItem) -> str:
-    return (
-        f"[{item.position:02d}] charges({_format_charge(item.q1)}, {_format_charge(item.q2)}) "
-        f"=> observed {_render_outcome(item)}."
-    )
-
-
 def _render_binary_ledger_line(item: EpisodeItem) -> str:
     return (
         f"row {item.position:02d} | pair=({_format_charge(item.q1)}, {_format_charge(item.q2)}) "
         f"| result={_render_outcome(item)}"
-    )
-
-
-def _render_narrative_ledger_line(item: EpisodeItem) -> str:
-    return (
-        f"row {item.position:02d} recorded pair({_format_charge(item.q1)}, {_format_charge(item.q2)}) "
-        f"with result {_render_outcome(item)}."
     )
 
 
