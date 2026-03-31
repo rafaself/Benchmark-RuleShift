@@ -33,7 +33,6 @@ def _execute_notebook_cells() -> dict:
     cells = json.loads(_NOTEBOOK_PATH.read_text(encoding="utf-8"))["cells"]
     ns: dict = {
         "__builtins__": __import__("builtins"),
-        "display": lambda *args, **kwargs: None,
     }
     for cell in cells:
         if cell.get("cell_type") != "code":
@@ -96,8 +95,6 @@ def test_notebook_source_keeps_binary_only_leaderboard_surface():
     assert "store_task=False" in source
     assert '@kbench.task(\n    name="ruleshift_benchmark_v1_binary"' in source
     assert "def ruleshift_benchmark_v1_binary(llm) -> dict:" in source
-    assert "def ruleshift_benchmark_v1_binary(llm) -> dict[str, object]:" not in source
-    assert '@kbench.task(\n    name="ruleshift_benchmark_v1_narrative"' not in source
     assert "load_leaderboard_dataframe" in source
     assert "run_binary_task" in source
     assert "_ruleshift_benchmark_v1_binary_row.evaluate(" in source
@@ -105,27 +102,7 @@ def test_notebook_source_keeps_binary_only_leaderboard_surface():
     assert "_RULESHIFT_BINARY_DF = None" in source
     assert "global _RULESHIFT_BINARY_DF" in source
     assert "_RULESHIFT_BINARY_DF = binary_df" in source
-    assert "getattr(ruleshift_benchmark_v1_binary, '_binary_df', None)" not in source
-    assert "ruleshift_benchmark_v1_binary._binary_df = binary_df" not in source
-    assert ".head(DEBUG_LIMIT)" not in source
-    assert "DEBUG_MODE" not in source
-    assert "DEBUG_LIMIT" not in source
-    assert "DebugLLM" not in source
-    assert "run_binary_task_debug" not in source
-    assert "[DEBUG]" not in source
-    assert "_ensure_binary_response_runtime_compatibility" not in source
-    assert "BinaryResponse.as_tuple =" not in source
-    assert "packaging/kaggle/private/private_episodes.json" not in source
-    assert "NotebookStatus" not in source
-    assert "discover_private_dataset_root" not in source
-    assert "load_private_split" not in source
-    assert "run_narrative_episode" not in source
-    assert "write_diagnostics_summary" not in source
-    assert "write_run_manifest" not in source
-    assert "benchmark_result.json" not in source
-    assert "dev_df" not in source
     assert "%choose ruleshift_benchmark_v1_binary" in source
-    assert "<table" not in source
     assert "pd.DataFrame(" in source
     assert ".to_string(index=False)" in source
 

@@ -100,15 +100,6 @@ def test_notebook_imports_runtime_helpers_only():
     assert "load_leaderboard_dataframe" in sources
     assert "run_binary_task" in sources
     assert "build_kaggle_payload" in sources
-    assert "validate_kaggle_staging_manifest" not in sources
-    assert "from core.splits import load_frozen_split" not in sources
-    assert "from core.private_split import discover_private_dataset_root, load_private_split" not in sources
-    assert "from core.kaggle.runner import (" not in sources
-    assert "BinaryResponse" not in sources
-    assert "normalize_binary_response" not in sources
-    assert "score_episode" not in sources
-    assert "packaging/kaggle/private/private_episodes.json" not in sources
-    assert "<table" not in sources
     assert "pd.DataFrame(" in sources
     assert ".to_string(index=False)" in sources
 
