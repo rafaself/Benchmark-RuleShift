@@ -1,5 +1,5 @@
 {
-  "id": "raptorengineer/ruleshift-notebook",
-  "title": "RuleShift Notebook",
+  "id": "raptorengineer/ruleshift-notebook-runtime",
+  "title": "RuleShift Notebook Runtime",
   "licenses": [{"name": "CC0-1.0"}]
 }
