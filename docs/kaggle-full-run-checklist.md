@@ -1,13 +1,13 @@
 # Kaggle Full Run Checklist
 
-Use this checklist for the real Phase 6 hosted Kaggle run after the local validation phases pass.
+Use this checklist for the hosted Kaggle run after local validation passes.
 
 ## Before the run
 
-Run the local gate:
+Run the pre-deploy gate:
 
 ```bash
-docker compose -f docker-compose.kaggle-local.yml run --rm kaggle-local ./scripts/pre_deploy_check.sh
+./scripts/pre_deploy_check.sh
 ```
 
 Confirm the notebook is on the normal path:
@@ -21,8 +21,8 @@ Confirm the notebook is on the normal path:
 Rebuild the release artifacts you intend to publish:
 
 ```bash
-docker compose -f docker-compose.kaggle-local.yml run --rm kaggle-local python scripts/build_runtime_dataset_package.py --output-dir /tmp/ruleshift-runtime-package
-docker compose -f docker-compose.kaggle-local.yml run --rm kaggle-local python scripts/build_kernel_package.py --output-dir /tmp/ruleshift-kernel-bundle
+python3 scripts/build_runtime_dataset_package.py --output-dir /tmp/ruleshift-runtime-package
+python3 scripts/build_kernel_package.py --output-dir /tmp/ruleshift-kernel-bundle
 ```
 
 ## In Kaggle

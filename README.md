@@ -58,7 +58,9 @@ python3 -m pip install -r requirements-dev.txt
 python3 -m pip install -e .
 ```
 
-Run the release-path validation set:
+## Local Validation
+
+Run the release-path validation tests:
 
 ```bash
 python3 -m pytest tests/test_packaging.py -v
@@ -69,6 +71,16 @@ python3 -m pytest tests/test_kaggle_payload.py -v
 python3 -m pytest tests/test_run_manifest.py -v
 python3 -m pytest tests/test_private_split.py -v
 ```
+
+## Pre-publish Checks
+
+Run the pre-deploy gate before any Kaggle packaging or publish action:
+
+```bash
+./scripts/pre_deploy_check.sh
+```
+
+The gate checks the local environment, runs the preflight path and targeted schema/runtime regression tests, and rebuilds the public Kaggle artifacts to catch manifest/metadata drift before release.
 
 ## Build Outputs
 
@@ -84,21 +96,16 @@ Build the Kaggle notebook bundle:
 python3 scripts/build_kernel_package.py --output-dir /tmp/ruleshift-kernel-bundle
 ```
 
-## Local Kaggle-like Runtime
+## Kaggle Publish Flow
 
-For a Docker-based local runtime that uses the Kaggle Python image and mounts this repository into the container for development/debugging, see [docs/local-kaggle-validation.md](/home/rafa/dev/Challenges/ch-executive-functions-1/docs/local-kaggle-validation.md).
+For the hosted Kaggle full-run checklist and post-run evidence capture, see [docs/kaggle-full-run-checklist.md](docs/kaggle-full-run-checklist.md).
 
-## Safe Deploy Gate
-
-Run the local gate before any Kaggle runtime packaging or publish action:
-
-```bash
-docker compose -f docker-compose.kaggle-local.yml run --rm kaggle-local ./scripts/pre_deploy_check.sh
-```
-
-That gate checks the local Kaggle-like environment, runs the preflight path, runs the targeted schema/runtime regression tests, and rebuilds the public Kaggle artifacts to catch manifest/metadata drift before release.
-
-For the hosted Kaggle full-run checklist and post-run evidence capture, see [docs/kaggle-full-run-checklist.md](/home/rafa/dev/Challenges/ch-executive-functions-1/docs/kaggle-full-run-checklist.md).
+1. Run all local validation tests.
+2. Run `./scripts/pre_deploy_check.sh`.
+3. Build runtime dataset and notebook bundle.
+4. Publish the runtime dataset to Kaggle.
+5. Publish or update the notebook bundle.
+6. Run the notebook on Kaggle and capture evidence per the checklist.
 
 ## Private Evaluation Mount
 
@@ -116,5 +123,3 @@ export RULESHIFT_PRIVATE_DATASET_ROOT=/path/to/private-dataset
 - `packaging/kaggle/kernel-metadata.json`
 - `packaging/kaggle/dataset-metadata.json`
 - `packaging/kaggle/frozen_artifacts_manifest.json`
-
-`README.md` is the checked-in description of the final maintained public release surface.
