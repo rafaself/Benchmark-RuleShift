@@ -13,7 +13,6 @@ if TYPE_CHECKING:
 
 __all__ = [
     "KaggleExecutionError",
-    "find_repo_root",
     "load_leaderboard_dataframe",
     "run_binary_task",
 ]
@@ -42,37 +41,6 @@ class BinaryResponse:
 
 class KaggleExecutionError(RuntimeError):
     """Raised when the model provider/runtime fails before a response can be scored."""
-
-
-def find_repo_root() -> Path:
-    candidates: list[Path] = []
-    seen: set[Path] = set()
-
-    for origin in (Path.cwd().resolve(),):
-        for candidate in (origin, *origin.parents):
-            if candidate not in seen:
-                seen.add(candidate)
-                candidates.append(candidate)
-
-    for search_root in (Path("/kaggle/input"), Path("/kaggle/working")):
-        if not search_root.exists():
-            continue
-        for manifest_path in search_root.rglob("frozen_artifacts_manifest.json"):
-            candidate = manifest_path.parents[2]
-            if candidate not in seen:
-                seen.add(candidate)
-                candidates.append(candidate)
-
-    for candidate in candidates:
-        if (candidate / "src").is_dir() and (
-            candidate / "packaging" / "kaggle" / "frozen_artifacts_manifest.json"
-        ).is_file():
-            return candidate
-
-    raise FileNotFoundError(
-        "Could not locate repo root. Expected src/ and "
-        "packaging/kaggle/frozen_artifacts_manifest.json."
-    )
 
 
 def load_leaderboard_dataframe(

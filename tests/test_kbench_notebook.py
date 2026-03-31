@@ -62,6 +62,18 @@ def _execute_choose_magic() -> object:
 
 
 @pytest.fixture(autouse=True)
+def _patch_kaggle_runtime_path(monkeypatch: pytest.MonkeyPatch) -> None:
+    _original_is_dir = Path.is_dir
+
+    def _kaggle_aware_is_dir(self: Path) -> bool:
+        if str(self) == "/kaggle/input/ruleshift-runtime/src":
+            return True
+        return _original_is_dir(self)
+
+    monkeypatch.setattr(Path, "is_dir", _kaggle_aware_is_dir)
+
+
+@pytest.fixture(autouse=True)
 def _clean_registry() -> None:
     kbench.reset_registry()
     yield
@@ -115,7 +127,7 @@ def test_notebook_executes_end_to_end_with_private_mount():
 
     assert set(ns["frozen_splits"]) == {"public_leaderboard", "private_leaderboard"}
     assert set(ns["leaderboard_df"]["split"]) == {"public_leaderboard", "private_leaderboard"}
-    assert str(ns["REPO_ROOT"] / "src") in sys.path
+    assert str(ns["RUNTIME_SRC"]) in sys.path
 
     registry = kbench.get_registry()
     assert set(registry) == {"ruleshift_benchmark_v1_binary"}
