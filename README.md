@@ -104,12 +104,6 @@ Deploy from the local machine with:
 python -m scripts.deploy --release-message "your Kaggle dataset version note"
 ```
 
-Optional wrapper:
-
-```bash
-make deploy ARGS='--release-message "your Kaggle dataset version note"'
-```
-
 The deploy entrypoint rebuilds the runtime dataset and notebook bundle from the same repo state, versions or creates the runtime dataset on Kaggle, and then pushes the notebook bundle.
 
 ## Private Evaluation Mount
