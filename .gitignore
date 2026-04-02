@@ -3,11 +3,4 @@ __pycache__/
 .pytest_cache/
 *.pyc
 .env
-deploy/
 src/frozen_splits/private_leaderboard.json
-packaging/kaggle/private/
-# Transient local outputs — never canonical, never commit
-benchmark_result.json
-ruleshift_benchmark_v1_binary.task.json
-reports/live/
-reports/local/
