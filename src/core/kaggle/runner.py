@@ -5,7 +5,13 @@ from typing import TYPE_CHECKING, Any
 
 from core.private_split import discover_private_dataset_root, load_private_split
 from core.splits import load_frozen_split
-from tasks.ruleshift_benchmark.protocol import PROBE_COUNT, InteractionLabel, parse_label
+from tasks.ruleshift_benchmark.protocol import (
+    PROBE_COUNT,
+    InteractionLabel,
+    format_public_label,
+    parse_label,
+    parse_public_label,
+)
 from tasks.ruleshift_benchmark.render import render_binary_prompt
 
 if TYPE_CHECKING:
@@ -19,12 +25,16 @@ __all__ = [
 
 
 class Label(str, Enum):
-    attract = "attract"
-    repel = "repel"
+    """Public output labels accepted by the task-facing response schema."""
+
+    type_a = "type_a"
+    type_b = "type_b"
 
 
 @dataclass(frozen=True)
 class BinaryResponse:
+    """Structured task response with one `type_a`/`type_b` output per probe."""
+
     probe_6: Label
     probe_7: Label
     probe_8: Label
@@ -140,7 +150,9 @@ def _build_rows(partition: str, records: Any) -> list[dict[str, object]]:
                 "episode_id": episode.episode_id,
                 "split": partition,
                 "prompt_binary": render_binary_prompt(episode),
-                "probe_targets": tuple(label.value for label in episode.probe_targets),
+                "probe_targets": tuple(
+                    format_public_label(label) for label in episode.probe_targets
+                ),
             }
         )
     return rows
@@ -152,7 +164,7 @@ def _parse_binary_output(text: str) -> tuple[str, ...] | None:
     if len(tokens) != PROBE_COUNT:
         return None
     try:
-        return tuple(parse_label(token).value for token in tokens)
+        return tuple(format_public_label(parse_public_label(token)) for token in tokens)
     except ValueError:
         return None
 
@@ -185,7 +197,7 @@ def _try_coerce_to_binary_response(response: object) -> BinaryResponse | None:
 def _coerce_binary_label(value: object, *, field_name: str) -> str:
     raw_value = _extract_label_value(value)
     try:
-        return parse_label(raw_value).value
+        return format_public_label(parse_public_label(raw_value))
     except ValueError as exc:
         raise ValueError(f"invalid binary response field {field_name}: {raw_value!r}") from exc
 
@@ -205,7 +217,13 @@ def _normalize_labels(
 ) -> tuple[InteractionLabel, ...] | None:
     if labels is None:
         return None
-    normalized_labels = tuple(parse_label(label) for label in labels)
+    try:
+        normalized_labels = tuple(
+            label if isinstance(label, InteractionLabel) else parse_public_label(label)
+            for label in labels
+        )
+    except ValueError:
+        return None
     if len(normalized_labels) != PROBE_COUNT:
         return None
     return normalized_labels

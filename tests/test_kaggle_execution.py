@@ -23,16 +23,16 @@ class _RaisingLLM:
 
 class _StringLLM:
     def prompt(self, *_args, **_kwargs):
-        return "attract, repel, attract, repel"
+        return "type_a, type_b, type_a, type_b"
 
 
 class _MappingLLM:
     def prompt(self, *_args, **_kwargs):
         return {
-            "probe_6": "attract",
-            "probe_7": "repel",
-            "probe_8": "attract",
-            "probe_9": "repel",
+            "probe_6": "type_a",
+            "probe_7": "type_b",
+            "probe_8": "type_a",
+            "probe_9": "type_b",
         }
 
 
@@ -43,20 +43,20 @@ class _SchemaAwareLLM:
     def prompt(self, *_args, **kwargs):
         self.last_schema = kwargs.get("schema")
         return BinaryResponse(
-            probe_6=Label.attract,
-            probe_7=Label.repel,
-            probe_8=Label.attract,
-            probe_9=Label.repel,
+            probe_6=Label.type_a,
+            probe_7=Label.type_b,
+            probe_8=Label.type_a,
+            probe_9=Label.type_b,
         )
 
 
 class _StringFieldBinaryResponseLLM:
     def prompt(self, *_args, **_kwargs):
         return BinaryResponse(
-            probe_6="attract",
-            probe_7="repel",
-            probe_8="attract",
-            probe_9="repel",
+            probe_6="type_a",
+            probe_7="type_b",
+            probe_8="type_a",
+            probe_9="type_b",
         )
 
 
@@ -64,9 +64,9 @@ class _InvalidBinaryResponseLLM:
     def prompt(self, *_args, **_kwargs):
         return BinaryResponse(
             probe_6="invalid_label",
-            probe_7="repel",
-            probe_8="attract",
-            probe_9="repel",
+            probe_7="type_b",
+            probe_8="type_a",
+            probe_9="type_b",
         )
 
 
@@ -83,7 +83,7 @@ def test_run_binary_task_raises_for_unscoreable_outputs(response, expected_type)
         def prompt(self, *_args, **_kwargs):
             return response
 
-    targets = ("attract", "repel", "attract", "repel")
+    targets = ("type_a", "type_b", "type_a", "type_b")
 
     with pytest.raises(
         KaggleExecutionError,
@@ -97,7 +97,7 @@ def test_run_binary_task_raises_for_unscoreable_outputs(response, expected_type)
 
 
 def test_run_binary_task_scores_minimal_valid_binary_response():
-    targets = ("attract", "repel", "attract", "repel")
+    targets = ("type_a", "type_b", "type_a", "type_b")
     llm = _SchemaAwareLLM()
 
     assert run_binary_task(
@@ -110,33 +110,33 @@ def test_run_binary_task_scores_minimal_valid_binary_response():
 
 def test_binary_response_as_tuple_accepts_enum_fields():
     response = BinaryResponse(
-        probe_6=Label.attract,
-        probe_7=Label.repel,
-        probe_8=Label.attract,
-        probe_9=Label.repel,
+        probe_6=Label.type_a,
+        probe_7=Label.type_b,
+        probe_8=Label.type_a,
+        probe_9=Label.type_b,
     )
 
-    assert response.as_tuple() == ("attract", "repel", "attract", "repel")
+    assert response.as_tuple() == ("type_a", "type_b", "type_a", "type_b")
 
 
 def test_binary_response_as_tuple_accepts_string_fields():
     response = BinaryResponse(
-        probe_6="attract",
-        probe_7="repel",
-        probe_8="attract",
-        probe_9="repel",
+        probe_6="type_a",
+        probe_7="type_b",
+        probe_8="type_a",
+        probe_9="type_b",
     )
 
-    assert response.as_tuple() == ("attract", "repel", "attract", "repel")
-    assert normalize_binary_response(response) == ("attract", "repel", "attract", "repel")
+    assert response.as_tuple() == ("type_a", "type_b", "type_a", "type_b")
+    assert normalize_binary_response(response) == ("type_a", "type_b", "type_a", "type_b")
 
 
 def test_binary_response_as_tuple_rejects_invalid_string_fields():
     response = BinaryResponse(
         probe_6="invalid_label",
-        probe_7="repel",
-        probe_8="attract",
-        probe_9="repel",
+        probe_7="type_b",
+        probe_8="type_a",
+        probe_9="type_b",
     )
 
     with pytest.raises(ValueError, match=r"probe_6"):
@@ -155,17 +155,17 @@ def test_normalize_binary_response_tolerates_stale_as_tuple(monkeypatch: pytest.
     monkeypatch.setattr(BinaryResponse, "as_tuple", _stale_as_tuple)
 
     response = BinaryResponse(
-        probe_6="attract",
-        probe_7="repel",
-        probe_8="attract",
-        probe_9="repel",
+        probe_6="type_a",
+        probe_7="type_b",
+        probe_8="type_a",
+        probe_9="type_b",
     )
 
-    assert normalize_binary_response(response) == ("attract", "repel", "attract", "repel")
+    assert normalize_binary_response(response) == ("type_a", "type_b", "type_a", "type_b")
 
 
 def test_run_binary_task_scores_valid_string_and_mapping_responses():
-    targets = ("attract", "repel", "attract", "repel")
+    targets = ("type_a", "type_b", "type_a", "type_b")
 
     assert run_binary_task(
         llm=_StringLLM(),
@@ -180,7 +180,7 @@ def test_run_binary_task_scores_valid_string_and_mapping_responses():
 
 
 def test_run_binary_task_scores_binary_response_with_string_fields():
-    targets = ("attract", "repel", "attract", "repel")
+    targets = ("type_a", "type_b", "type_a", "type_b")
 
     assert run_binary_task(
         llm=_StringFieldBinaryResponseLLM(),
@@ -190,7 +190,7 @@ def test_run_binary_task_scores_binary_response_with_string_fields():
 
 
 def test_run_binary_task_raises_for_invalid_binary_response_fields():
-    targets = ("attract", "repel", "attract", "repel")
+    targets = ("type_a", "type_b", "type_a", "type_b")
 
     with pytest.raises(
         KaggleExecutionError,
@@ -212,11 +212,11 @@ def test_binary_response_matches_structured_output_schema_contract():
     assert schema["title"] == "BinaryResponse"
     assert schema["required"] == ["probe_6", "probe_7", "probe_8", "probe_9"]
     assert list(schema["properties"]) == ["probe_6", "probe_7", "probe_8", "probe_9"]
-    assert schema["$defs"]["Label"]["enum"] == ["attract", "repel"]
+    assert schema["$defs"]["Label"]["enum"] == ["type_a", "type_b"]
 
 
 def test_run_binary_task_surfaces_provider_exception():
-    targets = ("attract", "repel", "attract", "repel")
+    targets = ("type_a", "type_b", "type_a", "type_b")
 
     with pytest.raises(KaggleExecutionError, match="llm.prompt failed"):
         run_binary_task(
@@ -227,7 +227,7 @@ def test_run_binary_task_surfaces_provider_exception():
 
 
 def test_run_binary_task_surfaces_timeout_like_failure():
-    targets = ("attract", "repel", "attract", "repel")
+    targets = ("type_a", "type_b", "type_a", "type_b")
 
     with pytest.raises(KaggleExecutionError, match="llm.prompt failed"):
         run_binary_task(
@@ -235,6 +235,24 @@ def test_run_binary_task_surfaces_timeout_like_failure():
             prompt_binary="prompt",
             probe_targets=targets,
         )
+
+
+@pytest.mark.parametrize("legacy_output", ["attract, repel, attract, repel", "zark, blim, zark, blim"])
+def test_normalize_binary_response_rejects_legacy_public_output_strings(legacy_output: str):
+    assert normalize_binary_response(legacy_output) is None
+
+
+@pytest.mark.parametrize("legacy_value", ["attract", "repel", "zark", "blim"])
+def test_binary_response_as_tuple_rejects_legacy_public_output_fields(legacy_value: str):
+    response = BinaryResponse(
+        probe_6=legacy_value,
+        probe_7="type_b",
+        probe_8="type_a",
+        probe_9="type_b",
+    )
+
+    with pytest.raises(ValueError, match=r"probe_6"):
+        response.as_tuple()
 
 
 def test_load_leaderboard_dataframe_preserves_public_private_behavior(monkeypatch):

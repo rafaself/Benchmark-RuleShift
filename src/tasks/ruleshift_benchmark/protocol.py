@@ -36,6 +36,10 @@ __all__ = [
     "ItemKind",
     "TemplateSpec",
     "TEMPLATES",
+    "PUBLIC_CONTRACT_VERSION",
+    "format_public_label",
+    "format_public_state",
+    "parse_public_label",
     "parse_rule",
     "parse_label",
     "parse_template_id",
@@ -50,6 +54,7 @@ __all__ = [
 ]
 
 ProtocolEnumT = TypeVar("ProtocolEnumT", bound=StrEnum)
+PUBLIC_CONTRACT_VERSION: Final[str] = "markers-v1"
 
 
 def _is_plain_int(value: object) -> bool:
@@ -85,6 +90,14 @@ class RuleName(StrEnum):
 class InteractionLabel(StrEnum):
     ATTRACT = "attract"
     REPEL = "repel"
+
+
+_PUBLIC_LABEL_ALIASES: Final[Mapping[str, InteractionLabel]] = MappingProxyType(
+    {
+        "type_a": InteractionLabel.ATTRACT,
+        "type_b": InteractionLabel.REPEL,
+    }
+)
 
 
 class TemplateId(StrEnum):
@@ -302,6 +315,31 @@ def parse_rule(value: RuleName | str) -> RuleName:
 
 def parse_label(value: InteractionLabel | str) -> InteractionLabel:
     return _parse_enum(InteractionLabel, value, "label")
+
+
+def parse_public_label(value: InteractionLabel | str) -> InteractionLabel:
+    if isinstance(value, InteractionLabel):
+        return value
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized in _PUBLIC_LABEL_ALIASES:
+            return _PUBLIC_LABEL_ALIASES[normalized]
+    allowed = ", ".join(_PUBLIC_LABEL_ALIASES)
+    raise ValueError(f"unknown public label: {value}. expected one of: {allowed}")
+
+
+def format_public_label(value: InteractionLabel | str) -> str:
+    return {
+        InteractionLabel.ATTRACT: "type_a",
+        InteractionLabel.REPEL: "type_b",
+    }[parse_label(value)]
+
+
+def format_public_state(value: InteractionLabel | str) -> str:
+    return {
+        InteractionLabel.ATTRACT: "zark",
+        InteractionLabel.REPEL: "blim",
+    }[parse_label(value)]
 
 
 def parse_template_id(value: TemplateId | str) -> TemplateId:

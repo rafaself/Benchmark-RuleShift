@@ -46,10 +46,10 @@ class _LLMStub:
     def prompt(self, text: str, *, schema: Any = None) -> dict[str, str]:
         self.calls.append({"text": text, "schema": schema})
         return {
-            "probe_6": "attract",
-            "probe_7": "repel",
-            "probe_8": "attract",
-            "probe_9": "repel",
+            "probe_6": "type_a",
+            "probe_7": "type_b",
+            "probe_8": "type_a",
+            "probe_9": "type_b",
         }
 
     @property
