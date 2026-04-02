@@ -15,10 +15,13 @@ python3 scripts/build_kaggle.py
 
 ## Main Flow
 
-- Official notebook: `kaggle/ruleshift_notebook_task.ipynb`
-- Runtime protocol + episode schema: `src/tasks/ruleshift_benchmark/protocol.py` and `src/tasks/ruleshift_benchmark/schema.py`
-- Split loading, episode generation, prompt rendering + bundle assembly: `src/tasks/ruleshift_benchmark/splits.py`
-- Evaluation runner: `src/tasks/ruleshift_benchmark/runner.py`
-- Kaggle package build: `scripts/build_kaggle.py`
+Read the repository in this order:
 
-The notebook loads the frozen leaderboard bundle, runs the binary task, and returns the aggregate `(numerator, denominator)` result.
+1. `kaggle/ruleshift_notebook_task.ipynb`
+2. `src/tasks/ruleshift_benchmark/__init__.py`
+3. `src/tasks/ruleshift_benchmark/splits.py`
+4. `src/tasks/ruleshift_benchmark/runner.py`
+
+`protocol.py` and `schema.py` define the frozen episode contract underneath that runtime path.
+
+`scripts/build_kaggle.py` copies exactly what Kaggle needs: the notebook plus the `src/` runtime dataset.

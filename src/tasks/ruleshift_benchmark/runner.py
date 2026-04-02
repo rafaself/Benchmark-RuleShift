@@ -1,3 +1,5 @@
+"""Score one RuleShift binary episode against a Kaggle LLM handle."""
+
 from dataclasses import dataclass
 from enum import Enum
 

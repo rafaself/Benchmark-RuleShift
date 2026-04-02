@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Copy the Kaggle kernel + dataset package to an output directory."""
+"""Assemble the Kaggle notebook and runtime dataset into one output directory."""
 
 from __future__ import annotations
 
@@ -34,15 +34,26 @@ def build_kaggle_package(output_dir: Path) -> tuple[Path, Path]:
     return kernel_dir, dataset_dir
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Build the Kaggle package.")
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description="Build the Kaggle notebook and runtime dataset package.",
+    )
     parser.add_argument(
         "--output-dir",
         type=Path,
         default=Path("/tmp/ruleshift-kaggle-build"),
     )
-    args = parser.parse_args()
+    return parser
+
+
+def main() -> int:
+    args = build_parser().parse_args()
     kernel_dir, dataset_dir = build_kaggle_package(args.output_dir)
     print(kernel_dir.parent)
     print(kernel_dir)
     print(dataset_dir)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

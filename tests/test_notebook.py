@@ -19,6 +19,13 @@ import tests.kbench_shim as _shim  # noqa: E402
 
 sys.modules["kaggle_benchmarks"] = _shim  # type: ignore[assignment]
 import kaggle_benchmarks as kbench  # noqa: E402
+from tasks.ruleshift_benchmark import (  # noqa: E402
+    MANIFEST_VERSION,
+    build_benchmark_bundle,
+    build_leaderboard_rows,
+    discover_private_dataset_root,
+    run_binary_task,
+)
 
 _EXPECTED_PUBLIC_EPISODES = 54
 _EXPECTED_PRIVATE_EPISODES = 270
@@ -82,3 +89,11 @@ def test_notebook_executes_end_to_end_with_minimal_pipeline() -> None:
     assert ns["_RULESHIFT_BINARY_DF"] is not None
     assert len(ns["_RULESHIFT_BINARY_DF"]) == len(ns["leaderboard_df"])
     assert set(kbench.get_registry()) == {"ruleshift_benchmark_v1_binary"}
+
+
+def test_package_root_exposes_runtime_entrypoints() -> None:
+    assert MANIFEST_VERSION == "R14"
+    assert callable(build_benchmark_bundle)
+    assert callable(build_leaderboard_rows)
+    assert callable(discover_private_dataset_root)
+    assert callable(run_binary_task)

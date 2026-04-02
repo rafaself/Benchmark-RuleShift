@@ -1,3 +1,5 @@
+"""Frozen RuleShift runtime: load episodes, render prompts, and build bundles."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
