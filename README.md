@@ -9,16 +9,17 @@ python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install -r requirements-dev.txt
 python3 -m pip install -e .
-python3 -m pytest tests/test_kbench_notebook.py -v
-python3 -m scripts.deploy --skip-publish
+python3 -m pytest -v
+python3 scripts/build_kaggle.py
 ```
-
-Use `python3 -m scripts.deploy --release-message "..."` only when you intend to publish the Kaggle dataset and notebook bundle.
 
 ## Main Flow
 
 - Official notebook: `packaging/kaggle/ruleshift_notebook_task.ipynb`
-- Notebook runtime path: `src/core/kaggle/runner.py`
-- Official payload builder and validation: `src/core/kaggle/payload.py`
+- Example generation: `src/tasks/ruleshift_benchmark/generator.py`
+- Split loading: `src/tasks/ruleshift_benchmark/splits.py`
+- Bundle assembly: `src/tasks/ruleshift_benchmark/benchmark_bundle.py`
+- Evaluation runner: `src/tasks/ruleshift_benchmark/runner.py`
+- Kaggle package build: `scripts/build_kaggle.py`
 
-The notebook loads the frozen leaderboard split, runs the binary task, and emits the validated Kaggle payload.
+The notebook loads the frozen leaderboard bundle, runs the binary task, and returns the aggregate `(numerator, denominator)` result.

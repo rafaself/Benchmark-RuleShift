@@ -10,11 +10,11 @@ sys.path.insert(0, str(_REPO_ROOT / "src"))
 sys.path.insert(0, str(_REPO_ROOT / "scripts"))
 
 from _private_builder import build_private_episodes_payload  # noqa: E402
-from core.private_split import (  # noqa: E402
+from tasks.ruleshift_benchmark.splits import (  # noqa: E402
+    FrozenSplitManifest,
     PRIVATE_DATASET_ROOT_ENV_VAR,
     PRIVATE_EPISODES_FILENAME,
 )
-from core.splits import FrozenSplitManifest  # noqa: E402
 from tasks.ruleshift_benchmark.protocol import Split  # noqa: E402
 from tasks.ruleshift_benchmark.schema import (  # noqa: E402
     DIFFICULTY_VERSION,

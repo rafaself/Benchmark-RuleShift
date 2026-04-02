@@ -1,40 +1,30 @@
 from dataclasses import dataclass
 from enum import Enum
-from pathlib import Path
-from typing import TYPE_CHECKING, Any
 
-from core.private_split import discover_private_dataset_root, load_private_split
-from core.splits import load_frozen_split
 from tasks.ruleshift_benchmark.protocol import (
     PROBE_COUNT,
     InteractionLabel,
     format_public_label,
-    parse_label,
     parse_public_label,
 )
-from tasks.ruleshift_benchmark.render import render_binary_prompt
-
-if TYPE_CHECKING:
-    import pandas as pd
 
 __all__ = [
     "KaggleExecutionError",
-    "load_leaderboard_dataframe",
+    "Label",
+    "BinaryResponse",
+    "normalize_binary_response",
     "run_binary_task",
+    "score_episode",
 ]
 
 
 class Label(str, Enum):
-    """Public output labels accepted by the task-facing response schema."""
-
     type_a = "type_a"
     type_b = "type_b"
 
 
 @dataclass(frozen=True)
 class BinaryResponse:
-    """Structured task response with one `type_a`/`type_b` output per probe."""
-
     probe_6: Label
     probe_7: Label
     probe_8: Label
@@ -50,37 +40,7 @@ class BinaryResponse:
 
 
 class KaggleExecutionError(RuntimeError):
-    """Raised when the model provider/runtime fails before a response can be scored."""
-
-
-def load_leaderboard_dataframe() -> tuple[Path | None, dict[str, object], "pd.DataFrame"]:
-    try:
-        import pandas as pd
-    except ImportError:
-        raise ImportError("pandas is required for load_leaderboard_dataframe")
-
-    frozen_splits: dict[str, object] = {
-        "public_leaderboard": load_frozen_split("public_leaderboard"),
-    }
-
-    try:
-        private_dataset_root = discover_private_dataset_root()
-    except FileNotFoundError:
-        private_dataset_root = None
-    else:
-        if private_dataset_root is not None:
-            frozen_splits["private_leaderboard"] = load_private_split(private_dataset_root)
-
-    leaderboard_rows = [
-        row
-        for partition in ("public_leaderboard", "private_leaderboard")
-        if partition in frozen_splits
-        for row in _build_rows(partition, frozen_splits[partition])
-    ]
-    leaderboard_df = pd.DataFrame(leaderboard_rows)
-    if leaderboard_df.empty:
-        raise ValueError("leaderboard_df cannot be empty")
-    return private_dataset_root, frozen_splits, leaderboard_df
+    pass
 
 
 def run_binary_task(
@@ -92,12 +52,16 @@ def run_binary_task(
     try:
         response = llm.prompt(prompt_binary, schema=BinaryResponse)
     except Exception as exc:
-        raise KaggleExecutionError("llm.prompt failed before producing a scoreable response") from exc
+        raise KaggleExecutionError(
+            "llm.prompt failed before producing a scoreable response"
+        ) from exc
 
     try:
         normalized_response = normalize_binary_response(response)
     except ValueError as exc:
-        raise KaggleExecutionError(f"llm.prompt returned an invalid binary response: {exc}") from exc
+        raise KaggleExecutionError(
+            f"llm.prompt returned an invalid binary response: {exc}"
+        ) from exc
     if normalized_response is None:
         raise KaggleExecutionError(
             f"llm.prompt returned an unscoreable response of type {type(response).__name__}"
@@ -141,23 +105,6 @@ def score_episode(
     return (num_correct, PROBE_COUNT)
 
 
-def _build_rows(partition: str, records: Any) -> list[dict[str, object]]:
-    rows: list[dict[str, object]] = []
-    for record in records:
-        episode = record.episode
-        rows.append(
-            {
-                "episode_id": episode.episode_id,
-                "split": partition,
-                "prompt_binary": render_binary_prompt(episode),
-                "probe_targets": tuple(
-                    format_public_label(label) for label in episode.probe_targets
-                ),
-            }
-        )
-    return rows
-
-
 def _parse_binary_output(text: str) -> tuple[str, ...] | None:
     normalized_text = text.strip().strip("`").replace("\n", ",")
     tokens = tuple(token.strip().lower() for token in normalized_text.split(",") if token.strip())
@@ -176,11 +123,17 @@ def _try_coerce_to_binary_response(response: object) -> BinaryResponse | None:
         values = response
     elif hasattr(response, "__getitem__") and hasattr(response, "keys"):
         try:
-            values = {field: response[field] for field in ("probe_6", "probe_7", "probe_8", "probe_9")}
+            values = {
+                field: response[field]
+                for field in ("probe_6", "probe_7", "probe_8", "probe_9")
+            }
         except (KeyError, TypeError):
             return None
     elif all(hasattr(response, field) for field in ("probe_6", "probe_7", "probe_8", "probe_9")):
-        values = {field: getattr(response, field) for field in ("probe_6", "probe_7", "probe_8", "probe_9")}
+        values = {
+            field: getattr(response, field)
+            for field in ("probe_6", "probe_7", "probe_8", "probe_9")
+        }
     else:
         return None
 
