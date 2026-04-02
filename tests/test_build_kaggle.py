@@ -15,7 +15,6 @@ if str(_REPO_ROOT) not in sys.path:
 from scripts.build_kaggle import build_kaggle_package
 
 _EXPECTED_TASK_RUNTIME_RELPATHS = {
-    "src/tasks/ruleshift_benchmark/benchmark_bundle.py",
     "src/tasks/ruleshift_benchmark/protocol.py",
     "src/tasks/ruleshift_benchmark/runner.py",
     "src/tasks/ruleshift_benchmark/schema.py",

@@ -17,8 +17,7 @@ python3 scripts/build_kaggle.py
 
 - Official notebook: `kaggle/ruleshift_notebook_task.ipynb`
 - Runtime protocol + episode schema: `src/tasks/ruleshift_benchmark/protocol.py` and `src/tasks/ruleshift_benchmark/schema.py`
-- Split loading + episode generation: `src/tasks/ruleshift_benchmark/splits.py`
-- Bundle assembly + prompt rendering: `src/tasks/ruleshift_benchmark/benchmark_bundle.py`
+- Split loading, episode generation, prompt rendering + bundle assembly: `src/tasks/ruleshift_benchmark/splits.py`
 - Evaluation runner: `src/tasks/ruleshift_benchmark/runner.py`
 - Kaggle package build: `scripts/build_kaggle.py`
 

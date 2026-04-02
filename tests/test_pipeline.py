@@ -2,11 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from tasks.ruleshift_benchmark.benchmark_bundle import (
-    build_benchmark_bundle,
-    build_leaderboard_rows,
-)
 from tasks.ruleshift_benchmark.runner import run_binary_task
+from tasks.ruleshift_benchmark.splits import build_benchmark_bundle, build_leaderboard_rows
 
 _EXPECTED_PUBLIC_EPISODES = 54
 _EXPECTED_PRIVATE_EPISODES = 270
