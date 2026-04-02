@@ -6,7 +6,7 @@ import json
 import os
 from pathlib import Path
 import random
-from typing import Any, Callable, Final, Mapping
+from typing import Any, Final, Mapping
 
 from tasks.ruleshift_benchmark.protocol import (
     CASE_SPACE,
@@ -696,84 +696,40 @@ def _build_episode(ep: dict[str, object]) -> Episode:
 # ---------------------------------------------------------------------------
 
 
-@dataclass(frozen=True, slots=True)
-class _BinaryPresentation:
-    intro: str
-    labeled_heading: str
-    probe_heading: str
-    outro: str
-    line_renderer: Callable[[EpisodeItem], str]
-
-
-def _render_binary_line(item: EpisodeItem) -> str:
-    return (
-        f"{item.position}. r1={_format_marker_value(item.q1)}, "
-        f"r2={_format_marker_value(item.q2)} -> {_render_outcome(item)}"
-    )
-
-
-def _render_binary_log_line(item: EpisodeItem) -> str:
-    return (
-        f"[{item.position:02d}] r1={_format_marker_value(item.q1)} | "
-        f"r2={_format_marker_value(item.q2)} | observed={_render_outcome(item)}"
-    )
-
-
-def _render_binary_ledger_line(item: EpisodeItem) -> str:
-    return (
-        f"row {item.position:02d} | r1={_format_marker_value(item.q1)} | "
-        f"r2={_format_marker_value(item.q2)} | state={_render_outcome(item)}"
-    )
-
-
-def _render_outcome(item: EpisodeItem) -> str:
-    return format_public_state(item.label) if item.label is not None else "?"
-
-
-def _format_marker_value(marker_value: int) -> str:
-    return f"{marker_value:+d}"
-
-
 _BINARY_OUTRO: Final[str] = (
     "Return exactly 4 outputs in order, one per probe. "
     "Use only type_a or type_b. Map zark to type_a and blim to type_b."
 )
 
-_BINARY_PRESENTATIONS: Final[dict[TemplateFamily, _BinaryPresentation]] = {
-    TemplateFamily.CANONICAL: _BinaryPresentation(
-        intro=(
-            "You are given labeled records for two markers.\n"
-            "Each labeled line shows r1, r2, and the observed state.\n"
-            "Use the full sequence to infer which sign combinations were revised by the later evidence, "
-            "then answer the final unlabeled cases."
-        ),
-        labeled_heading="Labeled examples:",
-        probe_heading="Probes:",
-        outro=_BINARY_OUTRO,
-        line_renderer=_render_binary_line,
+_BINARY_FAMILIES: Final[
+    dict[TemplateFamily, tuple[str, str, str, str]]
+] = {
+    TemplateFamily.CANONICAL: (
+        "You are given labeled records for two markers.\n"
+        "Each labeled line shows r1, r2, and the observed state.\n"
+        "Use the full sequence to infer which sign combinations were revised by the later evidence, "
+        "then answer the final unlabeled cases.",
+        "Labeled examples:",
+        "Probes:",
+        "{pos}. r1={q1}, r2={q2} -> {out}",
     ),
-    TemplateFamily.OBSERVATION_LOG: _BinaryPresentation(
-        intro=(
-            "Review the observation log for two markers.\n"
-            "Each entry records r1, r2, and the observed state.\n"
-            "Use the full log to infer which sign combinations were revised later, then answer the unlabeled probe entries."
-        ),
-        labeled_heading="Resolved log entries:",
-        probe_heading="Unresolved probe entries:",
-        outro=_BINARY_OUTRO,
-        line_renderer=_render_binary_log_line,
+    TemplateFamily.OBSERVATION_LOG: (
+        "Review the observation log for two markers.\n"
+        "Each entry records r1, r2, and the observed state.\n"
+        "Use the full log to infer which sign combinations were revised later, "
+        "then answer the unlabeled probe entries.",
+        "Resolved log entries:",
+        "Unresolved probe entries:",
+        "[{pos:02d}] r1={q1} | r2={q2} | observed={out}",
     ),
-    TemplateFamily.CASE_LEDGER: _BinaryPresentation(
-        intro=(
-            "Review the case ledger for two markers.\n"
-            "Each row records r1, r2, and the observed state.\n"
-            "Use the full ledger to infer which sign combinations were revised by the later evidence, "
-            "then complete the pending rows."
-        ),
-        labeled_heading="Confirmed ledger rows:",
-        probe_heading="Pending ledger rows:",
-        outro=_BINARY_OUTRO,
-        line_renderer=_render_binary_ledger_line,
+    TemplateFamily.CASE_LEDGER: (
+        "Review the case ledger for two markers.\n"
+        "Each row records r1, r2, and the observed state.\n"
+        "Use the full ledger to infer which sign combinations were revised by the later evidence, "
+        "then complete the pending rows.",
+        "Confirmed ledger rows:",
+        "Pending ledger rows:",
+        "row {pos:02d} | r1={q1} | r2={q2} | state={out}",
     ),
 }
 
@@ -781,18 +737,27 @@ _BINARY_PRESENTATIONS: Final[dict[TemplateFamily, _BinaryPresentation]] = {
 def render_binary_prompt(episode: Episode) -> str:
     labeled_items = episode.items[:LABELED_ITEM_COUNT]
     probe_items = episode.items[LABELED_ITEM_COUNT:]
-    presentation = _BINARY_PRESENTATIONS[episode.template_family]
+    intro, labeled_heading, probe_heading, line_fmt = _BINARY_FAMILIES[
+        episode.template_family
+    ]
+
+    def _fmt(item: EpisodeItem) -> str:
+        out = format_public_state(item.label) if item.label is not None else "?"
+        return line_fmt.format(
+            pos=item.position, q1=f"{item.q1:+d}", q2=f"{item.q2:+d}", out=out,
+        )
+
     return "\n".join(
         (
-            presentation.intro,
+            intro,
             "",
-            presentation.labeled_heading,
-            *(presentation.line_renderer(item) for item in labeled_items),
+            labeled_heading,
+            *(_fmt(item) for item in labeled_items),
             "",
-            presentation.probe_heading,
-            *(presentation.line_renderer(item) for item in probe_items),
+            probe_heading,
+            *(_fmt(item) for item in probe_items),
             "",
-            presentation.outro,
+            _BINARY_OUTRO,
         )
     )
 
