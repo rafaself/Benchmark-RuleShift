@@ -237,12 +237,12 @@ def test_run_binary_task_surfaces_timeout_like_failure():
         )
 
 
-@pytest.mark.parametrize("legacy_output", ["attract, repel, attract, repel", "zark, blim, zark, blim"])
+@pytest.mark.parametrize("legacy_output", ["legacy_a, legacy_b, legacy_a, legacy_b", "zark, blim, zark, blim"])
 def test_normalize_binary_response_rejects_legacy_public_output_strings(legacy_output: str):
     assert normalize_binary_response(legacy_output) is None
 
 
-@pytest.mark.parametrize("legacy_value", ["attract", "repel", "zark", "blim"])
+@pytest.mark.parametrize("legacy_value", ["legacy_a", "legacy_b", "zark", "blim"])
 def test_binary_response_as_tuple_rejects_legacy_public_output_fields(legacy_value: str):
     response = BinaryResponse(
         probe_6=legacy_value,

@@ -35,104 +35,6 @@ from tasks.ruleshift_benchmark.schema import (
 _BASELINE_FIXTURE_PATH = (
     Path(__file__).resolve().parent / "fixtures" / "ruleshift_canonical_baseline.json"
 )
-_ORIGINAL_CANONICAL_OUTRO = (
-    "Return exactly 4 labels in order, one per probe. Use only attract or repel."
-)
-
-
-def _render_original_binary_prompt(episode: object) -> str:
-    labeled_items = episode.items[:LABELED_ITEM_COUNT]
-    probe_items = episode.items[LABELED_ITEM_COUNT:]
-
-    if episode.template_family is TemplateFamily.CANONICAL:
-        intro = (
-            "You are given labeled interactions between two electric charges.\n"
-            "Each labeled line shows q1, q2, and the observed result.\n"
-            "Use the full sequence to infer which sign combinations were revised by the later evidence, "
-            "then answer the final unlabeled cases."
-        )
-        labeled_heading = "Labeled examples:"
-        probe_heading = "Probes:"
-        labeled_lines = tuple(
-            f"{item.position}. q1={item.q1:+d}, q2={item.q2:+d} -> {_render_original_label(item.label)}"
-            for item in labeled_items
-        )
-        probe_lines = tuple(
-            f"{item.position}. q1={item.q1:+d}, q2={item.q2:+d} -> ?"
-            for item in probe_items
-        )
-    elif episode.template_family is TemplateFamily.OBSERVATION_LOG:
-        intro = (
-            "Review the observation log for interactions between two electric charges.\n"
-            "Each entry records q1, q2, and the observed outcome.\n"
-            "Use the full log to infer which sign combinations were revised later, then answer the unlabeled probe entries."
-        )
-        labeled_heading = "Resolved log entries:"
-        probe_heading = "Unresolved probe entries:"
-        labeled_lines = tuple(
-            f"[{item.position:02d}] q1={item.q1:+d} | q2={item.q2:+d} | observed={_render_original_label(item.label)}"
-            for item in labeled_items
-        )
-        probe_lines = tuple(
-            f"[{item.position:02d}] q1={item.q1:+d} | q2={item.q2:+d} | observed=?"
-            for item in probe_items
-        )
-    else:
-        intro = (
-            "Review the case ledger for interactions between two electric charges.\n"
-            "Each row records the charge pair and the observed result.\n"
-            "Use the full ledger to infer which sign combinations were revised by the later evidence, "
-            "then complete the pending rows."
-        )
-        labeled_heading = "Confirmed ledger rows:"
-        probe_heading = "Pending ledger rows:"
-        labeled_lines = tuple(
-            f"row {item.position:02d} | pair=({item.q1:+d}, {item.q2:+d}) | result={_render_original_label(item.label)}"
-            for item in labeled_items
-        )
-        probe_lines = tuple(
-            f"row {item.position:02d} | pair=({item.q1:+d}, {item.q2:+d}) | result=?"
-            for item in probe_items
-        )
-
-    return "\n".join(
-        (
-            intro,
-            "",
-            labeled_heading,
-            *labeled_lines,
-            "",
-            probe_heading,
-            *probe_lines,
-            "",
-            _ORIGINAL_CANONICAL_OUTRO,
-        )
-    )
-
-
-def _render_original_label(value: InteractionLabel | None) -> str:
-    return "?" if value is None else value.value
-
-
-def _extract_original_prompt_signature(
-    prompt: str,
-    template_family: TemplateFamily,
-) -> tuple[tuple[int, int, int, InteractionLabel | None], ...]:
-    if template_family is TemplateFamily.CANONICAL:
-        pattern = re.compile(
-            r"^(?P<position>\d+)\. q1=(?P<q1>[+-]\d+), q2=(?P<q2>[+-]\d+) -> (?P<label>\?|attract|repel)$"
-        )
-    elif template_family is TemplateFamily.OBSERVATION_LOG:
-        pattern = re.compile(
-            r"^\[(?P<position>\d{2})\] q1=(?P<q1>[+-]\d+) \| q2=(?P<q2>[+-]\d+) \| observed=(?P<label>\?|attract|repel)$"
-        )
-    else:
-        pattern = re.compile(
-            r"^row (?P<position>\d{2}) \| pair=\((?P<q1>[+-]\d+), (?P<q2>[+-]\d+)\) \| result=(?P<label>\?|attract|repel)$"
-        )
-    return _extract_prompt_signature(prompt, pattern, _parse_original_surface_label)
-
-
 def _extract_reframed_prompt_signature(
     prompt: str,
     template_family: TemplateFamily,
@@ -172,18 +74,12 @@ def _extract_prompt_signature(
             )
         )
     return tuple(signature)
-
-
-def _parse_original_surface_label(value: str) -> InteractionLabel | None:
-    return None if value == "?" else InteractionLabel(value)
-
-
 def _parse_reframed_surface_label(value: str) -> InteractionLabel | None:
     if value == "?":
         return None
     return {
-        "zark": InteractionLabel.ATTRACT,
-        "blim": InteractionLabel.REPEL,
+        "zark": InteractionLabel.ZARK,
+        "blim": InteractionLabel.BLIM,
     }[value]
 
 
@@ -192,7 +88,7 @@ def _flip_latent_prediction(
 ) -> tuple[InteractionLabel, ...]:
     first, *rest = predictions
     flipped_first = (
-        InteractionLabel.REPEL if first is InteractionLabel.ATTRACT else InteractionLabel.ATTRACT
+        InteractionLabel.BLIM if first is InteractionLabel.ZARK else InteractionLabel.ZARK
     )
     return (flipped_first, *rest)
 
@@ -260,10 +156,10 @@ def _load_baseline_fixture() -> list[dict[str, object]]:
 
 
 def test_rule_logic_freezes_same_and_opposite_sign_behavior() -> None:
-    assert label(RuleName.R_STD, 2, 3) is InteractionLabel.REPEL
-    assert label(RuleName.R_STD, -2, 3) is InteractionLabel.ATTRACT
-    assert label(RuleName.R_INV, 2, 3) is InteractionLabel.ATTRACT
-    assert label(RuleName.R_INV, -2, 3) is InteractionLabel.REPEL
+    assert label(RuleName.R_STD, 2, 3) is InteractionLabel.BLIM
+    assert label(RuleName.R_STD, -2, 3) is InteractionLabel.ZARK
+    assert label(RuleName.R_INV, 2, 3) is InteractionLabel.ZARK
+    assert label(RuleName.R_INV, -2, 3) is InteractionLabel.BLIM
 
 
 def test_template_layouts_freeze_episode_structure() -> None:
@@ -370,14 +266,14 @@ def test_score_episode_freezes_exact_match_partial_match_and_invalid_predictions
     assert score_episode(probe_targets, probe_targets) == (4, 4)
     assert score_episode(
         (
-            InteractionLabel.REPEL,
-            InteractionLabel.REPEL,
-            InteractionLabel.ATTRACT,
-            InteractionLabel.REPEL,
+            InteractionLabel.BLIM,
+            InteractionLabel.BLIM,
+            InteractionLabel.ZARK,
+            InteractionLabel.BLIM,
         ),
         probe_targets,
     ) == (3, 4)
-    assert score_episode(("attract",), probe_targets) == (0, 4)
+    assert score_episode(("legacy_output",), probe_targets) == (0, 4)
 
 
 def test_public_label_mapping_preserves_underlying_correct_answers() -> None:
@@ -390,10 +286,10 @@ def test_public_label_mapping_preserves_underlying_correct_answers() -> None:
 
 def test_public_label_mapping_freezes_type_a_and_type_b_contract() -> None:
     assert PUBLIC_CONTRACT_VERSION == "markers-v1"
-    assert format_public_label(InteractionLabel.ATTRACT) == "type_a"
-    assert format_public_label(InteractionLabel.REPEL) == "type_b"
-    assert parse_public_label("type_a") is InteractionLabel.ATTRACT
-    assert parse_public_label("type_b") is InteractionLabel.REPEL
+    assert format_public_label(InteractionLabel.ZARK) == "type_a"
+    assert format_public_label(InteractionLabel.BLIM) == "type_b"
+    assert parse_public_label("type_a") is InteractionLabel.ZARK
+    assert parse_public_label("type_b") is InteractionLabel.BLIM
 
 
 def test_internal_label_parser_rejects_public_output_labels() -> None:
@@ -407,24 +303,22 @@ def test_internal_label_parser_rejects_public_output_labels() -> None:
         )
 
 
-def test_reframed_prompt_preserves_original_item_level_episode_content_for_baseline_seeds() -> None:
+def test_reframed_prompt_matches_latent_episode_items_for_baseline_seeds() -> None:
     for row in _load_baseline_fixture():
         seed = row["seed"]
         episode = generate_episode(seed, split=Split.PUBLIC)
-        original_prompt = _render_original_binary_prompt(episode)
         reframed_prompt = render_binary_prompt(episode)
-
-        original_signature = _extract_original_prompt_signature(
-            original_prompt,
-            episode.template_family,
-        )
         reframed_signature = _extract_reframed_prompt_signature(
             reframed_prompt,
             episode.template_family,
         )
+        expected_signature = tuple(
+            (item.position, item.q1, item.q2, item.label)
+            for item in episode.items
+        )
 
-        assert reframed_signature == original_signature, (
-            f"seed {seed} changed item-level prompt content under reframing "
+        assert reframed_signature == expected_signature, (
+            f"seed {seed} changed item-level prompt content "
             f"for template_family={episode.template_family.value}"
         )
 

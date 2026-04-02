@@ -83,7 +83,7 @@ Exact duplicate checks:
 
 Near-duplicate proxy:
 
-- metric: overlap in the 9 `(q1, q2)` item pairs between any two episodes
+- metric: overlap in the 9 `(r1, r2)` item pairs between any two episodes
 - maximum observed overlap: `6 / 9`
 - overlap histogram across all episode pairs:
   - `0`: 65 pairs

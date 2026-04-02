@@ -26,22 +26,22 @@ class BinaryPresentation:
 
 def render_binary_line(item: EpisodeItem) -> str:
     return (
-        f"{item.position}. r1={_format_charge(item.q1)}, "
-        f"r2={_format_charge(item.q2)} -> {_render_outcome(item)}"
+        f"{item.position}. r1={_format_marker_value(item.q1)}, "
+        f"r2={_format_marker_value(item.q2)} -> {_render_outcome(item)}"
     )
 
 
 def render_binary_log_line(item: EpisodeItem) -> str:
     return (
-        f"[{item.position:02d}] r1={_format_charge(item.q1)} | "
-        f"r2={_format_charge(item.q2)} | observed={_render_outcome(item)}"
+        f"[{item.position:02d}] r1={_format_marker_value(item.q1)} | "
+        f"r2={_format_marker_value(item.q2)} | observed={_render_outcome(item)}"
     )
 
 
 def render_binary_ledger_line(item: EpisodeItem) -> str:
     return (
-        f"row {item.position:02d} | r1={_format_charge(item.q1)} | "
-        f"r2={_format_charge(item.q2)} | state={_render_outcome(item)}"
+        f"row {item.position:02d} | r1={_format_marker_value(item.q1)} | "
+        f"r2={_format_marker_value(item.q2)} | state={_render_outcome(item)}"
     )
 
 
@@ -49,8 +49,8 @@ def _render_outcome(item: EpisodeItem) -> str:
     return format_public_state(item.label) if item.label is not None else "?"
 
 
-def _format_charge(charge: int) -> str:
-    return f"{charge:+d}"
+def _format_marker_value(marker_value: int) -> str:
+    return f"{marker_value:+d}"
 
 
 _BINARY_OUTRO: Final[str] = (

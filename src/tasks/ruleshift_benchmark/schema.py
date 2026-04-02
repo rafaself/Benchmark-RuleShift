@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Final
 
 from tasks.ruleshift_benchmark.protocol import (
-    CHARGES,
+    MARKER_VALUES,
     Difficulty,
     DifficultyProfileId,
     EPISODE_LENGTH,
@@ -65,8 +65,8 @@ TEMPLATE_SET_VERSION: Final[str] = "v2"
 DIFFICULTY_VERSION: Final[str] = "R13"
 DEFAULT_GENERATION_MAX_ATTEMPTS: Final[int] = 10000
 PROBE_LABEL_ORDER: Final[tuple[InteractionLabel, ...]] = (
-    InteractionLabel.ATTRACT,
-    InteractionLabel.REPEL,
+    InteractionLabel.ZARK,
+    InteractionLabel.BLIM,
 )
 PROBE_SIGN_PATTERN_ORDER: Final[tuple[str, ...]] = ("++", "--", "+-", "-+")
 _FACTOR_LEVEL_SCORE: Final[dict[FactorLevel, int]] = {
@@ -306,9 +306,9 @@ class EpisodeItem:
             raise TypeError("q1 must be an int")
         if not _is_plain_int(self.q2):
             raise TypeError("q2 must be an int")
-        if self.q1 not in CHARGES:
+        if self.q1 not in MARKER_VALUES:
             raise ValueError(f"unsupported q1: {self.q1}")
-        if self.q2 not in CHARGES:
+        if self.q2 not in MARKER_VALUES:
             raise ValueError(f"unsupported q2: {self.q2}")
 
         if self.kind is ItemKind.LABELED:
@@ -617,7 +617,7 @@ def _normalize_probe_label_counts(
 ) -> tuple[tuple[InteractionLabel, int], ...]:
     normalized_probe_label_counts = tuple(probe_label_counts)
     if len(normalized_probe_label_counts) != len(PROBE_LABEL_ORDER):
-        raise ValueError("probe_label_counts must contain canonical attract/repel counts")
+        raise ValueError("probe_label_counts must contain canonical state counts")
 
     normalized_pairs: list[tuple[InteractionLabel, int]] = []
     for index, expected_label in enumerate(PROBE_LABEL_ORDER):
@@ -627,7 +627,7 @@ def _normalize_probe_label_counts(
         label_value, count = pair
         resolved_label = parse_label(label_value)
         if resolved_label is not expected_label:
-            raise ValueError("probe_label_counts must use canonical attract/repel order")
+            raise ValueError("probe_label_counts must use canonical state order")
         if not _is_plain_int(count):
             raise TypeError("probe_label_counts counts must be ints")
         normalized_pairs.append((resolved_label, count))

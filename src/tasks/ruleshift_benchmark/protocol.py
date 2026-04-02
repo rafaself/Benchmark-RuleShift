@@ -7,7 +7,7 @@ from types import MappingProxyType
 from typing import Final, TypeVar
 
 __all__ = [
-    "CHARGES",
+    "MARKER_VALUES",
     "CASE_SPACE",
     "PROBE_COUNT",
     "LABELED_ITEM_COUNT",
@@ -88,14 +88,14 @@ class RuleName(StrEnum):
 
 
 class InteractionLabel(StrEnum):
-    ATTRACT = "attract"
-    REPEL = "repel"
+    ZARK = "zark"
+    BLIM = "blim"
 
 
 _PUBLIC_LABEL_ALIASES: Final[Mapping[str, InteractionLabel]] = MappingProxyType(
     {
-        "type_a": InteractionLabel.ATTRACT,
-        "type_b": InteractionLabel.REPEL,
+        "type_a": InteractionLabel.ZARK,
+        "type_b": InteractionLabel.BLIM,
     }
 )
 
@@ -167,12 +167,12 @@ class ItemKind(StrEnum):
     PROBE = "probe"
 
 
-CHARGES: Final[tuple[int, ...]] = (-3, -2, -1, 1, 2, 3)
+MARKER_VALUES: Final[tuple[int, ...]] = (-3, -2, -1, 1, 2, 3)
 
-# Ordered pairs are intentional: labels are symmetric in q1/q2, but the
+# Ordered pairs are intentional: state labels are symmetric in q1/q2, but the
 # benchmark preserves presentation order for deterministic generation and replay.
 CASE_SPACE: Final[tuple[tuple[int, int], ...]] = tuple(
-    (q1, q2) for q1 in CHARGES for q2 in CHARGES
+    (q1, q2) for q1 in MARKER_VALUES for q2 in MARKER_VALUES
 )
 
 PROBE_COUNT: Final[int] = 4
@@ -194,28 +194,28 @@ PHASES: Final[frozenset[Phase]] = frozenset(Phase)
 ITEM_KINDS: Final[frozenset[ItemKind]] = frozenset(ItemKind)
 
 
-def _validate_charges(charges: tuple[int, ...]) -> None:
-    if not charges:
-        raise ValueError("CHARGES must not be empty")
+def _validate_marker_values(marker_values: tuple[int, ...]) -> None:
+    if not marker_values:
+        raise ValueError("MARKER_VALUES must not be empty")
 
-    for charge in charges:
-        if not _is_plain_int(charge):
-            raise TypeError(f"unsupported charge value type: {charge!r}")
-        if charge == 0:
-            raise ValueError("CHARGES must not include 0")
+    for marker_value in marker_values:
+        if not _is_plain_int(marker_value):
+            raise TypeError(f"unsupported marker value type: {marker_value!r}")
+        if marker_value == 0:
+            raise ValueError("MARKER_VALUES must not include 0")
 
-    if len(set(charges)) != len(charges):
-        raise ValueError("CHARGES must contain unique values")
+    if len(set(marker_values)) != len(marker_values):
+        raise ValueError("MARKER_VALUES must contain unique values")
 
 
 def _validate_case_space(
-    charges: tuple[int, ...],
+    marker_values: tuple[int, ...],
     case_space: tuple[tuple[int, int], ...],
 ) -> None:
-    expected = tuple((q1, q2) for q1 in charges for q2 in charges)
+    expected = tuple((q1, q2) for q1 in marker_values for q2 in marker_values)
     if case_space != expected:
         raise ValueError(
-            "CASE_SPACE must exactly match the ordered cartesian product of CHARGES"
+            "CASE_SPACE must exactly match the ordered cartesian product of MARKER_VALUES"
         )
 
 
@@ -283,8 +283,8 @@ def _validate_templates(
     return templates
 
 
-_validate_charges(CHARGES)
-_validate_case_space(CHARGES, CASE_SPACE)
+_validate_marker_values(MARKER_VALUES)
+_validate_case_space(MARKER_VALUES, CASE_SPACE)
 
 TEMPLATES: Final[Mapping[TemplateId, TemplateSpec]] = MappingProxyType(
     _validate_templates(
@@ -330,16 +330,13 @@ def parse_public_label(value: InteractionLabel | str) -> InteractionLabel:
 
 def format_public_label(value: InteractionLabel | str) -> str:
     return {
-        InteractionLabel.ATTRACT: "type_a",
-        InteractionLabel.REPEL: "type_b",
+        InteractionLabel.ZARK: "type_a",
+        InteractionLabel.BLIM: "type_b",
     }[parse_label(value)]
 
 
 def format_public_state(value: InteractionLabel | str) -> str:
-    return {
-        InteractionLabel.ATTRACT: "zark",
-        InteractionLabel.REPEL: "blim",
-    }[parse_label(value)]
+    return parse_label(value).value
 
 
 def parse_template_id(value: TemplateId | str) -> TemplateId:
