@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum, StrEnum
-import hashlib
 import json
 import os
 from pathlib import Path
@@ -95,11 +94,9 @@ TASK_NAME: Final[str] = "ruleshift_benchmark"
 PRIVATE_DATASET_ROOT_ENV_VAR: Final[str] = "RULESHIFT_PRIVATE_DATASET_ROOT"
 
 _MAX_ATTEMPTS: Final[int] = 10_000
-_PRIVATE_EPISODES_FILENAME: Final[str] = "private_episodes.json"
-_PRIVATE_ARTIFACT_SCHEMA: Final[str] = "private_split_artifact.v1"
 _PUBLIC_ROWS_FILENAME: Final[str] = "public_leaderboard_rows.json"
+_PRIVATE_ROWS_FILENAME: Final[str] = "private_leaderboard_rows.json"
 _MANIFEST_DIR: Final[Path] = Path(__file__).resolve().parents[2] / "frozen_splits"
-_KAGGLE_SEARCH_ROOTS: Final[tuple[Path, ...]] = (Path("/kaggle/input"),)
 
 _PUBLIC_LABEL_MAP: Final[dict[str, InteractionLabel]] = {
     "type_a": InteractionLabel.ZARK,
@@ -232,28 +229,6 @@ class Episode:
     spec_version: str = SPEC_VERSION
     generator_version: str = GENERATOR_VERSION
     template_set_version: str = TEMPLATE_SET_VERSION
-
-
-@dataclass(frozen=True, slots=True)
-class FrozenSplitManifest:
-    partition: str
-    episode_split: Split
-    manifest_version: str
-    seed_bank_version: str
-    spec_version: str
-    generator_version: str
-    template_set_version: str
-    difficulty_version: str
-    seeds: tuple[int, ...]
-
-
-@dataclass(frozen=True, slots=True)
-class FrozenSplitEpisode:
-    partition: str
-    seed: int
-    manifest_version: str
-    seed_bank_version: str
-    episode: Episode
 
 
 @dataclass(frozen=True)
@@ -568,172 +543,47 @@ def load_public_rows() -> list[dict[str, object]]:
     ]
 
 
-def load_split_manifest(
-    partition: str,
-    *,
-    private_dataset_root: Path | str | None = None,
-) -> FrozenSplitManifest:
-    if partition != "private_leaderboard":
-        raise ValueError(f"load_split_manifest only supports 'private_leaderboard'; got {partition!r}")
-    root = resolve_private_dataset_root(private_dataset_root)
-    payload = json.loads((root / _PRIVATE_EPISODES_FILENAME).read_text("utf-8"))
-    records = _parse_private_episodes(payload)
-    return FrozenSplitManifest(
-        partition="private_leaderboard",
-        episode_split=Split(payload["episode_split"]),
-        manifest_version=payload["benchmark_version"],
-        seed_bank_version=payload["artifact_checksum"],
-        spec_version=SPEC_VERSION,
-        generator_version=GENERATOR_VERSION,
-        template_set_version=TEMPLATE_SET_VERSION,
-        difficulty_version=DIFFICULTY_VERSION,
-        seeds=tuple(r.seed for r in records),
-    )
-
-
-def load_frozen_split(
-    partition: str,
-    *,
-    private_dataset_root: Path | str | None = None,
-) -> tuple[FrozenSplitEpisode, ...]:
-    if partition != "private_leaderboard":
-        raise ValueError(f"load_frozen_split only supports 'private_leaderboard'; got {partition!r}")
-    return _load_private_split(private_dataset_root)
-
-
 def discover_private_dataset_root(
     private_dataset_root: Path | str | None = None,
 ) -> Path | None:
     if private_dataset_root is not None:
         root = Path(private_dataset_root)
-        if (root / _PRIVATE_EPISODES_FILENAME).is_file():
+        if (root / _PRIVATE_ROWS_FILENAME).is_file():
             return root
-        raise FileNotFoundError(
-            f"{_PRIVATE_EPISODES_FILENAME} not found at {root}"
-        )
+        raise FileNotFoundError(f"{_PRIVATE_ROWS_FILENAME} not found at {root}")
 
     env = os.environ.get(PRIVATE_DATASET_ROOT_ENV_VAR)
     if env:
         root = Path(env)
-        if (root / _PRIVATE_EPISODES_FILENAME).is_file():
+        if (root / _PRIVATE_ROWS_FILENAME).is_file():
             return root
-        raise FileNotFoundError(
-            f"{_PRIVATE_EPISODES_FILENAME} not found at {root}"
-        )
-
-    for search_root in _KAGGLE_SEARCH_ROOTS:
-        if not search_root.exists():
-            continue
-        for path in search_root.rglob(_PRIVATE_EPISODES_FILENAME):
-            return path.parent
+        raise FileNotFoundError(f"{_PRIVATE_ROWS_FILENAME} not found at {root}")
 
     return None
 
 
-def resolve_private_dataset_root(
+def load_private_rows(
     private_dataset_root: Path | str | None = None,
-) -> Path:
-    root = discover_private_dataset_root(private_dataset_root)
-    if root is not None:
-        return root
-    raise FileNotFoundError(
-        f"Private dataset not found. Set {PRIVATE_DATASET_ROOT_ENV_VAR} or "
-        "attach the authorized private dataset mount."
-    )
-
-
-def _load_private_split(
-    private_dataset_root: Path | str | None = None,
-) -> tuple[FrozenSplitEpisode, ...]:
-    root = resolve_private_dataset_root(private_dataset_root)
-    payload = json.loads((root / _PRIVATE_EPISODES_FILENAME).read_text("utf-8"))
-    return _parse_private_episodes(payload)
-
-
-def _parse_private_episodes(payload: dict) -> tuple[FrozenSplitEpisode, ...]:
-    checksum_input = {
-        "partition": payload["partition"],
-        "episode_split": payload["episode_split"],
-        "benchmark_version": payload["benchmark_version"],
-        "schema_version": payload["schema_version"],
-        "episodes": payload["episodes"],
-    }
-    expected = hashlib.sha256(
-        json.dumps(checksum_input, sort_keys=True, separators=(",", ":")).encode()
-    ).hexdigest()
-    if payload["artifact_checksum"] != expected:
-        raise ValueError("artifact_checksum mismatch")
-
-    version = payload["benchmark_version"]
-    checksum = payload["artifact_checksum"]
-    return tuple(
-        FrozenSplitEpisode(
-            partition="private_leaderboard",
-            seed=row["seed"],
-            manifest_version=version,
-            seed_bank_version=checksum,
-            episode=_build_episode_from_json(row["episode"]),
-        )
-        for row in payload["episodes"]
-    )
-
-
-def _build_episode_from_json(ep: dict) -> Episode:
-    items = tuple(
-        EpisodeItem(
-            position=i["position"],
-            phase=Phase(i["phase"]),
-            kind=ItemKind(i["kind"]),
-            q1=i["q1"],
-            q2=i["q2"],
-            label=InteractionLabel(i["label"]) if i.get("label") else None,
-        )
-        for i in ep["items"]
-    )
-    pre_count = ep["pre_count"]
-    df = _derive_difficulty_factors(items, pre_count)
-    d, dp = _derive_difficulty_profile(df)
-    targets = tuple(InteractionLabel(t) for t in ep["probe_targets"])
-
-    return Episode(
-        episode_id=ep["episode_id"],
-        split=Split(ep["split"]),
-        difficulty=Difficulty(ep.get("difficulty", d.value)),
-        template_id=TemplateId(ep["template_id"]),
-        template_family=TemplateFamily(ep.get("template_family", "canonical")),
-        rule_A=RuleName(ep["rule_A"]),
-        rule_B=RuleName(ep["rule_B"]),
-        transition=Transition(ep["transition"]),
-        pre_count=pre_count,
-        post_labeled_count=ep["post_labeled_count"],
-        shift_after_position=ep["shift_after_position"],
-        contradiction_count_post=ep["contradiction_count_post"],
-        difficulty_profile_id=DifficultyProfileId(
-            ep.get("difficulty_profile_id", dp.value)
-        ),
-        difficulty_factors=df,
-        items=items,
-        probe_targets=targets,
-        probe_label_counts=tuple(
-            (InteractionLabel(p[0]), p[1]) for p in ep["probe_label_counts"]
-        ),
-        probe_sign_pattern_counts=tuple(
-            (p[0], p[1]) for p in ep["probe_sign_pattern_counts"]
-        ),
-        probe_metadata=tuple(
-            ProbeMetadata(
-                position=m["position"],
-                is_disagreement_probe=m["is_disagreement_probe"],
-                old_rule_label=InteractionLabel(m["old_rule_label"]),
-                new_rule_label=InteractionLabel(m["new_rule_label"]),
+) -> list[dict[str, object]]:
+    if private_dataset_root is None:
+        env = os.environ.get(PRIVATE_DATASET_ROOT_ENV_VAR)
+        if not env:
+            raise FileNotFoundError(
+                f"Private dataset not found. Set {PRIVATE_DATASET_ROOT_ENV_VAR} or "
+                "pass private_dataset_root explicitly."
             )
-            for m in ep["probe_metadata"]
-        ),
-        difficulty_version=ep.get("difficulty_version", DIFFICULTY_VERSION),
-        spec_version=ep.get("spec_version", SPEC_VERSION),
-        generator_version=ep.get("generator_version", GENERATOR_VERSION),
-        template_set_version=ep.get("template_set_version", TEMPLATE_SET_VERSION),
-    )
+        private_dataset_root = env
+    root = Path(private_dataset_root)
+    rows = json.loads((root / _PRIVATE_ROWS_FILENAME).read_text("utf-8"))
+    return [
+        {
+            "episode_id": r["episode_id"],
+            "split": r["split"],
+            "prompt_binary": r["prompt_binary"],
+            "probe_targets": tuple(r["probe_targets"]),
+        }
+        for r in rows
+    ]
 
 _BINARY_OUTRO: Final[str] = (
     "Return exactly 4 outputs in order, one per probe. "
@@ -796,7 +646,12 @@ def build_benchmark_bundle(
     partitions = []
     root = discover_private_dataset_root(private_dataset_root)
     if root is not None:
-        partitions.append(_build_partition("private_leaderboard", private_dataset_root=root))
+        rows = load_private_rows(root)
+        partitions.append({
+            "partition": "private_leaderboard",
+            "episode_count": len(rows),
+            "rows": rows,
+        })
     return {
         "task": TASK_NAME,
         "benchmark_version": MANIFEST_VERSION,
@@ -804,43 +659,10 @@ def build_benchmark_bundle(
     }
 
 
-def _build_partition(
-    partition: str,
-    *,
-    private_dataset_root: Path | str | None = None,
-) -> dict[str, object]:
-    manifest = load_split_manifest(partition, private_dataset_root=private_dataset_root)
-    records = load_frozen_split(partition, private_dataset_root=private_dataset_root)
-    return {
-        "partition": manifest.partition,
-        "episode_split": manifest.episode_split.value,
-        "manifest_version": manifest.manifest_version,
-        "seed_bank_version": manifest.seed_bank_version,
-        "episode_count": len(records),
-        "episodes": [
-            {
-                "seed": r.seed,
-                "episode_id": r.episode.episode_id,
-                "prompt_binary": render_binary_prompt(r.episode),
-                "probe_targets": [
-                    format_public_label(lbl) for lbl in r.episode.probe_targets
-                ],
-            }
-            for r in records
-        ],
-    }
-
-
 def build_leaderboard_rows(bundle: dict[str, object]) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
     for partition in bundle["partitions"]:
-        for ep in partition["episodes"]:
-            rows.append({
-                "episode_id": ep["episode_id"],
-                "split": partition["partition"],
-                "prompt_binary": ep["prompt_binary"],
-                "probe_targets": tuple(ep["probe_targets"]),
-            })
+        rows.extend(partition["rows"])
     return rows
 
 def run_binary_task(

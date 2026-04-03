@@ -1,10 +1,7 @@
 from __future__ import annotations
 
-import hashlib
 import json
 import sys
-from dataclasses import asdict, is_dataclass
-from enum import Enum
 from pathlib import Path
 from typing import Any
 
@@ -13,10 +10,10 @@ import pytest
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 _SRC_DIR = _REPO_ROOT / "src"
 _NOTEBOOK_PATH = _REPO_ROOT / "kaggle" / "ruleshift_notebook_task.ipynb"
-_PRIVATE_EPISODES_FILENAME = "private_episodes.json"
-_PRIVATE_ARTIFACT_SCHEMA = "private_split_artifact.v1"
+_PRIVATE_ROWS_FILENAME = "private_leaderboard_rows.json"
 _EXPECTED_PUBLIC_EPISODES = 54
 _EXPECTED_PRIVATE_EPISODES = 270
+_PRIVATE_SEEDS = range(37800, 38070)
 
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
@@ -25,16 +22,13 @@ if str(_SRC_DIR) not in sys.path:
 
 from scripts.build_kaggle import build_kaggle_package  # noqa: E402
 from tasks.ruleshift_benchmark.runtime import (  # noqa: E402
-    DIFFICULTY_VERSION,
-    GENERATOR_VERSION,
     MANIFEST_VERSION,
     PRIVATE_DATASET_ROOT_ENV_VAR,
-    SPEC_VERSION,
-    TEMPLATE_SET_VERSION,
-    FrozenSplitManifest,
     Split,
     _generate_episode,
+    format_public_label,
     load_public_rows,
+    render_binary_prompt,
 )
 
 
@@ -63,48 +57,18 @@ class _KBenchShim:
         return decorator
 
 
-def _to_jsonable(value: object) -> object:
-    if isinstance(value, Enum):
-        return value.value
-    if is_dataclass(value):
-        return _to_jsonable(asdict(value))
-    if isinstance(value, dict):
-        return {str(key): _to_jsonable(item) for key, item in value.items()}
-    if isinstance(value, (list, tuple)):
-        return [_to_jsonable(item) for item in value]
-    return value
-
-
 def _write_private_dataset(root: Path) -> None:
-    manifest = FrozenSplitManifest(
-        partition="private_leaderboard",
-        episode_split=Split.PRIVATE,
-        manifest_version=MANIFEST_VERSION,
-        seed_bank_version="R14-private-5",
-        spec_version=SPEC_VERSION,
-        generator_version=GENERATOR_VERSION,
-        template_set_version=TEMPLATE_SET_VERSION,
-        difficulty_version=DIFFICULTY_VERSION,
-        seeds=tuple(range(37800, 38070)),
-    )
-    episodes = [
-        {
-            "seed": seed,
-            "episode": _to_jsonable(_generate_episode(seed, split=Split.PRIVATE)),
-        }
-        for seed in manifest.seeds
-    ]
-    payload: dict[str, object] = {
-        "partition": manifest.partition,
-        "episode_split": manifest.episode_split.value,
-        "benchmark_version": manifest.manifest_version,
-        "schema_version": _PRIVATE_ARTIFACT_SCHEMA,
-        "episodes": episodes,
-    }
-    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
-    payload["artifact_checksum"] = hashlib.sha256(encoded).hexdigest()
-    (root / _PRIVATE_EPISODES_FILENAME).write_text(
-        json.dumps(payload, indent=2) + "\n",
+    rows = []
+    for seed in _PRIVATE_SEEDS:
+        ep = _generate_episode(seed, split=Split.PRIVATE)
+        rows.append({
+            "episode_id": ep.episode_id,
+            "split": ep.split.value,
+            "prompt_binary": render_binary_prompt(ep),
+            "probe_targets": [format_public_label(t) for t in ep.probe_targets],
+        })
+    (root / _PRIVATE_ROWS_FILENAME).write_text(
+        json.dumps(rows, indent=2) + "\n",
         encoding="utf-8",
     )
 
