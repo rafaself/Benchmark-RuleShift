@@ -1,16 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import Enum, StrEnum
+from enum import Enum
 import json
 import os
 from pathlib import Path
 from typing import Final
-
-
-class InteractionLabel(StrEnum):
-    ZARK = "zark"
-    BLIM = "blim"
 
 
 class Label(str, Enum):
@@ -19,21 +14,12 @@ class Label(str, Enum):
 
 
 PROBE_COUNT: Final[int] = 4
-MANIFEST_VERSION: Final[str] = "R14"
 PRIVATE_DATASET_ROOT_ENV_VAR: Final[str] = "RULESHIFT_PRIVATE_DATASET_ROOT"
 
 _PUBLIC_ROWS_FILENAME: Final[str] = "public_leaderboard_rows.json"
 _PRIVATE_ROWS_FILENAME: Final[str] = "private_leaderboard_rows.json"
-_MANIFEST_DIR: Final[Path] = Path(__file__).resolve().parents[2] / "frozen_splits"
-
-_PUBLIC_LABEL_MAP: Final[dict[str, InteractionLabel]] = {
-    "type_a": InteractionLabel.ZARK,
-    "type_b": InteractionLabel.BLIM,
-}
-_INTERNAL_TO_PUBLIC: Final[dict[InteractionLabel, str]] = {
-    InteractionLabel.ZARK: "type_a",
-    InteractionLabel.BLIM: "type_b",
-}
+_FROZEN_SPLITS_DIR: Final[Path] = Path(__file__).resolve().parents[2] / "frozen_splits"
+_ALLOWED_LABELS: Final[frozenset[str]] = frozenset(label.value for label in Label)
 
 _PROBE_FIELDS: Final[tuple[str, ...]] = ("probe_6", "probe_7", "probe_8", "probe_9")
 
@@ -58,49 +44,8 @@ class KaggleExecutionError(RuntimeError):
     pass
 
 
-def parse_public_label(value: str) -> InteractionLabel:
-    normalized = value.strip().lower()
-    if normalized in _PUBLIC_LABEL_MAP:
-        return _PUBLIC_LABEL_MAP[normalized]
-    raise ValueError(f"unknown public label: {value}")
-
-
-def format_public_label(lbl: InteractionLabel | str) -> str:
-    if isinstance(lbl, str):
-        lbl = InteractionLabel(lbl)
-    return _INTERNAL_TO_PUBLIC[lbl]
-
-
 def load_public_rows() -> list[dict[str, object]]:
-    rows = json.loads((_MANIFEST_DIR / _PUBLIC_ROWS_FILENAME).read_text("utf-8"))
-    return [
-        {
-            "episode_id": r["episode_id"],
-            "split": r["split"],
-            "prompt_binary": r["prompt_binary"],
-            "probe_targets": tuple(r["probe_targets"]),
-        }
-        for r in rows
-    ]
-
-
-def discover_private_dataset_root(
-    private_dataset_root: Path | str | None = None,
-) -> Path | None:
-    if private_dataset_root is not None:
-        root = Path(private_dataset_root)
-        if (root / _PRIVATE_ROWS_FILENAME).is_file():
-            return root
-        raise FileNotFoundError(f"{_PRIVATE_ROWS_FILENAME} not found at {root}")
-
-    env = os.environ.get(PRIVATE_DATASET_ROOT_ENV_VAR)
-    if env:
-        root = Path(env)
-        if (root / _PRIVATE_ROWS_FILENAME).is_file():
-            return root
-        raise FileNotFoundError(f"{_PRIVATE_ROWS_FILENAME} not found at {root}")
-
-    return None
+    return _load_rows(_FROZEN_SPLITS_DIR / _PUBLIC_ROWS_FILENAME)
 
 
 def load_private_rows(
@@ -115,16 +60,7 @@ def load_private_rows(
             )
         private_dataset_root = env
     root = Path(private_dataset_root)
-    rows = json.loads((root / _PRIVATE_ROWS_FILENAME).read_text("utf-8"))
-    return [
-        {
-            "episode_id": r["episode_id"],
-            "split": r["split"],
-            "prompt_binary": r["prompt_binary"],
-            "probe_targets": tuple(r["probe_targets"]),
-        }
-        for r in rows
-    ]
+    return _load_rows(root / _PRIVATE_ROWS_FILENAME)
 
 
 def normalize_binary_response(response: object) -> tuple[str, ...] | None:
@@ -139,8 +75,8 @@ def normalize_binary_response(response: object) -> tuple[str, ...] | None:
 
 
 def score_episode(
-    predictions: tuple[str, ...] | tuple[InteractionLabel, ...] | None,
-    targets: tuple[str, ...] | tuple[InteractionLabel, ...],
+    predictions: tuple[str, ...] | tuple[Label, ...] | None,
+    targets: tuple[str, ...] | tuple[Label, ...],
 ) -> tuple[int, int]:
     norm_targets = _norm_labels(targets)
     if norm_targets is None:
@@ -149,7 +85,7 @@ def score_episode(
     if norm_preds is None:
         return (0, PROBE_COUNT)
     return (
-        sum(p is t for p, t in zip(norm_preds, norm_targets)),
+        sum(p == t for p, t in zip(norm_preds, norm_targets)),
         PROBE_COUNT,
     )
 
@@ -158,7 +94,7 @@ def run_binary_task(
     *,
     llm: object,
     prompt_binary: str,
-    probe_targets: tuple[str, ...] | tuple[InteractionLabel, ...],
+    probe_targets: tuple[str, ...] | tuple[Label, ...],
 ) -> tuple[int, int]:
     try:
         response = llm.prompt(prompt_binary, schema=BinaryResponse)
@@ -177,18 +113,35 @@ def run_binary_task(
     return score_episode(normalized, probe_targets)
 
 
+def _load_rows(path: Path) -> list[dict[str, object]]:
+    rows = json.loads(path.read_text("utf-8"))
+    return [
+        {
+            "episode_id": row["episode_id"],
+            "split": row["split"],
+            "prompt_binary": row["prompt_binary"],
+            "probe_targets": _normalize_probe_targets(row["probe_targets"]),
+        }
+        for row in rows
+    ]
+
+
+def _normalize_probe_targets(values: object) -> tuple[str, ...]:
+    if not isinstance(values, list | tuple):
+        raise ValueError("probe_targets must be a list or tuple")
+    labels = _norm_labels(tuple(values))
+    if labels is None:
+        raise ValueError(f"probe_targets must contain exactly {PROBE_COUNT} valid labels")
+    return labels
+
+
 def _parse_text_response(text: str) -> tuple[str, ...] | None:
     tokens = tuple(
         t.strip().lower()
         for t in text.strip().strip("`").replace("\n", ",").split(",")
         if t.strip()
     )
-    if len(tokens) != PROBE_COUNT:
-        return None
-    try:
-        return tuple(format_public_label(parse_public_label(t)) for t in tokens)
-    except ValueError:
-        return None
+    return _norm_labels(tokens)
 
 
 def _try_coerce(response: object) -> BinaryResponse | None:
@@ -211,30 +164,33 @@ def _try_coerce(response: object) -> BinaryResponse | None:
 
 
 def _coerce_label(value: object, field: str) -> str:
-    if isinstance(value, str):
-        raw = value
-    elif isinstance(value, Enum):
-        raw = value.value
-    elif hasattr(value, "value"):
-        raw = str(value.value)
-    else:
-        raw = str(value)
     try:
-        return format_public_label(parse_public_label(raw))
+        return _normalize_label(value)
     except ValueError as exc:
-        raise ValueError(f"invalid field {field}: {raw!r}") from exc
+        raise ValueError(f"invalid field {field}: {value!r}") from exc
 
 
 def _norm_labels(
-    labels: tuple[str, ...] | tuple[InteractionLabel, ...] | None,
-) -> tuple[InteractionLabel, ...] | None:
+    labels: tuple[str, ...] | tuple[Label, ...] | None,
+) -> tuple[str, ...] | None:
     if labels is None:
         return None
     try:
         result = tuple(
-            lbl if isinstance(lbl, InteractionLabel) else parse_public_label(lbl)
+            _normalize_label(lbl.value if isinstance(lbl, Label) else lbl)
             for lbl in labels
         )
     except ValueError:
         return None
     return result if len(result) == PROBE_COUNT else None
+
+
+def _normalize_label(value: object) -> str:
+    if isinstance(value, Enum):
+        value = value.value
+    elif hasattr(value, "value"):
+        value = value.value
+    normalized = str(value).strip().lower()
+    if normalized not in _ALLOWED_LABELS:
+        raise ValueError(f"unknown label: {value}")
+    return normalized

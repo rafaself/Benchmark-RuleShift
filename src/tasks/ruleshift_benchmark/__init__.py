@@ -1,6 +1,5 @@
 from tasks.ruleshift_benchmark.runtime import (
-    MANIFEST_VERSION,
-    discover_private_dataset_root,
+    PRIVATE_DATASET_ROOT_ENV_VAR,
     load_private_rows,
     load_public_rows,
     run_binary_task,

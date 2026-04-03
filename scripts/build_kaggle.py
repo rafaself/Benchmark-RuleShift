@@ -9,6 +9,11 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 KAGGLE_DIR = REPO_ROOT / "kaggle"
 SRC_DIR = REPO_ROOT / "src"
+DATASET_RUNTIME_FILES = (
+    Path("tasks/ruleshift_benchmark/__init__.py"),
+    Path("tasks/ruleshift_benchmark/runtime.py"),
+    Path("frozen_splits/public_leaderboard_rows.json"),
+)
 
 
 def build_kaggle_package(output_dir: Path) -> tuple[Path, Path]:
@@ -23,11 +28,11 @@ def build_kaggle_package(output_dir: Path) -> tuple[Path, Path]:
     shutil.copy2(KAGGLE_DIR / "ruleshift_notebook_task.ipynb", kernel_dir)
     shutil.copy2(KAGGLE_DIR / "kernel-metadata.json", kernel_dir)
 
-    shutil.copytree(
-        SRC_DIR,
-        dataset_dir / "src",
-        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
-    )
+    dataset_src_dir = dataset_dir / "src"
+    for rel_path in DATASET_RUNTIME_FILES:
+        destination = dataset_src_dir / rel_path
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(SRC_DIR / rel_path, destination)
     shutil.copy2(KAGGLE_DIR / "dataset-metadata.json", dataset_dir)
 
     return kernel_dir, dataset_dir
