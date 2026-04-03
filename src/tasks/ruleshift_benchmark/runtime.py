@@ -1,13 +1,3 @@
-"""Frozen-data Kaggle runtime for the RuleShift benchmark.
-
-Single module containing everything needed to:
-1. Load the public frozen split (seed-based deterministic regeneration).
-2. Discover and load the private split (JSON artifact).
-3. Build leaderboard rows for the evaluation loop.
-4. Normalize model binary responses.
-5. Score predictions.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -18,11 +8,6 @@ import os
 from pathlib import Path
 import random
 from typing import Final
-
-
-# ---------------------------------------------------------------------------
-# Enums
-# ---------------------------------------------------------------------------
 
 
 class RuleName(StrEnum):
@@ -93,11 +78,6 @@ class Label(str, Enum):
     type_a = "type_a"
     type_b = "type_b"
 
-
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
-
 MARKER_VALUES: Final[tuple[int, ...]] = (-3, -2, -1, 1, 2, 3)
 CASE_SPACE: Final[tuple[tuple[int, int], ...]] = tuple(
     (q1, q2) for q1 in MARKER_VALUES for q2 in MARKER_VALUES
@@ -117,10 +97,6 @@ PRIVATE_DATASET_ROOT_ENV_VAR: Final[str] = "RULESHIFT_PRIVATE_DATASET_ROOT"
 _MAX_ATTEMPTS: Final[int] = 10_000
 _PRIVATE_EPISODES_FILENAME: Final[str] = "private_episodes.json"
 _PRIVATE_ARTIFACT_SCHEMA: Final[str] = "private_split_artifact.v1"
-_PARTITION_SPLIT: Final[dict[str, Split]] = {
-    "public_leaderboard": Split.PUBLIC,
-    "private_leaderboard": Split.PRIVATE,
-}
 _MANIFEST_DIR: Final[Path] = Path(__file__).resolve().parents[2] / "frozen_splits"
 _KAGGLE_SEARCH_ROOTS: Final[tuple[Path, ...]] = (Path("/kaggle/input"),)
 
@@ -151,12 +127,6 @@ _TRANSITION_CHOICES: Final[tuple[Transition, ...]] = (
 )
 _PROBE_SIGN_ORDER: Final[tuple[str, ...]] = ("++", "--", "+-", "-+")
 
-
-# ---------------------------------------------------------------------------
-# Template specs
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True, slots=True)
 class TemplateSpec:
     template_id: TemplateId
@@ -178,12 +148,6 @@ TEMPLATES: Final[dict[TemplateId, TemplateSpec]] = {
     TemplateId.T2: TemplateSpec(TemplateId.T2, 3, 2),
     TemplateId.T3: TemplateSpec(TemplateId.T3, 1, 4),
 }
-
-
-# ---------------------------------------------------------------------------
-# Core labeling
-# ---------------------------------------------------------------------------
-
 
 def sign(v: int) -> int:
     return 1 if v > 0 else -1
@@ -214,12 +178,6 @@ def parse_public_label(value: str) -> InteractionLabel:
     if normalized in _PUBLIC_LABEL_MAP:
         return _PUBLIC_LABEL_MAP[normalized]
     raise ValueError(f"unknown public label: {value}")
-
-
-# ---------------------------------------------------------------------------
-# Dataclasses
-# ---------------------------------------------------------------------------
-
 
 @dataclass(frozen=True, slots=True)
 class DifficultyFactors:
@@ -315,12 +273,6 @@ class BinaryResponse:
 
 class KaggleExecutionError(RuntimeError):
     pass
-
-
-# ---------------------------------------------------------------------------
-# Difficulty derivation
-# ---------------------------------------------------------------------------
-
 
 def _probe_sign(q1: int, q2: int) -> str:
     if q1 > 0 and q2 > 0:
@@ -516,12 +468,6 @@ def _derive_difficulty_profile(
         return Difficulty.HARD, DifficultyProfileId.HARD_INTERLEAVED
     return Difficulty.MEDIUM, DifficultyProfileId.MEDIUM_BALANCED
 
-
-# ---------------------------------------------------------------------------
-# Episode generation
-# ---------------------------------------------------------------------------
-
-
 def _build_items(
     pairs: tuple[tuple[int, int], ...],
     pre_count: int,
@@ -607,12 +553,6 @@ def _generate_episode(seed: int, split: Split = Split.PUBLIC) -> Episode:
         probe_sign_pattern_counts=_probe_sign_counts(items[LABELED_ITEM_COUNT:]),
         probe_metadata=_probe_metadata(items[LABELED_ITEM_COUNT:], rule_a, rule_b),
     )
-
-
-# ---------------------------------------------------------------------------
-# Split loading
-# ---------------------------------------------------------------------------
-
 
 def load_split_manifest(
     partition: str,
@@ -803,11 +743,6 @@ def _build_episode_from_json(ep: dict) -> Episode:
         template_set_version=ep.get("template_set_version", TEMPLATE_SET_VERSION),
     )
 
-
-# ---------------------------------------------------------------------------
-# Prompt rendering
-# ---------------------------------------------------------------------------
-
 _BINARY_OUTRO: Final[str] = (
     "Return exactly 4 outputs in order, one per probe. "
     "Use only type_a or type_b. Map zark to type_a and blim to type_b."
@@ -861,12 +796,6 @@ def render_binary_prompt(episode: Episode) -> str:
         prb_hdr, *(_fmt(i) for i in probes), "",
         _BINARY_OUTRO,
     ))
-
-
-# ---------------------------------------------------------------------------
-# Bundle building
-# ---------------------------------------------------------------------------
-
 
 def build_benchmark_bundle(
     *,
@@ -929,12 +858,6 @@ def build_leaderboard_rows(bundle: dict[str, object]) -> list[dict[str, object]]
                 "probe_targets": tuple(ep["probe_targets"]),
             })
     return rows
-
-
-# ---------------------------------------------------------------------------
-# Response normalization and scoring
-# ---------------------------------------------------------------------------
-
 
 def run_binary_task(
     *,
