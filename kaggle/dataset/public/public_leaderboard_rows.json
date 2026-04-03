@@ -2,7 +2,7 @@
   {
     "episode_id": "0001",
     "group_id": "simple",
-    "prompt": "Study the benchmark notes for two markers.\nEach listed item gives r1, r2, and the recorded state.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nFocus on the observed transitions, not on surface symmetry alone.\n\nLabeled examples:\n1. r1=+1, r2=+1 -> blim\n2. r1=-3, r2=-2 -> blim\n3. r1=+3, r2=+3 -> zark\n4. r1=-1, r2=+1 -> blim\n5. r1=+1, r2=+2 -> zark\n\nProbes:\n6. r1=-3, r2=-3 -> ?\n7. r1=+1, r2=-1 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=-3, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the baseline classification slice for two markers. Episode 0001.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=+1, r2=+1 -> blim\n2. r1=-3, r2=-2 -> blim\n3. r1=+3, r2=+3 -> zark\n4. r1=-1, r2=+1 -> blim\n5. r1=+1, r2=+2 -> zark\n\nProbes:\n6. r1=-3, r2=-3 -> ?\n7. r1=+1, r2=-1 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=-3, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_a",
@@ -13,7 +13,7 @@
   {
     "episode_id": "0002",
     "group_id": "simple",
-    "prompt": "Inspect the benchmark trace for two markers.\nEach listed item gives r1, r2, and the recorded state.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nWatch for the combinations that are clarified only when the later rows are taken into account.\n\nLabeled examples:\n1. r1=-1, r2=-2 -> blim\n2. r1=-1, r2=-1 -> blim\n3. r1=+1, r2=-2 -> blim\n4. r1=+1, r2=+1 -> zark\n5. r1=+3, r2=+3 -> zark\n\nProbes:\n6. r1=-1, r2=+2 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=+3, r2=-3 -> ?\n9. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the baseline classification slice for two markers. Episode 0002.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=-1, r2=-2 -> blim\n2. r1=-1, r2=-1 -> blim\n3. r1=+1, r2=-2 -> blim\n4. r1=+1, r2=+1 -> zark\n5. r1=+3, r2=+3 -> zark\n\nProbes:\n6. r1=-1, r2=+2 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=+3, r2=-3 -> ?\n9. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_a",
@@ -24,7 +24,7 @@
   {
     "episode_id": "0003",
     "group_id": "simple",
-    "prompt": "Read the benchmark record for two markers.\nEach listed item gives r1, r2, and the recorded state.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nThe safest answer comes from reconciling all listed cases together.\n\nLabeled examples:\n1. r1=+3, r2=-1 -> zark\n2. r1=+3, r2=-2 -> zark\n3. r1=-1, r2=+2 -> blim\n4. r1=+2, r2=+3 -> zark\n5. r1=+2, r2=+1 -> zark\n\nProbes:\n6. r1=+2, r2=+2 -> ?\n7. r1=-1, r2=-3 -> ?\n8. r1=-1, r2=+3 -> ?\n9. r1=+1, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the baseline classification slice for two markers. Episode 0003.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=+3, r2=-1 -> zark\n2. r1=+3, r2=-2 -> zark\n3. r1=-1, r2=+2 -> blim\n4. r1=+2, r2=+3 -> zark\n5. r1=+2, r2=+1 -> zark\n\nProbes:\n6. r1=+2, r2=+2 -> ?\n7. r1=-1, r2=-3 -> ?\n8. r1=-1, r2=+3 -> ?\n9. r1=+1, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -35,7 +35,7 @@
   {
     "episode_id": "0004",
     "group_id": "simple",
-    "prompt": "Work through the benchmark evidence for two markers.\nEach listed item gives r1, r2, and the recorded state.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nSome sign pairings only make sense after the full trace is considered.\n\nLabeled examples:\n1. r1=-2, r2=+1 -> zark\n2. r1=-2, r2=+3 -> zark\n3. r1=-3, r2=+3 -> zark\n4. r1=-1, r2=-2 -> zark\n5. r1=+3, r2=-2 -> blim\n\nProbes:\n6. r1=-3, r2=+2 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=-1, r2=-1 -> ?\n9. r1=+3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the baseline classification slice for two markers. Episode 0004.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=-2, r2=+1 -> zark\n2. r1=-2, r2=+3 -> zark\n3. r1=-3, r2=+3 -> zark\n4. r1=-1, r2=-2 -> zark\n5. r1=+3, r2=-2 -> blim\n\nProbes:\n6. r1=-3, r2=+2 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=-1, r2=-1 -> ?\n9. r1=+3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -46,7 +46,7 @@
   {
     "episode_id": "0005",
     "group_id": "simple",
-    "prompt": "Examine the benchmark snapshot for two markers.\nEach listed item gives r1, r2, and the recorded state.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nUse the sequence as a whole to avoid overfitting to an early row.\n\nLabeled examples:\n1. r1=-3, r2=+1 -> zark\n2. r1=-2, r2=+2 -> zark\n3. r1=+3, r2=-3 -> zark\n4. r1=-2, r2=+3 -> blim\n5. r1=-1, r2=-3 -> zark\n\nProbes:\n6. r1=+2, r2=+3 -> ?\n7. r1=+2, r2=-2 -> ?\n8. r1=-1, r2=+2 -> ?\n9. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the baseline classification slice for two markers. Episode 0005.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=-3, r2=+1 -> zark\n2. r1=-2, r2=+2 -> zark\n3. r1=+3, r2=-3 -> zark\n4. r1=-2, r2=+3 -> blim\n5. r1=-1, r2=-3 -> zark\n\nProbes:\n6. r1=+2, r2=+3 -> ?\n7. r1=+2, r2=-2 -> ?\n8. r1=-1, r2=+2 -> ?\n9. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_a",
@@ -57,7 +57,7 @@
   {
     "episode_id": "0006",
     "group_id": "simple",
-    "prompt": "Study the benchmark notes for two markers.\nEvery line lists r1, r2, and the observed state.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nLater evidence may settle ambiguities left by the opening cases.\n\nLabeled examples:\n1. r1=+1, r2=-2 -> zark\n2. r1=-2, r2=+3 -> zark\n3. r1=-3, r2=-1 -> blim\n4. r1=-3, r2=+3 -> blim\n5. r1=+1, r2=+3 -> zark\n\nProbes:\n6. r1=-2, r2=-3 -> ?\n7. r1=-1, r2=+2 -> ?\n8. r1=+3, r2=+3 -> ?\n9. r1=+2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the baseline classification slice for two markers. Episode 0006.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=+1, r2=-2 -> zark\n2. r1=-2, r2=+3 -> zark\n3. r1=-3, r2=-1 -> blim\n4. r1=-3, r2=+3 -> blim\n5. r1=+1, r2=+3 -> zark\n\nProbes:\n6. r1=-2, r2=-3 -> ?\n7. r1=-1, r2=+2 -> ?\n8. r1=+3, r2=+3 -> ?\n9. r1=+2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_b",
@@ -68,7 +68,7 @@
   {
     "episode_id": "0007",
     "group_id": "simple",
-    "prompt": "Inspect the benchmark trace for two markers.\nEvery line lists r1, r2, and the observed state.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nTreat the examples as a compact but complete calibration slice.\n\nLabeled examples:\n1. r1=-2, r2=-2 -> blim\n2. r1=-3, r2=-2 -> zark\n3. r1=-1, r2=-1 -> zark\n4. r1=+2, r2=-3 -> blim\n5. r1=+2, r2=-2 -> blim\n\nProbes:\n6. r1=-1, r2=+2 -> ?\n7. r1=-3, r2=-1 -> ?\n8. r1=+2, r2=+2 -> ?\n9. r1=+1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the baseline classification slice for two markers. Episode 0007.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=-2, r2=-2 -> blim\n2. r1=-3, r2=-2 -> zark\n3. r1=-1, r2=-1 -> zark\n4. r1=+2, r2=-3 -> blim\n5. r1=+2, r2=-2 -> blim\n\nProbes:\n6. r1=-1, r2=+2 -> ?\n7. r1=-3, r2=-1 -> ?\n8. r1=+2, r2=+2 -> ?\n9. r1=+1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_a",
@@ -79,7 +79,7 @@
   {
     "episode_id": "0008",
     "group_id": "simple",
-    "prompt": "Read the benchmark record for two markers.\nEvery line lists r1, r2, and the observed state.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nThe final judgment should reflect the full collection of evidence.\n\nLabeled examples:\n1. r1=-3, r2=-3 -> blim\n2. r1=+1, r2=-3 -> blim\n3. r1=+3, r2=-3 -> blim\n4. r1=+1, r2=+2 -> zark\n5. r1=+3, r2=+3 -> zark\n\nProbes:\n6. r1=+1, r2=-2 -> ?\n7. r1=+2, r2=+1 -> ?\n8. r1=-3, r2=+1 -> ?\n9. r1=-2, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the baseline classification slice for two markers. Episode 0008.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=-3, r2=-3 -> blim\n2. r1=+1, r2=-3 -> blim\n3. r1=+3, r2=-3 -> blim\n4. r1=+1, r2=+2 -> zark\n5. r1=+3, r2=+3 -> zark\n\nProbes:\n6. r1=+1, r2=-2 -> ?\n7. r1=+2, r2=+1 -> ?\n8. r1=-3, r2=+1 -> ?\n9. r1=-2, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_a",
@@ -90,7 +90,7 @@
   {
     "episode_id": "0009",
     "group_id": "simple",
-    "prompt": "Work through the benchmark evidence for two markers.\nEvery line lists r1, r2, and the observed state.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nFocus on the observed transitions, not on surface symmetry alone.\n\nLabeled examples:\n1. r1=-2, r2=-1 -> blim\n2. r1=+3, r2=+2 -> zark\n3. r1=+1, r2=-1 -> blim\n4. r1=+1, r2=-3 -> blim\n5. r1=+2, r2=-2 -> blim\n\nProbes:\n6. r1=+3, r2=+3 -> ?\n7. r1=-3, r2=+3 -> ?\n8. r1=+1, r2=-2 -> ?\n9. r1=-1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the baseline classification slice for two markers. Episode 0009.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=-2, r2=-1 -> blim\n2. r1=+3, r2=+2 -> zark\n3. r1=+1, r2=-1 -> blim\n4. r1=+1, r2=-3 -> blim\n5. r1=+2, r2=-2 -> blim\n\nProbes:\n6. r1=+3, r2=+3 -> ?\n7. r1=-3, r2=+3 -> ?\n8. r1=+1, r2=-2 -> ?\n9. r1=-1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_a",
@@ -101,7 +101,7 @@
   {
     "episode_id": "0010",
     "group_id": "simple",
-    "prompt": "Examine the benchmark snapshot for two markers.\nEvery line lists r1, r2, and the observed state.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nWatch for the combinations that are clarified only when the later rows are taken into account.\n\nLabeled examples:\n1. r1=+2, r2=-3 -> blim\n2. r1=+2, r2=-1 -> blim\n3. r1=-3, r2=+2 -> zark\n4. r1=+1, r2=+3 -> blim\n5. r1=-3, r2=+3 -> zark\n\nProbes:\n6. r1=-3, r2=-1 -> ?\n7. r1=+2, r2=+3 -> ?\n8. r1=+3, r2=-3 -> ?\n9. r1=-2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the baseline classification slice for two markers. Episode 0010.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=+2, r2=-3 -> blim\n2. r1=+2, r2=-1 -> blim\n3. r1=-3, r2=+2 -> zark\n4. r1=+1, r2=+3 -> blim\n5. r1=-3, r2=+3 -> zark\n\nProbes:\n6. r1=-3, r2=-1 -> ?\n7. r1=+2, r2=+3 -> ?\n8. r1=+3, r2=-3 -> ?\n9. r1=-2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -112,7 +112,7 @@
   {
     "episode_id": "0011",
     "group_id": "simple",
-    "prompt": "Study the benchmark notes for two markers.\nEach row reports r1, r2, and the state that was recorded.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nThe safest answer comes from reconciling all listed cases together.\n\nLabeled examples:\n1. r1=-2, r2=+2 -> blim\n2. r1=+2, r2=-1 -> blim\n3. r1=-2, r2=+3 -> zark\n4. r1=-1, r2=-3 -> blim\n5. r1=-1, r2=+2 -> zark\n\nProbes:\n6. r1=-2, r2=-2 -> ?\n7. r1=-1, r2=+3 -> ?\n8. r1=+1, r2=+3 -> ?\n9. r1=+1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the baseline classification slice for two markers. Episode 0011.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=-2, r2=+2 -> blim\n2. r1=+2, r2=-1 -> blim\n3. r1=-2, r2=+3 -> zark\n4. r1=-1, r2=-3 -> blim\n5. r1=-1, r2=+2 -> zark\n\nProbes:\n6. r1=-2, r2=-2 -> ?\n7. r1=-1, r2=+3 -> ?\n8. r1=+1, r2=+3 -> ?\n9. r1=+1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_a",
@@ -123,7 +123,7 @@
   {
     "episode_id": "0012",
     "group_id": "simple",
-    "prompt": "Inspect the benchmark trace for two markers.\nEach row reports r1, r2, and the state that was recorded.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nSome sign pairings only make sense after the full trace is considered.\n\nLabeled examples:\n1. r1=-2, r2=+3 -> blim\n2. r1=+2, r2=-1 -> blim\n3. r1=+3, r2=-3 -> zark\n4. r1=+1, r2=-2 -> zark\n5. r1=+2, r2=+3 -> blim\n\nProbes:\n6. r1=+2, r2=-3 -> ?\n7. r1=-1, r2=-1 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=-3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the baseline classification slice for two markers. Episode 0012.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=-2, r2=+3 -> blim\n2. r1=+2, r2=-1 -> blim\n3. r1=+3, r2=-3 -> zark\n4. r1=+1, r2=-2 -> zark\n5. r1=+2, r2=+3 -> blim\n\nProbes:\n6. r1=+2, r2=-3 -> ?\n7. r1=-1, r2=-1 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=-3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_a",
@@ -134,7 +134,7 @@
   {
     "episode_id": "0013",
     "group_id": "simple",
-    "prompt": "Read the benchmark record for two markers.\nEach row reports r1, r2, and the state that was recorded.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nUse the sequence as a whole to avoid overfitting to an early row.\n\nLabeled examples:\n1. r1=+2, r2=+3 -> zark\n2. r1=+2, r2=+1 -> zark\n3. r1=-1, r2=+2 -> blim\n4. r1=+1, r2=+1 -> blim\n5. r1=-1, r2=+1 -> zark\n\nProbes:\n6. r1=-1, r2=-3 -> ?\n7. r1=+3, r2=-1 -> ?\n8. r1=+3, r2=+3 -> ?\n9. r1=-1, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the baseline classification slice for two markers. Episode 0013.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=+2, r2=+3 -> zark\n2. r1=+2, r2=+1 -> zark\n3. r1=-1, r2=+2 -> blim\n4. r1=+1, r2=+1 -> blim\n5. r1=-1, r2=+1 -> zark\n\nProbes:\n6. r1=-1, r2=-3 -> ?\n7. r1=+3, r2=-1 -> ?\n8. r1=+3, r2=+3 -> ?\n9. r1=-1, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -145,7 +145,7 @@
   {
     "episode_id": "0014",
     "group_id": "simple",
-    "prompt": "Work through the benchmark evidence for two markers.\nEach row reports r1, r2, and the state that was recorded.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nLater evidence may settle ambiguities left by the opening cases.\n\nLabeled examples:\n1. r1=-3, r2=-2 -> zark\n2. r1=-3, r2=+2 -> blim\n3. r1=-1, r2=+3 -> blim\n4. r1=+3, r2=-3 -> zark\n5. r1=+3, r2=+3 -> blim\n\nProbes:\n6. r1=-3, r2=+3 -> ?\n7. r1=-2, r2=-1 -> ?\n8. r1=+3, r2=-1 -> ?\n9. r1=+2, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the baseline classification slice for two markers. Episode 0014.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=-3, r2=-2 -> zark\n2. r1=-3, r2=+2 -> blim\n3. r1=-1, r2=+3 -> blim\n4. r1=+3, r2=-3 -> zark\n5. r1=+3, r2=+3 -> blim\n\nProbes:\n6. r1=-3, r2=+3 -> ?\n7. r1=-2, r2=-1 -> ?\n8. r1=+3, r2=-1 -> ?\n9. r1=+2, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_a",
@@ -156,7 +156,7 @@
   {
     "episode_id": "0015",
     "group_id": "simple",
-    "prompt": "Examine the benchmark snapshot for two markers.\nEach row reports r1, r2, and the state that was recorded.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nTreat the examples as a compact but complete calibration slice.\n\nLabeled examples:\n1. r1=+3, r2=-2 -> blim\n2. r1=+1, r2=-1 -> blim\n3. r1=-3, r2=-1 -> zark\n4. r1=-3, r2=+3 -> zark\n5. r1=-1, r2=-2 -> blim\n\nProbes:\n6. r1=+3, r2=-1 -> ?\n7. r1=-3, r2=-2 -> ?\n8. r1=+1, r2=+3 -> ?\n9. r1=-3, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the baseline classification slice for two markers. Episode 0015.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=+3, r2=-2 -> blim\n2. r1=+1, r2=-1 -> blim\n3. r1=-3, r2=-1 -> zark\n4. r1=-3, r2=+3 -> zark\n5. r1=-1, r2=-2 -> blim\n\nProbes:\n6. r1=+3, r2=-1 -> ?\n7. r1=-3, r2=-2 -> ?\n8. r1=+1, r2=+3 -> ?\n9. r1=-3, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_b",
@@ -167,7 +167,7 @@
   {
     "episode_id": "0016",
     "group_id": "simple",
-    "prompt": "Study the benchmark notes for two markers.\nEach entry contains r1, r2, and the resulting state label.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nThe final judgment should reflect the full collection of evidence.\n\nLabeled examples:\n1. r1=-1, r2=+1 -> blim\n2. r1=-3, r2=-2 -> blim\n3. r1=+1, r2=-1 -> zark\n4. r1=+1, r2=-2 -> zark\n5. r1=-2, r2=-1 -> blim\n\nProbes:\n6. r1=-3, r2=-3 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=-1, r2=+3 -> ?\n9. r1=+2, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the baseline classification slice for two markers. Episode 0016.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=-1, r2=+1 -> blim\n2. r1=-3, r2=-2 -> blim\n3. r1=+1, r2=-1 -> zark\n4. r1=+1, r2=-2 -> zark\n5. r1=-2, r2=-1 -> blim\n\nProbes:\n6. r1=-3, r2=-3 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=-1, r2=+3 -> ?\n9. r1=+2, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_a",
@@ -178,7 +178,7 @@
   {
     "episode_id": "0017",
     "group_id": "simple",
-    "prompt": "Inspect the benchmark trace for two markers.\nEach entry contains r1, r2, and the resulting state label.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nFocus on the observed transitions, not on surface symmetry alone.\n\nLabeled examples:\n1. r1=-1, r2=+3 -> blim\n2. r1=+2, r2=+3 -> blim\n3. r1=+2, r2=-1 -> zark\n4. r1=+3, r2=+1 -> blim\n5. r1=+1, r2=-1 -> zark\n\nProbes:\n6. r1=-2, r2=-3 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=+1, r2=-2 -> ?\n9. r1=-3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the baseline classification slice for two markers. Episode 0017.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=-1, r2=+3 -> blim\n2. r1=+2, r2=+3 -> blim\n3. r1=+2, r2=-1 -> zark\n4. r1=+3, r2=+1 -> blim\n5. r1=+1, r2=-1 -> zark\n\nProbes:\n6. r1=-2, r2=-3 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=+1, r2=-2 -> ?\n9. r1=-3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -189,7 +189,7 @@
   {
     "episode_id": "0018",
     "group_id": "simple",
-    "prompt": "Read the benchmark record for two markers.\nEach entry contains r1, r2, and the resulting state label.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nWatch for the combinations that are clarified only when the later rows are taken into account.\n\nLabeled examples:\n1. r1=+2, r2=-3 -> blim\n2. r1=+2, r2=+1 -> blim\n3. r1=-3, r2=+2 -> zark\n4. r1=+3, r2=+1 -> blim\n5. r1=+1, r2=+2 -> blim\n\nProbes:\n6. r1=-1, r2=+1 -> ?\n7. r1=+1, r2=-2 -> ?\n8. r1=+2, r2=+2 -> ?\n9. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the baseline classification slice for two markers. Episode 0018.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=+2, r2=-3 -> blim\n2. r1=+2, r2=+1 -> blim\n3. r1=-3, r2=+2 -> zark\n4. r1=+3, r2=+1 -> blim\n5. r1=+1, r2=+2 -> blim\n\nProbes:\n6. r1=-1, r2=+1 -> ?\n7. r1=+1, r2=-2 -> ?\n8. r1=+2, r2=+2 -> ?\n9. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -200,7 +200,7 @@
   {
     "episode_id": "0019",
     "group_id": "simple",
-    "prompt": "Work through the benchmark evidence for two markers.\nEach entry contains r1, r2, and the resulting state label.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nThe safest answer comes from reconciling all listed cases together.\n\nLabeled examples:\n1. r1=+1, r2=+1 -> blim\n2. r1=-3, r2=-2 -> blim\n3. r1=+3, r2=+3 -> zark\n4. r1=-1, r2=+1 -> blim\n5. r1=+1, r2=+2 -> zark\n\nProbes:\n6. r1=-3, r2=-3 -> ?\n7. r1=+1, r2=-1 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=-3, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the baseline classification slice for two markers. Episode 0019.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=+1, r2=+1 -> blim\n2. r1=-3, r2=-2 -> blim\n3. r1=+3, r2=+3 -> zark\n4. r1=-1, r2=+1 -> blim\n5. r1=+1, r2=+2 -> zark\n\nProbes:\n6. r1=-3, r2=-3 -> ?\n7. r1=+1, r2=-1 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=-3, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_a",
@@ -211,7 +211,7 @@
   {
     "episode_id": "0020",
     "group_id": "simple",
-    "prompt": "Examine the benchmark snapshot for two markers.\nEach entry contains r1, r2, and the resulting state label.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nSome sign pairings only make sense after the full trace is considered.\n\nLabeled examples:\n1. r1=-1, r2=-2 -> blim\n2. r1=-1, r2=-1 -> blim\n3. r1=+1, r2=-2 -> blim\n4. r1=+1, r2=+1 -> zark\n5. r1=+3, r2=+3 -> zark\n\nProbes:\n6. r1=-1, r2=+2 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=+3, r2=-3 -> ?\n9. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the baseline classification slice for two markers. Episode 0020.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=-1, r2=-2 -> blim\n2. r1=-1, r2=-1 -> blim\n3. r1=+1, r2=-2 -> blim\n4. r1=+1, r2=+1 -> zark\n5. r1=+3, r2=+3 -> zark\n\nProbes:\n6. r1=-1, r2=+2 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=+3, r2=-3 -> ?\n9. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_a",
@@ -222,7 +222,7 @@
   {
     "episode_id": "0021",
     "group_id": "exception",
-    "prompt": "Study the benchmark notes for two markers.\nEvery observation specifies r1, r2, and the logged state.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nUse the sequence as a whole to avoid overfitting to an early row.\n\nResolved log entries:\n1. r1=-1, r2=-2 -> blim\n2. r1=-3, r2=-3 -> blim\n3. r1=+3, r2=-3 -> blim\n4. r1=+2, r2=-3 -> blim\n5. r1=-3, r2=-2 -> zark\n\nUnresolved probe entries:\n6. r1=-2, r2=+3 -> ?\n7. r1=+1, r2=+2 -> ?\n8. r1=-1, r2=-1 -> ?\n9. r1=+1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0021.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-2 | r2=-3 | observed=blim\n[02] r1=-1 | r2=-1 | observed=blim\n[03] r1=+1 | r2=-1 | observed=blim\n[04] r1=+3 | r2=-1 | observed=blim\n[05] r1=-1 | r2=-3 | observed=zark  <= exception-setting row\n\nRows to classify:\n[06] r1=-3 | r2=+1 | observed=?\n[07] r1=+2 | r2=+3 | observed=?\n[08] r1=-2 | r2=-2 | observed=?\n[09] r1=+2 | r2=-3 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -233,7 +233,7 @@
   {
     "episode_id": "0022",
     "group_id": "exception",
-    "prompt": "Inspect the benchmark trace for two markers.\nEvery observation specifies r1, r2, and the logged state.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nLater evidence may settle ambiguities left by the opening cases.\n\nResolved log entries:\n1. r1=+2, r2=+3 -> blim\n2. r1=+3, r2=+2 -> blim\n3. r1=+3, r2=-2 -> blim\n4. r1=-1, r2=-3 -> zark\n5. r1=-3, r2=-3 -> zark\n\nUnresolved probe entries:\n6. r1=-1, r2=-2 -> ?\n7. r1=+1, r2=-3 -> ?\n8. r1=+1, r2=+1 -> ?\n9. r1=-3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0022.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=+3 | r2=+1 | observed=blim\n[02] r1=+1 | r2=+3 | observed=blim\n[03] r1=+1 | r2=-3 | observed=blim\n[04] r1=-2 | r2=-1 | observed=zark\n[05] r1=-1 | r2=-1 | observed=zark  <= exception-setting row\n\nRows to classify:\n[06] r1=-2 | r2=-3 | observed=?\n[07] r1=+2 | r2=-1 | observed=?\n[08] r1=+2 | r2=+2 | observed=?\n[09] r1=-1 | r2=+1 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -244,7 +244,7 @@
   {
     "episode_id": "0023",
     "group_id": "exception",
-    "prompt": "Read the benchmark record for two markers.\nEvery observation specifies r1, r2, and the logged state.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nTreat the examples as a compact but complete calibration slice.\n\nResolved log entries:\n1. r1=+2, r2=-3 -> zark\n2. r1=+3, r2=+2 -> blim\n3. r1=+1, r2=-3 -> blim\n4. r1=+1, r2=+2 -> zark\n5. r1=+3, r2=-2 -> blim\n\nUnresolved probe entries:\n6. r1=+2, r2=-2 -> ?\n7. r1=-1, r2=-3 -> ?\n8. r1=+2, r2=+2 -> ?\n9. r1=-2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0023.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=+3 | r2=-1 | observed=zark\n[02] r1=+1 | r2=+3 | observed=blim\n[03] r1=+2 | r2=-1 | observed=blim\n[04] r1=+2 | r2=+3 | observed=zark\n[05] r1=+1 | r2=-3 | observed=blim  <= exception-setting row\n\nRows to classify:\n[06] r1=+3 | r2=-3 | observed=?\n[07] r1=-2 | r2=-1 | observed=?\n[08] r1=+3 | r2=+3 | observed=?\n[09] r1=-3 | r2=+1 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_b",
@@ -255,7 +255,7 @@
   {
     "episode_id": "0024",
     "group_id": "exception",
-    "prompt": "Work through the benchmark evidence for two markers.\nEvery observation specifies r1, r2, and the logged state.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nThe final judgment should reflect the full collection of evidence.\n\nResolved log entries:\n1. r1=+2, r2=-2 -> zark\n2. r1=+2, r2=-1 -> zark\n3. r1=+3, r2=-1 -> zark\n4. r1=-2, r2=-1 -> zark\n5. r1=+2, r2=-3 -> blim\n\nUnresolved probe entries:\n6. r1=-3, r2=+1 -> ?\n7. r1=+3, r2=+3 -> ?\n8. r1=-1, r2=-2 -> ?\n9. r1=+1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0024.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=+3 | r2=-3 | observed=zark\n[02] r1=+3 | r2=-2 | observed=zark\n[03] r1=+1 | r2=-2 | observed=zark\n[04] r1=-3 | r2=-2 | observed=zark\n[05] r1=+3 | r2=-1 | observed=blim  <= exception-setting row\n\nRows to classify:\n[06] r1=-1 | r2=+2 | observed=?\n[07] r1=+1 | r2=+1 | observed=?\n[08] r1=-2 | r2=-3 | observed=?\n[09] r1=+2 | r2=-3 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -266,7 +266,7 @@
   {
     "episode_id": "0025",
     "group_id": "exception",
-    "prompt": "Examine the benchmark snapshot for two markers.\nEvery observation specifies r1, r2, and the logged state.\nUse the whole set of evidence before deciding the unlabeled cases.\nKeep the ordering intact while you reason through it.\nFocus on the observed transitions, not on surface symmetry alone.\n\nResolved log entries:\n1. r1=-3, r2=+1 -> zark\n2. r1=-3, r2=-2 -> blim\n3. r1=-3, r2=-1 -> blim\n4. r1=-2, r2=-1 -> zark\n5. r1=+3, r2=-2 -> blim\n\nUnresolved probe entries:\n6. r1=-2, r2=-3 -> ?\n7. r1=-1, r2=+1 -> ?\n8. r1=+1, r2=+3 -> ?\n9. r1=+3, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0025.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-1 | r2=+2 | observed=zark\n[02] r1=-1 | r2=-3 | observed=blim\n[03] r1=-1 | r2=-2 | observed=blim\n[04] r1=-3 | r2=-2 | observed=zark\n[05] r1=+1 | r2=-3 | observed=blim  <= exception-setting row\n\nRows to classify:\n[06] r1=-3 | r2=-1 | observed=?\n[07] r1=-2 | r2=+2 | observed=?\n[08] r1=+2 | r2=+1 | observed=?\n[09] r1=+1 | r2=-2 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_a",
@@ -277,7 +277,7 @@
   {
     "episode_id": "0026",
     "group_id": "exception",
-    "prompt": "Study the benchmark notes for two markers.\nEach listed item gives r1, r2, and the recorded state.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nWatch for the combinations that are clarified only when the later rows are taken into account.\n\nResolved log entries:\n1. r1=-2, r2=+3 -> zark\n2. r1=-3, r2=+1 -> zark\n3. r1=+1, r2=-3 -> zark\n4. r1=-1, r2=-2 -> zark\n5. r1=-2, r2=+2 -> blim\n\nUnresolved probe entries:\n6. r1=-1, r2=+3 -> ?\n7. r1=+1, r2=+1 -> ?\n8. r1=+3, r2=-2 -> ?\n9. r1=-1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0026.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-3 | r2=+1 | observed=zark\n[02] r1=-1 | r2=+2 | observed=zark\n[03] r1=+2 | r2=-1 | observed=zark\n[04] r1=-2 | r2=-3 | observed=zark\n[05] r1=-3 | r2=+3 | observed=blim  <= exception-setting row\n\nRows to classify:\n[06] r1=-2 | r2=+1 | observed=?\n[07] r1=+2 | r2=+2 | observed=?\n[08] r1=+1 | r2=-3 | observed=?\n[09] r1=-2 | r2=-2 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_b",
@@ -288,7 +288,7 @@
   {
     "episode_id": "0027",
     "group_id": "exception",
-    "prompt": "Inspect the benchmark trace for two markers.\nEach listed item gives r1, r2, and the recorded state.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nThe safest answer comes from reconciling all listed cases together.\n\nResolved log entries:\n1. r1=-3, r2=-3 -> blim\n2. r1=+3, r2=+2 -> zark\n3. r1=+3, r2=+1 -> zark\n4. r1=+1, r2=-1 -> blim\n5. r1=+1, r2=+3 -> zark\n\nUnresolved probe entries:\n6. r1=+2, r2=+3 -> ?\n7. r1=-1, r2=-3 -> ?\n8. r1=-1, r2=+3 -> ?\n9. r1=+3, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0027.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-1 | r2=-1 | observed=blim\n[02] r1=+1 | r2=+3 | observed=zark\n[03] r1=+1 | r2=+2 | observed=zark\n[04] r1=+2 | r2=-2 | observed=blim\n[05] r1=+2 | r2=+1 | observed=zark  <= exception-setting row\n\nRows to classify:\n[06] r1=+3 | r2=+1 | observed=?\n[07] r1=-2 | r2=-1 | observed=?\n[08] r1=-2 | r2=+1 | observed=?\n[09] r1=+1 | r2=-3 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -299,7 +299,7 @@
   {
     "episode_id": "0028",
     "group_id": "exception",
-    "prompt": "Read the benchmark record for two markers.\nEach listed item gives r1, r2, and the recorded state.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nSome sign pairings only make sense after the full trace is considered.\n\nResolved log entries:\n1. r1=-2, r2=+3 -> zark\n2. r1=+2, r2=-2 -> blim\n3. r1=+1, r2=-2 -> blim\n4. r1=-1, r2=-1 -> zark\n5. r1=+1, r2=-1 -> blim\n\nUnresolved probe entries:\n6. r1=-1, r2=+2 -> ?\n7. r1=+3, r2=-2 -> ?\n8. r1=-1, r2=-3 -> ?\n9. r1=+2, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0028.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-3 | r2=+1 | observed=zark\n[02] r1=+3 | r2=-3 | observed=blim\n[03] r1=+2 | r2=-3 | observed=blim\n[04] r1=-2 | r2=-2 | observed=zark\n[05] r1=+2 | r2=-2 | observed=blim  <= exception-setting row\n\nRows to classify:\n[06] r1=-2 | r2=+3 | observed=?\n[07] r1=+1 | r2=-3 | observed=?\n[08] r1=-2 | r2=-1 | observed=?\n[09] r1=+3 | r2=+3 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -310,7 +310,7 @@
   {
     "episode_id": "0029",
     "group_id": "exception",
-    "prompt": "Work through the benchmark evidence for two markers.\nEach listed item gives r1, r2, and the recorded state.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nUse the sequence as a whole to avoid overfitting to an early row.\n\nResolved log entries:\n1. r1=-2, r2=+2 -> zark\n2. r1=+3, r2=+2 -> zark\n3. r1=+1, r2=-3 -> blim\n4. r1=+2, r2=+3 -> zark\n5. r1=+3, r2=-1 -> blim\n\nUnresolved probe entries:\n6. r1=+1, r2=-1 -> ?\n7. r1=-1, r2=+2 -> ?\n8. r1=+3, r2=+3 -> ?\n9. r1=-2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0029.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-3 | r2=+3 | observed=zark\n[02] r1=+1 | r2=+3 | observed=zark\n[03] r1=+2 | r2=-1 | observed=blim\n[04] r1=+3 | r2=+1 | observed=zark\n[05] r1=+1 | r2=-2 | observed=blim  <= exception-setting row\n\nRows to classify:\n[06] r1=+2 | r2=-2 | observed=?\n[07] r1=-2 | r2=+3 | observed=?\n[08] r1=+1 | r2=+1 | observed=?\n[09] r1=-3 | r2=-1 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_a",
@@ -321,7 +321,7 @@
   {
     "episode_id": "0030",
     "group_id": "exception",
-    "prompt": "Examine the benchmark snapshot for two markers.\nEach listed item gives r1, r2, and the recorded state.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nLater evidence may settle ambiguities left by the opening cases.\n\nResolved log entries:\n1. r1=-1, r2=+3 -> blim\n2. r1=-1, r2=-2 -> zark\n3. r1=+1, r2=-2 -> zark\n4. r1=-3, r2=-3 -> blim\n5. r1=-2, r2=-1 -> blim\n\nUnresolved probe entries:\n6. r1=-1, r2=+1 -> ?\n7. r1=+1, r2=+2 -> ?\n8. r1=+2, r2=-2 -> ?\n9. r1=-1, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0030.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-2 | r2=+1 | observed=blim\n[02] r1=-2 | r2=-3 | observed=zark\n[03] r1=+2 | r2=-3 | observed=zark\n[04] r1=-1 | r2=-1 | observed=blim\n[05] r1=-3 | r2=-2 | observed=blim  <= exception-setting row\n\nRows to classify:\n[06] r1=-2 | r2=+2 | observed=?\n[07] r1=+2 | r2=+3 | observed=?\n[08] r1=+3 | r2=-3 | observed=?\n[09] r1=-2 | r2=-1 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_a",
@@ -332,7 +332,7 @@
   {
     "episode_id": "0031",
     "group_id": "exception",
-    "prompt": "Study the benchmark notes for two markers.\nEvery line lists r1, r2, and the observed state.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nTreat the examples as a compact but complete calibration slice.\n\nResolved log entries:\n1. r1=-2, r2=-2 -> zark\n2. r1=-1, r2=-1 -> zark\n3. r1=+3, r2=+3 -> blim\n4. r1=-3, r2=+3 -> zark\n5. r1=+2, r2=+1 -> blim\n\nUnresolved probe entries:\n6. r1=-1, r2=-3 -> ?\n7. r1=+1, r2=+2 -> ?\n8. r1=-2, r2=+2 -> ?\n9. r1=+1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0031.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-3 | r2=-3 | observed=zark\n[02] r1=-2 | r2=-2 | observed=zark\n[03] r1=+1 | r2=+1 | observed=blim\n[04] r1=-1 | r2=+1 | observed=zark\n[05] r1=+3 | r2=+2 | observed=blim  <= exception-setting row\n\nRows to classify:\n[06] r1=-2 | r2=-1 | observed=?\n[07] r1=+2 | r2=+3 | observed=?\n[08] r1=-3 | r2=+3 | observed=?\n[09] r1=+2 | r2=-2 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -343,7 +343,7 @@
   {
     "episode_id": "0032",
     "group_id": "exception",
-    "prompt": "Inspect the benchmark trace for two markers.\nEvery line lists r1, r2, and the observed state.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nThe final judgment should reflect the full collection of evidence.\n\nResolved log entries:\n1. r1=-2, r2=+3 -> blim\n2. r1=+1, r2=+1 -> zark\n3. r1=+2, r2=-1 -> zark\n4. r1=+3, r2=+3 -> blim\n5. r1=+3, r2=-1 -> zark\n\nUnresolved probe entries:\n6. r1=-1, r2=+1 -> ?\n7. r1=+3, r2=+1 -> ?\n8. r1=+1, r2=-3 -> ?\n9. r1=-1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0032.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-3 | r2=+1 | observed=blim\n[02] r1=+2 | r2=+2 | observed=zark\n[03] r1=+3 | r2=-2 | observed=zark\n[04] r1=+1 | r2=+1 | observed=blim\n[05] r1=+1 | r2=-2 | observed=zark  <= exception-setting row\n\nRows to classify:\n[06] r1=-2 | r2=+2 | observed=?\n[07] r1=+1 | r2=+2 | observed=?\n[08] r1=+2 | r2=-1 | observed=?\n[09] r1=-2 | r2=-2 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_b",
@@ -354,7 +354,7 @@
   {
     "episode_id": "0033",
     "group_id": "exception",
-    "prompt": "Read the benchmark record for two markers.\nEvery line lists r1, r2, and the observed state.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nFocus on the observed transitions, not on surface symmetry alone.\n\nResolved log entries:\n1. r1=-3, r2=+1 -> blim\n2. r1=-1, r2=+3 -> blim\n3. r1=+1, r2=+3 -> zark\n4. r1=-3, r2=+2 -> zark\n5. r1=+3, r2=+1 -> blim\n\nUnresolved probe entries:\n6. r1=-1, r2=-1 -> ?\n7. r1=+1, r2=-1 -> ?\n8. r1=-2, r2=+1 -> ?\n9. r1=+1, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0033.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-1 | r2=+2 | observed=blim\n[02] r1=-2 | r2=+1 | observed=blim\n[03] r1=+2 | r2=+1 | observed=zark\n[04] r1=-1 | r2=+3 | observed=zark\n[05] r1=+1 | r2=+2 | observed=blim  <= exception-setting row\n\nRows to classify:\n[06] r1=-2 | r2=-2 | observed=?\n[07] r1=+2 | r2=-2 | observed=?\n[08] r1=-3 | r2=+2 | observed=?\n[09] r1=+2 | r2=+3 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -365,7 +365,7 @@
   {
     "episode_id": "0034",
     "group_id": "exception",
-    "prompt": "Work through the benchmark evidence for two markers.\nEvery line lists r1, r2, and the observed state.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nWatch for the combinations that are clarified only when the later rows are taken into account.\n\nResolved log entries:\n1. r1=-3, r2=-2 -> zark\n2. r1=-2, r2=-1 -> zark\n3. r1=-1, r2=-2 -> zark\n4. r1=-2, r2=-2 -> blim\n5. r1=+2, r2=-3 -> zark\n\nUnresolved probe entries:\n6. r1=+2, r2=-2 -> ?\n7. r1=-3, r2=-1 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=-2, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0034.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-1 | r2=-3 | observed=zark\n[02] r1=-3 | r2=-2 | observed=zark\n[03] r1=-2 | r2=-3 | observed=zark\n[04] r1=-3 | r2=-3 | observed=blim\n[05] r1=+3 | r2=-1 | observed=zark  <= exception-setting row\n\nRows to classify:\n[06] r1=+3 | r2=-3 | observed=?\n[07] r1=-1 | r2=-2 | observed=?\n[08] r1=+3 | r2=+2 | observed=?\n[09] r1=-3 | r2=+3 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -376,7 +376,7 @@
   {
     "episode_id": "0035",
     "group_id": "exception",
-    "prompt": "Examine the benchmark snapshot for two markers.\nEvery line lists r1, r2, and the observed state.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nThe safest answer comes from reconciling all listed cases together.\n\nResolved log entries:\n1. r1=-3, r2=-1 -> zark\n2. r1=-3, r2=+3 -> blim\n3. r1=-2, r2=+1 -> blim\n4. r1=+1, r2=+3 -> blim\n5. r1=+3, r2=-1 -> zark\n\nUnresolved probe entries:\n6. r1=-2, r2=-3 -> ?\n7. r1=-3, r2=+1 -> ?\n8. r1=+2, r2=-2 -> ?\n9. r1=+3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0035.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-1 | r2=-2 | observed=zark\n[02] r1=-1 | r2=+1 | observed=blim\n[03] r1=-3 | r2=+2 | observed=blim\n[04] r1=+2 | r2=+1 | observed=blim\n[05] r1=+1 | r2=-2 | observed=zark  <= exception-setting row\n\nRows to classify:\n[06] r1=-3 | r2=-1 | observed=?\n[07] r1=-1 | r2=+2 | observed=?\n[08] r1=+3 | r2=-3 | observed=?\n[09] r1=+1 | r2=+1 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -387,7 +387,7 @@
   {
     "episode_id": "0036",
     "group_id": "exception",
-    "prompt": "Study the benchmark notes for two markers.\nEach row reports r1, r2, and the state that was recorded.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nSome sign pairings only make sense after the full trace is considered.\n\nResolved log entries:\n1. r1=+3, r2=+2 -> zark\n2. r1=+1, r2=-2 -> zark\n3. r1=-1, r2=-2 -> blim\n4. r1=+2, r2=-3 -> zark\n5. r1=-1, r2=-3 -> blim\n\nUnresolved probe entries:\n6. r1=+3, r2=-2 -> ?\n7. r1=+2, r2=+1 -> ?\n8. r1=-3, r2=+1 -> ?\n9. r1=-2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0036.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=+1 | r2=+3 | observed=zark\n[02] r1=+2 | r2=-3 | observed=zark\n[03] r1=-2 | r2=-3 | observed=blim\n[04] r1=+3 | r2=-1 | observed=zark\n[05] r1=-2 | r2=-1 | observed=blim  <= exception-setting row\n\nRows to classify:\n[06] r1=+1 | r2=-3 | observed=?\n[07] r1=+3 | r2=+2 | observed=?\n[08] r1=-1 | r2=+2 | observed=?\n[09] r1=-3 | r2=-1 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_a",
@@ -398,7 +398,7 @@
   {
     "episode_id": "0037",
     "group_id": "exception",
-    "prompt": "Inspect the benchmark trace for two markers.\nEach row reports r1, r2, and the state that was recorded.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nUse the sequence as a whole to avoid overfitting to an early row.\n\nResolved log entries:\n1. r1=+1, r2=+2 -> zark\n2. r1=-3, r2=-3 -> blim\n3. r1=-1, r2=+2 -> zark\n4. r1=-3, r2=+1 -> zark\n5. r1=-1, r2=+3 -> zark\n\nUnresolved probe entries:\n6. r1=+3, r2=-3 -> ?\n7. r1=-2, r2=+1 -> ?\n8. r1=-2, r2=-2 -> ?\n9. r1=+3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0037.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=+2 | r2=+3 | observed=zark\n[02] r1=-1 | r2=-1 | observed=blim\n[03] r1=-2 | r2=+3 | observed=zark\n[04] r1=-1 | r2=+2 | observed=zark\n[05] r1=-2 | r2=+1 | observed=zark  <= exception-setting row\n\nRows to classify:\n[06] r1=+1 | r2=-1 | observed=?\n[07] r1=-3 | r2=+2 | observed=?\n[08] r1=-3 | r2=-3 | observed=?\n[09] r1=+1 | r2=+1 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_a",
@@ -409,7 +409,7 @@
   {
     "episode_id": "0038",
     "group_id": "exception",
-    "prompt": "Read the benchmark record for two markers.\nEach row reports r1, r2, and the state that was recorded.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nLater evidence may settle ambiguities left by the opening cases.\n\nResolved log entries:\n1. r1=-2, r2=-3 -> zark\n2. r1=-3, r2=+2 -> zark\n3. r1=-1, r2=+3 -> zark\n4. r1=+2, r2=+2 -> blim\n5. r1=-3, r2=+1 -> zark\n\nUnresolved probe entries:\n6. r1=-3, r2=+3 -> ?\n7. r1=+2, r2=-2 -> ?\n8. r1=+1, r2=+2 -> ?\n9. r1=-1, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0038.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-3 | r2=-1 | observed=zark\n[02] r1=-1 | r2=+3 | observed=zark\n[03] r1=-2 | r2=+1 | observed=zark\n[04] r1=+3 | r2=+3 | observed=blim\n[05] r1=-1 | r2=+2 | observed=zark  <= exception-setting row\n\nRows to classify:\n[06] r1=-1 | r2=+1 | observed=?\n[07] r1=+3 | r2=-3 | observed=?\n[08] r1=+2 | r2=+3 | observed=?\n[09] r1=-2 | r2=-1 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -420,7 +420,7 @@
   {
     "episode_id": "0039",
     "group_id": "exception",
-    "prompt": "Work through the benchmark evidence for two markers.\nEach row reports r1, r2, and the state that was recorded.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nTreat the examples as a compact but complete calibration slice.\n\nResolved log entries:\n1. r1=-1, r2=-2 -> blim\n2. r1=-3, r2=-3 -> blim\n3. r1=+3, r2=-3 -> blim\n4. r1=+2, r2=-3 -> blim\n5. r1=-3, r2=-2 -> zark\n\nUnresolved probe entries:\n6. r1=-2, r2=+3 -> ?\n7. r1=+1, r2=+2 -> ?\n8. r1=-1, r2=-1 -> ?\n9. r1=+1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0039.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-2 | r2=-3 | observed=blim\n[02] r1=-1 | r2=-1 | observed=blim\n[03] r1=+1 | r2=-1 | observed=blim\n[04] r1=+3 | r2=-1 | observed=blim\n[05] r1=-1 | r2=-3 | observed=zark  <= exception-setting row\n\nRows to classify:\n[06] r1=-3 | r2=+1 | observed=?\n[07] r1=+2 | r2=+3 | observed=?\n[08] r1=-2 | r2=-2 | observed=?\n[09] r1=+2 | r2=-3 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -431,7 +431,7 @@
   {
     "episode_id": "0040",
     "group_id": "exception",
-    "prompt": "Examine the benchmark snapshot for two markers.\nEach row reports r1, r2, and the state that was recorded.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nThe final judgment should reflect the full collection of evidence.\n\nResolved log entries:\n1. r1=+2, r2=+3 -> blim\n2. r1=+3, r2=+2 -> blim\n3. r1=+3, r2=-2 -> blim\n4. r1=-1, r2=-3 -> zark\n5. r1=-3, r2=-3 -> zark\n\nUnresolved probe entries:\n6. r1=-1, r2=-2 -> ?\n7. r1=+1, r2=-3 -> ?\n8. r1=+1, r2=+1 -> ?\n9. r1=-3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0040.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=+3 | r2=+1 | observed=blim\n[02] r1=+1 | r2=+3 | observed=blim\n[03] r1=+1 | r2=-3 | observed=blim\n[04] r1=-2 | r2=-1 | observed=zark\n[05] r1=-1 | r2=-1 | observed=zark  <= exception-setting row\n\nRows to classify:\n[06] r1=-2 | r2=-3 | observed=?\n[07] r1=+2 | r2=-1 | observed=?\n[08] r1=+2 | r2=+2 | observed=?\n[09] r1=-1 | r2=+1 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -442,7 +442,7 @@
   {
     "episode_id": "0041",
     "group_id": "distractor",
-    "prompt": "Study the benchmark notes for two markers.\nEach entry contains r1, r2, and the resulting state label.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nFocus on the observed transitions, not on surface symmetry alone.\n\nConfirmed ledger rows:\n1. r1=-3, r2=-3 -> blim\n2. r1=-1, r2=-3 -> blim\n3. r1=-1, r2=-2 -> zark\n4. r1=-1, r2=+1 -> blim\n5. r1=-2, r2=+3 -> blim\n\nPending ledger rows:\n6. r1=+2, r2=-2 -> ?\n7. r1=+3, r2=+3 -> ?\n8. r1=-3, r2=+3 -> ?\n9. r1=-2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0041.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=archived :: r1=-2 ; r2=-2 ; state=blim\ncase 02 :: memo=reviewed :: r1=-3 ; r2=-2 ; state=blim\ncase 03 :: memo=duplicate-check :: r1=-3 ; r2=-1 ; state=zark\ncase 04 :: memo=queue-ok :: r1=-3 ; r2=+3 ; state=blim\ncase 05 :: memo=carry-forward :: r1=-1 ; r2=+2 ; state=blim\n\nPending file entries:\ncase 06 :: memo=duplicate-check :: r1=+1 ; r2=-1 ; state=?\ncase 07 :: memo=queue-ok :: r1=+2 ; r2=+2 ; state=?\ncase 08 :: memo=carry-forward :: r1=-2 ; r2=+2 ; state=?\ncase 09 :: memo=archived :: r1=-1 ; r2=-2 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -453,7 +453,7 @@
   {
     "episode_id": "0042",
     "group_id": "distractor",
-    "prompt": "Inspect the benchmark trace for two markers.\nEach entry contains r1, r2, and the resulting state label.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nWatch for the combinations that are clarified only when the later rows are taken into account.\n\nConfirmed ledger rows:\n1. r1=+3, r2=+1 -> blim\n2. r1=+2, r2=+2 -> blim\n3. r1=+1, r2=+3 -> zark\n4. r1=-1, r2=+1 -> blim\n5. r1=-3, r2=+1 -> blim\n\nPending ledger rows:\n6. r1=-2, r2=+3 -> ?\n7. r1=-1, r2=-3 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=+2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0042.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=reviewed :: r1=+2 ; r2=+3 ; state=blim\ncase 02 :: memo=duplicate-check :: r1=+1 ; r2=+1 ; state=blim\ncase 03 :: memo=queue-ok :: r1=+3 ; r2=+2 ; state=zark\ncase 04 :: memo=carry-forward :: r1=-3 ; r2=+3 ; state=blim\ncase 05 :: memo=archived :: r1=-2 ; r2=+3 ; state=blim\n\nPending file entries:\ncase 06 :: memo=queue-ok :: r1=-1 ; r2=+2 ; state=?\ncase 07 :: memo=carry-forward :: r1=-3 ; r2=-2 ; state=?\ncase 08 :: memo=archived :: r1=+1 ; r2=+3 ; state=?\ncase 09 :: memo=reviewed :: r1=+1 ; r2=-2 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_b",
@@ -464,7 +464,7 @@
   {
     "episode_id": "0043",
     "group_id": "distractor",
-    "prompt": "Read the benchmark record for two markers.\nEach entry contains r1, r2, and the resulting state label.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nThe safest answer comes from reconciling all listed cases together.\n\nConfirmed ledger rows:\n1. r1=-2, r2=+2 -> zark\n2. r1=+3, r2=+2 -> blim\n3. r1=-1, r2=+2 -> blim\n4. r1=-2, r2=-2 -> zark\n5. r1=-1, r2=+1 -> blim\n\nPending ledger rows:\n6. r1=+2, r2=+1 -> ?\n7. r1=-2, r2=+1 -> ?\n8. r1=-2, r2=-3 -> ?\n9. r1=+1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0043.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=duplicate-check :: r1=-1 ; r2=+1 ; state=zark\ncase 02 :: memo=queue-ok :: r1=+2 ; r2=+1 ; state=blim\ncase 03 :: memo=carry-forward :: r1=-3 ; r2=+1 ; state=blim\ncase 04 :: memo=archived :: r1=-1 ; r2=-1 ; state=zark\ncase 05 :: memo=reviewed :: r1=-3 ; r2=+3 ; state=blim\n\nPending file entries:\ncase 06 :: memo=carry-forward :: r1=+1 ; r2=+3 ; state=?\ncase 07 :: memo=archived :: r1=-1 ; r2=+3 ; state=?\ncase 08 :: memo=reviewed :: r1=-1 ; r2=-2 ; state=?\ncase 09 :: memo=duplicate-check :: r1=+3 ; r2=-1 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_b",
@@ -475,7 +475,7 @@
   {
     "episode_id": "0044",
     "group_id": "distractor",
-    "prompt": "Work through the benchmark evidence for two markers.\nEach entry contains r1, r2, and the resulting state label.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nSome sign pairings only make sense after the full trace is considered.\n\nConfirmed ledger rows:\n1. r1=-1, r2=-1 -> blim\n2. r1=-1, r2=+1 -> zark\n3. r1=-1, r2=-2 -> blim\n4. r1=-2, r2=-2 -> zark\n5. r1=-2, r2=+3 -> blim\n\nPending ledger rows:\n6. r1=+2, r2=-1 -> ?\n7. r1=+2, r2=+1 -> ?\n8. r1=-1, r2=-3 -> ?\n9. r1=-1, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0044.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=queue-ok :: r1=-3 ; r2=-3 ; state=blim\ncase 02 :: memo=carry-forward :: r1=-3 ; r2=+3 ; state=zark\ncase 03 :: memo=archived :: r1=-3 ; r2=-1 ; state=blim\ncase 04 :: memo=reviewed :: r1=-1 ; r2=-1 ; state=zark\ncase 05 :: memo=duplicate-check :: r1=-1 ; r2=+2 ; state=blim\n\nPending file entries:\ncase 06 :: memo=archived :: r1=+1 ; r2=-3 ; state=?\ncase 07 :: memo=reviewed :: r1=+1 ; r2=+3 ; state=?\ncase 08 :: memo=duplicate-check :: r1=-3 ; r2=-2 ; state=?\ncase 09 :: memo=queue-ok :: r1=-3 ; r2=+1 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -486,7 +486,7 @@
   {
     "episode_id": "0045",
     "group_id": "distractor",
-    "prompt": "Examine the benchmark snapshot for two markers.\nEach entry contains r1, r2, and the resulting state label.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nUse the sequence as a whole to avoid overfitting to an early row.\n\nConfirmed ledger rows:\n1. r1=-2, r2=-3 -> blim\n2. r1=-3, r2=-3 -> blim\n3. r1=+3, r2=-3 -> zark\n4. r1=-3, r2=+2 -> blim\n5. r1=+2, r2=+2 -> zark\n\nPending ledger rows:\n6. r1=+1, r2=-3 -> ?\n7. r1=-2, r2=-2 -> ?\n8. r1=-3, r2=+1 -> ?\n9. r1=+1, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0045.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=carry-forward :: r1=-1 ; r2=-2 ; state=blim\ncase 02 :: memo=archived :: r1=-2 ; r2=-2 ; state=blim\ncase 03 :: memo=reviewed :: r1=+2 ; r2=-2 ; state=zark\ncase 04 :: memo=duplicate-check :: r1=-2 ; r2=+1 ; state=blim\ncase 05 :: memo=queue-ok :: r1=+1 ; r2=+1 ; state=zark\n\nPending file entries:\ncase 06 :: memo=reviewed :: r1=+3 ; r2=-2 ; state=?\ncase 07 :: memo=duplicate-check :: r1=-1 ; r2=-1 ; state=?\ncase 08 :: memo=queue-ok :: r1=-2 ; r2=+3 ; state=?\ncase 09 :: memo=carry-forward :: r1=+3 ; r2=+1 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -497,7 +497,7 @@
   {
     "episode_id": "0046",
     "group_id": "distractor",
-    "prompt": "Study the benchmark notes for two markers.\nEvery observation specifies r1, r2, and the logged state.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nLater evidence may settle ambiguities left by the opening cases.\n\nConfirmed ledger rows:\n1. r1=+3, r2=-3 -> zark\n2. r1=-1, r2=-3 -> blim\n3. r1=+2, r2=-3 -> zark\n4. r1=-2, r2=-1 -> zark\n5. r1=-2, r2=+3 -> blim\n\nPending ledger rows:\n6. r1=-3, r2=+2 -> ?\n7. r1=+3, r2=-1 -> ?\n8. r1=+3, r2=+3 -> ?\n9. r1=-3, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0046.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=archived :: r1=+2 ; r2=-2 ; state=zark\ncase 02 :: memo=reviewed :: r1=-3 ; r2=-2 ; state=blim\ncase 03 :: memo=duplicate-check :: r1=+1 ; r2=-2 ; state=zark\ncase 04 :: memo=queue-ok :: r1=-1 ; r2=-3 ; state=zark\ncase 05 :: memo=carry-forward :: r1=-1 ; r2=+2 ; state=blim\n\nPending file entries:\ncase 06 :: memo=duplicate-check :: r1=-2 ; r2=+1 ; state=?\ncase 07 :: memo=queue-ok :: r1=+2 ; r2=-3 ; state=?\ncase 08 :: memo=carry-forward :: r1=+2 ; r2=+2 ; state=?\ncase 09 :: memo=archived :: r1=-2 ; r2=-3 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_a",
@@ -508,7 +508,7 @@
   {
     "episode_id": "0047",
     "group_id": "distractor",
-    "prompt": "Inspect the benchmark trace for two markers.\nEvery observation specifies r1, r2, and the logged state.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nTreat the examples as a compact but complete calibration slice.\n\nConfirmed ledger rows:\n1. r1=-3, r2=+1 -> zark\n2. r1=-2, r2=-1 -> zark\n3. r1=+1, r2=-2 -> blim\n4. r1=+1, r2=-3 -> blim\n5. r1=-3, r2=-3 -> zark\n\nPending ledger rows:\n6. r1=-1, r2=+1 -> ?\n7. r1=+2, r2=+1 -> ?\n8. r1=+3, r2=-1 -> ?\n9. r1=-2, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0047.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=reviewed :: r1=-2 ; r2=+3 ; state=zark\ncase 02 :: memo=duplicate-check :: r1=-1 ; r2=-3 ; state=zark\ncase 03 :: memo=queue-ok :: r1=+3 ; r2=-1 ; state=blim\ncase 04 :: memo=carry-forward :: r1=+3 ; r2=-2 ; state=blim\ncase 05 :: memo=archived :: r1=-2 ; r2=-2 ; state=zark\n\nPending file entries:\ncase 06 :: memo=queue-ok :: r1=-3 ; r2=+3 ; state=?\ncase 07 :: memo=carry-forward :: r1=+1 ; r2=+3 ; state=?\ncase 08 :: memo=archived :: r1=+2 ; r2=-3 ; state=?\ncase 09 :: memo=reviewed :: r1=-1 ; r2=-1 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -519,7 +519,7 @@
   {
     "episode_id": "0048",
     "group_id": "distractor",
-    "prompt": "Read the benchmark record for two markers.\nEvery observation specifies r1, r2, and the logged state.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nThe final judgment should reflect the full collection of evidence.\n\nConfirmed ledger rows:\n1. r1=+3, r2=+2 -> blim\n2. r1=+2, r2=-3 -> blim\n3. r1=+2, r2=-2 -> blim\n4. r1=-1, r2=-2 -> zark\n5. r1=+3, r2=-1 -> blim\n\nPending ledger rows:\n6. r1=+2, r2=+1 -> ?\n7. r1=-3, r2=-3 -> ?\n8. r1=+1, r2=-1 -> ?\n9. r1=-2, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0048.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=duplicate-check :: r1=+2 ; r2=+1 ; state=blim\ncase 02 :: memo=queue-ok :: r1=+1 ; r2=-2 ; state=blim\ncase 03 :: memo=carry-forward :: r1=+1 ; r2=-1 ; state=blim\ncase 04 :: memo=archived :: r1=-3 ; r2=-1 ; state=zark\ncase 05 :: memo=reviewed :: r1=+2 ; r2=-3 ; state=blim\n\nPending file entries:\ncase 06 :: memo=carry-forward :: r1=+1 ; r2=+3 ; state=?\ncase 07 :: memo=archived :: r1=-2 ; r2=-2 ; state=?\ncase 08 :: memo=reviewed :: r1=+3 ; r2=-3 ; state=?\ncase 09 :: memo=duplicate-check :: r1=-1 ; r2=+1 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_a",
@@ -530,7 +530,7 @@
   {
     "episode_id": "0049",
     "group_id": "distractor",
-    "prompt": "Work through the benchmark evidence for two markers.\nEvery observation specifies r1, r2, and the logged state.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nFocus on the observed transitions, not on surface symmetry alone.\n\nConfirmed ledger rows:\n1. r1=-1, r2=+3 -> zark\n2. r1=+1, r2=-2 -> blim\n3. r1=+3, r2=+3 -> zark\n4. r1=+3, r2=+1 -> zark\n5. r1=+3, r2=+2 -> zark\n\nPending ledger rows:\n6. r1=+3, r2=-2 -> ?\n7. r1=-3, r2=+3 -> ?\n8. r1=+2, r2=+2 -> ?\n9. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0049.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=queue-ok :: r1=-3 ; r2=+2 ; state=zark\ncase 02 :: memo=carry-forward :: r1=+3 ; r2=-1 ; state=blim\ncase 03 :: memo=archived :: r1=+2 ; r2=+2 ; state=zark\ncase 04 :: memo=reviewed :: r1=+2 ; r2=+3 ; state=zark\ncase 05 :: memo=duplicate-check :: r1=+2 ; r2=+1 ; state=zark\n\nPending file entries:\ncase 06 :: memo=archived :: r1=+2 ; r2=-1 ; state=?\ncase 07 :: memo=reviewed :: r1=-2 ; r2=+2 ; state=?\ncase 08 :: memo=duplicate-check :: r1=+1 ; r2=+1 ; state=?\ncase 09 :: memo=queue-ok :: r1=-2 ; r2=-2 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_a",
@@ -541,7 +541,7 @@
   {
     "episode_id": "0050",
     "group_id": "distractor",
-    "prompt": "Examine the benchmark snapshot for two markers.\nEvery observation specifies r1, r2, and the logged state.\nBase the answers on the full record rather than any single early clue.\nKeep the ordering intact while you reason through it.\nWatch for the combinations that are clarified only when the later rows are taken into account.\n\nConfirmed ledger rows:\n1. r1=-2, r2=+3 -> blim\n2. r1=-3, r2=+3 -> blim\n3. r1=+3, r2=+2 -> blim\n4. r1=+3, r2=-2 -> zark\n5. r1=+2, r2=-1 -> zark\n\nPending ledger rows:\n6. r1=+2, r2=+3 -> ?\n7. r1=-1, r2=+2 -> ?\n8. r1=-1, r2=-3 -> ?\n9. r1=+1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0050.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=carry-forward :: r1=-1 ; r2=+2 ; state=blim\ncase 02 :: memo=archived :: r1=-2 ; r2=+2 ; state=blim\ncase 03 :: memo=reviewed :: r1=+2 ; r2=+1 ; state=blim\ncase 04 :: memo=duplicate-check :: r1=+2 ; r2=-1 ; state=zark\ncase 05 :: memo=queue-ok :: r1=+1 ; r2=-3 ; state=zark\n\nPending file entries:\ncase 06 :: memo=reviewed :: r1=+1 ; r2=+2 ; state=?\ncase 07 :: memo=duplicate-check :: r1=-3 ; r2=+1 ; state=?\ncase 08 :: memo=queue-ok :: r1=-3 ; r2=-2 ; state=?\ncase 09 :: memo=carry-forward :: r1=+3 ; r2=-3 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_b",
@@ -552,7 +552,7 @@
   {
     "episode_id": "0051",
     "group_id": "distractor",
-    "prompt": "Study the benchmark notes for two markers.\nEach listed item gives r1, r2, and the recorded state.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nThe safest answer comes from reconciling all listed cases together.\n\nConfirmed ledger rows:\n1. r1=+1, r2=-1 -> blim\n2. r1=+1, r2=+1 -> zark\n3. r1=+3, r2=-2 -> zark\n4. r1=+3, r2=-3 -> zark\n5. r1=-3, r2=-3 -> blim\n\nPending ledger rows:\n6. r1=+3, r2=+3 -> ?\n7. r1=+1, r2=-3 -> ?\n8. r1=-1, r2=+1 -> ?\n9. r1=-1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0051.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=archived :: r1=+3 ; r2=-3 ; state=blim\ncase 02 :: memo=reviewed :: r1=+3 ; r2=+3 ; state=zark\ncase 03 :: memo=duplicate-check :: r1=+2 ; r2=-1 ; state=zark\ncase 04 :: memo=queue-ok :: r1=+2 ; r2=-2 ; state=zark\ncase 05 :: memo=carry-forward :: r1=-2 ; r2=-2 ; state=blim\n\nPending file entries:\ncase 06 :: memo=duplicate-check :: r1=+2 ; r2=+2 ; state=?\ncase 07 :: memo=queue-ok :: r1=+3 ; r2=-2 ; state=?\ncase 08 :: memo=carry-forward :: r1=-3 ; r2=+3 ; state=?\ncase 09 :: memo=archived :: r1=-3 ; r2=-1 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_a",
@@ -563,7 +563,7 @@
   {
     "episode_id": "0052",
     "group_id": "distractor",
-    "prompt": "Inspect the benchmark trace for two markers.\nEach listed item gives r1, r2, and the recorded state.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nSome sign pairings only make sense after the full trace is considered.\n\nConfirmed ledger rows:\n1. r1=+3, r2=-3 -> blim\n2. r1=-3, r2=+3 -> blim\n3. r1=+2, r2=+1 -> blim\n4. r1=+3, r2=-2 -> zark\n5. r1=+1, r2=+3 -> blim\n\nPending ledger rows:\n6. r1=-2, r2=+3 -> ?\n7. r1=+1, r2=+2 -> ?\n8. r1=+1, r2=-3 -> ?\n9. r1=-1, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0052.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=reviewed :: r1=+2 ; r2=-2 ; state=blim\ncase 02 :: memo=duplicate-check :: r1=-2 ; r2=+2 ; state=blim\ncase 03 :: memo=queue-ok :: r1=+1 ; r2=+3 ; state=blim\ncase 04 :: memo=carry-forward :: r1=+2 ; r2=-1 ; state=zark\ncase 05 :: memo=archived :: r1=+3 ; r2=+2 ; state=blim\n\nPending file entries:\ncase 06 :: memo=queue-ok :: r1=-1 ; r2=+2 ; state=?\ncase 07 :: memo=carry-forward :: r1=+3 ; r2=+1 ; state=?\ncase 08 :: memo=archived :: r1=+3 ; r2=-2 ; state=?\ncase 09 :: memo=reviewed :: r1=-3 ; r2=-2 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_b",
@@ -574,7 +574,7 @@
   {
     "episode_id": "0053",
     "group_id": "distractor",
-    "prompt": "Read the benchmark record for two markers.\nEach listed item gives r1, r2, and the recorded state.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nUse the sequence as a whole to avoid overfitting to an early row.\n\nConfirmed ledger rows:\n1. r1=-1, r2=-1 -> zark\n2. r1=-2, r2=-2 -> zark\n3. r1=-1, r2=-2 -> zark\n4. r1=-3, r2=-3 -> blim\n5. r1=+1, r2=-3 -> zark\n\nPending ledger rows:\n6. r1=-1, r2=+3 -> ?\n7. r1=+3, r2=+3 -> ?\n8. r1=+2, r2=-2 -> ?\n9. r1=-3, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0053.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=duplicate-check :: r1=-3 ; r2=-3 ; state=zark\ncase 02 :: memo=queue-ok :: r1=-1 ; r2=-1 ; state=zark\ncase 03 :: memo=carry-forward :: r1=-3 ; r2=-1 ; state=zark\ncase 04 :: memo=archived :: r1=-2 ; r2=-2 ; state=blim\ncase 05 :: memo=reviewed :: r1=+3 ; r2=-2 ; state=zark\n\nPending file entries:\ncase 06 :: memo=carry-forward :: r1=-3 ; r2=+2 ; state=?\ncase 07 :: memo=archived :: r1=+2 ; r2=+2 ; state=?\ncase 08 :: memo=reviewed :: r1=+1 ; r2=-1 ; state=?\ncase 09 :: memo=duplicate-check :: r1=-2 ; r2=-3 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_a",
@@ -585,7 +585,7 @@
   {
     "episode_id": "0054",
     "group_id": "distractor",
-    "prompt": "Work through the benchmark evidence for two markers.\nEach listed item gives r1, r2, and the recorded state.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nLater evidence may settle ambiguities left by the opening cases.\n\nConfirmed ledger rows:\n1. r1=+3, r2=+3 -> zark\n2. r1=+3, r2=-3 -> blim\n3. r1=-2, r2=-1 -> zark\n4. r1=+3, r2=+2 -> blim\n5. r1=+2, r2=-1 -> zark\n\nPending ledger rows:\n6. r1=-3, r2=-2 -> ?\n7. r1=-2, r2=+1 -> ?\n8. r1=+1, r2=+2 -> ?\n9. r1=+1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0054.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=queue-ok :: r1=+2 ; r2=+2 ; state=zark\ncase 02 :: memo=carry-forward :: r1=+2 ; r2=-2 ; state=blim\ncase 03 :: memo=archived :: r1=-1 ; r2=-3 ; state=zark\ncase 04 :: memo=reviewed :: r1=+2 ; r2=+1 ; state=blim\ncase 05 :: memo=duplicate-check :: r1=+1 ; r2=-3 ; state=zark\n\nPending file entries:\ncase 06 :: memo=archived :: r1=-2 ; r2=-1 ; state=?\ncase 07 :: memo=reviewed :: r1=-1 ; r2=+3 ; state=?\ncase 08 :: memo=duplicate-check :: r1=+3 ; r2=+1 ; state=?\ncase 09 :: memo=queue-ok :: r1=+3 ; r2=-1 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -596,7 +596,7 @@
   {
     "episode_id": "0055",
     "group_id": "distractor",
-    "prompt": "Examine the benchmark snapshot for two markers.\nEach listed item gives r1, r2, and the recorded state.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nTreat the examples as a compact but complete calibration slice.\n\nConfirmed ledger rows:\n1. r1=+1, r2=+3 -> zark\n2. r1=-3, r2=+3 -> blim\n3. r1=+3, r2=+1 -> zark\n4. r1=-2, r2=-2 -> blim\n5. r1=-2, r2=+1 -> zark\n\nPending ledger rows:\n6. r1=+1, r2=+1 -> ?\n7. r1=-3, r2=+2 -> ?\n8. r1=-1, r2=-3 -> ?\n9. r1=+1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0055.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=carry-forward :: r1=+3 ; r2=+2 ; state=zark\ncase 02 :: memo=archived :: r1=-2 ; r2=+2 ; state=blim\ncase 03 :: memo=reviewed :: r1=+2 ; r2=+3 ; state=zark\ncase 04 :: memo=duplicate-check :: r1=-1 ; r2=-1 ; state=blim\ncase 05 :: memo=queue-ok :: r1=-1 ; r2=+3 ; state=zark\n\nPending file entries:\ncase 06 :: memo=reviewed :: r1=+3 ; r2=+3 ; state=?\ncase 07 :: memo=duplicate-check :: r1=-2 ; r2=+1 ; state=?\ncase 08 :: memo=queue-ok :: r1=-3 ; r2=-2 ; state=?\ncase 09 :: memo=carry-forward :: r1=+3 ; r2=-1 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_a",
@@ -607,7 +607,7 @@
   {
     "episode_id": "0056",
     "group_id": "distractor",
-    "prompt": "Study the benchmark notes for two markers.\nEvery line lists r1, r2, and the observed state.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nThe final judgment should reflect the full collection of evidence.\n\nConfirmed ledger rows:\n1. r1=-3, r2=-2 -> zark\n2. r1=-3, r2=+3 -> zark\n3. r1=-1, r2=-2 -> blim\n4. r1=-3, r2=-1 -> blim\n5. r1=-2, r2=+1 -> zark\n\nPending ledger rows:\n6. r1=-1, r2=-3 -> ?\n7. r1=+1, r2=+2 -> ?\n8. r1=+1, r2=-3 -> ?\n9. r1=-1, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0056.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=archived :: r1=-2 ; r2=-1 ; state=zark\ncase 02 :: memo=reviewed :: r1=-2 ; r2=+2 ; state=zark\ncase 03 :: memo=duplicate-check :: r1=-3 ; r2=-1 ; state=blim\ncase 04 :: memo=queue-ok :: r1=-2 ; r2=-3 ; state=blim\ncase 05 :: memo=carry-forward :: r1=-1 ; r2=+3 ; state=zark\n\nPending file entries:\ncase 06 :: memo=duplicate-check :: r1=-3 ; r2=-2 ; state=?\ncase 07 :: memo=queue-ok :: r1=+3 ; r2=+1 ; state=?\ncase 08 :: memo=carry-forward :: r1=+3 ; r2=-2 ; state=?\ncase 09 :: memo=archived :: r1=-3 ; r2=+2 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_a",
@@ -618,7 +618,7 @@
   {
     "episode_id": "0057",
     "group_id": "distractor",
-    "prompt": "Inspect the benchmark trace for two markers.\nEvery line lists r1, r2, and the observed state.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nFocus on the observed transitions, not on surface symmetry alone.\n\nConfirmed ledger rows:\n1. r1=+1, r2=+2 -> zark\n2. r1=-2, r2=-2 -> blim\n3. r1=-3, r2=-3 -> blim\n4. r1=+3, r2=-3 -> zark\n5. r1=+3, r2=-1 -> zark\n\nPending ledger rows:\n6. r1=+2, r2=-3 -> ?\n7. r1=-3, r2=-2 -> ?\n8. r1=+2, r2=+3 -> ?\n9. r1=-2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0057.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=reviewed :: r1=+3 ; r2=+1 ; state=zark\ncase 02 :: memo=duplicate-check :: r1=-1 ; r2=-1 ; state=blim\ncase 03 :: memo=queue-ok :: r1=-2 ; r2=-2 ; state=blim\ncase 04 :: memo=carry-forward :: r1=+2 ; r2=-2 ; state=zark\ncase 05 :: memo=archived :: r1=+2 ; r2=-3 ; state=zark\n\nPending file entries:\ncase 06 :: memo=queue-ok :: r1=+1 ; r2=-2 ; state=?\ncase 07 :: memo=carry-forward :: r1=-2 ; r2=-1 ; state=?\ncase 08 :: memo=archived :: r1=+1 ; r2=+2 ; state=?\ncase 09 :: memo=reviewed :: r1=-1 ; r2=+3 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -629,7 +629,7 @@
   {
     "episode_id": "0058",
     "group_id": "distractor",
-    "prompt": "Read the benchmark record for two markers.\nEvery line lists r1, r2, and the observed state.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nWatch for the combinations that are clarified only when the later rows are taken into account.\n\nConfirmed ledger rows:\n1. r1=-1, r2=-3 -> zark\n2. r1=+2, r2=+1 -> blim\n3. r1=+3, r2=+1 -> blim\n4. r1=+1, r2=-3 -> zark\n5. r1=+1, r2=-1 -> zark\n\nPending ledger rows:\n6. r1=+1, r2=+2 -> ?\n7. r1=-1, r2=+3 -> ?\n8. r1=+1, r2=-2 -> ?\n9. r1=-3, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0058.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=duplicate-check :: r1=-3 ; r2=-2 ; state=zark\ncase 02 :: memo=queue-ok :: r1=+1 ; r2=+3 ; state=blim\ncase 03 :: memo=carry-forward :: r1=+2 ; r2=+3 ; state=blim\ncase 04 :: memo=archived :: r1=+3 ; r2=-2 ; state=zark\ncase 05 :: memo=reviewed :: r1=+3 ; r2=-3 ; state=zark\n\nPending file entries:\ncase 06 :: memo=carry-forward :: r1=+3 ; r2=+1 ; state=?\ncase 07 :: memo=archived :: r1=-3 ; r2=+2 ; state=?\ncase 08 :: memo=reviewed :: r1=+3 ; r2=-1 ; state=?\ncase 09 :: memo=duplicate-check :: r1=-2 ; r2=-3 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_b",
@@ -640,7 +640,7 @@
   {
     "episode_id": "0059",
     "group_id": "distractor",
-    "prompt": "Work through the benchmark evidence for two markers.\nEvery line lists r1, r2, and the observed state.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nThe safest answer comes from reconciling all listed cases together.\n\nConfirmed ledger rows:\n1. r1=-3, r2=-3 -> blim\n2. r1=-1, r2=-3 -> blim\n3. r1=-1, r2=-2 -> zark\n4. r1=-1, r2=+1 -> blim\n5. r1=-2, r2=+3 -> blim\n\nPending ledger rows:\n6. r1=+2, r2=-2 -> ?\n7. r1=+3, r2=+3 -> ?\n8. r1=-3, r2=+3 -> ?\n9. r1=-2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0059.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=queue-ok :: r1=-2 ; r2=-2 ; state=blim\ncase 02 :: memo=carry-forward :: r1=-3 ; r2=-2 ; state=blim\ncase 03 :: memo=archived :: r1=-3 ; r2=-1 ; state=zark\ncase 04 :: memo=reviewed :: r1=-3 ; r2=+3 ; state=blim\ncase 05 :: memo=duplicate-check :: r1=-1 ; r2=+2 ; state=blim\n\nPending file entries:\ncase 06 :: memo=archived :: r1=+1 ; r2=-1 ; state=?\ncase 07 :: memo=reviewed :: r1=+2 ; r2=+2 ; state=?\ncase 08 :: memo=duplicate-check :: r1=-2 ; r2=+2 ; state=?\ncase 09 :: memo=queue-ok :: r1=-1 ; r2=-2 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -651,7 +651,7 @@
   {
     "episode_id": "0060",
     "group_id": "distractor",
-    "prompt": "Examine the benchmark snapshot for two markers.\nEvery line lists r1, r2, and the observed state.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nSome sign pairings only make sense after the full trace is considered.\n\nConfirmed ledger rows:\n1. r1=+3, r2=+1 -> blim\n2. r1=+2, r2=+2 -> blim\n3. r1=+1, r2=+3 -> zark\n4. r1=-1, r2=+1 -> blim\n5. r1=-3, r2=+1 -> blim\n\nPending ledger rows:\n6. r1=-2, r2=+3 -> ?\n7. r1=-1, r2=-3 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=+2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0060.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=carry-forward :: r1=+2 ; r2=+3 ; state=blim\ncase 02 :: memo=archived :: r1=+1 ; r2=+1 ; state=blim\ncase 03 :: memo=reviewed :: r1=+3 ; r2=+2 ; state=zark\ncase 04 :: memo=duplicate-check :: r1=-3 ; r2=+3 ; state=blim\ncase 05 :: memo=queue-ok :: r1=-2 ; r2=+3 ; state=blim\n\nPending file entries:\ncase 06 :: memo=reviewed :: r1=-1 ; r2=+2 ; state=?\ncase 07 :: memo=duplicate-check :: r1=-3 ; r2=-2 ; state=?\ncase 08 :: memo=queue-ok :: r1=+1 ; r2=+3 ; state=?\ncase 09 :: memo=carry-forward :: r1=+1 ; r2=-2 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
       "type_b",
@@ -662,7 +662,7 @@
   {
     "episode_id": "0061",
     "group_id": "multi-step",
-    "prompt": "Study the benchmark notes for two markers.\nEach row reports r1, r2, and the state that was recorded.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nUse the sequence as a whole to avoid overfitting to an early row.\n\nWorked examples:\n1. r1=+1, r2=+1 -> blim\n2. r1=-3, r2=-2 -> blim\n3. r1=+3, r2=+3 -> zark\n4. r1=-1, r2=+1 -> blim\n5. r1=+1, r2=+2 -> zark\n\nFollow-up probes:\n6. r1=-3, r2=-3 -> ?\n7. r1=+1, r2=-1 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=-3, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the multi-step inference slice for two markers. Episode 0061.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=+3, r2=+3, mark=blim\nitem 02 => r1=-2, r2=-3, mark=blim\nitem 03 => r1=+1, r2=+1, mark=zark\nitem 04 => r1=-1, r2=+3, mark=blim\nitem 05 => r1=+3, r2=+2, mark=zark\n\nProbe block:\nitem 06 => r1=-2, r2=-2, mark=?\nitem 07 => r1=+3, r2=-1, mark=?\nitem 08 => r1=+2, r2=+3, mark=?\nitem 09 => r1=-2, r2=+2, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
     "probe_targets": [
       "type_b",
       "type_a",
@@ -673,7 +673,7 @@
   {
     "episode_id": "0062",
     "group_id": "multi-step",
-    "prompt": "Inspect the benchmark trace for two markers.\nEach row reports r1, r2, and the state that was recorded.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nLater evidence may settle ambiguities left by the opening cases.\n\nWorked examples:\n1. r1=-1, r2=-2 -> blim\n2. r1=-1, r2=-1 -> blim\n3. r1=+1, r2=-2 -> blim\n4. r1=+1, r2=+1 -> zark\n5. r1=+3, r2=+3 -> zark\n\nFollow-up probes:\n6. r1=-1, r2=+2 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=+3, r2=-3 -> ?\n9. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the multi-step inference slice for two markers. Episode 0062.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-1, r2=-3, mark=blim\nitem 02 => r1=-1, r2=-1, mark=blim\nitem 03 => r1=+3, r2=-3, mark=blim\nitem 04 => r1=+3, r2=+3, mark=zark\nitem 05 => r1=+1, r2=+1, mark=zark\n\nProbe block:\nitem 06 => r1=-1, r2=+2, mark=?\nitem 07 => r1=+2, r2=+2, mark=?\nitem 08 => r1=+1, r2=-2, mark=?\nitem 09 => r1=-2, r2=-2, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
     "probe_targets": [
       "type_a",
       "type_a",
@@ -684,7 +684,7 @@
   {
     "episode_id": "0063",
     "group_id": "multi-step",
-    "prompt": "Read the benchmark record for two markers.\nEach row reports r1, r2, and the state that was recorded.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nTreat the examples as a compact but complete calibration slice.\n\nWorked examples:\n1. r1=+3, r2=-1 -> zark\n2. r1=+3, r2=-2 -> zark\n3. r1=-1, r2=+2 -> blim\n4. r1=+2, r2=+3 -> zark\n5. r1=+2, r2=+1 -> zark\n\nFollow-up probes:\n6. r1=+2, r2=+2 -> ?\n7. r1=-1, r2=-3 -> ?\n8. r1=-1, r2=+3 -> ?\n9. r1=+1, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the multi-step inference slice for two markers. Episode 0063.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=+1, r2=-1, mark=zark\nitem 02 => r1=+1, r2=-3, mark=zark\nitem 03 => r1=-1, r2=+2, mark=blim\nitem 04 => r1=+2, r2=+1, mark=zark\nitem 05 => r1=+2, r2=+3, mark=zark\n\nProbe block:\nitem 06 => r1=+2, r2=+2, mark=?\nitem 07 => r1=-1, r2=-2, mark=?\nitem 08 => r1=-1, r2=+1, mark=?\nitem 09 => r1=+3, r2=-2, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -695,7 +695,7 @@
   {
     "episode_id": "0064",
     "group_id": "multi-step",
-    "prompt": "Work through the benchmark evidence for two markers.\nEach row reports r1, r2, and the state that was recorded.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nThe final judgment should reflect the full collection of evidence.\n\nWorked examples:\n1. r1=-2, r2=+1 -> zark\n2. r1=-2, r2=+3 -> zark\n3. r1=-3, r2=+3 -> zark\n4. r1=-1, r2=-2 -> zark\n5. r1=+3, r2=-2 -> blim\n\nFollow-up probes:\n6. r1=-3, r2=+2 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=-1, r2=-1 -> ?\n9. r1=+3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the multi-step inference slice for two markers. Episode 0064.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-3, r2=+3, mark=zark\nitem 02 => r1=-3, r2=+1, mark=zark\nitem 03 => r1=-2, r2=+1, mark=zark\nitem 04 => r1=-1, r2=-3, mark=zark\nitem 05 => r1=+1, r2=-3, mark=blim\n\nProbe block:\nitem 06 => r1=-2, r2=+2, mark=?\nitem 07 => r1=+2, r2=+2, mark=?\nitem 08 => r1=-1, r2=-1, mark=?\nitem 09 => r1=+1, r2=-2, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -706,7 +706,7 @@
   {
     "episode_id": "0065",
     "group_id": "multi-step",
-    "prompt": "Examine the benchmark snapshot for two markers.\nEach row reports r1, r2, and the state that was recorded.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nFocus on the observed transitions, not on surface symmetry alone.\n\nWorked examples:\n1. r1=-3, r2=+1 -> zark\n2. r1=-2, r2=+2 -> zark\n3. r1=+3, r2=-3 -> zark\n4. r1=-2, r2=+3 -> blim\n5. r1=-1, r2=-3 -> zark\n\nFollow-up probes:\n6. r1=+2, r2=+3 -> ?\n7. r1=+2, r2=-2 -> ?\n8. r1=-1, r2=+2 -> ?\n9. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the multi-step inference slice for two markers. Episode 0065.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-2, r2=+3, mark=zark\nitem 02 => r1=-3, r2=+2, mark=zark\nitem 03 => r1=+1, r2=-2, mark=zark\nitem 04 => r1=-3, r2=+1, mark=blim\nitem 05 => r1=-1, r2=-2, mark=zark\n\nProbe block:\nitem 06 => r1=+2, r2=+1, mark=?\nitem 07 => r1=+2, r2=-3, mark=?\nitem 08 => r1=-1, r2=+2, mark=?\nitem 09 => r1=-2, r2=-2, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
     "probe_targets": [
       "type_b",
       "type_a",
@@ -717,7 +717,7 @@
   {
     "episode_id": "0066",
     "group_id": "multi-step",
-    "prompt": "Study the benchmark notes for two markers.\nEach entry contains r1, r2, and the resulting state label.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nWatch for the combinations that are clarified only when the later rows are taken into account.\n\nWorked examples:\n1. r1=+1, r2=-2 -> zark\n2. r1=-2, r2=+3 -> zark\n3. r1=-3, r2=-1 -> blim\n4. r1=-3, r2=+3 -> blim\n5. r1=+1, r2=+3 -> zark\n\nFollow-up probes:\n6. r1=-2, r2=-3 -> ?\n7. r1=-1, r2=+2 -> ?\n8. r1=+3, r2=+3 -> ?\n9. r1=+2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the multi-step inference slice for two markers. Episode 0066.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=+3, r2=-3, mark=zark\nitem 02 => r1=-3, r2=+1, mark=zark\nitem 03 => r1=-2, r2=-1, mark=blim\nitem 04 => r1=-2, r2=+1, mark=blim\nitem 05 => r1=+3, r2=+1, mark=zark\n\nProbe block:\nitem 06 => r1=-3, r2=-2, mark=?\nitem 07 => r1=-1, r2=+2, mark=?\nitem 08 => r1=+1, r2=+1, mark=?\nitem 09 => r1=+2, r2=-2, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
     "probe_targets": [
       "type_b",
       "type_b",
@@ -728,7 +728,7 @@
   {
     "episode_id": "0067",
     "group_id": "multi-step",
-    "prompt": "Inspect the benchmark trace for two markers.\nEach entry contains r1, r2, and the resulting state label.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nThe safest answer comes from reconciling all listed cases together.\n\nWorked examples:\n1. r1=-2, r2=-2 -> blim\n2. r1=-3, r2=-2 -> zark\n3. r1=-1, r2=-1 -> zark\n4. r1=+2, r2=-3 -> blim\n5. r1=+2, r2=-2 -> blim\n\nFollow-up probes:\n6. r1=-1, r2=+2 -> ?\n7. r1=-3, r2=-1 -> ?\n8. r1=+2, r2=+2 -> ?\n9. r1=+1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the multi-step inference slice for two markers. Episode 0067.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-3, r2=-3, mark=blim\nitem 02 => r1=-2, r2=-3, mark=zark\nitem 03 => r1=-1, r2=-1, mark=zark\nitem 04 => r1=+2, r2=-2, mark=blim\nitem 05 => r1=+2, r2=-3, mark=blim\n\nProbe block:\nitem 06 => r1=-1, r2=+2, mark=?\nitem 07 => r1=-2, r2=-1, mark=?\nitem 08 => r1=+2, r2=+2, mark=?\nitem 09 => r1=+3, r2=-3, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
     "probe_targets": [
       "type_a",
       "type_a",
@@ -739,7 +739,7 @@
   {
     "episode_id": "0068",
     "group_id": "multi-step",
-    "prompt": "Read the benchmark record for two markers.\nEach entry contains r1, r2, and the resulting state label.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nSome sign pairings only make sense after the full trace is considered.\n\nWorked examples:\n1. r1=-3, r2=-3 -> blim\n2. r1=+1, r2=-3 -> blim\n3. r1=+3, r2=-3 -> blim\n4. r1=+1, r2=+2 -> zark\n5. r1=+3, r2=+3 -> zark\n\nFollow-up probes:\n6. r1=+1, r2=-2 -> ?\n7. r1=+2, r2=+1 -> ?\n8. r1=-3, r2=+1 -> ?\n9. r1=-2, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the multi-step inference slice for two markers. Episode 0068.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-2, r2=-2, mark=blim\nitem 02 => r1=+3, r2=-2, mark=blim\nitem 03 => r1=+1, r2=-2, mark=blim\nitem 04 => r1=+3, r2=+2, mark=zark\nitem 05 => r1=+1, r2=+1, mark=zark\n\nProbe block:\nitem 06 => r1=+3, r2=-3, mark=?\nitem 07 => r1=+2, r2=+3, mark=?\nitem 08 => r1=-2, r2=+3, mark=?\nitem 09 => r1=-3, r2=-1, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
     "probe_targets": [
       "type_b",
       "type_a",
@@ -750,7 +750,7 @@
   {
     "episode_id": "0069",
     "group_id": "multi-step",
-    "prompt": "Work through the benchmark evidence for two markers.\nEach entry contains r1, r2, and the resulting state label.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nUse the sequence as a whole to avoid overfitting to an early row.\n\nWorked examples:\n1. r1=-2, r2=-1 -> blim\n2. r1=+3, r2=+2 -> zark\n3. r1=+1, r2=-1 -> blim\n4. r1=+1, r2=-3 -> blim\n5. r1=+2, r2=-2 -> blim\n\nFollow-up probes:\n6. r1=+3, r2=+3 -> ?\n7. r1=-3, r2=+3 -> ?\n8. r1=+1, r2=-2 -> ?\n9. r1=-1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the multi-step inference slice for two markers. Episode 0069.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-3, r2=-1, mark=blim\nitem 02 => r1=+1, r2=+2, mark=zark\nitem 03 => r1=+3, r2=-1, mark=blim\nitem 04 => r1=+3, r2=-2, mark=blim\nitem 05 => r1=+2, r2=-3, mark=blim\n\nProbe block:\nitem 06 => r1=+1, r2=+1, mark=?\nitem 07 => r1=-2, r2=+1, mark=?\nitem 08 => r1=+3, r2=-3, mark=?\nitem 09 => r1=-1, r2=-1, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
     "probe_targets": [
       "type_a",
       "type_a",
@@ -761,7 +761,7 @@
   {
     "episode_id": "0070",
     "group_id": "multi-step",
-    "prompt": "Examine the benchmark snapshot for two markers.\nEach entry contains r1, r2, and the resulting state label.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nLater evidence may settle ambiguities left by the opening cases.\n\nWorked examples:\n1. r1=-1, r2=-2 -> blim\n2. r1=-3, r2=-3 -> blim\n3. r1=+3, r2=-3 -> blim\n4. r1=+2, r2=-3 -> blim\n5. r1=-3, r2=-2 -> zark\n\nFollow-up probes:\n6. r1=-2, r2=+3 -> ?\n7. r1=+1, r2=+2 -> ?\n8. r1=-1, r2=-1 -> ?\n9. r1=+1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the multi-step inference slice for two markers. Episode 0070.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-1, r2=-3, mark=blim\nitem 02 => r1=-2, r2=-2, mark=blim\nitem 03 => r1=+1, r2=-2, mark=blim\nitem 04 => r1=+2, r2=-2, mark=blim\nitem 05 => r1=-2, r2=-3, mark=zark\n\nProbe block:\nitem 06 => r1=-3, r2=+1, mark=?\nitem 07 => r1=+3, r2=+2, mark=?\nitem 08 => r1=-1, r2=-1, mark=?\nitem 09 => r1=+3, r2=-3, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -772,7 +772,7 @@
   {
     "episode_id": "0071",
     "group_id": "multi-step",
-    "prompt": "Study the benchmark notes for two markers.\nEvery observation specifies r1, r2, and the logged state.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nTreat the examples as a compact but complete calibration slice.\n\nWorked examples:\n1. r1=+2, r2=+3 -> blim\n2. r1=+3, r2=+2 -> blim\n3. r1=+3, r2=-2 -> blim\n4. r1=-1, r2=-3 -> zark\n5. r1=-3, r2=-3 -> zark\n\nFollow-up probes:\n6. r1=-1, r2=-2 -> ?\n7. r1=+1, r2=-3 -> ?\n8. r1=+1, r2=+1 -> ?\n9. r1=-3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the multi-step inference slice for two markers. Episode 0071.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=+2, r2=+1, mark=blim\nitem 02 => r1=+1, r2=+2, mark=blim\nitem 03 => r1=+1, r2=-3, mark=blim\nitem 04 => r1=-1, r2=-2, mark=zark\nitem 05 => r1=-2, r2=-2, mark=zark\n\nProbe block:\nitem 06 => r1=-1, r2=-3, mark=?\nitem 07 => r1=+3, r2=-2, mark=?\nitem 08 => r1=+3, r2=+3, mark=?\nitem 09 => r1=-2, r2=+1, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -783,7 +783,7 @@
   {
     "episode_id": "0072",
     "group_id": "multi-step",
-    "prompt": "Inspect the benchmark trace for two markers.\nEvery observation specifies r1, r2, and the logged state.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nThe final judgment should reflect the full collection of evidence.\n\nWorked examples:\n1. r1=+2, r2=-3 -> zark\n2. r1=+3, r2=+2 -> blim\n3. r1=+1, r2=-3 -> blim\n4. r1=+1, r2=+2 -> zark\n5. r1=+3, r2=-2 -> blim\n\nFollow-up probes:\n6. r1=+2, r2=-2 -> ?\n7. r1=-1, r2=-3 -> ?\n8. r1=+2, r2=+2 -> ?\n9. r1=-2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the multi-step inference slice for two markers. Episode 0072.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=+2, r2=-2, mark=zark\nitem 02 => r1=+1, r2=+2, mark=blim\nitem 03 => r1=+3, r2=-2, mark=blim\nitem 04 => r1=+3, r2=+2, mark=zark\nitem 05 => r1=+1, r2=-3, mark=blim\n\nProbe block:\nitem 06 => r1=+2, r2=-3, mark=?\nitem 07 => r1=-1, r2=-2, mark=?\nitem 08 => r1=+2, r2=+2, mark=?\nitem 09 => r1=-3, r2=+1, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
     "probe_targets": [
       "type_b",
       "type_b",
@@ -794,7 +794,7 @@
   {
     "episode_id": "0073",
     "group_id": "multi-step",
-    "prompt": "Read the benchmark record for two markers.\nEvery observation specifies r1, r2, and the logged state.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nFocus on the observed transitions, not on surface symmetry alone.\n\nWorked examples:\n1. r1=+2, r2=-2 -> zark\n2. r1=+2, r2=-1 -> zark\n3. r1=+3, r2=-1 -> zark\n4. r1=-2, r2=-1 -> zark\n5. r1=+2, r2=-3 -> blim\n\nFollow-up probes:\n6. r1=-3, r2=+1 -> ?\n7. r1=+3, r2=+3 -> ?\n8. r1=-1, r2=-2 -> ?\n9. r1=+1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the multi-step inference slice for two markers. Episode 0073.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=+2, r2=-3, mark=zark\nitem 02 => r1=+2, r2=-1, mark=zark\nitem 03 => r1=+1, r2=-1, mark=zark\nitem 04 => r1=-3, r2=-1, mark=zark\nitem 05 => r1=+2, r2=-2, mark=blim\n\nProbe block:\nitem 06 => r1=-2, r2=+3, mark=?\nitem 07 => r1=+1, r2=+1, mark=?\nitem 08 => r1=-1, r2=-3, mark=?\nitem 09 => r1=+3, r2=-3, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -805,7 +805,7 @@
   {
     "episode_id": "0074",
     "group_id": "multi-step",
-    "prompt": "Work through the benchmark evidence for two markers.\nEvery observation specifies r1, r2, and the logged state.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nWatch for the combinations that are clarified only when the later rows are taken into account.\n\nWorked examples:\n1. r1=-3, r2=+1 -> zark\n2. r1=-3, r2=-2 -> blim\n3. r1=-3, r2=-1 -> blim\n4. r1=-2, r2=-1 -> zark\n5. r1=+3, r2=-2 -> blim\n\nFollow-up probes:\n6. r1=-2, r2=-3 -> ?\n7. r1=-1, r2=+1 -> ?\n8. r1=+1, r2=+3 -> ?\n9. r1=+3, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the multi-step inference slice for two markers. Episode 0074.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-2, r2=+3, mark=zark\nitem 02 => r1=-2, r2=-3, mark=blim\nitem 03 => r1=-2, r2=-1, mark=blim\nitem 04 => r1=-3, r2=-1, mark=zark\nitem 05 => r1=+1, r2=-3, mark=blim\n\nProbe block:\nitem 06 => r1=-3, r2=-2, mark=?\nitem 07 => r1=-1, r2=+3, mark=?\nitem 08 => r1=+3, r2=+1, mark=?\nitem 09 => r1=+1, r2=-1, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
     "probe_targets": [
       "type_a",
       "type_a",
@@ -816,7 +816,7 @@
   {
     "episode_id": "0075",
     "group_id": "multi-step",
-    "prompt": "Examine the benchmark snapshot for two markers.\nEvery observation specifies r1, r2, and the logged state.\nResolve the final unknown cases by following the later evidence across the full sequence.\nKeep the ordering intact while you reason through it.\nThe safest answer comes from reconciling all listed cases together.\n\nWorked examples:\n1. r1=-2, r2=+3 -> zark\n2. r1=-3, r2=+1 -> zark\n3. r1=+1, r2=-3 -> zark\n4. r1=-1, r2=-2 -> zark\n5. r1=-2, r2=+2 -> blim\n\nFollow-up probes:\n6. r1=-1, r2=+3 -> ?\n7. r1=+1, r2=+1 -> ?\n8. r1=+3, r2=-2 -> ?\n9. r1=-1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the multi-step inference slice for two markers. Episode 0075.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-3, r2=+1, mark=zark\nitem 02 => r1=-2, r2=+3, mark=zark\nitem 03 => r1=+3, r2=-2, mark=zark\nitem 04 => r1=-1, r2=-3, mark=zark\nitem 05 => r1=-3, r2=+2, mark=blim\n\nProbe block:\nitem 06 => r1=-1, r2=+1, mark=?\nitem 07 => r1=+3, r2=+3, mark=?\nitem 08 => r1=+1, r2=-3, mark=?\nitem 09 => r1=-1, r2=-1, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
     "probe_targets": [
       "type_b",
       "type_b",
@@ -827,7 +827,7 @@
   {
     "episode_id": "0076",
     "group_id": "multi-step",
-    "prompt": "Study the benchmark notes for two markers.\nEach listed item gives r1, r2, and the recorded state.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nSome sign pairings only make sense after the full trace is considered.\n\nWorked examples:\n1. r1=-3, r2=-3 -> blim\n2. r1=+3, r2=+2 -> zark\n3. r1=+3, r2=+1 -> zark\n4. r1=+1, r2=-1 -> blim\n5. r1=+1, r2=+3 -> zark\n\nFollow-up probes:\n6. r1=+2, r2=+3 -> ?\n7. r1=-1, r2=-3 -> ?\n8. r1=-1, r2=+3 -> ?\n9. r1=+3, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the multi-step inference slice for two markers. Episode 0076.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-2, r2=-2, mark=blim\nitem 02 => r1=+1, r2=+2, mark=zark\nitem 03 => r1=+1, r2=+3, mark=zark\nitem 04 => r1=+3, r2=-1, mark=blim\nitem 05 => r1=+3, r2=+1, mark=zark\n\nProbe block:\nitem 06 => r1=+2, r2=+1, mark=?\nitem 07 => r1=-1, r2=-2, mark=?\nitem 08 => r1=-1, r2=+1, mark=?\nitem 09 => r1=+1, r2=-3, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -838,7 +838,7 @@
   {
     "episode_id": "0077",
     "group_id": "multi-step",
-    "prompt": "Inspect the benchmark trace for two markers.\nEach listed item gives r1, r2, and the recorded state.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nUse the sequence as a whole to avoid overfitting to an early row.\n\nWorked examples:\n1. r1=-2, r2=+3 -> zark\n2. r1=+2, r2=-2 -> blim\n3. r1=+1, r2=-2 -> blim\n4. r1=-1, r2=-1 -> zark\n5. r1=+1, r2=-1 -> blim\n\nFollow-up probes:\n6. r1=-1, r2=+2 -> ?\n7. r1=+3, r2=-2 -> ?\n8. r1=-1, r2=-3 -> ?\n9. r1=+2, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the multi-step inference slice for two markers. Episode 0077.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-3, r2=+1, mark=zark\nitem 02 => r1=+2, r2=-3, mark=blim\nitem 03 => r1=+3, r2=-3, mark=blim\nitem 04 => r1=-1, r2=-1, mark=zark\nitem 05 => r1=+3, r2=-1, mark=blim\n\nProbe block:\nitem 06 => r1=-1, r2=+2, mark=?\nitem 07 => r1=+1, r2=-3, mark=?\nitem 08 => r1=-1, r2=-2, mark=?\nitem 09 => r1=+2, r2=+2, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -849,7 +849,7 @@
   {
     "episode_id": "0078",
     "group_id": "multi-step",
-    "prompt": "Read the benchmark record for two markers.\nEach listed item gives r1, r2, and the recorded state.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nLater evidence may settle ambiguities left by the opening cases.\n\nWorked examples:\n1. r1=-2, r2=+2 -> zark\n2. r1=+3, r2=+2 -> zark\n3. r1=+1, r2=-3 -> blim\n4. r1=+2, r2=+3 -> zark\n5. r1=+3, r2=-1 -> blim\n\nFollow-up probes:\n6. r1=+1, r2=-1 -> ?\n7. r1=-1, r2=+2 -> ?\n8. r1=+3, r2=+3 -> ?\n9. r1=-2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the multi-step inference slice for two markers. Episode 0078.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-3, r2=+2, mark=zark\nitem 02 => r1=+1, r2=+2, mark=zark\nitem 03 => r1=+3, r2=-2, mark=blim\nitem 04 => r1=+2, r2=+1, mark=zark\nitem 05 => r1=+1, r2=-1, mark=blim\n\nProbe block:\nitem 06 => r1=+3, r2=-1, mark=?\nitem 07 => r1=-1, r2=+2, mark=?\nitem 08 => r1=+1, r2=+1, mark=?\nitem 09 => r1=-3, r2=-2, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
     "probe_targets": [
       "type_b",
       "type_a",
@@ -860,7 +860,7 @@
   {
     "episode_id": "0079",
     "group_id": "multi-step",
-    "prompt": "Work through the benchmark evidence for two markers.\nEach listed item gives r1, r2, and the recorded state.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nTreat the examples as a compact but complete calibration slice.\n\nWorked examples:\n1. r1=-3, r2=-3 -> blim\n2. r1=-1, r2=-3 -> blim\n3. r1=-1, r2=-2 -> zark\n4. r1=-1, r2=+1 -> blim\n5. r1=-2, r2=+3 -> blim\n\nFollow-up probes:\n6. r1=+2, r2=-2 -> ?\n7. r1=+3, r2=+3 -> ?\n8. r1=-3, r2=+3 -> ?\n9. r1=-2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the multi-step inference slice for two markers. Episode 0079.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-2, r2=-2, mark=blim\nitem 02 => r1=-1, r2=-2, mark=blim\nitem 03 => r1=-1, r2=-3, mark=zark\nitem 04 => r1=-1, r2=+3, mark=blim\nitem 05 => r1=-3, r2=+1, mark=blim\n\nProbe block:\nitem 06 => r1=+2, r2=-3, mark=?\nitem 07 => r1=+1, r2=+1, mark=?\nitem 08 => r1=-2, r2=+1, mark=?\nitem 09 => r1=-3, r2=-2, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -871,7 +871,7 @@
   {
     "episode_id": "0080",
     "group_id": "multi-step",
-    "prompt": "Examine the benchmark snapshot for two markers.\nEach listed item gives r1, r2, and the recorded state.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nThe final judgment should reflect the full collection of evidence.\n\nWorked examples:\n1. r1=+3, r2=+1 -> blim\n2. r1=+2, r2=+2 -> blim\n3. r1=+1, r2=+3 -> zark\n4. r1=-1, r2=+1 -> blim\n5. r1=-3, r2=+1 -> blim\n\nFollow-up probes:\n6. r1=-2, r2=+3 -> ?\n7. r1=-1, r2=-3 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=+2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Solve the multi-step inference slice for two markers. Episode 0080.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=+1, r2=+3, mark=blim\nitem 02 => r1=+2, r2=+2, mark=blim\nitem 03 => r1=+3, r2=+1, mark=zark\nitem 04 => r1=-1, r2=+3, mark=blim\nitem 05 => r1=-2, r2=+3, mark=blim\n\nProbe block:\nitem 06 => r1=-3, r2=+1, mark=?\nitem 07 => r1=-1, r2=-2, mark=?\nitem 08 => r1=+2, r2=+3, mark=?\nitem 09 => r1=+2, r2=-2, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
     "probe_targets": [
       "type_b",
       "type_b",
@@ -882,18 +882,29 @@
   {
     "episode_id": "0081",
     "group_id": "hard",
-    "prompt": "Study the benchmark notes for two markers.\nEvery line lists r1, r2, and the observed state.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nFocus on the observed transitions, not on surface symmetry alone.\n\nCalibration cases:\n1. r1=-1, r2=+3 -> blim\n2. r1=+2, r2=+3 -> blim\n3. r1=+2, r2=-1 -> zark\n4. r1=+3, r2=+1 -> blim\n5. r1=+1, r2=-1 -> zark\n\nDecision probes:\n6. r1=-2, r2=-3 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=+1, r2=-2 -> ?\n9. r1=-3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0081.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+2, r2=-3 -> zark\n2. r1=+1, r2=-3 -> zark\n3. r1=+3, r2=+2 -> blim\n4. r1=-3, r2=+3 -> blim\n5. r1=+1, r2=+3 -> blim\n\nDecision set:\n6. r1=-1, r2=+3 -> ?\n7. r1=+2, r2=-2 -> ?\n8. r1=+1, r2=+1 -> ?\n9. r1=-2, r2=-1 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
-      "type_a",
+      "type_b",
       "type_b",
       "type_a",
-      "type_b"
+      "type_a"
     ]
   },
   {
     "episode_id": "0082",
     "group_id": "hard",
-    "prompt": "Inspect the benchmark trace for two markers.\nEvery line lists r1, r2, and the observed state.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nWatch for the combinations that are clarified only when the later rows are taken into account.\n\nCalibration cases:\n1. r1=+2, r2=-3 -> blim\n2. r1=+2, r2=+1 -> blim\n3. r1=-3, r2=+2 -> zark\n4. r1=+3, r2=+1 -> blim\n5. r1=+1, r2=+2 -> blim\n\nDecision probes:\n6. r1=-1, r2=+1 -> ?\n7. r1=+1, r2=-2 -> ?\n8. r1=+2, r2=+2 -> ?\n9. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0082.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+2, r2=+1 -> blim\n2. r1=-1, r2=+1 -> zark\n3. r1=+3, r2=+2 -> blim\n4. r1=+1, r2=-1 -> blim\n5. r1=+1, r2=+2 -> blim\n\nDecision set:\n6. r1=-1, r2=-1 -> ?\n7. r1=+1, r2=+1 -> ?\n8. r1=+2, r2=-2 -> ?\n9. r1=-3, r2=+2 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "probe_targets": [
+      "type_b",
+      "type_a",
+      "type_a",
+      "type_b"
+    ]
+  },
+  {
+    "episode_id": "0083",
+    "group_id": "hard",
+    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0083.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=-2, r2=-3 -> blim\n2. r1=+2, r2=-2 -> zark\n3. r1=-1, r2=-1 -> blim\n4. r1=-3, r2=+3 -> blim\n5. r1=-3, r2=-2 -> zark\n\nDecision set:\n6. r1=-3, r2=-1 -> ?\n7. r1=+1, r2=-2 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=-3, r2=+2 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -902,152 +913,130 @@
     ]
   },
   {
-    "episode_id": "0083",
-    "group_id": "hard",
-    "prompt": "Read the benchmark record for two markers.\nEvery line lists r1, r2, and the observed state.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nThe safest answer comes from reconciling all listed cases together.\n\nCalibration cases:\n1. r1=-1, r2=+3 -> blim\n2. r1=-1, r2=-2 -> zark\n3. r1=+1, r2=-2 -> zark\n4. r1=-3, r2=-3 -> blim\n5. r1=-2, r2=-1 -> blim\n\nDecision probes:\n6. r1=-1, r2=+1 -> ?\n7. r1=+1, r2=+2 -> ?\n8. r1=+2, r2=-2 -> ?\n9. r1=-1, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_a",
-      "type_b"
-    ]
-  },
-  {
     "episode_id": "0084",
     "group_id": "hard",
-    "prompt": "Work through the benchmark evidence for two markers.\nEvery line lists r1, r2, and the observed state.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nSome sign pairings only make sense after the full trace is considered.\n\nCalibration cases:\n1. r1=-2, r2=-2 -> zark\n2. r1=-1, r2=-1 -> zark\n3. r1=+3, r2=+3 -> blim\n4. r1=-3, r2=+3 -> zark\n5. r1=+2, r2=+1 -> blim\n\nDecision probes:\n6. r1=-1, r2=-3 -> ?\n7. r1=+1, r2=+2 -> ?\n8. r1=-2, r2=+2 -> ?\n9. r1=+1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0084.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+1, r2=+2 -> blim\n2. r1=+3, r2=+3 -> blim\n3. r1=-1, r2=+3 -> zark\n4. r1=-2, r2=-2 -> zark\n5. r1=-3, r2=-3 -> zark\n\nDecision set:\n6. r1=+2, r2=-3 -> ?\n7. r1=-2, r2=+1 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=-3, r2=-1 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
-      "type_a",
+      "type_b",
       "type_b",
       "type_a",
-      "type_b"
+      "type_a"
     ]
   },
   {
     "episode_id": "0085",
     "group_id": "hard",
-    "prompt": "Examine the benchmark snapshot for two markers.\nEvery line lists r1, r2, and the observed state.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nUse the sequence as a whole to avoid overfitting to an early row.\n\nCalibration cases:\n1. r1=-2, r2=+3 -> blim\n2. r1=+1, r2=+1 -> zark\n3. r1=+2, r2=-1 -> zark\n4. r1=+3, r2=+3 -> blim\n5. r1=+3, r2=-1 -> zark\n\nDecision probes:\n6. r1=-1, r2=+1 -> ?\n7. r1=+3, r2=+1 -> ?\n8. r1=+1, r2=-3 -> ?\n9. r1=-1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0085.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+3, r2=-3 -> zark\n2. r1=+1, r2=-3 -> zark\n3. r1=+3, r2=+3 -> blim\n4. r1=-2, r2=+3 -> blim\n5. r1=+2, r2=+2 -> zark\n\nDecision set:\n6. r1=-3, r2=-3 -> ?\n7. r1=+2, r2=-1 -> ?\n8. r1=+3, r2=+2 -> ?\n9. r1=-3, r2=+2 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
-      "type_b",
       "type_a",
+      "type_b",
       "type_a"
     ]
   },
   {
     "episode_id": "0086",
     "group_id": "hard",
-    "prompt": "Study the benchmark notes for two markers.\nEach row reports r1, r2, and the state that was recorded.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nLater evidence may settle ambiguities left by the opening cases.\n\nCalibration cases:\n1. r1=-3, r2=+1 -> blim\n2. r1=-1, r2=+3 -> blim\n3. r1=+1, r2=+3 -> zark\n4. r1=-3, r2=+2 -> zark\n5. r1=+3, r2=+1 -> blim\n\nDecision probes:\n6. r1=-1, r2=-1 -> ?\n7. r1=+1, r2=-1 -> ?\n8. r1=-2, r2=+1 -> ?\n9. r1=+1, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0086.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+3, r2=+2 -> blim\n2. r1=+2, r2=+3 -> zark\n3. r1=-1, r2=+1 -> zark\n4. r1=-1, r2=+2 -> blim\n5. r1=-3, r2=+3 -> blim\n\nDecision set:\n6. r1=+2, r2=+1 -> ?\n7. r1=-2, r2=+2 -> ?\n8. r1=+2, r2=-3 -> ?\n9. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
-      "type_a",
+      "type_b",
       "type_b",
       "type_a",
-      "type_b"
+      "type_a"
     ]
   },
   {
     "episode_id": "0087",
     "group_id": "hard",
-    "prompt": "Inspect the benchmark trace for two markers.\nEach row reports r1, r2, and the state that was recorded.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nTreat the examples as a compact but complete calibration slice.\n\nCalibration cases:\n1. r1=-3, r2=-2 -> zark\n2. r1=-2, r2=-1 -> zark\n3. r1=-1, r2=-2 -> zark\n4. r1=-2, r2=-2 -> blim\n5. r1=+2, r2=-3 -> zark\n\nDecision probes:\n6. r1=+2, r2=-2 -> ?\n7. r1=-3, r2=-1 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=-2, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0087.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+1, r2=-1 -> zark\n2. r1=-3, r2=-2 -> zark\n3. r1=-2, r2=-2 -> blim\n4. r1=-1, r2=-2 -> zark\n5. r1=-2, r2=-3 -> zark\n\nDecision set:\n6. r1=-2, r2=+1 -> ?\n7. r1=+1, r2=+2 -> ?\n8. r1=-1, r2=-3 -> ?\n9. r1=+1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
-      "type_a",
+      "type_b",
       "type_b",
       "type_a",
-      "type_b"
+      "type_a"
     ]
   },
   {
     "episode_id": "0088",
     "group_id": "hard",
-    "prompt": "Read the benchmark record for two markers.\nEach row reports r1, r2, and the state that was recorded.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nThe final judgment should reflect the full collection of evidence.\n\nCalibration cases:\n1. r1=-3, r2=-1 -> zark\n2. r1=-3, r2=+3 -> blim\n3. r1=-2, r2=+1 -> blim\n4. r1=+1, r2=+3 -> blim\n5. r1=+3, r2=-1 -> zark\n\nDecision probes:\n6. r1=-2, r2=-3 -> ?\n7. r1=-3, r2=+1 -> ?\n8. r1=+2, r2=-2 -> ?\n9. r1=+3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0088.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+3, r2=-3 -> zark\n2. r1=-2, r2=+2 -> blim\n3. r1=+2, r2=+3 -> blim\n4. r1=-1, r2=-3 -> zark\n5. r1=-1, r2=+3 -> blim\n\nDecision set:\n6. r1=+3, r2=+3 -> ?\n7. r1=+1, r2=-2 -> ?\n8. r1=-1, r2=+2 -> ?\n9. r1=-2, r2=-1 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
-      "type_a",
+      "type_b",
       "type_b",
       "type_a",
-      "type_b"
+      "type_a"
     ]
   },
   {
     "episode_id": "0089",
     "group_id": "hard",
-    "prompt": "Work through the benchmark evidence for two markers.\nEach row reports r1, r2, and the state that was recorded.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nFocus on the observed transitions, not on surface symmetry alone.\n\nCalibration cases:\n1. r1=+3, r2=+2 -> zark\n2. r1=+1, r2=-2 -> zark\n3. r1=-1, r2=-2 -> blim\n4. r1=+2, r2=-3 -> zark\n5. r1=-1, r2=-3 -> blim\n\nDecision probes:\n6. r1=+3, r2=-2 -> ?\n7. r1=+2, r2=+1 -> ?\n8. r1=-3, r2=+1 -> ?\n9. r1=-2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0089.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=-3, r2=-1 -> blim\n2. r1=-3, r2=-2 -> blim\n3. r1=+1, r2=-1 -> zark\n4. r1=+3, r2=+1 -> zark\n5. r1=+2, r2=-2 -> zark\n\nDecision set:\n6. r1=-2, r2=-1 -> ?\n7. r1=-1, r2=+2 -> ?\n8. r1=+1, r2=+2 -> ?\n9. r1=+3, r2=-2 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
-      "type_a",
       "type_b",
+      "type_a",
       "type_b"
     ]
   },
   {
     "episode_id": "0090",
     "group_id": "hard",
-    "prompt": "Examine the benchmark snapshot for two markers.\nEach row reports r1, r2, and the state that was recorded.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nWatch for the combinations that are clarified only when the later rows are taken into account.\n\nCalibration cases:\n1. r1=+1, r2=+2 -> zark\n2. r1=-3, r2=-3 -> blim\n3. r1=-1, r2=+2 -> zark\n4. r1=-3, r2=+1 -> zark\n5. r1=-1, r2=+3 -> zark\n\nDecision probes:\n6. r1=+3, r2=-3 -> ?\n7. r1=-2, r2=+1 -> ?\n8. r1=-2, r2=-2 -> ?\n9. r1=+3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0090.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=-3, r2=+3 -> zark\n2. r1=-3, r2=+1 -> zark\n3. r1=-1, r2=+2 -> zark\n4. r1=+2, r2=+1 -> zark\n5. r1=-1, r2=-1 -> blim\n\nDecision set:\n6. r1=+3, r2=+3 -> ?\n7. r1=-2, r2=-2 -> ?\n8. r1=-2, r2=+2 -> ?\n9. r1=+3, r2=-1 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
-      "type_b",
+      "type_a",
       "type_a",
       "type_b",
-      "type_a"
+      "type_b"
     ]
   },
   {
     "episode_id": "0091",
     "group_id": "hard",
-    "prompt": "Study the benchmark notes for two markers.\nEach entry contains r1, r2, and the resulting state label.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nThe safest answer comes from reconciling all listed cases together.\n\nCalibration cases:\n1. r1=-2, r2=-3 -> zark\n2. r1=-3, r2=+2 -> zark\n3. r1=-1, r2=+3 -> zark\n4. r1=+2, r2=+2 -> blim\n5. r1=-3, r2=+1 -> zark\n\nDecision probes:\n6. r1=-3, r2=+3 -> ?\n7. r1=+2, r2=-2 -> ?\n8. r1=+1, r2=+2 -> ?\n9. r1=-1, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0091.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=-1, r2=+2 -> zark\n2. r1=-3, r2=+3 -> zark\n3. r1=+1, r2=+1 -> blim\n4. r1=-2, r2=-1 -> zark\n5. r1=-1, r2=+1 -> zark\n\nDecision set:\n6. r1=-3, r2=-1 -> ?\n7. r1=+2, r2=+1 -> ?\n8. r1=+1, r2=-2 -> ?\n9. r1=-1, r2=+3 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
+      "type_b",
       "type_a",
-      "type_b",
-      "type_b",
-      "type_a"
+      "type_a",
+      "type_b"
     ]
   },
   {
     "episode_id": "0092",
     "group_id": "hard",
-    "prompt": "Inspect the benchmark trace for two markers.\nEach entry contains r1, r2, and the resulting state label.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nSome sign pairings only make sense after the full trace is considered.\n\nCalibration cases:\n1. r1=-2, r2=+3 -> blim\n2. r1=-3, r2=+3 -> blim\n3. r1=+3, r2=+2 -> blim\n4. r1=+3, r2=-2 -> zark\n5. r1=+2, r2=-1 -> zark\n\nDecision probes:\n6. r1=+2, r2=+3 -> ?\n7. r1=-1, r2=+2 -> ?\n8. r1=-1, r2=-3 -> ?\n9. r1=+1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0092.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+1, r2=-3 -> zark\n2. r1=+3, r2=+1 -> blim\n3. r1=+3, r2=-2 -> zark\n4. r1=-2, r2=+3 -> blim\n5. r1=-1, r2=+3 -> blim\n\nDecision set:\n6. r1=+2, r2=-3 -> ?\n7. r1=-3, r2=-1 -> ?\n8. r1=-3, r2=+1 -> ?\n9. r1=+1, r2=+3 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
-      "type_b",
       "type_a",
+      "type_b",
       "type_a"
     ]
   },
   {
     "episode_id": "0093",
     "group_id": "hard",
-    "prompt": "Read the benchmark record for two markers.\nEach entry contains r1, r2, and the resulting state label.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nUse the sequence as a whole to avoid overfitting to an early row.\n\nCalibration cases:\n1. r1=+1, r2=-1 -> blim\n2. r1=+1, r2=+1 -> zark\n3. r1=+3, r2=-2 -> zark\n4. r1=+3, r2=-3 -> zark\n5. r1=-3, r2=-3 -> blim\n\nDecision probes:\n6. r1=+3, r2=+3 -> ?\n7. r1=+1, r2=-3 -> ?\n8. r1=-1, r2=+1 -> ?\n9. r1=-1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0093.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=-1, r2=-1 -> blim\n2. r1=+3, r2=-2 -> zark\n3. r1=+3, r2=-1 -> zark\n4. r1=+2, r2=-3 -> blim\n5. r1=+2, r2=+2 -> zark\n\nDecision set:\n6. r1=-3, r2=-2 -> ?\n7. r1=-3, r2=+2 -> ?\n8. r1=+2, r2=-1 -> ?\n9. r1=+3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
-      "type_a",
       "type_b",
+      "type_a",
       "type_b"
     ]
   },
   {
     "episode_id": "0094",
     "group_id": "hard",
-    "prompt": "Work through the benchmark evidence for two markers.\nEach entry contains r1, r2, and the resulting state label.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nLater evidence may settle ambiguities left by the opening cases.\n\nCalibration cases:\n1. r1=+3, r2=-3 -> blim\n2. r1=-3, r2=+3 -> blim\n3. r1=+2, r2=+1 -> blim\n4. r1=+3, r2=-2 -> zark\n5. r1=+1, r2=+3 -> blim\n\nDecision probes:\n6. r1=-2, r2=+3 -> ?\n7. r1=+1, r2=+2 -> ?\n8. r1=+1, r2=-3 -> ?\n9. r1=-1, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0094.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+2, r2=+3 -> blim\n2. r1=+1, r2=+2 -> blim\n3. r1=+3, r2=-2 -> zark\n4. r1=+3, r2=-1 -> blim\n5. r1=-1, r2=+3 -> blim\n\nDecision set:\n6. r1=-3, r2=-1 -> ?\n7. r1=+2, r2=-1 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=-2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
-      "type_b",
       "type_a",
+      "type_b",
       "type_a"
     ]
   },
   {
     "episode_id": "0095",
     "group_id": "hard",
-    "prompt": "Examine the benchmark snapshot for two markers.\nEach entry contains r1, r2, and the resulting state label.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nTreat the examples as a compact but complete calibration slice.\n\nCalibration cases:\n1. r1=-1, r2=-1 -> zark\n2. r1=-2, r2=-2 -> zark\n3. r1=-1, r2=-2 -> zark\n4. r1=-3, r2=-3 -> blim\n5. r1=+1, r2=-3 -> zark\n\nDecision probes:\n6. r1=-1, r2=+3 -> ?\n7. r1=+3, r2=+3 -> ?\n8. r1=+2, r2=-2 -> ?\n9. r1=-3, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_a",
-      "type_b"
-    ]
-  },
-  {
-    "episode_id": "0096",
-    "group_id": "hard",
-    "prompt": "Study the benchmark notes for two markers.\nEvery observation specifies r1, r2, and the logged state.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nThe final judgment should reflect the full collection of evidence.\n\nCalibration cases:\n1. r1=+3, r2=+3 -> zark\n2. r1=+3, r2=-3 -> blim\n3. r1=-2, r2=-1 -> zark\n4. r1=+3, r2=+2 -> blim\n5. r1=+2, r2=-1 -> zark\n\nDecision probes:\n6. r1=-3, r2=-2 -> ?\n7. r1=-2, r2=+1 -> ?\n8. r1=+1, r2=+2 -> ?\n9. r1=+1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0095.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+2, r2=-1 -> zark\n2. r1=-3, r2=-2 -> zark\n3. r1=-1, r2=-1 -> blim\n4. r1=-3, r2=-3 -> zark\n5. r1=-2, r2=-2 -> zark\n\nDecision set:\n6. r1=-1, r2=-3 -> ?\n7. r1=+1, r2=-2 -> ?\n8. r1=+3, r2=+3 -> ?\n9. r1=-3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
       "type_b",
@@ -1056,46 +1045,57 @@
     ]
   },
   {
+    "episode_id": "0096",
+    "group_id": "hard",
+    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0096.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+1, r2=-3 -> zark\n2. r1=-2, r2=-3 -> zark\n3. r1=+3, r2=+1 -> blim\n4. r1=+3, r2=+3 -> zark\n5. r1=+3, r2=-1 -> blim\n\nDecision set:\n6. r1=+2, r2=-2 -> ?\n7. r1=+2, r2=+1 -> ?\n8. r1=-2, r2=+2 -> ?\n9. r1=-1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "probe_targets": [
+      "type_b",
+      "type_a",
+      "type_a",
+      "type_b"
+    ]
+  },
+  {
     "episode_id": "0097",
     "group_id": "hard",
-    "prompt": "Inspect the benchmark trace for two markers.\nEvery observation specifies r1, r2, and the logged state.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nFocus on the observed transitions, not on surface symmetry alone.\n\nCalibration cases:\n1. r1=+1, r2=+3 -> zark\n2. r1=-3, r2=+3 -> blim\n3. r1=+3, r2=+1 -> zark\n4. r1=-2, r2=-2 -> blim\n5. r1=-2, r2=+1 -> zark\n\nDecision probes:\n6. r1=+1, r2=+1 -> ?\n7. r1=-3, r2=+2 -> ?\n8. r1=-1, r2=-3 -> ?\n9. r1=+1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0097.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=-2, r2=+2 -> zark\n2. r1=+3, r2=+2 -> zark\n3. r1=-2, r2=-2 -> blim\n4. r1=+2, r2=+3 -> zark\n5. r1=-1, r2=+3 -> blim\n\nDecision set:\n6. r1=+2, r2=-2 -> ?\n7. r1=-3, r2=-1 -> ?\n8. r1=-1, r2=+1 -> ?\n9. r1=+2, r2=+2 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_a",
-      "type_a",
       "type_b",
+      "type_a",
       "type_b"
     ]
   },
   {
     "episode_id": "0098",
     "group_id": "hard",
-    "prompt": "Read the benchmark record for two markers.\nEvery observation specifies r1, r2, and the logged state.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nWatch for the combinations that are clarified only when the later rows are taken into account.\n\nCalibration cases:\n1. r1=-3, r2=-2 -> zark\n2. r1=-3, r2=+3 -> zark\n3. r1=-1, r2=-2 -> blim\n4. r1=-3, r2=-1 -> blim\n5. r1=-2, r2=+1 -> zark\n\nDecision probes:\n6. r1=-1, r2=-3 -> ?\n7. r1=+1, r2=+2 -> ?\n8. r1=+1, r2=-3 -> ?\n9. r1=-1, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0098.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=-2, r2=+2 -> zark\n2. r1=-3, r2=-2 -> blim\n3. r1=-1, r2=-3 -> blim\n4. r1=-1, r2=-2 -> zark\n5. r1=-1, r2=+3 -> zark\n\nDecision set:\n6. r1=-3, r2=+3 -> ?\n7. r1=+2, r2=-1 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=-3, r2=-1 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
-      "type_b",
+      "type_a",
       "type_a",
       "type_b",
-      "type_a"
+      "type_b"
     ]
   },
   {
     "episode_id": "0099",
     "group_id": "hard",
-    "prompt": "Work through the benchmark evidence for two markers.\nEvery observation specifies r1, r2, and the logged state.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nThe safest answer comes from reconciling all listed cases together.\n\nCalibration cases:\n1. r1=+1, r2=+2 -> zark\n2. r1=-2, r2=-2 -> blim\n3. r1=-3, r2=-3 -> blim\n4. r1=+3, r2=-3 -> zark\n5. r1=+3, r2=-1 -> zark\n\nDecision probes:\n6. r1=+2, r2=-3 -> ?\n7. r1=-3, r2=-2 -> ?\n8. r1=+2, r2=+3 -> ?\n9. r1=-2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0099.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+3, r2=-3 -> zark\n2. r1=-1, r2=-1 -> blim\n3. r1=+3, r2=-1 -> zark\n4. r1=+2, r2=+1 -> zark\n5. r1=-2, r2=-2 -> blim\n\nDecision set:\n6. r1=-2, r2=+2 -> ?\n7. r1=+1, r2=+3 -> ?\n8. r1=-1, r2=-2 -> ?\n9. r1=+1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
-      "type_a",
+      "type_b",
       "type_b",
       "type_a",
-      "type_b"
+      "type_a"
     ]
   },
   {
     "episode_id": "0100",
     "group_id": "hard",
-    "prompt": "Examine the benchmark snapshot for two markers.\nEvery observation specifies r1, r2, and the logged state.\nInfer the pending cases from the complete sequence, including any later revisions.\nKeep the ordering intact while you reason through it.\nSome sign pairings only make sense after the full trace is considered.\n\nCalibration cases:\n1. r1=-1, r2=-3 -> zark\n2. r1=+2, r2=+1 -> blim\n3. r1=+3, r2=+1 -> blim\n4. r1=+1, r2=-3 -> zark\n5. r1=+1, r2=-1 -> zark\n\nDecision probes:\n6. r1=+1, r2=+2 -> ?\n7. r1=-1, r2=+3 -> ?\n8. r1=+1, r2=-2 -> ?\n9. r1=-3, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
+    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0100.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+2, r2=-3 -> zark\n2. r1=+3, r2=+2 -> blim\n3. r1=+2, r2=-1 -> zark\n4. r1=-3, r2=-1 -> zark\n5. r1=+1, r2=+2 -> blim\n\nDecision set:\n6. r1=-1, r2=-3 -> ?\n7. r1=+2, r2=-2 -> ?\n8. r1=-3, r2=+3 -> ?\n9. r1=+2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
     "probe_targets": [
       "type_b",
-      "type_b",
       "type_a",
+      "type_b",
       "type_a"
     ]
   }
