@@ -1,42 +1,118 @@
 # RuleShift Benchmark
 
-This repository contains the Kaggle notebook and dataset assets for the RuleShift benchmark.
+Minimal Kaggle benchmark project for the **RuleShift** task.
 
-## Main References
+This repository contains only the assets required to publish and run the benchmark on Kaggle:
 
-If you are working on publishing or maintaining the Kaggle assets, these are the most useful official references.
+* the packaged dataset
+* the benchmark notebook
+* small deploy scripts
 
-### Kaggle API and Publishing Docs
+## Repository Layout
 
-- **Kaggle API / CLI repo**: overview of the CLI, installation, authentication, and commands such as `datasets` and `kernels`. ([GitHub][1])
-- **Dataset Metadata**: reference for `dataset-metadata.json`, used by `kaggle datasets create` and `kaggle datasets version`. ([GitHub][2])
-- **Kernel Metadata**: reference for `kernel-metadata.json`, used by `kaggle kernels push`, including `dataset_sources`. ([GitHub][3])
-- **kaggle-api docs index**: entry point for the documentation files in the official repository. ([GitHub][4])
+```text
+kaggle/
+  dataset/
+    dataset-metadata.json
+    public_leaderboard_rows.json
+  notebook/
+    kernel-metadata.json
+    ruleshift_notebook_task.ipynb
+scripts/
+  deploy_dataset.sh
+  deploy_notebook.sh
+Makefile
+```
 
-### Kaggle Benchmarks References
+## What the Notebook Does
 
-- **Community Benchmarks announcement**: official overview of the product and benchmark workflow on Kaggle. ([blog.google][5])
-- **`kaggle-benchmarks` on PyPI**: overview of the SDK and its expected behavior inside Kaggle notebooks. ([PyPI][6])
+The notebook implements the full benchmark flow in a clear, sequential format:
 
-## Recommended Reading Order
+1. locate the packaged dataset
+2. define the benchmark types and constants
+3. normalize model responses
+4. score each benchmark episode
+5. load the frozen benchmark rows
+6. register the official Kaggle task
+7. run a smoke check inside the notebook
+8. mark the official entry point with `%choose`
 
-If you are new to this workflow, read in this order:
+Official task name:
 
-1. **Kaggle API / CLI repo**
-2. **Dataset Metadata**
-3. **Kernel Metadata**
-4. **Community Benchmarks announcement**
-5. **`kaggle-benchmarks` on PyPI**
+```text
+ruleshift_benchmark_v1_binary
+```
+
+## Requirements
+
+* Python environment with the Kaggle CLI installed
+* Kaggle API token available through `.env`
+* access to the Kaggle account that owns these assets
+
+## Local Usage
+
+Open the notebook locally:
+
+```bash
+make notelab
+```
+
+This launches Jupyter Lab with:
+
+```text
+kaggle/notebook/ruleshift_notebook_task.ipynb
+```
+
+## Deployment
+
+### 1. Publish the dataset
+
+```bash
+make deploy-dataset
+```
+
+Or with a custom version message:
+
+```bash
+./scripts/deploy_dataset.sh "Update RuleShift dataset"
+```
+
+### 2. Publish the notebook
+
+```bash
+make deploy-notebook
+```
+
+## Environment
+
+The deploy scripts expect:
+
+* a `.env` file at the repository root
+* `KAGGLE_API_TOKEN` defined in that file
+* the Kaggle CLI available at `.venv/bin/kaggle`
+
+Example:
+
+```bash
+KAGGLE_API_TOKEN=your_token_here
+```
+
+## Kaggle Asset IDs
+
+Dataset:
+
+```text
+raptorengineer/ruleshift-runtime
+```
+
+Notebook:
+
+```text
+raptorengineer/ruleshift-notebook
+```
 
 ## Notes
 
-- The old dataset/kernel wiki pages indicate that some content was moved into the `docs/` files in the official repository. ([GitHub][7])
-- If you only need one entry point for the Kaggle API docs, start with the **kaggle-api docs index**.
-
-[1]: https://github.com/Kaggle/kaggle-api?utm_source=chatgpt.com "GitHub - Kaggle/kaggle-cli: Official Kaggle CLI"
-[2]: https://github.com/Kaggle/kaggle-api/wiki/Dataset-Metadata?utm_source=chatgpt.com "Dataset Metadata · Kaggle/kaggle-api Wiki · GitHub"
-[3]: https://github.com/Kaggle/kaggle-api/wiki/Kernel-Metadata?utm_source=chatgpt.com "Kernel Metadata · Kaggle/kaggle-api Wiki · GitHub"
-[4]: https://github.com/Kaggle/kaggle-api/blob/main/docs/README.md?utm_source=chatgpt.com "kaggle-api/docs/README.md at main · Kaggle/kaggle-api · GitHub"
-[5]: https://blog.google/innovation-and-ai/technology/developers-tools/kaggle-community-benchmarks/?utm_source=chatgpt.com "Community Benchmarks: Evaluating modern AI on Kaggle"
-[6]: https://pypi.org/project/kaggle-benchmarks/?utm_source=chatgpt.com "kaggle_benchmarks · PyPI"
-[7]: https://github.com/Kaggle/kaggle-api/wiki/Dataset-Metadata "Dataset Metadata · Kaggle/kaggle-cli Wiki · GitHub"
+* The notebook is the source of truth for the benchmark runtime logic.
+* The dataset contains the frozen public benchmark rows used during evaluation.
+* The repository is intentionally kept small and Kaggle-oriented, with minimal abstraction and minimal supporting files.
