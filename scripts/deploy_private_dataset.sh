@@ -4,7 +4,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_FILE="$ROOT_DIR/.env"
-DATASET_DIR="$ROOT_DIR/kaggle/dataset/public"
+DATASET_DIR="$ROOT_DIR/kaggle/dataset/private"
 KAGGLE_BIN="${KAGGLE_BIN:-kaggle}"
 
 if [[ ! -f "$ENV_FILE" ]]; then
@@ -26,7 +26,7 @@ if [[ -z "${KAGGLE_API_TOKEN:-}" ]]; then
   exit 1
 fi
 
-MESSAGE="${1:-Update RuleShift public dataset}"
+MESSAGE="${1:-Update RuleShift private dataset}"
 
-echo "Publishing dataset from $DATASET_DIR"
+echo "Publishing private dataset from $DATASET_DIR"
 "$KAGGLE_BIN" datasets version -p "$DATASET_DIR" -m "$MESSAGE"

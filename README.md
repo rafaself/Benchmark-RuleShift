@@ -4,7 +4,7 @@ Minimal Kaggle benchmark project for the **RuleShift** task.
 
 This repository contains only the assets required to publish and run the benchmark on Kaggle:
 
-* the packaged dataset
+* the packaged public and private datasets
 * the benchmark notebook
 * small deploy scripts
 
@@ -13,13 +13,18 @@ This repository contains only the assets required to publish and run the benchma
 ```text
 kaggle/
   dataset/
-    dataset-metadata.json
-    public_leaderboard_rows.json
+    public/
+      dataset-metadata.json
+      public_leaderboard_rows.json
+    private/
+      dataset-metadata.json
+      private_leaderboard_rows.json
   notebook/
     kernel-metadata.json
     ruleshift_notebook_task.ipynb
 scripts/
   deploy_dataset.sh
+  deploy_private_dataset.sh
   deploy_notebook.sh
 Makefile
 ```
@@ -65,7 +70,7 @@ kaggle/notebook/ruleshift_notebook_task.ipynb
 
 ## Deployment
 
-### 1. Publish the dataset
+### 1. Publish the public dataset
 
 ```bash
 make deploy-dataset
@@ -74,10 +79,22 @@ make deploy-dataset
 Or with a custom version message:
 
 ```bash
-./scripts/deploy_dataset.sh "Update RuleShift dataset"
+./scripts/deploy_dataset.sh "Update RuleShift public dataset"
 ```
 
-### 2. Publish the notebook
+### 2. Publish the private dataset
+
+```bash
+make deploy-private-dataset
+```
+
+Or with a custom version message:
+
+```bash
+./scripts/deploy_private_dataset.sh "Update RuleShift private dataset"
+```
+
+### 3. Publish the notebook
 
 ```bash
 make deploy-notebook
@@ -106,6 +123,12 @@ Dataset:
 raptorengineer/ruleshift-runtime
 ```
 
+Private dataset:
+
+```text
+raptorengineer/ruleshift-runtime-private
+```
+
 Notebook:
 
 ```text
@@ -115,7 +138,9 @@ raptorengineer/ruleshift-notebook
 ## Notes
 
 * The notebook is the source of truth for the benchmark runtime logic.
-* The dataset contains the frozen public benchmark rows used during evaluation.
+* The public dataset contains 100 frozen benchmark rows, with 20 rows per group.
+* The private dataset contains 500 frozen benchmark rows, with 100 rows per group.
+* The notebook uses `EVAL_SPLIT = "public"` by default and supports `EVAL_SPLIT = "private"` when the private dataset is available.
 * The repository is intentionally kept small and Kaggle-oriented, with minimal abstraction and minimal supporting files.
 
 ## References
