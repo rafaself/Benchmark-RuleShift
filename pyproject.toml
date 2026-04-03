@@ -9,11 +9,3 @@ description = "Challenge runtime for RuleShift Benchmark."
 requires-python = ">=3.11"
 dependencies = [
 ]
-
-[tool.setuptools]
-package-dir = {"" = "src"}
-
-[tool.setuptools.packages.find]
-where = ["src"]
-include = ["tasks*"]
-namespaces = true
