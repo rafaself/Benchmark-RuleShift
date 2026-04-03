@@ -10,8 +10,6 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 KAGGLE_DIR = REPO_ROOT / "kaggle"
 SRC_DIR = REPO_ROOT / "src"
 DATASET_RUNTIME_FILES = (
-    Path("tasks/ruleshift_benchmark/__init__.py"),
-    Path("tasks/ruleshift_benchmark/runtime.py"),
     Path("frozen_splits/public_leaderboard_rows.json"),
 )
 
@@ -40,7 +38,7 @@ def build_kaggle_package(output_dir: Path) -> tuple[Path, Path]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Build the Kaggle notebook and runtime dataset package.",
+        description="Build the Kaggle notebook and benchmark dataset package.",
     )
     parser.add_argument(
         "--output-dir",

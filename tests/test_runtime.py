@@ -8,36 +8,31 @@ from typing import Any
 import pytest
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
+_NOTEBOOK_PATH = _REPO_ROOT / "kaggle" / "ruleshift_notebook_task.ipynb"
 _PUBLIC_ROWS_PATH = _REPO_ROOT / "src" / "frozen_splits" / "public_leaderboard_rows.json"
 _PRIVATE_ROWS_FILENAME = "private_leaderboard_rows.json"
 _ALLOWED_LABELS = {"type_a", "type_b"}
+_PRIVATE_DATASET_ROOT_ENV_VAR = "RULESHIFT_PRIVATE_DATASET_ROOT"
+_RUNTIME_ROOT_ENV_VAR = "RULESHIFT_RUNTIME_ROOT"
 
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 from scripts.build_kaggle import build_kaggle_package  # noqa: E402
-from tasks.ruleshift_benchmark.runtime import (  # noqa: E402
-    BinaryResponse,
-    KaggleExecutionError,
-    PRIVATE_DATASET_ROOT_ENV_VAR,
-    load_public_rows,
-    normalize_binary_response,
-    run_binary_task,
-)
 
 
 class _LLMStub:
-    def prompt(self, text: str, *, schema: Any = None) -> BinaryResponse:
-        return BinaryResponse(
-            probe_6="type_a",
-            probe_7="type_b",
-            probe_8="type_a",
-            probe_9="type_b",
-        )
+    def prompt(self, text: str, *, schema: Any = None) -> dict[str, str]:
+        return {
+            "probe_6": "type_a",
+            "probe_7": "type_b",
+            "probe_8": "type_a",
+            "probe_9": "type_b",
+        }
 
 
 class _FailingLLM:
-    def prompt(self, text: str, *, schema: Any = None) -> BinaryResponse:
+    def prompt(self, text: str, *, schema: Any = None) -> dict[str, str]:
         raise RuntimeError("boom")
 
 
@@ -92,26 +87,43 @@ def _execute_notebook(path: Path) -> dict[str, object]:
     return namespace
 
 
-def _purge_runtime_modules() -> None:
-    for name in list(sys.modules):
-        if name == "tasks" or name.startswith("tasks."):
-            sys.modules.pop(name, None)
+def _load_notebook_runtime(
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    runtime_root: Path,
+    private_dataset_root: Path | None = None,
+    notebook_path: Path = _NOTEBOOK_PATH,
+) -> dict[str, object]:
+    monkeypatch.setitem(sys.modules, "kaggle_benchmarks", _KBenchShim())
+    monkeypatch.setenv(_RUNTIME_ROOT_ENV_VAR, str(runtime_root))
+    if private_dataset_root is not None:
+        monkeypatch.setenv(_PRIVATE_DATASET_ROOT_ENV_VAR, str(private_dataset_root))
+    else:
+        monkeypatch.delenv(_PRIVATE_DATASET_ROOT_ENV_VAR, raising=False)
+    return _execute_notebook(notebook_path)
 
 
 def test_public_split_file_exists() -> None:
     assert _PUBLIC_ROWS_PATH.is_file()
 
 
-def test_public_rows_have_four_binary_probe_targets() -> None:
-    rows = load_public_rows()
+def test_public_rows_have_four_binary_probe_targets(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rows = _load_notebook_runtime(monkeypatch, runtime_root=_REPO_ROOT / "src")[
+        "load_public_rows"
+    ]()
     assert rows
     for row in rows:
         assert len(row["probe_targets"]) == 4
         assert set(row["probe_targets"]) <= _ALLOWED_LABELS
 
 
-def test_binary_predictions_normalize_to_public_labels() -> None:
-    normalized = normalize_binary_response(
+def test_binary_predictions_normalize_to_public_labels(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    namespace = _load_notebook_runtime(monkeypatch, runtime_root=_REPO_ROOT / "src")
+    normalized = namespace["normalize_binary_response"](
         {
             "probe_6": "type_a",
             "probe_7": "type_b",
@@ -123,9 +135,12 @@ def test_binary_predictions_normalize_to_public_labels() -> None:
     assert set(normalized) <= _ALLOWED_LABELS
 
 
-def test_task_response_failure_is_explicit() -> None:
-    with pytest.raises(KaggleExecutionError, match="llm.prompt failed"):
-        run_binary_task(
+def test_task_response_failure_is_explicit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    namespace = _load_notebook_runtime(monkeypatch, runtime_root=_REPO_ROOT / "src")
+    with pytest.raises(namespace["KaggleExecutionError"], match="llm.prompt failed"):
+        namespace["run_binary_task"](
             llm=_FailingLLM(),
             prompt_binary="prompt",
             probe_targets=("type_a", "type_b", "type_a", "type_b"),
@@ -149,31 +164,22 @@ def test_kaggle_build_and_notebook_smoke(
     ) == [
         "dataset-metadata.json",
         "src/frozen_splits/public_leaderboard_rows.json",
-        "src/tasks/ruleshift_benchmark/__init__.py",
-        "src/tasks/ruleshift_benchmark/runtime.py",
     ]
 
     private_dataset_root = tmp_path / "private-dataset"
     private_dataset_root.mkdir()
     _write_private_dataset(private_dataset_root)
 
-    monkeypatch.setenv(PRIVATE_DATASET_ROOT_ENV_VAR, str(private_dataset_root))
-    monkeypatch.setitem(sys.modules, "kaggle_benchmarks", _KBenchShim())
-    monkeypatch.syspath_prepend(str(dataset_dir / "src"))
+    namespace = _load_notebook_runtime(
+        monkeypatch,
+        runtime_root=dataset_dir / "src",
+        private_dataset_root=private_dataset_root,
+        notebook_path=kernel_dir / "ruleshift_notebook_task.ipynb",
+    )
 
-    original_is_dir = Path.is_dir
-
-    def kaggle_runtime_is_dir(path: Path) -> bool:
-        if str(path) == "/kaggle/input/datasets/raptorengineer/ruleshift-runtime/src":
-            return True
-        return original_is_dir(path)
-
-    monkeypatch.setattr(Path, "is_dir", kaggle_runtime_is_dir)
-    _purge_runtime_modules()
-
-    namespace = _execute_notebook(kernel_dir / "ruleshift_notebook_task.ipynb")
-
-    assert len(namespace["leaderboard_rows"]) == len(load_public_rows()) + 2
+    assert len(namespace["leaderboard_rows"]) == len(
+        json.loads(_PUBLIC_ROWS_PATH.read_text(encoding="utf-8"))
+    ) + 2
     assert namespace["score"] == (
         namespace["result"]["numerator"],
         namespace["result"]["denominator"],
