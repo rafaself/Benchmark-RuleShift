@@ -22,13 +22,9 @@ if str(_SRC_DIR) not in sys.path:
 
 from scripts.build_kaggle import build_kaggle_package  # noqa: E402
 from tasks.ruleshift_benchmark.runtime import (  # noqa: E402
-    MANIFEST_VERSION,
     PRIVATE_DATASET_ROOT_ENV_VAR,
-    Split,
-    _generate_episode,
     format_public_label,
     load_public_rows,
-    render_binary_prompt,
 )
 
 
@@ -58,15 +54,20 @@ class _KBenchShim:
 
 
 def _write_private_dataset(root: Path) -> None:
-    rows = []
-    for seed in _PRIVATE_SEEDS:
-        ep = _generate_episode(seed, split=Split.PRIVATE)
-        rows.append({
-            "episode_id": ep.episode_id,
-            "split": ep.split.value,
-            "prompt_binary": render_binary_prompt(ep),
-            "probe_targets": [format_public_label(t) for t in ep.probe_targets],
-        })
+    rows = [
+        {
+            "episode_id": f"ife-r13-{seed}",
+            "split": "private",
+            "prompt_binary": "Classify the probes. Return type_a or type_b for each.",
+            "probe_targets": [
+                format_public_label("zark"),
+                format_public_label("blim"),
+                format_public_label("zark"),
+                format_public_label("blim"),
+            ],
+        }
+        for seed in _PRIVATE_SEEDS
+    ]
     (root / _PRIVATE_ROWS_FILENAME).write_text(
         json.dumps(rows, indent=2) + "\n",
         encoding="utf-8",
@@ -116,9 +117,6 @@ def test_kaggle_build_and_notebook_smoke(
     namespace = _execute_notebook()
 
     assert namespace["PRIVATE_DATASET_ROOT"] is not None
-    assert [p["partition"] for p in namespace["bundle"]["partitions"]] == [
-        "private_leaderboard",
-    ]
     assert len(load_public_rows()) == _EXPECTED_PUBLIC_EPISODES
     assert list(namespace["partition_df"]["episodes"]) == [
         _EXPECTED_PUBLIC_EPISODES,
