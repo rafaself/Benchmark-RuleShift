@@ -19,9 +19,6 @@ Read the repository in this order:
 
 1. `kaggle/ruleshift_notebook_task.ipynb`
 2. `src/tasks/ruleshift_benchmark/__init__.py`
-3. `src/tasks/ruleshift_benchmark/splits.py`
-4. `src/tasks/ruleshift_benchmark/runner.py`
-
-`protocol.py` and `schema.py` define the frozen episode contract underneath that runtime path.
+3. `src/tasks/ruleshift_benchmark/runtime.py`
 
 `scripts/build_kaggle.py` copies exactly what Kaggle needs: the notebook plus the `src/` runtime dataset.

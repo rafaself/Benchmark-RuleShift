@@ -1,6 +1,6 @@
 {
-  "id": "raptorengineer/ruleshift-notebook-test",
-  "title": "RuleShift Notebook Test",
+  "id": "raptorengineer/ruleshift-notebook",
+  "title": "RuleShift Notebook",
   "code_file": "ruleshift_notebook_task.ipynb",
   "language": "python",
   "kernel_type": "notebook",
