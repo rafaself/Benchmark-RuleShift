@@ -5,15 +5,15 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_FILE="$ROOT_DIR/.env"
 NOTEBOOK_DIR="$ROOT_DIR/kaggle/notebook"
-KAGGLE_BIN="$ROOT_DIR/.venv/bin/kaggle"
+KAGGLE_BIN="${KAGGLE_BIN:-kaggle}"
 
 if [[ ! -f "$ENV_FILE" ]]; then
   echo "Missing .env file at $ENV_FILE" >&2
   exit 1
 fi
 
-if [[ ! -x "$KAGGLE_BIN" ]]; then
-  echo "Missing Kaggle CLI at $KAGGLE_BIN" >&2
+if ! command -v "$KAGGLE_BIN" &>/dev/null; then
+  echo "Kaggle CLI not found ('$KAGGLE_BIN'). Install it or set KAGGLE_BIN to its path." >&2
   exit 1
 fi
 

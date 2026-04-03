@@ -89,12 +89,13 @@ The deploy scripts expect:
 
 * a `.env` file at the repository root
 * `KAGGLE_API_TOKEN` defined in that file
-* the Kaggle CLI available at `.venv/bin/kaggle`
+* the Kaggle CLI available on `PATH` (i.e. `kaggle` resolves)
 
-Example:
+Override the CLI path with `KAGGLE_BIN` if needed:
 
 ```bash
 KAGGLE_API_TOKEN=your_token_here
+KAGGLE_BIN=/path/to/kaggle   # optional; defaults to kaggle in PATH
 ```
 
 ## Kaggle Asset IDs
