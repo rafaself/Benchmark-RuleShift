@@ -117,3 +117,17 @@ raptorengineer/ruleshift-notebook
 * The notebook is the source of truth for the benchmark runtime logic.
 * The dataset contains the frozen public benchmark rows used during evaluation.
 * The repository is intentionally kept small and Kaggle-oriented, with minimal abstraction and minimal supporting files.
+
+## References
+
+- [Kaggle Competition — Measuring Progress Toward AGI: Cognitive Abilities](https://www.kaggle.com/competitions/kaggle-measuring-agi)
+- [Competition Rules](https://www.kaggle.com/competitions/kaggle-measuring-agi/rules)
+- [Kaggle Benchmarks Repository](https://github.com/Kaggle/kaggle-benchmarks)
+- [Kaggle Benchmarks Cookbook](https://github.com/Kaggle/kaggle-benchmarks/blob/ci/cookbook.md)
+- [Kaggle Notebooks Documentation](https://www.kaggle.com/docs/notebooks)
+- [Kaggle Public API / CLI Documentation](https://www.kaggle.com/docs/api)
+- [Kaggle CLI Repository](https://github.com/Kaggle/kaggle-cli)
+- [Kaggle CLI — General Docs](https://github.com/Kaggle/kaggle-cli/blob/main/docs/README.md)
+- [Kaggle CLI — Kernels / Notebooks Commands](https://github.com/Kaggle/kaggle-cli/blob/main/docs/kernels.md)
+- [DeepMind Paper PDF — Measuring Progress Toward AGI: A Cognitive Framework](https://storage.googleapis.com/deepmind-media/DeepMind.com/Blog/measuring-progress-toward-agi/measuring-progress-toward-agi-a-cognitive-framework.pdf)
+- [DeepMind Blog Post — Measuring progress toward AGI: A cognitive framework](https://blog.google/innovation-and-ai/models-and-research/google-deepmind/measuring-agi-cognitive-framework/)
