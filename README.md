@@ -13,6 +13,7 @@ This repository contains only the assets required to publish and run the benchma
 ```text
 kaggle/
   dataset/
+    audit_key.json
     public/
       dataset-metadata.json
       public_leaderboard_rows.json
@@ -23,6 +24,7 @@ kaggle/
     kernel-metadata.json
     ruleshift_notebook_task.ipynb
 scripts/
+  build_ruleshift_dataset.py
   deploy_dataset.sh
   deploy_private_dataset.sh
   deploy_notebook.sh
@@ -39,7 +41,7 @@ The notebook implements the full benchmark flow in a clear, sequential format:
 4. score each benchmark episode
 5. load the frozen benchmark rows
 6. register the official Kaggle task
-7. run a smoke check inside the notebook
+7. define optional diagnostics helpers outside the official score
 8. mark the official entry point with `%choose`
 
 Official task name:
@@ -47,6 +49,22 @@ Official task name:
 ```text
 ruleshift_benchmark_v1_binary
 ```
+
+## Release 1 Scope
+
+Release 1 is a single-turn cognitive-flexibility benchmark. Each scored episode contains exactly 5 labeled examples, 4 probes, one response, and probe-wise scoring over `type_a` / `type_b`.
+
+The scoped Release 1 benchmark evaluates only the `simple`, `exception`, `distractor`, and `hard` groups.
+
+The cleaned prompt contract for the scoped benchmark is fixed: `RuleShift classification task. Episode XXXX.`, then `Examples:`, then `Probes:`, then one shared output instruction. Group differences now come from the row content rather than coaching in the prompt wrapper.
+
+The dataset and internal answer key are generated deterministically from a formal rule catalog in `scripts/build_ruleshift_dataset.py`. The audit record lives at `kaggle/dataset/audit_key.json`.
+
+Dataset rows are split into explicit layers:
+
+* `inference.prompt` is the only task content sent to the model.
+* `scoring.probe_targets` is used only by the evaluator.
+* `analysis.group_id` is retained for balance checks and debugging, but is not passed to the model.
 
 ## Requirements
 
@@ -67,6 +85,23 @@ This launches Jupyter Lab with:
 ```text
 kaggle/notebook/ruleshift_notebook_task.ipynb
 ```
+
+Select the evaluation split by setting `RULESHIFT_EVAL_SPLIT` to `public` or `private` before running the notebook.
+
+## Verification
+
+Run the deterministic local verification path:
+
+```bash
+make verify-public
+make verify-private
+```
+
+These checks validate row structure, split balance, and deterministic scoring behavior for the packaged public and private datasets.
+
+## Diagnostics
+
+The notebook keeps one simple official score and a separate optional diagnostics helper. After a run, `build_ruleshift_diagnostics(runs, leaderboard_rows)` can summarize accuracy by `group_id`, `rule_id`, `shortcut_type`, and episode miss-count pattern without affecting the benchmark score.
 
 ## Deployment
 
@@ -113,6 +148,7 @@ Override the CLI path with `KAGGLE_BIN` if needed:
 ```bash
 KAGGLE_API_TOKEN=your_token_here
 KAGGLE_BIN=/path/to/kaggle   # optional; defaults to kaggle in PATH
+RULESHIFT_EVAL_SPLIT=public  # optional for local notebook runs
 ```
 
 ## Kaggle Asset IDs
@@ -137,10 +173,11 @@ raptorengineer/ruleshift-notebook
 
 ## Notes
 
-* The notebook is the source of truth for the benchmark runtime logic.
-* The public dataset contains 100 frozen benchmark rows, with 20 rows per group.
-* The private dataset contains 500 frozen benchmark rows, with 100 rows per group.
+* The notebook is the source of truth for the benchmark runtime logic and the baseline artifact.
+* The public dataset contains 80 audited benchmark rows, with 20 rows per scoped group.
+* The private dataset contains 400 audited benchmark rows, with 100 rows per scoped group.
 * The notebook uses `EVAL_SPLIT = "public"` by default and supports `EVAL_SPLIT = "private"` when the private dataset is available.
+* Benchmark invariants are enforced while rows are loaded.
 * The repository is intentionally kept small and Kaggle-oriented, with minimal abstraction and minimal supporting files.
 
 ## References

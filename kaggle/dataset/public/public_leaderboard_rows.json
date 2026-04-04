@@ -1,1102 +1,1602 @@
 [
   {
     "episode_id": "0001",
-    "group_id": "simple",
-    "prompt": "Solve the baseline classification slice for two markers. Episode 0001.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=+1, r2=+1 -> blim\n2. r1=-3, r2=-2 -> blim\n3. r1=+3, r2=+3 -> zark\n4. r1=-1, r2=+1 -> blim\n5. r1=+1, r2=+2 -> zark\n\nProbes:\n6. r1=-3, r2=-3 -> ?\n7. r1=+1, r2=-1 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=-3, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0001.\n\nExamples:\n1. r1=+1, r2=+3 -> blim\n2. r1=-1, r2=-1 -> blim\n3. r1=-3, r2=+2 -> blim\n4. r1=+3, r2=+2 -> zark\n5. r1=+2, r2=-3 -> zark\n\nProbes:\n6. r1=+1, r2=+2 -> ?\n7. r1=-1, r2=-3 -> ?\n8. r1=-2, r2=+1 -> ?\n9. r1=+2, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "simple",
+      "rule_id": "r1_gt_r2",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "r1_positive"
+    }
   },
   {
     "episode_id": "0002",
-    "group_id": "simple",
-    "prompt": "Solve the baseline classification slice for two markers. Episode 0002.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=-1, r2=-2 -> blim\n2. r1=-1, r2=-1 -> blim\n3. r1=+1, r2=-2 -> blim\n4. r1=+1, r2=+1 -> zark\n5. r1=+3, r2=+3 -> zark\n\nProbes:\n6. r1=-1, r2=+2 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=+3, r2=-3 -> ?\n9. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_a",
-      "type_b",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0002.\n\nExamples:\n1. r1=+2, r2=+3 -> zark\n2. r1=-1, r2=+2 -> zark\n3. r1=+3, r2=+1 -> blim\n4. r1=+2, r2=-3 -> blim\n5. r1=-2, r2=-2 -> blim\n\nProbes:\n6. r1=-3, r2=+1 -> ?\n7. r1=-1, r2=+3 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=-2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_a",
+        "type_b",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "simple",
+      "rule_id": "r1_lt_r2",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "sum_positive"
+    }
   },
   {
     "episode_id": "0003",
-    "group_id": "simple",
-    "prompt": "Solve the baseline classification slice for two markers. Episode 0003.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=+3, r2=-1 -> zark\n2. r1=+3, r2=-2 -> zark\n3. r1=-1, r2=+2 -> blim\n4. r1=+2, r2=+3 -> zark\n5. r1=+2, r2=+1 -> zark\n\nProbes:\n6. r1=+2, r2=+2 -> ?\n7. r1=-1, r2=-3 -> ?\n8. r1=-1, r2=+3 -> ?\n9. r1=+1, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_b",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0003.\n\nExamples:\n1. r1=-2, r2=-2 -> blim\n2. r1=-2, r2=+3 -> zark\n3. r1=+3, r2=-3 -> blim\n4. r1=+3, r2=-2 -> zark\n5. r1=+1, r2=-1 -> blim\n\nProbes:\n6. r1=+1, r2=+3 -> ?\n7. r1=+1, r2=-3 -> ?\n8. r1=+2, r2=+3 -> ?\n9. r1=+2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "simple",
+      "rule_id": "sum_positive",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "r2_positive"
+    }
   },
   {
     "episode_id": "0004",
-    "group_id": "simple",
-    "prompt": "Solve the baseline classification slice for two markers. Episode 0004.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=-2, r2=+1 -> zark\n2. r1=-2, r2=+3 -> zark\n3. r1=-3, r2=+3 -> zark\n4. r1=-1, r2=-2 -> zark\n5. r1=+3, r2=-2 -> blim\n\nProbes:\n6. r1=-3, r2=+2 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=-1, r2=-1 -> ?\n9. r1=+3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0004.\n\nExamples:\n1. r1=-2, r2=+3 -> blim\n2. r1=-3, r2=-2 -> zark\n3. r1=-1, r2=+1 -> blim\n4. r1=+3, r2=-3 -> blim\n5. r1=+1, r2=-2 -> zark\n\nProbes:\n6. r1=-3, r2=+3 -> ?\n7. r1=+1, r2=+3 -> ?\n8. r1=-2, r2=-1 -> ?\n9. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_b",
+        "type_a",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "simple",
+      "rule_id": "sum_negative",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "sum_at_most_minus_two"
+    }
   },
   {
     "episode_id": "0005",
-    "group_id": "simple",
-    "prompt": "Solve the baseline classification slice for two markers. Episode 0005.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=-3, r2=+1 -> zark\n2. r1=-2, r2=+2 -> zark\n3. r1=+3, r2=-3 -> zark\n4. r1=-2, r2=+3 -> blim\n5. r1=-1, r2=-3 -> zark\n\nProbes:\n6. r1=+2, r2=+3 -> ?\n7. r1=+2, r2=-2 -> ?\n8. r1=-1, r2=+2 -> ?\n9. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_b",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0005.\n\nExamples:\n1. r1=+3, r2=+2 -> zark\n2. r1=-3, r2=+1 -> zark\n3. r1=+3, r2=-3 -> blim\n4. r1=+3, r2=+3 -> blim\n5. r1=-1, r2=+1 -> blim\n\nProbes:\n6. r1=+2, r2=-1 -> ?\n7. r1=-2, r2=+1 -> ?\n8. r1=-1, r2=+2 -> ?\n9. r1=-2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_a",
+        "type_b",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "simple",
+      "rule_id": "abs_r1_gt_abs_r2",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "sum_negative"
+    }
   },
   {
     "episode_id": "0006",
-    "group_id": "simple",
-    "prompt": "Solve the baseline classification slice for two markers. Episode 0006.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=+1, r2=-2 -> zark\n2. r1=-2, r2=+3 -> zark\n3. r1=-3, r2=-1 -> blim\n4. r1=-3, r2=+3 -> blim\n5. r1=+1, r2=+3 -> zark\n\nProbes:\n6. r1=-2, r2=-3 -> ?\n7. r1=-1, r2=+2 -> ?\n8. r1=+3, r2=+3 -> ?\n9. r1=+2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_b",
-      "type_a",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0006.\n\nExamples:\n1. r1=+3, r2=-3 -> blim\n2. r1=-2, r2=+1 -> blim\n3. r1=-1, r2=-3 -> zark\n4. r1=-3, r2=+3 -> blim\n5. r1=+2, r2=-3 -> zark\n\nProbes:\n6. r1=+2, r2=+3 -> ?\n7. r1=-2, r2=-2 -> ?\n8. r1=+1, r2=-1 -> ?\n9. r1=+1, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "simple",
+      "rule_id": "abs_r1_lt_abs_r2",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "sum_at_most_minus_two"
+    }
   },
   {
     "episode_id": "0007",
-    "group_id": "simple",
-    "prompt": "Solve the baseline classification slice for two markers. Episode 0007.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=-2, r2=-2 -> blim\n2. r1=-3, r2=-2 -> zark\n3. r1=-1, r2=-1 -> zark\n4. r1=+2, r2=-3 -> blim\n5. r1=+2, r2=-2 -> blim\n\nProbes:\n6. r1=-1, r2=+2 -> ?\n7. r1=-3, r2=-1 -> ?\n8. r1=+2, r2=+2 -> ?\n9. r1=+1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_a",
-      "type_b",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0007.\n\nExamples:\n1. r1=-1, r2=-1 -> zark\n2. r1=-1, r2=+1 -> zark\n3. r1=+1, r2=-2 -> blim\n4. r1=-3, r2=-2 -> blim\n5. r1=-3, r2=+1 -> blim\n\nProbes:\n6. r1=-2, r2=-1 -> ?\n7. r1=-3, r2=-3 -> ?\n8. r1=-1, r2=-3 -> ?\n9. r1=+1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "simple",
+      "rule_id": "abs_equal",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "r2_positive"
+    }
   },
   {
     "episode_id": "0008",
-    "group_id": "simple",
-    "prompt": "Solve the baseline classification slice for two markers. Episode 0008.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=-3, r2=-3 -> blim\n2. r1=+1, r2=-3 -> blim\n3. r1=+3, r2=-3 -> blim\n4. r1=+1, r2=+2 -> zark\n5. r1=+3, r2=+3 -> zark\n\nProbes:\n6. r1=+1, r2=-2 -> ?\n7. r1=+2, r2=+1 -> ?\n8. r1=-3, r2=+1 -> ?\n9. r1=-2, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0008.\n\nExamples:\n1. r1=-1, r2=+1 -> blim\n2. r1=+1, r2=-3 -> zark\n3. r1=+1, r2=+3 -> zark\n4. r1=-1, r2=-2 -> blim\n5. r1=-2, r2=-3 -> blim\n\nProbes:\n6. r1=+2, r2=+3 -> ?\n7. r1=+3, r2=+3 -> ?\n8. r1=-3, r2=+1 -> ?\n9. r1=-3, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_a",
+        "type_b",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "simple",
+      "rule_id": "r1_positive",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "sum_positive"
+    }
   },
   {
     "episode_id": "0009",
-    "group_id": "simple",
-    "prompt": "Solve the baseline classification slice for two markers. Episode 0009.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=-2, r2=-1 -> blim\n2. r1=+3, r2=+2 -> zark\n3. r1=+1, r2=-1 -> blim\n4. r1=+1, r2=-3 -> blim\n5. r1=+2, r2=-2 -> blim\n\nProbes:\n6. r1=+3, r2=+3 -> ?\n7. r1=-3, r2=+3 -> ?\n8. r1=+1, r2=-2 -> ?\n9. r1=-1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_a",
-      "type_b",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0009.\n\nExamples:\n1. r1=-1, r2=-1 -> blim\n2. r1=-2, r2=+2 -> zark\n3. r1=+1, r2=+1 -> zark\n4. r1=-3, r2=-1 -> blim\n5. r1=+1, r2=-1 -> blim\n\nProbes:\n6. r1=-2, r2=-1 -> ?\n7. r1=+3, r2=+1 -> ?\n8. r1=-3, r2=+1 -> ?\n9. r1=-1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "simple",
+      "rule_id": "r2_positive",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "sum_positive"
+    }
   },
   {
     "episode_id": "0010",
-    "group_id": "simple",
-    "prompt": "Solve the baseline classification slice for two markers. Episode 0010.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=+2, r2=-3 -> blim\n2. r1=+2, r2=-1 -> blim\n3. r1=-3, r2=+2 -> zark\n4. r1=+1, r2=+3 -> blim\n5. r1=-3, r2=+3 -> zark\n\nProbes:\n6. r1=-3, r2=-1 -> ?\n7. r1=+2, r2=+3 -> ?\n8. r1=+3, r2=-3 -> ?\n9. r1=-2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_b",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0010.\n\nExamples:\n1. r1=+1, r2=+3 -> blim\n2. r1=-3, r2=+1 -> zark\n3. r1=+3, r2=-3 -> blim\n4. r1=+2, r2=-2 -> blim\n5. r1=-2, r2=+2 -> zark\n\nProbes:\n6. r1=+2, r2=+2 -> ?\n7. r1=+3, r2=-1 -> ?\n8. r1=-3, r2=-1 -> ?\n9. r1=-2, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_b",
+        "type_a",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "simple",
+      "rule_id": "r1_negative",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "sum_negative"
+    }
   },
   {
     "episode_id": "0011",
-    "group_id": "simple",
-    "prompt": "Solve the baseline classification slice for two markers. Episode 0011.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=-2, r2=+2 -> blim\n2. r1=+2, r2=-1 -> blim\n3. r1=-2, r2=+3 -> zark\n4. r1=-1, r2=-3 -> blim\n5. r1=-1, r2=+2 -> zark\n\nProbes:\n6. r1=-2, r2=-2 -> ?\n7. r1=-1, r2=+3 -> ?\n8. r1=+1, r2=+3 -> ?\n9. r1=+1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0011.\n\nExamples:\n1. r1=+1, r2=+1 -> blim\n2. r1=+2, r2=+1 -> blim\n3. r1=-3, r2=-1 -> zark\n4. r1=+1, r2=-1 -> zark\n5. r1=-2, r2=+1 -> blim\n\nProbes:\n6. r1=-2, r2=+3 -> ?\n7. r1=+2, r2=-3 -> ?\n8. r1=-3, r2=-2 -> ?\n9. r1=+3, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "simple",
+      "rule_id": "r2_negative",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "sum_at_most_minus_two"
+    }
   },
   {
     "episode_id": "0012",
-    "group_id": "simple",
-    "prompt": "Solve the baseline classification slice for two markers. Episode 0012.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=-2, r2=+3 -> blim\n2. r1=+2, r2=-1 -> blim\n3. r1=+3, r2=-3 -> zark\n4. r1=+1, r2=-2 -> zark\n5. r1=+2, r2=+3 -> blim\n\nProbes:\n6. r1=+2, r2=-3 -> ?\n7. r1=-1, r2=-1 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=-3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_a",
-      "type_b",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0012.\n\nExamples:\n1. r1=-3, r2=-3 -> blim\n2. r1=+3, r2=+2 -> zark\n3. r1=+3, r2=-1 -> blim\n4. r1=+2, r2=+2 -> zark\n5. r1=-2, r2=+1 -> blim\n\nProbes:\n6. r1=+1, r2=+1 -> ?\n7. r1=-2, r2=+3 -> ?\n8. r1=+3, r2=+1 -> ?\n9. r1=-3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "simple",
+      "rule_id": "both_positive",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "r2_positive"
+    }
   },
   {
     "episode_id": "0013",
-    "group_id": "simple",
-    "prompt": "Solve the baseline classification slice for two markers. Episode 0013.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=+2, r2=+3 -> zark\n2. r1=+2, r2=+1 -> zark\n3. r1=-1, r2=+2 -> blim\n4. r1=+1, r2=+1 -> blim\n5. r1=-1, r2=+1 -> zark\n\nProbes:\n6. r1=-1, r2=-3 -> ?\n7. r1=+3, r2=-1 -> ?\n8. r1=+3, r2=+3 -> ?\n9. r1=-1, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_b",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0013.\n\nExamples:\n1. r1=-2, r2=-3 -> zark\n2. r1=-3, r2=+1 -> blim\n3. r1=+2, r2=-2 -> blim\n4. r1=+3, r2=+1 -> blim\n5. r1=-1, r2=-1 -> zark\n\nProbes:\n6. r1=+1, r2=-2 -> ?\n7. r1=-3, r2=+3 -> ?\n8. r1=-3, r2=-1 -> ?\n9. r1=-2, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_b",
+        "type_a",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "simple",
+      "rule_id": "both_negative",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "abs_r1_lt_abs_r2"
+    }
   },
   {
     "episode_id": "0014",
-    "group_id": "simple",
-    "prompt": "Solve the baseline classification slice for two markers. Episode 0014.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=-3, r2=-2 -> zark\n2. r1=-3, r2=+2 -> blim\n3. r1=-1, r2=+3 -> blim\n4. r1=+3, r2=-3 -> zark\n5. r1=+3, r2=+3 -> blim\n\nProbes:\n6. r1=-3, r2=+3 -> ?\n7. r1=-2, r2=-1 -> ?\n8. r1=+3, r2=-1 -> ?\n9. r1=+2, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0014.\n\nExamples:\n1. r1=-2, r2=+3 -> blim\n2. r1=-1, r2=-3 -> zark\n3. r1=+3, r2=-1 -> blim\n4. r1=+2, r2=+1 -> zark\n5. r1=+1, r2=-3 -> blim\n\nProbes:\n6. r1=+1, r2=+1 -> ?\n7. r1=-3, r2=+1 -> ?\n8. r1=+3, r2=-2 -> ?\n9. r1=+2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "simple",
+      "rule_id": "same_sign",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "both_positive"
+    }
   },
   {
     "episode_id": "0015",
-    "group_id": "simple",
-    "prompt": "Solve the baseline classification slice for two markers. Episode 0015.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=+3, r2=-2 -> blim\n2. r1=+1, r2=-1 -> blim\n3. r1=-3, r2=-1 -> zark\n4. r1=-3, r2=+3 -> zark\n5. r1=-1, r2=-2 -> blim\n\nProbes:\n6. r1=+3, r2=-1 -> ?\n7. r1=-3, r2=-2 -> ?\n8. r1=+1, r2=+3 -> ?\n9. r1=-3, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_b",
-      "type_a",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0015.\n\nExamples:\n1. r1=-2, r2=-1 -> blim\n2. r1=+1, r2=+2 -> blim\n3. r1=-3, r2=+3 -> zark\n4. r1=-3, r2=-2 -> blim\n5. r1=+2, r2=-3 -> zark\n\nProbes:\n6. r1=+1, r2=+1 -> ?\n7. r1=-1, r2=+3 -> ?\n8. r1=-2, r2=-3 -> ?\n9. r1=-2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "simple",
+      "rule_id": "opposite_sign",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "diff_at_most_minus_two"
+    }
   },
   {
     "episode_id": "0016",
-    "group_id": "simple",
-    "prompt": "Solve the baseline classification slice for two markers. Episode 0016.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=-1, r2=+1 -> blim\n2. r1=-3, r2=-2 -> blim\n3. r1=+1, r2=-1 -> zark\n4. r1=+1, r2=-2 -> zark\n5. r1=-2, r2=-1 -> blim\n\nProbes:\n6. r1=-3, r2=-3 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=-1, r2=+3 -> ?\n9. r1=+2, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_b",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0016.\n\nExamples:\n1. r1=-1, r2=+2 -> blim\n2. r1=-1, r2=+3 -> zark\n3. r1=-3, r2=-3 -> blim\n4. r1=+2, r2=+2 -> zark\n5. r1=+3, r2=-3 -> blim\n\nProbes:\n6. r1=+3, r2=+2 -> ?\n7. r1=-2, r2=+2 -> ?\n8. r1=+3, r2=+3 -> ?\n9. r1=-1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "simple",
+      "rule_id": "sum_at_least_two",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "sum_positive"
+    }
   },
   {
     "episode_id": "0017",
-    "group_id": "simple",
-    "prompt": "Solve the baseline classification slice for two markers. Episode 0017.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=-1, r2=+3 -> blim\n2. r1=+2, r2=+3 -> blim\n3. r1=+2, r2=-1 -> zark\n4. r1=+3, r2=+1 -> blim\n5. r1=+1, r2=-1 -> zark\n\nProbes:\n6. r1=-2, r2=-3 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=+1, r2=-2 -> ?\n9. r1=-3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0017.\n\nExamples:\n1. r1=-3, r2=-1 -> zark\n2. r1=-3, r2=+1 -> zark\n3. r1=+2, r2=+3 -> blim\n4. r1=-2, r2=+1 -> blim\n5. r1=-2, r2=+3 -> blim\n\nProbes:\n6. r1=-1, r2=+1 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=-3, r2=-2 -> ?\n9. r1=-2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_b",
+        "type_a",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "simple",
+      "rule_id": "sum_at_most_minus_two",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "sum_negative"
+    }
   },
   {
     "episode_id": "0018",
-    "group_id": "simple",
-    "prompt": "Solve the baseline classification slice for two markers. Episode 0018.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=+2, r2=-3 -> blim\n2. r1=+2, r2=+1 -> blim\n3. r1=-3, r2=+2 -> zark\n4. r1=+3, r2=+1 -> blim\n5. r1=+1, r2=+2 -> blim\n\nProbes:\n6. r1=-1, r2=+1 -> ?\n7. r1=+1, r2=-2 -> ?\n8. r1=+2, r2=+2 -> ?\n9. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_b",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0018.\n\nExamples:\n1. r1=+2, r2=+2 -> blim\n2. r1=+1, r2=-1 -> zark\n3. r1=+3, r2=-1 -> zark\n4. r1=-2, r2=+2 -> blim\n5. r1=-1, r2=-2 -> blim\n\nProbes:\n6. r1=+1, r2=+3 -> ?\n7. r1=+1, r2=-2 -> ?\n8. r1=+3, r2=-2 -> ?\n9. r1=-1, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "simple",
+      "rule_id": "diff_at_least_two",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "r2_negative"
+    }
   },
   {
     "episode_id": "0019",
-    "group_id": "simple",
-    "prompt": "Solve the baseline classification slice for two markers. Episode 0019.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=+1, r2=+1 -> blim\n2. r1=-3, r2=-2 -> blim\n3. r1=+3, r2=+3 -> zark\n4. r1=-1, r2=+1 -> blim\n5. r1=+1, r2=+2 -> zark\n\nProbes:\n6. r1=-3, r2=-3 -> ?\n7. r1=+1, r2=-1 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=-3, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0019.\n\nExamples:\n1. r1=+2, r2=+1 -> blim\n2. r1=+2, r2=+3 -> blim\n3. r1=+1, r2=+3 -> zark\n4. r1=+3, r2=+1 -> blim\n5. r1=-2, r2=+2 -> zark\n\nProbes:\n6. r1=+3, r2=-1 -> ?\n7. r1=-3, r2=+2 -> ?\n8. r1=+1, r2=-1 -> ?\n9. r1=-2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "simple",
+      "rule_id": "diff_at_most_minus_two",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "r1_negative"
+    }
   },
   {
     "episode_id": "0020",
-    "group_id": "simple",
-    "prompt": "Solve the baseline classification slice for two markers. Episode 0020.\nEach example directly reveals how the marker pair was labeled.\nInfer the rule from the examples, then label the probes in the same format.\nThis group is intentionally direct: no decoys, no hidden side conditions.\n\nExamples:\n1. r1=-1, r2=-2 -> blim\n2. r1=-1, r2=-1 -> blim\n3. r1=+1, r2=-2 -> blim\n4. r1=+1, r2=+1 -> zark\n5. r1=+3, r2=+3 -> zark\n\nProbes:\n6. r1=-1, r2=+2 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=+3, r2=-3 -> ?\n9. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_a",
-      "type_b",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0020.\n\nExamples:\n1. r1=+2, r2=+1 -> blim\n2. r1=-2, r2=-1 -> blim\n3. r1=+2, r2=+3 -> zark\n4. r1=-1, r2=-1 -> blim\n5. r1=+2, r2=+2 -> zark\n\nProbes:\n6. r1=-3, r2=-1 -> ?\n7. r1=+3, r2=-3 -> ?\n8. r1=-1, r2=+1 -> ?\n9. r1=-3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "simple",
+      "rule_id": "both_large_abs",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "abs_r1_lt_abs_r2"
+    }
   },
   {
     "episode_id": "0021",
-    "group_id": "exception",
-    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0021.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-2 | r2=-3 | observed=blim\n[02] r1=-1 | r2=-1 | observed=blim\n[03] r1=+1 | r2=-1 | observed=blim\n[04] r1=+3 | r2=-1 | observed=blim\n[05] r1=-1 | r2=-3 | observed=zark  <= exception-setting row\n\nRows to classify:\n[06] r1=-3 | r2=+1 | observed=?\n[07] r1=+2 | r2=+3 | observed=?\n[08] r1=-2 | r2=-2 | observed=?\n[09] r1=+2 | r2=-3 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0021.\n\nExamples:\n1. r1=-1, r2=-2 -> zark\n2. r1=-1, r2=+1 -> blim\n3. r1=+1, r2=-2 -> zark\n4. r1=-2, r2=+3 -> blim\n5. r1=+3, r2=+1 -> zark\n\nProbes:\n6. r1=-1, r2=+3 -> ?\n7. r1=+1, r2=-3 -> ?\n8. r1=-1, r2=-1 -> ?\n9. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_b",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "exception",
+      "rule_id": "r1_gt_r2",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "sum_negative"
+    }
   },
   {
     "episode_id": "0022",
-    "group_id": "exception",
-    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0022.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=+3 | r2=+1 | observed=blim\n[02] r1=+1 | r2=+3 | observed=blim\n[03] r1=+1 | r2=-3 | observed=blim\n[04] r1=-2 | r2=-1 | observed=zark\n[05] r1=-1 | r2=-1 | observed=zark  <= exception-setting row\n\nRows to classify:\n[06] r1=-2 | r2=-3 | observed=?\n[07] r1=+2 | r2=-1 | observed=?\n[08] r1=+2 | r2=+2 | observed=?\n[09] r1=-1 | r2=+1 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_b",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0022.\n\nExamples:\n1. r1=+2, r2=-1 -> blim\n2. r1=-3, r2=+1 -> zark\n3. r1=-2, r2=-2 -> blim\n4. r1=+3, r2=-2 -> blim\n5. r1=-3, r2=-2 -> zark\n\nProbes:\n6. r1=+3, r2=+3 -> ?\n7. r1=+2, r2=+1 -> ?\n8. r1=+1, r2=+2 -> ?\n9. r1=-2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_b",
+        "type_a",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "exception",
+      "rule_id": "r1_lt_r2",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "r2_positive"
+    }
   },
   {
     "episode_id": "0023",
-    "group_id": "exception",
-    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0023.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=+3 | r2=-1 | observed=zark\n[02] r1=+1 | r2=+3 | observed=blim\n[03] r1=+2 | r2=-1 | observed=blim\n[04] r1=+2 | r2=+3 | observed=zark\n[05] r1=+1 | r2=-3 | observed=blim  <= exception-setting row\n\nRows to classify:\n[06] r1=+3 | r2=-3 | observed=?\n[07] r1=-2 | r2=-1 | observed=?\n[08] r1=+3 | r2=+3 | observed=?\n[09] r1=-3 | r2=+1 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_b",
-      "type_a",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0023.\n\nExamples:\n1. r1=+2, r2=-2 -> blim\n2. r1=+2, r2=+3 -> zark\n3. r1=+3, r2=+2 -> zark\n4. r1=+3, r2=+1 -> zark\n5. r1=+3, r2=-2 -> zark\n\nProbes:\n6. r1=-2, r2=+3 -> ?\n7. r1=+1, r2=+2 -> ?\n8. r1=+2, r2=+2 -> ?\n9. r1=-1, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_a",
+        "type_a",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "exception",
+      "rule_id": "sum_positive",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "both_positive"
+    }
   },
   {
     "episode_id": "0024",
-    "group_id": "exception",
-    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0024.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=+3 | r2=-3 | observed=zark\n[02] r1=+3 | r2=-2 | observed=zark\n[03] r1=+1 | r2=-2 | observed=zark\n[04] r1=-3 | r2=-2 | observed=zark\n[05] r1=+3 | r2=-1 | observed=blim  <= exception-setting row\n\nRows to classify:\n[06] r1=-1 | r2=+2 | observed=?\n[07] r1=+1 | r2=+1 | observed=?\n[08] r1=-2 | r2=-3 | observed=?\n[09] r1=+2 | r2=-3 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0024.\n\nExamples:\n1. r1=-2, r2=+3 -> blim\n2. r1=+2, r2=+3 -> blim\n3. r1=-2, r2=+1 -> zark\n4. r1=+1, r2=-1 -> blim\n5. r1=-1, r2=-2 -> zark\n\nProbes:\n6. r1=-3, r2=-2 -> ?\n7. r1=+3, r2=+2 -> ?\n8. r1=+1, r2=-2 -> ?\n9. r1=-2, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "exception",
+      "rule_id": "sum_negative",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "abs_r1_gt_abs_r2"
+    }
   },
   {
     "episode_id": "0025",
-    "group_id": "exception",
-    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0025.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-1 | r2=+2 | observed=zark\n[02] r1=-1 | r2=-3 | observed=blim\n[03] r1=-1 | r2=-2 | observed=blim\n[04] r1=-3 | r2=-2 | observed=zark\n[05] r1=+1 | r2=-3 | observed=blim  <= exception-setting row\n\nRows to classify:\n[06] r1=-3 | r2=-1 | observed=?\n[07] r1=-2 | r2=+2 | observed=?\n[08] r1=+2 | r2=+1 | observed=?\n[09] r1=+1 | r2=-2 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_a",
-      "type_b",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0025.\n\nExamples:\n1. r1=+3, r2=+3 -> blim\n2. r1=+1, r2=-2 -> blim\n3. r1=-3, r2=+2 -> zark\n4. r1=-3, r2=-2 -> zark\n5. r1=+3, r2=+1 -> zark\n\nProbes:\n6. r1=-2, r2=-2 -> ?\n7. r1=+2, r2=+3 -> ?\n8. r1=+1, r2=+2 -> ?\n9. r1=+3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_b",
+        "type_b",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "exception",
+      "rule_id": "abs_r1_gt_abs_r2",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "r1_lt_r2"
+    }
   },
   {
     "episode_id": "0026",
-    "group_id": "exception",
-    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0026.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-3 | r2=+1 | observed=zark\n[02] r1=-1 | r2=+2 | observed=zark\n[03] r1=+2 | r2=-1 | observed=zark\n[04] r1=-2 | r2=-3 | observed=zark\n[05] r1=-3 | r2=+3 | observed=blim  <= exception-setting row\n\nRows to classify:\n[06] r1=-2 | r2=+1 | observed=?\n[07] r1=+2 | r2=+2 | observed=?\n[08] r1=+1 | r2=-3 | observed=?\n[09] r1=-2 | r2=-2 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_b",
-      "type_a",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0026.\n\nExamples:\n1. r1=-3, r2=+3 -> blim\n2. r1=-3, r2=-3 -> blim\n3. r1=-1, r2=-3 -> zark\n4. r1=+2, r2=+2 -> blim\n5. r1=-2, r2=+3 -> zark\n\nProbes:\n6. r1=+3, r2=+1 -> ?\n7. r1=-1, r2=+3 -> ?\n8. r1=-3, r2=+2 -> ?\n9. r1=-1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_b",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "exception",
+      "rule_id": "abs_r1_lt_abs_r2",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "diff_at_least_two"
+    }
   },
   {
     "episode_id": "0027",
-    "group_id": "exception",
-    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0027.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-1 | r2=-1 | observed=blim\n[02] r1=+1 | r2=+3 | observed=zark\n[03] r1=+1 | r2=+2 | observed=zark\n[04] r1=+2 | r2=-2 | observed=blim\n[05] r1=+2 | r2=+1 | observed=zark  <= exception-setting row\n\nRows to classify:\n[06] r1=+3 | r2=+1 | observed=?\n[07] r1=-2 | r2=-1 | observed=?\n[08] r1=-2 | r2=+1 | observed=?\n[09] r1=+1 | r2=-3 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0027.\n\nExamples:\n1. r1=+2, r2=+2 -> zark\n2. r1=+2, r2=-3 -> blim\n3. r1=-2, r2=+3 -> blim\n4. r1=-1, r2=+2 -> blim\n5. r1=-1, r2=+1 -> zark\n\nProbes:\n6. r1=-3, r2=-1 -> ?\n7. r1=+1, r2=-3 -> ?\n8. r1=-3, r2=+3 -> ?\n9. r1=-1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_b",
+        "type_a",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "exception",
+      "rule_id": "abs_equal",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "both_positive"
+    }
   },
   {
     "episode_id": "0028",
-    "group_id": "exception",
-    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0028.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-3 | r2=+1 | observed=zark\n[02] r1=+3 | r2=-3 | observed=blim\n[03] r1=+2 | r2=-3 | observed=blim\n[04] r1=-2 | r2=-2 | observed=zark\n[05] r1=+2 | r2=-2 | observed=blim  <= exception-setting row\n\nRows to classify:\n[06] r1=-2 | r2=+3 | observed=?\n[07] r1=+1 | r2=-3 | observed=?\n[08] r1=-2 | r2=-1 | observed=?\n[09] r1=+3 | r2=+3 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0028.\n\nExamples:\n1. r1=+1, r2=+2 -> zark\n2. r1=-3, r2=-3 -> blim\n3. r1=+2, r2=+3 -> zark\n4. r1=-2, r2=-3 -> blim\n5. r1=+1, r2=-1 -> zark\n\nProbes:\n6. r1=-1, r2=+1 -> ?\n7. r1=-2, r2=-2 -> ?\n8. r1=-1, r2=-1 -> ?\n9. r1=-2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_b",
+        "type_b",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "exception",
+      "rule_id": "r1_positive",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "r1_lt_r2"
+    }
   },
   {
     "episode_id": "0029",
-    "group_id": "exception",
-    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0029.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-3 | r2=+3 | observed=zark\n[02] r1=+1 | r2=+3 | observed=zark\n[03] r1=+2 | r2=-1 | observed=blim\n[04] r1=+3 | r2=+1 | observed=zark\n[05] r1=+1 | r2=-2 | observed=blim  <= exception-setting row\n\nRows to classify:\n[06] r1=+2 | r2=-2 | observed=?\n[07] r1=-2 | r2=+3 | observed=?\n[08] r1=+1 | r2=+1 | observed=?\n[09] r1=-3 | r2=-1 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0029.\n\nExamples:\n1. r1=-3, r2=-2 -> blim\n2. r1=-2, r2=-3 -> blim\n3. r1=-1, r2=-3 -> blim\n4. r1=+3, r2=+3 -> zark\n5. r1=-3, r2=+2 -> zark\n\nProbes:\n6. r1=+3, r2=-2 -> ?\n7. r1=+1, r2=-2 -> ?\n8. r1=-1, r2=-1 -> ?\n9. r1=+2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_b",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "exception",
+      "rule_id": "r2_positive",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "r1_positive"
+    }
   },
   {
     "episode_id": "0030",
-    "group_id": "exception",
-    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0030.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-2 | r2=+1 | observed=blim\n[02] r1=-2 | r2=-3 | observed=zark\n[03] r1=+2 | r2=-3 | observed=zark\n[04] r1=-1 | r2=-1 | observed=blim\n[05] r1=-3 | r2=-2 | observed=blim  <= exception-setting row\n\nRows to classify:\n[06] r1=-2 | r2=+2 | observed=?\n[07] r1=+2 | r2=+3 | observed=?\n[08] r1=+3 | r2=-3 | observed=?\n[09] r1=-2 | r2=-1 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0030.\n\nExamples:\n1. r1=+2, r2=+1 -> blim\n2. r1=+1, r2=+1 -> blim\n3. r1=+1, r2=+3 -> blim\n4. r1=-1, r2=-3 -> zark\n5. r1=-2, r2=+3 -> zark\n\nProbes:\n6. r1=+3, r2=+2 -> ?\n7. r1=+3, r2=-1 -> ?\n8. r1=-3, r2=-3 -> ?\n9. r1=+1, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_b",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "exception",
+      "rule_id": "r1_negative",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "diff_at_least_two"
+    }
   },
   {
     "episode_id": "0031",
-    "group_id": "exception",
-    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0031.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-3 | r2=-3 | observed=zark\n[02] r1=-2 | r2=-2 | observed=zark\n[03] r1=+1 | r2=+1 | observed=blim\n[04] r1=-1 | r2=+1 | observed=zark\n[05] r1=+3 | r2=+2 | observed=blim  <= exception-setting row\n\nRows to classify:\n[06] r1=-2 | r2=-1 | observed=?\n[07] r1=+2 | r2=+3 | observed=?\n[08] r1=-3 | r2=+3 | observed=?\n[09] r1=+2 | r2=-2 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0031.\n\nExamples:\n1. r1=-3, r2=+1 -> blim\n2. r1=-2, r2=+2 -> blim\n3. r1=+3, r2=-1 -> zark\n4. r1=-3, r2=+3 -> blim\n5. r1=-3, r2=-3 -> zark\n\nProbes:\n6. r1=+2, r2=-3 -> ?\n7. r1=-2, r2=+1 -> ?\n8. r1=+2, r2=+2 -> ?\n9. r1=-2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_b",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "exception",
+      "rule_id": "r2_negative",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "sum_at_least_two"
+    }
   },
   {
     "episode_id": "0032",
-    "group_id": "exception",
-    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0032.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-3 | r2=+1 | observed=blim\n[02] r1=+2 | r2=+2 | observed=zark\n[03] r1=+3 | r2=-2 | observed=zark\n[04] r1=+1 | r2=+1 | observed=blim\n[05] r1=+1 | r2=-2 | observed=zark  <= exception-setting row\n\nRows to classify:\n[06] r1=-2 | r2=+2 | observed=?\n[07] r1=+1 | r2=+2 | observed=?\n[08] r1=+2 | r2=-1 | observed=?\n[09] r1=-2 | r2=-2 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_b",
-      "type_a",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0032.\n\nExamples:\n1. r1=+2, r2=+3 -> zark\n2. r1=+1, r2=-1 -> blim\n3. r1=-3, r2=+1 -> blim\n4. r1=+3, r2=-1 -> blim\n5. r1=-2, r2=-3 -> blim\n\nProbes:\n6. r1=-2, r2=+2 -> ?\n7. r1=+1, r2=-2 -> ?\n8. r1=-1, r2=+3 -> ?\n9. r1=-2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_b",
+        "type_b",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "exception",
+      "rule_id": "both_positive",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "both_large_abs"
+    }
   },
   {
     "episode_id": "0033",
-    "group_id": "exception",
-    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0033.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-1 | r2=+2 | observed=blim\n[02] r1=-2 | r2=+1 | observed=blim\n[03] r1=+2 | r2=+1 | observed=zark\n[04] r1=-1 | r2=+3 | observed=zark\n[05] r1=+1 | r2=+2 | observed=blim  <= exception-setting row\n\nRows to classify:\n[06] r1=-2 | r2=-2 | observed=?\n[07] r1=+2 | r2=-2 | observed=?\n[08] r1=-3 | r2=+2 | observed=?\n[09] r1=+2 | r2=+3 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0033.\n\nExamples:\n1. r1=+2, r2=-3 -> blim\n2. r1=+1, r2=-3 -> blim\n3. r1=-1, r2=+3 -> blim\n4. r1=-2, r2=-2 -> zark\n5. r1=+3, r2=+3 -> blim\n\nProbes:\n6. r1=+1, r2=+1 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=+1, r2=+3 -> ?\n9. r1=+3, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_b",
+        "type_b",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "exception",
+      "rule_id": "both_negative",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "abs_equal"
+    }
   },
   {
     "episode_id": "0034",
-    "group_id": "exception",
-    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0034.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-1 | r2=-3 | observed=zark\n[02] r1=-3 | r2=-2 | observed=zark\n[03] r1=-2 | r2=-3 | observed=zark\n[04] r1=-3 | r2=-3 | observed=blim\n[05] r1=+3 | r2=-1 | observed=zark  <= exception-setting row\n\nRows to classify:\n[06] r1=+3 | r2=-3 | observed=?\n[07] r1=-1 | r2=-2 | observed=?\n[08] r1=+3 | r2=+2 | observed=?\n[09] r1=-3 | r2=+3 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0034.\n\nExamples:\n1. r1=+2, r2=-1 -> blim\n2. r1=+3, r2=-3 -> blim\n3. r1=+1, r2=+2 -> zark\n4. r1=+3, r2=+1 -> zark\n5. r1=-2, r2=-2 -> zark\n\nProbes:\n6. r1=-2, r2=+2 -> ?\n7. r1=+1, r2=+3 -> ?\n8. r1=-2, r2=+1 -> ?\n9. r1=+2, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "exception",
+      "rule_id": "same_sign",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "r2_positive"
+    }
   },
   {
     "episode_id": "0035",
-    "group_id": "exception",
-    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0035.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-1 | r2=-2 | observed=zark\n[02] r1=-1 | r2=+1 | observed=blim\n[03] r1=-3 | r2=+2 | observed=blim\n[04] r1=+2 | r2=+1 | observed=blim\n[05] r1=+1 | r2=-2 | observed=zark  <= exception-setting row\n\nRows to classify:\n[06] r1=-3 | r2=-1 | observed=?\n[07] r1=-1 | r2=+2 | observed=?\n[08] r1=+3 | r2=-3 | observed=?\n[09] r1=+1 | r2=+1 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0035.\n\nExamples:\n1. r1=-3, r2=-2 -> blim\n2. r1=+1, r2=+3 -> blim\n3. r1=+2, r2=-3 -> zark\n4. r1=-3, r2=-3 -> blim\n5. r1=+3, r2=+1 -> blim\n\nProbes:\n6. r1=+1, r2=+2 -> ?\n7. r1=-1, r2=+1 -> ?\n8. r1=+2, r2=-2 -> ?\n9. r1=-3, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_a",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "exception",
+      "rule_id": "opposite_sign",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "r1_gt_r2"
+    }
   },
   {
     "episode_id": "0036",
-    "group_id": "exception",
-    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0036.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=+1 | r2=+3 | observed=zark\n[02] r1=+2 | r2=-3 | observed=zark\n[03] r1=-2 | r2=-3 | observed=blim\n[04] r1=+3 | r2=-1 | observed=zark\n[05] r1=-2 | r2=-1 | observed=blim  <= exception-setting row\n\nRows to classify:\n[06] r1=+1 | r2=-3 | observed=?\n[07] r1=+3 | r2=+2 | observed=?\n[08] r1=-1 | r2=+2 | observed=?\n[09] r1=-3 | r2=-1 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_a",
-      "type_b",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0036.\n\nExamples:\n1. r1=-2, r2=-3 -> blim\n2. r1=+2, r2=-2 -> blim\n3. r1=+3, r2=-2 -> blim\n4. r1=+1, r2=+3 -> zark\n5. r1=+3, r2=-1 -> zark\n\nProbes:\n6. r1=-3, r2=+3 -> ?\n7. r1=+3, r2=-3 -> ?\n8. r1=+3, r2=+2 -> ?\n9. r1=+1, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_b",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "exception",
+      "rule_id": "sum_at_least_two",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "diff_at_most_minus_two"
+    }
   },
   {
     "episode_id": "0037",
-    "group_id": "exception",
-    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0037.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=+2 | r2=+3 | observed=zark\n[02] r1=-1 | r2=-1 | observed=blim\n[03] r1=-2 | r2=+3 | observed=zark\n[04] r1=-1 | r2=+2 | observed=zark\n[05] r1=-2 | r2=+1 | observed=zark  <= exception-setting row\n\nRows to classify:\n[06] r1=+1 | r2=-1 | observed=?\n[07] r1=-3 | r2=+2 | observed=?\n[08] r1=-3 | r2=-3 | observed=?\n[09] r1=+1 | r2=+1 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_b",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0037.\n\nExamples:\n1. r1=+2, r2=-1 -> blim\n2. r1=-3, r2=-3 -> zark\n3. r1=+3, r2=-1 -> blim\n4. r1=+1, r2=-2 -> blim\n5. r1=+1, r2=-3 -> zark\n\nProbes:\n6. r1=-3, r2=+1 -> ?\n7. r1=+3, r2=+3 -> ?\n8. r1=+1, r2=+2 -> ?\n9. r1=-2, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "exception",
+      "rule_id": "sum_at_most_minus_two",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "abs_equal"
+    }
   },
   {
     "episode_id": "0038",
-    "group_id": "exception",
-    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0038.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-3 | r2=-1 | observed=zark\n[02] r1=-1 | r2=+3 | observed=zark\n[03] r1=-2 | r2=+1 | observed=zark\n[04] r1=+3 | r2=+3 | observed=blim\n[05] r1=-1 | r2=+2 | observed=zark  <= exception-setting row\n\nRows to classify:\n[06] r1=-1 | r2=+1 | observed=?\n[07] r1=+3 | r2=-3 | observed=?\n[08] r1=+2 | r2=+3 | observed=?\n[09] r1=-2 | r2=-1 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_b",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0038.\n\nExamples:\n1. r1=-2, r2=+1 -> blim\n2. r1=-2, r2=-2 -> blim\n3. r1=-3, r2=-2 -> blim\n4. r1=+3, r2=+1 -> zark\n5. r1=+3, r2=+2 -> blim\n\nProbes:\n6. r1=+3, r2=-2 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=-1, r2=-2 -> ?\n9. r1=-1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_b",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "exception",
+      "rule_id": "diff_at_least_two",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "both_positive"
+    }
   },
   {
     "episode_id": "0039",
-    "group_id": "exception",
-    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0039.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=-2 | r2=-3 | observed=blim\n[02] r1=-1 | r2=-1 | observed=blim\n[03] r1=+1 | r2=-1 | observed=blim\n[04] r1=+3 | r2=-1 | observed=blim\n[05] r1=-1 | r2=-3 | observed=zark  <= exception-setting row\n\nRows to classify:\n[06] r1=-3 | r2=+1 | observed=?\n[07] r1=+2 | r2=+3 | observed=?\n[08] r1=-2 | r2=-2 | observed=?\n[09] r1=+2 | r2=-3 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0039.\n\nExamples:\n1. r1=-3, r2=-2 -> blim\n2. r1=-1, r2=+3 -> zark\n3. r1=+3, r2=+1 -> blim\n4. r1=+3, r2=+2 -> blim\n5. r1=+1, r2=-2 -> blim\n\nProbes:\n6. r1=+2, r2=-1 -> ?\n7. r1=-2, r2=+2 -> ?\n8. r1=-3, r2=-1 -> ?\n9. r1=+2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "exception",
+      "rule_id": "diff_at_most_minus_two",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "abs_r1_lt_abs_r2"
+    }
   },
   {
     "episode_id": "0040",
-    "group_id": "exception",
-    "prompt": "Resolve a rule-with-exception case for two markers. Episode 0040.\nMost rows suggest a broad pattern, but a later labeled row identifies the exception that must override the earlier shortcut.\nUse the final labeled evidence as authoritative when it conflicts with the simpler trend.\n\nObserved rows:\n[01] r1=+3 | r2=+1 | observed=blim\n[02] r1=+1 | r2=+3 | observed=blim\n[03] r1=+1 | r2=-3 | observed=blim\n[04] r1=-2 | r2=-1 | observed=zark\n[05] r1=-1 | r2=-1 | observed=zark  <= exception-setting row\n\nRows to classify:\n[06] r1=-2 | r2=-3 | observed=?\n[07] r1=+2 | r2=-1 | observed=?\n[08] r1=+2 | r2=+2 | observed=?\n[09] r1=-1 | r2=+1 | observed=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_b",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0040.\n\nExamples:\n1. r1=-2, r2=-2 -> zark\n2. r1=+2, r2=-2 -> zark\n3. r1=+2, r2=+1 -> blim\n4. r1=-3, r2=-2 -> zark\n5. r1=+2, r2=+3 -> zark\n\nProbes:\n6. r1=+1, r2=+3 -> ?\n7. r1=-1, r2=-1 -> ?\n8. r1=+2, r2=-3 -> ?\n9. r1=+3, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_b",
+        "type_a",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "exception",
+      "rule_id": "both_large_abs",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "r2_negative"
+    }
   },
   {
     "episode_id": "0041",
-    "group_id": "distractor",
-    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0041.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=archived :: r1=-2 ; r2=-2 ; state=blim\ncase 02 :: memo=reviewed :: r1=-3 ; r2=-2 ; state=blim\ncase 03 :: memo=duplicate-check :: r1=-3 ; r2=-1 ; state=zark\ncase 04 :: memo=queue-ok :: r1=-3 ; r2=+3 ; state=blim\ncase 05 :: memo=carry-forward :: r1=-1 ; r2=+2 ; state=blim\n\nPending file entries:\ncase 06 :: memo=duplicate-check :: r1=+1 ; r2=-1 ; state=?\ncase 07 :: memo=queue-ok :: r1=+2 ; r2=+2 ; state=?\ncase 08 :: memo=carry-forward :: r1=-2 ; r2=+2 ; state=?\ncase 09 :: memo=archived :: r1=-1 ; r2=-2 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_b",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0041.\n\nExamples:\n1. memo=queue-ok | r1=-1 | r2=-1 -> blim\n2. memo=reviewed | r1=+3 | r2=+1 -> zark\n3. memo=duplicate-check | r1=-1 | r2=+1 -> blim\n4. memo=carry-forward | r1=-2 | r2=-2 -> blim\n5. memo=duplicate-check | r1=-2 | r2=-3 -> zark\n\nProbes:\n6. memo=carry-forward | r1=+1 | r2=-1 -> ?\n7. memo=archived | r1=-3 | r2=+3 -> ?\n8. memo=reviewed | r1=+3 | r2=-1 -> ?\n9. memo=archived | r1=-1 | r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "distractor",
+      "rule_id": "r1_gt_r2",
+      "shortcut_type": "metadata_noise",
+      "shortcut_rule_id": null
+    }
   },
   {
     "episode_id": "0042",
-    "group_id": "distractor",
-    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0042.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=reviewed :: r1=+2 ; r2=+3 ; state=blim\ncase 02 :: memo=duplicate-check :: r1=+1 ; r2=+1 ; state=blim\ncase 03 :: memo=queue-ok :: r1=+3 ; r2=+2 ; state=zark\ncase 04 :: memo=carry-forward :: r1=-3 ; r2=+3 ; state=blim\ncase 05 :: memo=archived :: r1=-2 ; r2=+3 ; state=blim\n\nPending file entries:\ncase 06 :: memo=queue-ok :: r1=-1 ; r2=+2 ; state=?\ncase 07 :: memo=carry-forward :: r1=-3 ; r2=-2 ; state=?\ncase 08 :: memo=archived :: r1=+1 ; r2=+3 ; state=?\ncase 09 :: memo=reviewed :: r1=+1 ; r2=-2 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_b",
-      "type_a",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0042.\n\nExamples:\n1. memo=duplicate-check | r1=-1 | r2=-1 -> blim\n2. memo=reviewed | r1=-2 | r2=+3 -> zark\n3. memo=carry-forward | r1=+2 | r2=-3 -> blim\n4. memo=carry-forward | r1=-2 | r2=-1 -> zark\n5. memo=duplicate-check | r1=+3 | r2=+1 -> blim\n\nProbes:\n6. memo=reviewed | r1=+3 | r2=+2 -> ?\n7. memo=archived | r1=+1 | r2=+2 -> ?\n8. memo=queue-ok | r1=+3 | r2=-1 -> ?\n9. memo=archived | r1=-3 | r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "distractor",
+      "rule_id": "r1_lt_r2",
+      "shortcut_type": "metadata_noise",
+      "shortcut_rule_id": null
+    }
   },
   {
     "episode_id": "0043",
-    "group_id": "distractor",
-    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0043.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=duplicate-check :: r1=-1 ; r2=+1 ; state=zark\ncase 02 :: memo=queue-ok :: r1=+2 ; r2=+1 ; state=blim\ncase 03 :: memo=carry-forward :: r1=-3 ; r2=+1 ; state=blim\ncase 04 :: memo=archived :: r1=-1 ; r2=-1 ; state=zark\ncase 05 :: memo=reviewed :: r1=-3 ; r2=+3 ; state=blim\n\nPending file entries:\ncase 06 :: memo=carry-forward :: r1=+1 ; r2=+3 ; state=?\ncase 07 :: memo=archived :: r1=-1 ; r2=+3 ; state=?\ncase 08 :: memo=reviewed :: r1=-1 ; r2=-2 ; state=?\ncase 09 :: memo=duplicate-check :: r1=+3 ; r2=-1 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_b",
-      "type_a",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0043.\n\nExamples:\n1. memo=carry-forward | r1=-1 | r2=-2 -> blim\n2. memo=archived | r1=-2 | r2=+3 -> zark\n3. memo=queue-ok | r1=-3 | r2=+2 -> blim\n4. memo=duplicate-check | r1=+2 | r2=-3 -> blim\n5. memo=reviewed | r1=+2 | r2=-1 -> zark\n\nProbes:\n6. memo=archived | r1=+1 | r2=+3 -> ?\n7. memo=duplicate-check | r1=-3 | r2=+3 -> ?\n8. memo=reviewed | r1=+3 | r2=-3 -> ?\n9. memo=queue-ok | r1=+2 | r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "distractor",
+      "rule_id": "sum_positive",
+      "shortcut_type": "metadata_noise",
+      "shortcut_rule_id": null
+    }
   },
   {
     "episode_id": "0044",
-    "group_id": "distractor",
-    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0044.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=queue-ok :: r1=-3 ; r2=-3 ; state=blim\ncase 02 :: memo=carry-forward :: r1=-3 ; r2=+3 ; state=zark\ncase 03 :: memo=archived :: r1=-3 ; r2=-1 ; state=blim\ncase 04 :: memo=reviewed :: r1=-1 ; r2=-1 ; state=zark\ncase 05 :: memo=duplicate-check :: r1=-1 ; r2=+2 ; state=blim\n\nPending file entries:\ncase 06 :: memo=archived :: r1=+1 ; r2=-3 ; state=?\ncase 07 :: memo=reviewed :: r1=+1 ; r2=+3 ; state=?\ncase 08 :: memo=duplicate-check :: r1=-3 ; r2=-2 ; state=?\ncase 09 :: memo=queue-ok :: r1=-3 ; r2=+1 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0044.\n\nExamples:\n1. memo=carry-forward | r1=+3 | r2=+2 -> blim\n2. memo=carry-forward | r1=-1 | r2=+2 -> blim\n3. memo=queue-ok | r1=-2 | r2=+1 -> zark\n4. memo=duplicate-check | r1=-3 | r2=+2 -> zark\n5. memo=queue-ok | r1=+1 | r2=+3 -> blim\n\nProbes:\n6. memo=duplicate-check | r1=-1 | r2=-1 -> ?\n7. memo=reviewed | r1=+3 | r2=-3 -> ?\n8. memo=archived | r1=-2 | r2=-1 -> ?\n9. memo=reviewed | r1=+2 | r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "distractor",
+      "rule_id": "sum_negative",
+      "shortcut_type": "metadata_noise",
+      "shortcut_rule_id": null
+    }
   },
   {
     "episode_id": "0045",
-    "group_id": "distractor",
-    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0045.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=carry-forward :: r1=-1 ; r2=-2 ; state=blim\ncase 02 :: memo=archived :: r1=-2 ; r2=-2 ; state=blim\ncase 03 :: memo=reviewed :: r1=+2 ; r2=-2 ; state=zark\ncase 04 :: memo=duplicate-check :: r1=-2 ; r2=+1 ; state=blim\ncase 05 :: memo=queue-ok :: r1=+1 ; r2=+1 ; state=zark\n\nPending file entries:\ncase 06 :: memo=reviewed :: r1=+3 ; r2=-2 ; state=?\ncase 07 :: memo=duplicate-check :: r1=-1 ; r2=-1 ; state=?\ncase 08 :: memo=queue-ok :: r1=-2 ; r2=+3 ; state=?\ncase 09 :: memo=carry-forward :: r1=+3 ; r2=+1 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_b",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0045.\n\nExamples:\n1. memo=queue-ok | r1=+1 | r2=-2 -> blim\n2. memo=archived | r1=+3 | r2=+2 -> zark\n3. memo=queue-ok | r1=+1 | r2=+2 -> blim\n4. memo=duplicate-check | r1=-3 | r2=+1 -> zark\n5. memo=duplicate-check | r1=+1 | r2=-1 -> blim\n\nProbes:\n6. memo=carry-forward | r1=-3 | r2=-2 -> ?\n7. memo=carry-forward | r1=-2 | r2=+3 -> ?\n8. memo=reviewed | r1=-3 | r2=+3 -> ?\n9. memo=reviewed | r1=-3 | r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "distractor",
+      "rule_id": "abs_r1_gt_abs_r2",
+      "shortcut_type": "metadata_noise",
+      "shortcut_rule_id": null
+    }
   },
   {
     "episode_id": "0046",
-    "group_id": "distractor",
-    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0046.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=archived :: r1=+2 ; r2=-2 ; state=zark\ncase 02 :: memo=reviewed :: r1=-3 ; r2=-2 ; state=blim\ncase 03 :: memo=duplicate-check :: r1=+1 ; r2=-2 ; state=zark\ncase 04 :: memo=queue-ok :: r1=-1 ; r2=-3 ; state=zark\ncase 05 :: memo=carry-forward :: r1=-1 ; r2=+2 ; state=blim\n\nPending file entries:\ncase 06 :: memo=duplicate-check :: r1=-2 ; r2=+1 ; state=?\ncase 07 :: memo=queue-ok :: r1=+2 ; r2=-3 ; state=?\ncase 08 :: memo=carry-forward :: r1=+2 ; r2=+2 ; state=?\ncase 09 :: memo=archived :: r1=-2 ; r2=-3 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_b",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0046.\n\nExamples:\n1. memo=reviewed | r1=+2 | r2=+1 -> blim\n2. memo=queue-ok | r1=-1 | r2=+3 -> zark\n3. memo=carry-forward | r1=+3 | r2=-1 -> blim\n4. memo=archived | r1=+3 | r2=-3 -> blim\n5. memo=reviewed | r1=+1 | r2=-3 -> zark\n\nProbes:\n6. memo=carry-forward | r1=+1 | r2=+1 -> ?\n7. memo=queue-ok | r1=+1 | r2=+2 -> ?\n8. memo=duplicate-check | r1=+2 | r2=+3 -> ?\n9. memo=archived | r1=+1 | r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "distractor",
+      "rule_id": "abs_r1_lt_abs_r2",
+      "shortcut_type": "metadata_noise",
+      "shortcut_rule_id": null
+    }
   },
   {
     "episode_id": "0047",
-    "group_id": "distractor",
-    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0047.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=reviewed :: r1=-2 ; r2=+3 ; state=zark\ncase 02 :: memo=duplicate-check :: r1=-1 ; r2=-3 ; state=zark\ncase 03 :: memo=queue-ok :: r1=+3 ; r2=-1 ; state=blim\ncase 04 :: memo=carry-forward :: r1=+3 ; r2=-2 ; state=blim\ncase 05 :: memo=archived :: r1=-2 ; r2=-2 ; state=zark\n\nPending file entries:\ncase 06 :: memo=queue-ok :: r1=-3 ; r2=+3 ; state=?\ncase 07 :: memo=carry-forward :: r1=+1 ; r2=+3 ; state=?\ncase 08 :: memo=archived :: r1=+2 ; r2=-3 ; state=?\ncase 09 :: memo=reviewed :: r1=-1 ; r2=-1 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_b",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0047.\n\nExamples:\n1. memo=duplicate-check | r1=+1 | r2=-3 -> blim\n2. memo=carry-forward | r1=+2 | r2=+1 -> blim\n3. memo=carry-forward | r1=-1 | r2=-1 -> zark\n4. memo=archived | r1=+2 | r2=-1 -> blim\n5. memo=archived | r1=+3 | r2=-3 -> zark\n\nProbes:\n6. memo=queue-ok | r1=+2 | r2=+2 -> ?\n7. memo=duplicate-check | r1=+1 | r2=+1 -> ?\n8. memo=reviewed | r1=+3 | r2=+1 -> ?\n9. memo=reviewed | r1=+3 | r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_a",
+        "type_b",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "distractor",
+      "rule_id": "abs_equal",
+      "shortcut_type": "metadata_noise",
+      "shortcut_rule_id": null
+    }
   },
   {
     "episode_id": "0048",
-    "group_id": "distractor",
-    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0048.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=duplicate-check :: r1=+2 ; r2=+1 ; state=blim\ncase 02 :: memo=queue-ok :: r1=+1 ; r2=-2 ; state=blim\ncase 03 :: memo=carry-forward :: r1=+1 ; r2=-1 ; state=blim\ncase 04 :: memo=archived :: r1=-3 ; r2=-1 ; state=zark\ncase 05 :: memo=reviewed :: r1=+2 ; r2=-3 ; state=blim\n\nPending file entries:\ncase 06 :: memo=carry-forward :: r1=+1 ; r2=+3 ; state=?\ncase 07 :: memo=archived :: r1=-2 ; r2=-2 ; state=?\ncase 08 :: memo=reviewed :: r1=+3 ; r2=-3 ; state=?\ncase 09 :: memo=duplicate-check :: r1=-1 ; r2=+1 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_b",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0048.\n\nExamples:\n1. memo=carry-forward | r1=-1 | r2=-3 -> blim\n2. memo=carry-forward | r1=+3 | r2=+2 -> zark\n3. memo=duplicate-check | r1=-3 | r2=+3 -> blim\n4. memo=archived | r1=+2 | r2=-3 -> zark\n5. memo=archived | r1=-3 | r2=-2 -> blim\n\nProbes:\n6. memo=queue-ok | r1=+1 | r2=-2 -> ?\n7. memo=duplicate-check | r1=+1 | r2=+2 -> ?\n8. memo=queue-ok | r1=-2 | r2=+3 -> ?\n9. memo=reviewed | r1=-1 | r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_a",
+        "type_b",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "distractor",
+      "rule_id": "r1_positive",
+      "shortcut_type": "metadata_noise",
+      "shortcut_rule_id": null
+    }
   },
   {
     "episode_id": "0049",
-    "group_id": "distractor",
-    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0049.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=queue-ok :: r1=-3 ; r2=+2 ; state=zark\ncase 02 :: memo=carry-forward :: r1=+3 ; r2=-1 ; state=blim\ncase 03 :: memo=archived :: r1=+2 ; r2=+2 ; state=zark\ncase 04 :: memo=reviewed :: r1=+2 ; r2=+3 ; state=zark\ncase 05 :: memo=duplicate-check :: r1=+2 ; r2=+1 ; state=zark\n\nPending file entries:\ncase 06 :: memo=archived :: r1=+2 ; r2=-1 ; state=?\ncase 07 :: memo=reviewed :: r1=-2 ; r2=+2 ; state=?\ncase 08 :: memo=duplicate-check :: r1=+1 ; r2=+1 ; state=?\ncase 09 :: memo=queue-ok :: r1=-2 ; r2=-2 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0049.\n\nExamples:\n1. memo=duplicate-check | r1=+3 | r2=+1 -> zark\n2. memo=reviewed | r1=-3 | r2=-2 -> blim\n3. memo=queue-ok | r1=+2 | r2=-3 -> blim\n4. memo=carry-forward | r1=-3 | r2=-3 -> blim\n5. memo=carry-forward | r1=-2 | r2=+2 -> zark\n\nProbes:\n6. memo=queue-ok | r1=-2 | r2=+1 -> ?\n7. memo=reviewed | r1=+1 | r2=-2 -> ?\n8. memo=duplicate-check | r1=+2 | r2=+3 -> ?\n9. memo=archived | r1=+1 | r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "distractor",
+      "rule_id": "r2_positive",
+      "shortcut_type": "metadata_noise",
+      "shortcut_rule_id": null
+    }
   },
   {
     "episode_id": "0050",
-    "group_id": "distractor",
-    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0050.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=carry-forward :: r1=-1 ; r2=+2 ; state=blim\ncase 02 :: memo=archived :: r1=-2 ; r2=+2 ; state=blim\ncase 03 :: memo=reviewed :: r1=+2 ; r2=+1 ; state=blim\ncase 04 :: memo=duplicate-check :: r1=+2 ; r2=-1 ; state=zark\ncase 05 :: memo=queue-ok :: r1=+1 ; r2=-3 ; state=zark\n\nPending file entries:\ncase 06 :: memo=reviewed :: r1=+1 ; r2=+2 ; state=?\ncase 07 :: memo=duplicate-check :: r1=-3 ; r2=+1 ; state=?\ncase 08 :: memo=queue-ok :: r1=-3 ; r2=-2 ; state=?\ncase 09 :: memo=carry-forward :: r1=+3 ; r2=-3 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_b",
-      "type_a",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0050.\n\nExamples:\n1. memo=reviewed | r1=+2 | r2=+3 -> blim\n2. memo=queue-ok | r1=+2 | r2=-3 -> blim\n3. memo=duplicate-check | r1=+3 | r2=-2 -> blim\n4. memo=archived | r1=-2 | r2=+3 -> zark\n5. memo=reviewed | r1=-2 | r2=-1 -> zark\n\nProbes:\n6. memo=queue-ok | r1=+1 | r2=+2 -> ?\n7. memo=duplicate-check | r1=-3 | r2=+1 -> ?\n8. memo=carry-forward | r1=+1 | r2=+3 -> ?\n9. memo=archived | r1=-2 | r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "distractor",
+      "rule_id": "r1_negative",
+      "shortcut_type": "metadata_noise",
+      "shortcut_rule_id": null
+    }
   },
   {
     "episode_id": "0051",
-    "group_id": "distractor",
-    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0051.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=archived :: r1=+3 ; r2=-3 ; state=blim\ncase 02 :: memo=reviewed :: r1=+3 ; r2=+3 ; state=zark\ncase 03 :: memo=duplicate-check :: r1=+2 ; r2=-1 ; state=zark\ncase 04 :: memo=queue-ok :: r1=+2 ; r2=-2 ; state=zark\ncase 05 :: memo=carry-forward :: r1=-2 ; r2=-2 ; state=blim\n\nPending file entries:\ncase 06 :: memo=duplicate-check :: r1=+2 ; r2=+2 ; state=?\ncase 07 :: memo=queue-ok :: r1=+3 ; r2=-2 ; state=?\ncase 08 :: memo=carry-forward :: r1=-3 ; r2=+3 ; state=?\ncase 09 :: memo=archived :: r1=-3 ; r2=-1 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_a",
-      "type_b",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0051.\n\nExamples:\n1. memo=queue-ok | r1=+2 | r2=+1 -> blim\n2. memo=carry-forward | r1=-1 | r2=+1 -> blim\n3. memo=reviewed | r1=+2 | r2=-1 -> zark\n4. memo=duplicate-check | r1=-3 | r2=-1 -> zark\n5. memo=archived | r1=+2 | r2=+2 -> blim\n\nProbes:\n6. memo=queue-ok | r1=-3 | r2=-3 -> ?\n7. memo=reviewed | r1=-3 | r2=+3 -> ?\n8. memo=archived | r1=-3 | r2=-2 -> ?\n9. memo=carry-forward | r1=-2 | r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "distractor",
+      "rule_id": "r2_negative",
+      "shortcut_type": "metadata_noise",
+      "shortcut_rule_id": null
+    }
   },
   {
     "episode_id": "0052",
-    "group_id": "distractor",
-    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0052.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=reviewed :: r1=+2 ; r2=-2 ; state=blim\ncase 02 :: memo=duplicate-check :: r1=-2 ; r2=+2 ; state=blim\ncase 03 :: memo=queue-ok :: r1=+1 ; r2=+3 ; state=blim\ncase 04 :: memo=carry-forward :: r1=+2 ; r2=-1 ; state=zark\ncase 05 :: memo=archived :: r1=+3 ; r2=+2 ; state=blim\n\nPending file entries:\ncase 06 :: memo=queue-ok :: r1=-1 ; r2=+2 ; state=?\ncase 07 :: memo=carry-forward :: r1=+3 ; r2=+1 ; state=?\ncase 08 :: memo=archived :: r1=+3 ; r2=-2 ; state=?\ncase 09 :: memo=reviewed :: r1=-3 ; r2=-2 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_b",
-      "type_a",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0052.\n\nExamples:\n1. memo=reviewed | r1=-2 | r2=-3 -> blim\n2. memo=duplicate-check | r1=+2 | r2=+1 -> zark\n3. memo=carry-forward | r1=-3 | r2=+2 -> blim\n4. memo=archived | r1=+3 | r2=-1 -> blim\n5. memo=duplicate-check | r1=+3 | r2=+3 -> zark\n\nProbes:\n6. memo=reviewed | r1=-1 | r2=-1 -> ?\n7. memo=archived | r1=+3 | r2=+2 -> ?\n8. memo=queue-ok | r1=+1 | r2=+3 -> ?\n9. memo=queue-ok | r1=-2 | r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "distractor",
+      "rule_id": "both_positive",
+      "shortcut_type": "metadata_noise",
+      "shortcut_rule_id": null
+    }
   },
   {
     "episode_id": "0053",
-    "group_id": "distractor",
-    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0053.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=duplicate-check :: r1=-3 ; r2=-3 ; state=zark\ncase 02 :: memo=queue-ok :: r1=-1 ; r2=-1 ; state=zark\ncase 03 :: memo=carry-forward :: r1=-3 ; r2=-1 ; state=zark\ncase 04 :: memo=archived :: r1=-2 ; r2=-2 ; state=blim\ncase 05 :: memo=reviewed :: r1=+3 ; r2=-2 ; state=zark\n\nPending file entries:\ncase 06 :: memo=carry-forward :: r1=-3 ; r2=+2 ; state=?\ncase 07 :: memo=archived :: r1=+2 ; r2=+2 ; state=?\ncase 08 :: memo=reviewed :: r1=+1 ; r2=-1 ; state=?\ncase 09 :: memo=duplicate-check :: r1=-2 ; r2=-3 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0053.\n\nExamples:\n1. memo=reviewed | r1=-2 | r2=-1 -> zark\n2. memo=reviewed | r1=+3 | r2=+1 -> blim\n3. memo=queue-ok | r1=-2 | r2=+1 -> blim\n4. memo=queue-ok | r1=-1 | r2=-3 -> zark\n5. memo=archived | r1=+1 | r2=-3 -> blim\n\nProbes:\n6. memo=carry-forward | r1=-1 | r2=+2 -> ?\n7. memo=duplicate-check | r1=-1 | r2=-2 -> ?\n8. memo=duplicate-check | r1=-3 | r2=+3 -> ?\n9. memo=archived | r1=-1 | r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "distractor",
+      "rule_id": "both_negative",
+      "shortcut_type": "metadata_noise",
+      "shortcut_rule_id": null
+    }
   },
   {
     "episode_id": "0054",
-    "group_id": "distractor",
-    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0054.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=queue-ok :: r1=+2 ; r2=+2 ; state=zark\ncase 02 :: memo=carry-forward :: r1=+2 ; r2=-2 ; state=blim\ncase 03 :: memo=archived :: r1=-1 ; r2=-3 ; state=zark\ncase 04 :: memo=reviewed :: r1=+2 ; r2=+1 ; state=blim\ncase 05 :: memo=duplicate-check :: r1=+1 ; r2=-3 ; state=zark\n\nPending file entries:\ncase 06 :: memo=archived :: r1=-2 ; r2=-1 ; state=?\ncase 07 :: memo=reviewed :: r1=-1 ; r2=+3 ; state=?\ncase 08 :: memo=duplicate-check :: r1=+3 ; r2=+1 ; state=?\ncase 09 :: memo=queue-ok :: r1=+3 ; r2=-1 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_b",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0054.\n\nExamples:\n1. memo=archived | r1=-3 | r2=-3 -> zark\n2. memo=duplicate-check | r1=+1 | r2=-2 -> blim\n3. memo=archived | r1=-2 | r2=+1 -> blim\n4. memo=queue-ok | r1=+1 | r2=-1 -> blim\n5. memo=duplicate-check | r1=+2 | r2=+1 -> zark\n\nProbes:\n6. memo=carry-forward | r1=-1 | r2=-3 -> ?\n7. memo=reviewed | r1=-3 | r2=+1 -> ?\n8. memo=reviewed | r1=-2 | r2=+2 -> ?\n9. memo=carry-forward | r1=-1 | r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "distractor",
+      "rule_id": "same_sign",
+      "shortcut_type": "metadata_noise",
+      "shortcut_rule_id": null
+    }
   },
   {
     "episode_id": "0055",
-    "group_id": "distractor",
-    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0055.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=carry-forward :: r1=+3 ; r2=+2 ; state=zark\ncase 02 :: memo=archived :: r1=-2 ; r2=+2 ; state=blim\ncase 03 :: memo=reviewed :: r1=+2 ; r2=+3 ; state=zark\ncase 04 :: memo=duplicate-check :: r1=-1 ; r2=-1 ; state=blim\ncase 05 :: memo=queue-ok :: r1=-1 ; r2=+3 ; state=zark\n\nPending file entries:\ncase 06 :: memo=reviewed :: r1=+3 ; r2=+3 ; state=?\ncase 07 :: memo=duplicate-check :: r1=-2 ; r2=+1 ; state=?\ncase 08 :: memo=queue-ok :: r1=-3 ; r2=-2 ; state=?\ncase 09 :: memo=carry-forward :: r1=+3 ; r2=-1 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_a",
-      "type_b",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0055.\n\nExamples:\n1. memo=carry-forward | r1=+2 | r2=-1 -> zark\n2. memo=queue-ok | r1=-2 | r2=+3 -> zark\n3. memo=queue-ok | r1=+3 | r2=+2 -> blim\n4. memo=archived | r1=-2 | r2=-1 -> blim\n5. memo=duplicate-check | r1=-3 | r2=-3 -> blim\n\nProbes:\n6. memo=reviewed | r1=+2 | r2=+3 -> ?\n7. memo=reviewed | r1=+1 | r2=+2 -> ?\n8. memo=carry-forward | r1=+2 | r2=-3 -> ?\n9. memo=archived | r1=+1 | r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_b",
+        "type_a",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "distractor",
+      "rule_id": "opposite_sign",
+      "shortcut_type": "metadata_noise",
+      "shortcut_rule_id": null
+    }
   },
   {
     "episode_id": "0056",
-    "group_id": "distractor",
-    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0056.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=archived :: r1=-2 ; r2=-1 ; state=zark\ncase 02 :: memo=reviewed :: r1=-2 ; r2=+2 ; state=zark\ncase 03 :: memo=duplicate-check :: r1=-3 ; r2=-1 ; state=blim\ncase 04 :: memo=queue-ok :: r1=-2 ; r2=-3 ; state=blim\ncase 05 :: memo=carry-forward :: r1=-1 ; r2=+3 ; state=zark\n\nPending file entries:\ncase 06 :: memo=duplicate-check :: r1=-3 ; r2=-2 ; state=?\ncase 07 :: memo=queue-ok :: r1=+3 ; r2=+1 ; state=?\ncase 08 :: memo=carry-forward :: r1=+3 ; r2=-2 ; state=?\ncase 09 :: memo=archived :: r1=-3 ; r2=+2 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_b",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0056.\n\nExamples:\n1. memo=queue-ok | r1=-1 | r2=+1 -> blim\n2. memo=reviewed | r1=-1 | r2=+2 -> blim\n3. memo=carry-forward | r1=-3 | r2=+2 -> blim\n4. memo=carry-forward | r1=-1 | r2=+3 -> zark\n5. memo=archived | r1=+2 | r2=+3 -> zark\n\nProbes:\n6. memo=reviewed | r1=+3 | r2=+3 -> ?\n7. memo=duplicate-check | r1=-3 | r2=-1 -> ?\n8. memo=archived | r1=-3 | r2=+3 -> ?\n9. memo=queue-ok | r1=+3 | r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "distractor",
+      "rule_id": "sum_at_least_two",
+      "shortcut_type": "metadata_noise",
+      "shortcut_rule_id": null
+    }
   },
   {
     "episode_id": "0057",
-    "group_id": "distractor",
-    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0057.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=reviewed :: r1=+3 ; r2=+1 ; state=zark\ncase 02 :: memo=duplicate-check :: r1=-1 ; r2=-1 ; state=blim\ncase 03 :: memo=queue-ok :: r1=-2 ; r2=-2 ; state=blim\ncase 04 :: memo=carry-forward :: r1=+2 ; r2=-2 ; state=zark\ncase 05 :: memo=archived :: r1=+2 ; r2=-3 ; state=zark\n\nPending file entries:\ncase 06 :: memo=queue-ok :: r1=+1 ; r2=-2 ; state=?\ncase 07 :: memo=carry-forward :: r1=-2 ; r2=-1 ; state=?\ncase 08 :: memo=archived :: r1=+1 ; r2=+2 ; state=?\ncase 09 :: memo=reviewed :: r1=-1 ; r2=+3 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0057.\n\nExamples:\n1. memo=archived | r1=+3 | r2=-1 -> blim\n2. memo=reviewed | r1=+1 | r2=-3 -> zark\n3. memo=queue-ok | r1=-3 | r2=-1 -> zark\n4. memo=carry-forward | r1=-3 | r2=+2 -> blim\n5. memo=duplicate-check | r1=+3 | r2=+1 -> blim\n\nProbes:\n6. memo=duplicate-check | r1=+2 | r2=+3 -> ?\n7. memo=queue-ok | r1=-3 | r2=-2 -> ?\n8. memo=reviewed | r1=+3 | r2=+3 -> ?\n9. memo=carry-forward | r1=-1 | r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "distractor",
+      "rule_id": "sum_at_most_minus_two",
+      "shortcut_type": "metadata_noise",
+      "shortcut_rule_id": null
+    }
   },
   {
     "episode_id": "0058",
-    "group_id": "distractor",
-    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0058.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=duplicate-check :: r1=-3 ; r2=-2 ; state=zark\ncase 02 :: memo=queue-ok :: r1=+1 ; r2=+3 ; state=blim\ncase 03 :: memo=carry-forward :: r1=+2 ; r2=+3 ; state=blim\ncase 04 :: memo=archived :: r1=+3 ; r2=-2 ; state=zark\ncase 05 :: memo=reviewed :: r1=+3 ; r2=-3 ; state=zark\n\nPending file entries:\ncase 06 :: memo=carry-forward :: r1=+3 ; r2=+1 ; state=?\ncase 07 :: memo=archived :: r1=-3 ; r2=+2 ; state=?\ncase 08 :: memo=reviewed :: r1=+3 ; r2=-1 ; state=?\ncase 09 :: memo=duplicate-check :: r1=-2 ; r2=-3 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_b",
-      "type_a",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0058.\n\nExamples:\n1. memo=carry-forward | r1=-1 | r2=-3 -> zark\n2. memo=reviewed | r1=+1 | r2=+1 -> blim\n3. memo=queue-ok | r1=-1 | r2=+1 -> blim\n4. memo=duplicate-check | r1=+2 | r2=+1 -> blim\n5. memo=carry-forward | r1=+3 | r2=+1 -> zark\n\nProbes:\n6. memo=duplicate-check | r1=-1 | r2=+3 -> ?\n7. memo=queue-ok | r1=+2 | r2=-1 -> ?\n8. memo=archived | r1=+1 | r2=-2 -> ?\n9. memo=reviewed | r1=-1 | r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "distractor",
+      "rule_id": "diff_at_least_two",
+      "shortcut_type": "metadata_noise",
+      "shortcut_rule_id": null
+    }
   },
   {
     "episode_id": "0059",
-    "group_id": "distractor",
-    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0059.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=queue-ok :: r1=-2 ; r2=-2 ; state=blim\ncase 02 :: memo=carry-forward :: r1=-3 ; r2=-2 ; state=blim\ncase 03 :: memo=archived :: r1=-3 ; r2=-1 ; state=zark\ncase 04 :: memo=reviewed :: r1=-3 ; r2=+3 ; state=blim\ncase 05 :: memo=duplicate-check :: r1=-1 ; r2=+2 ; state=blim\n\nPending file entries:\ncase 06 :: memo=archived :: r1=+1 ; r2=-1 ; state=?\ncase 07 :: memo=reviewed :: r1=+2 ; r2=+2 ; state=?\ncase 08 :: memo=duplicate-check :: r1=-2 ; r2=+2 ; state=?\ncase 09 :: memo=queue-ok :: r1=-1 ; r2=-2 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_b",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0059.\n\nExamples:\n1. memo=archived | r1=-3 | r2=-2 -> blim\n2. memo=duplicate-check | r1=-2 | r2=+1 -> zark\n3. memo=archived | r1=-2 | r2=+2 -> zark\n4. memo=queue-ok | r1=+3 | r2=+2 -> blim\n5. memo=reviewed | r1=+2 | r2=-2 -> blim\n\nProbes:\n6. memo=carry-forward | r1=-3 | r2=-1 -> ?\n7. memo=reviewed | r1=+3 | r2=-1 -> ?\n8. memo=queue-ok | r1=-2 | r2=+3 -> ?\n9. memo=duplicate-check | r1=+3 | r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "distractor",
+      "rule_id": "diff_at_most_minus_two",
+      "shortcut_type": "metadata_noise",
+      "shortcut_rule_id": null
+    }
   },
   {
     "episode_id": "0060",
-    "group_id": "distractor",
-    "prompt": "Work through a distractor-heavy case file for two markers. Episode 0060.\nIgnore the audit tags and memo fields; they are bookkeeping noise and do not determine the label.\nOnly the r1/r2 patterns and the labeled states matter for the probes.\n\nCase file:\ncase 01 :: memo=carry-forward :: r1=+2 ; r2=+3 ; state=blim\ncase 02 :: memo=archived :: r1=+1 ; r2=+1 ; state=blim\ncase 03 :: memo=reviewed :: r1=+3 ; r2=+2 ; state=zark\ncase 04 :: memo=duplicate-check :: r1=-3 ; r2=+3 ; state=blim\ncase 05 :: memo=queue-ok :: r1=-2 ; r2=+3 ; state=blim\n\nPending file entries:\ncase 06 :: memo=reviewed :: r1=-1 ; r2=+2 ; state=?\ncase 07 :: memo=duplicate-check :: r1=-3 ; r2=-2 ; state=?\ncase 08 :: memo=queue-ok :: r1=+1 ; r2=+3 ; state=?\ncase 09 :: memo=carry-forward :: r1=+1 ; r2=-2 ; state=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_b",
-      "type_a",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0060.\n\nExamples:\n1. memo=carry-forward | r1=-2 | r2=-2 -> zark\n2. memo=reviewed | r1=-3 | r2=+3 -> zark\n3. memo=reviewed | r1=+3 | r2=+1 -> blim\n4. memo=queue-ok | r1=-3 | r2=-1 -> blim\n5. memo=archived | r1=-1 | r2=+1 -> blim\n\nProbes:\n6. memo=queue-ok | r1=-1 | r2=+3 -> ?\n7. memo=duplicate-check | r1=-2 | r2=-1 -> ?\n8. memo=carry-forward | r1=-2 | r2=+2 -> ?\n9. memo=duplicate-check | r1=+2 | r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_b",
+        "type_a",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "distractor",
+      "rule_id": "both_large_abs",
+      "shortcut_type": "metadata_noise",
+      "shortcut_rule_id": null
+    }
   },
   {
     "episode_id": "0061",
-    "group_id": "multi-step",
-    "prompt": "Solve the multi-step inference slice for two markers. Episode 0061.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=+3, r2=+3, mark=blim\nitem 02 => r1=-2, r2=-3, mark=blim\nitem 03 => r1=+1, r2=+1, mark=zark\nitem 04 => r1=-1, r2=+3, mark=blim\nitem 05 => r1=+3, r2=+2, mark=zark\n\nProbe block:\nitem 06 => r1=-2, r2=-2, mark=?\nitem 07 => r1=+3, r2=-1, mark=?\nitem 08 => r1=+2, r2=+3, mark=?\nitem 09 => r1=-2, r2=+2, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0061.\n\nExamples:\n1. r1=-3, r2=-1 -> blim\n2. r1=+1, r2=-3 -> zark\n3. r1=-3, r2=-2 -> blim\n4. r1=+1, r2=+3 -> blim\n5. r1=+3, r2=+2 -> zark\n\nProbes:\n6. r1=-1, r2=-3 -> ?\n7. r1=-1, r2=+2 -> ?\n8. r1=-1, r2=-2 -> ?\n9. r1=-3, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "hard",
+      "rule_id": "r1_gt_r2",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "opposite_sign"
+    }
   },
   {
     "episode_id": "0062",
-    "group_id": "multi-step",
-    "prompt": "Solve the multi-step inference slice for two markers. Episode 0062.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-1, r2=-3, mark=blim\nitem 02 => r1=-1, r2=-1, mark=blim\nitem 03 => r1=+3, r2=-3, mark=blim\nitem 04 => r1=+3, r2=+3, mark=zark\nitem 05 => r1=+1, r2=+1, mark=zark\n\nProbe block:\nitem 06 => r1=-1, r2=+2, mark=?\nitem 07 => r1=+2, r2=+2, mark=?\nitem 08 => r1=+1, r2=-2, mark=?\nitem 09 => r1=-2, r2=-2, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_a",
-      "type_b",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0062.\n\nExamples:\n1. r1=-3, r2=-3 -> blim\n2. r1=-1, r2=+3 -> zark\n3. r1=+1, r2=+1 -> blim\n4. r1=-1, r2=-2 -> blim\n5. r1=-2, r2=-1 -> zark\n\nProbes:\n6. r1=+2, r2=+3 -> ?\n7. r1=+1, r2=-1 -> ?\n8. r1=+1, r2=-2 -> ?\n9. r1=+1, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "hard",
+      "rule_id": "r1_lt_r2",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "opposite_sign"
+    }
   },
   {
     "episode_id": "0063",
-    "group_id": "multi-step",
-    "prompt": "Solve the multi-step inference slice for two markers. Episode 0063.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=+1, r2=-1, mark=zark\nitem 02 => r1=+1, r2=-3, mark=zark\nitem 03 => r1=-1, r2=+2, mark=blim\nitem 04 => r1=+2, r2=+1, mark=zark\nitem 05 => r1=+2, r2=+3, mark=zark\n\nProbe block:\nitem 06 => r1=+2, r2=+2, mark=?\nitem 07 => r1=-1, r2=-2, mark=?\nitem 08 => r1=-1, r2=+1, mark=?\nitem 09 => r1=+3, r2=-2, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_b",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0063.\n\nExamples:\n1. r1=+3, r2=-2 -> zark\n2. r1=-2, r2=-2 -> blim\n3. r1=-2, r2=-1 -> blim\n4. r1=+2, r2=-1 -> zark\n5. r1=+2, r2=-2 -> blim\n\nProbes:\n6. r1=-2, r2=+1 -> ?\n7. r1=+1, r2=+3 -> ?\n8. r1=+2, r2=+2 -> ?\n9. r1=-1, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "hard",
+      "rule_id": "sum_positive",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "r1_positive"
+    }
   },
   {
     "episode_id": "0064",
-    "group_id": "multi-step",
-    "prompt": "Solve the multi-step inference slice for two markers. Episode 0064.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-3, r2=+3, mark=zark\nitem 02 => r1=-3, r2=+1, mark=zark\nitem 03 => r1=-2, r2=+1, mark=zark\nitem 04 => r1=-1, r2=-3, mark=zark\nitem 05 => r1=+1, r2=-3, mark=blim\n\nProbe block:\nitem 06 => r1=-2, r2=+2, mark=?\nitem 07 => r1=+2, r2=+2, mark=?\nitem 08 => r1=-1, r2=-1, mark=?\nitem 09 => r1=+1, r2=-2, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0064.\n\nExamples:\n1. r1=+1, r2=+2 -> blim\n2. r1=+1, r2=-2 -> zark\n3. r1=-1, r2=-3 -> zark\n4. r1=-1, r2=+2 -> blim\n5. r1=+3, r2=-1 -> blim\n\nProbes:\n6. r1=+2, r2=+1 -> ?\n7. r1=-2, r2=-2 -> ?\n8. r1=+2, r2=-1 -> ?\n9. r1=-2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "hard",
+      "rule_id": "sum_negative",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "r2_negative"
+    }
   },
   {
     "episode_id": "0065",
-    "group_id": "multi-step",
-    "prompt": "Solve the multi-step inference slice for two markers. Episode 0065.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-2, r2=+3, mark=zark\nitem 02 => r1=-3, r2=+2, mark=zark\nitem 03 => r1=+1, r2=-2, mark=zark\nitem 04 => r1=-3, r2=+1, mark=blim\nitem 05 => r1=-1, r2=-2, mark=zark\n\nProbe block:\nitem 06 => r1=+2, r2=+1, mark=?\nitem 07 => r1=+2, r2=-3, mark=?\nitem 08 => r1=-1, r2=+2, mark=?\nitem 09 => r1=-2, r2=-2, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_b",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0065.\n\nExamples:\n1. r1=+3, r2=+2 -> zark\n2. r1=-1, r2=-3 -> blim\n3. r1=-1, r2=-2 -> blim\n4. r1=+2, r2=-2 -> blim\n5. r1=-3, r2=-1 -> zark\n\nProbes:\n6. r1=+2, r2=+2 -> ?\n7. r1=+2, r2=-1 -> ?\n8. r1=-3, r2=+2 -> ?\n9. r1=-2, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "hard",
+      "rule_id": "abs_r1_gt_abs_r2",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "sum_positive"
+    }
   },
   {
     "episode_id": "0066",
-    "group_id": "multi-step",
-    "prompt": "Solve the multi-step inference slice for two markers. Episode 0066.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=+3, r2=-3, mark=zark\nitem 02 => r1=-3, r2=+1, mark=zark\nitem 03 => r1=-2, r2=-1, mark=blim\nitem 04 => r1=-2, r2=+1, mark=blim\nitem 05 => r1=+3, r2=+1, mark=zark\n\nProbe block:\nitem 06 => r1=-3, r2=-2, mark=?\nitem 07 => r1=-1, r2=+2, mark=?\nitem 08 => r1=+1, r2=+1, mark=?\nitem 09 => r1=+2, r2=-2, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_b",
-      "type_a",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0066.\n\nExamples:\n1. r1=+1, r2=+2 -> zark\n2. r1=+1, r2=+3 -> zark\n3. r1=-3, r2=-1 -> blim\n4. r1=+1, r2=-1 -> blim\n5. r1=+3, r2=+1 -> blim\n\nProbes:\n6. r1=+3, r2=-2 -> ?\n7. r1=+1, r2=-3 -> ?\n8. r1=-2, r2=+3 -> ?\n9. r1=-1, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "hard",
+      "rule_id": "abs_r1_lt_abs_r2",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "sum_positive"
+    }
   },
   {
     "episode_id": "0067",
-    "group_id": "multi-step",
-    "prompt": "Solve the multi-step inference slice for two markers. Episode 0067.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-3, r2=-3, mark=blim\nitem 02 => r1=-2, r2=-3, mark=zark\nitem 03 => r1=-1, r2=-1, mark=zark\nitem 04 => r1=+2, r2=-2, mark=blim\nitem 05 => r1=+2, r2=-3, mark=blim\n\nProbe block:\nitem 06 => r1=-1, r2=+2, mark=?\nitem 07 => r1=-2, r2=-1, mark=?\nitem 08 => r1=+2, r2=+2, mark=?\nitem 09 => r1=+3, r2=-3, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_a",
-      "type_b",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0067.\n\nExamples:\n1. r1=-2, r2=-2 -> zark\n2. r1=+1, r2=-2 -> blim\n3. r1=-3, r2=-3 -> zark\n4. r1=+1, r2=+3 -> blim\n5. r1=-3, r2=-2 -> blim\n\nProbes:\n6. r1=-3, r2=-1 -> ?\n7. r1=+1, r2=+1 -> ?\n8. r1=-1, r2=-1 -> ?\n9. r1=+2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "hard",
+      "rule_id": "abs_equal",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "sum_at_most_minus_two"
+    }
   },
   {
     "episode_id": "0068",
-    "group_id": "multi-step",
-    "prompt": "Solve the multi-step inference slice for two markers. Episode 0068.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-2, r2=-2, mark=blim\nitem 02 => r1=+3, r2=-2, mark=blim\nitem 03 => r1=+1, r2=-2, mark=blim\nitem 04 => r1=+3, r2=+2, mark=zark\nitem 05 => r1=+1, r2=+1, mark=zark\n\nProbe block:\nitem 06 => r1=+3, r2=-3, mark=?\nitem 07 => r1=+2, r2=+3, mark=?\nitem 08 => r1=-2, r2=+3, mark=?\nitem 09 => r1=-3, r2=-1, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0068.\n\nExamples:\n1. r1=-3, r2=+3 -> blim\n2. r1=-3, r2=+1 -> blim\n3. r1=+2, r2=-2 -> zark\n4. r1=-2, r2=-2 -> blim\n5. r1=+1, r2=+1 -> zark\n\nProbes:\n6. r1=-2, r2=-3 -> ?\n7. r1=-1, r2=-2 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=+3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_b",
+        "type_a",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "hard",
+      "rule_id": "r1_positive",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "r1_gt_r2"
+    }
   },
   {
     "episode_id": "0069",
-    "group_id": "multi-step",
-    "prompt": "Solve the multi-step inference slice for two markers. Episode 0069.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-3, r2=-1, mark=blim\nitem 02 => r1=+1, r2=+2, mark=zark\nitem 03 => r1=+3, r2=-1, mark=blim\nitem 04 => r1=+3, r2=-2, mark=blim\nitem 05 => r1=+2, r2=-3, mark=blim\n\nProbe block:\nitem 06 => r1=+1, r2=+1, mark=?\nitem 07 => r1=-2, r2=+1, mark=?\nitem 08 => r1=+3, r2=-3, mark=?\nitem 09 => r1=-1, r2=-1, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_a",
-      "type_b",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0069.\n\nExamples:\n1. r1=-1, r2=-3 -> blim\n2. r1=+3, r2=+3 -> zark\n3. r1=+3, r2=-2 -> blim\n4. r1=-1, r2=-2 -> blim\n5. r1=-2, r2=+3 -> zark\n\nProbes:\n6. r1=-3, r2=+3 -> ?\n7. r1=-1, r2=-1 -> ?\n8. r1=+1, r2=-1 -> ?\n9. r1=-3, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "hard",
+      "rule_id": "r2_positive",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "sum_at_least_two"
+    }
   },
   {
     "episode_id": "0070",
-    "group_id": "multi-step",
-    "prompt": "Solve the multi-step inference slice for two markers. Episode 0070.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-1, r2=-3, mark=blim\nitem 02 => r1=-2, r2=-2, mark=blim\nitem 03 => r1=+1, r2=-2, mark=blim\nitem 04 => r1=+2, r2=-2, mark=blim\nitem 05 => r1=-2, r2=-3, mark=zark\n\nProbe block:\nitem 06 => r1=-3, r2=+1, mark=?\nitem 07 => r1=+3, r2=+2, mark=?\nitem 08 => r1=-1, r2=-1, mark=?\nitem 09 => r1=+3, r2=-3, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0070.\n\nExamples:\n1. r1=+2, r2=-2 -> blim\n2. r1=-3, r2=+1 -> zark\n3. r1=+3, r2=-1 -> blim\n4. r1=+1, r2=-3 -> blim\n5. r1=-1, r2=-2 -> zark\n\nProbes:\n6. r1=-2, r2=-2 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=+3, r2=+3 -> ?\n9. r1=-1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "hard",
+      "rule_id": "r1_negative",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "r2_positive"
+    }
   },
   {
     "episode_id": "0071",
-    "group_id": "multi-step",
-    "prompt": "Solve the multi-step inference slice for two markers. Episode 0071.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=+2, r2=+1, mark=blim\nitem 02 => r1=+1, r2=+2, mark=blim\nitem 03 => r1=+1, r2=-3, mark=blim\nitem 04 => r1=-1, r2=-2, mark=zark\nitem 05 => r1=-2, r2=-2, mark=zark\n\nProbe block:\nitem 06 => r1=-1, r2=-3, mark=?\nitem 07 => r1=+3, r2=-2, mark=?\nitem 08 => r1=+3, r2=+3, mark=?\nitem 09 => r1=-2, r2=+1, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_b",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0071.\n\nExamples:\n1. r1=-2, r2=+2 -> blim\n2. r1=-2, r2=+3 -> blim\n3. r1=-3, r2=+1 -> blim\n4. r1=+1, r2=-2 -> zark\n5. r1=-3, r2=-3 -> zark\n\nProbes:\n6. r1=+1, r2=+1 -> ?\n7. r1=-1, r2=-2 -> ?\n8. r1=-2, r2=-3 -> ?\n9. r1=+2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "hard",
+      "rule_id": "r2_negative",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "r1_positive"
+    }
   },
   {
     "episode_id": "0072",
-    "group_id": "multi-step",
-    "prompt": "Solve the multi-step inference slice for two markers. Episode 0072.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=+2, r2=-2, mark=zark\nitem 02 => r1=+1, r2=+2, mark=blim\nitem 03 => r1=+3, r2=-2, mark=blim\nitem 04 => r1=+3, r2=+2, mark=zark\nitem 05 => r1=+1, r2=-3, mark=blim\n\nProbe block:\nitem 06 => r1=+2, r2=-3, mark=?\nitem 07 => r1=-1, r2=-2, mark=?\nitem 08 => r1=+2, r2=+2, mark=?\nitem 09 => r1=-3, r2=+1, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_b",
-      "type_a",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0072.\n\nExamples:\n1. r1=+2, r2=+1 -> zark\n2. r1=+2, r2=-1 -> blim\n3. r1=-1, r2=-3 -> blim\n4. r1=+3, r2=+1 -> zark\n5. r1=-1, r2=+3 -> blim\n\nProbes:\n6. r1=+2, r2=+2 -> ?\n7. r1=+3, r2=+2 -> ?\n8. r1=-3, r2=+1 -> ?\n9. r1=-2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_a",
+        "type_b",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "hard",
+      "rule_id": "both_positive",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "sum_at_least_two"
+    }
   },
   {
     "episode_id": "0073",
-    "group_id": "multi-step",
-    "prompt": "Solve the multi-step inference slice for two markers. Episode 0073.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=+2, r2=-3, mark=zark\nitem 02 => r1=+2, r2=-1, mark=zark\nitem 03 => r1=+1, r2=-1, mark=zark\nitem 04 => r1=-3, r2=-1, mark=zark\nitem 05 => r1=+2, r2=-2, mark=blim\n\nProbe block:\nitem 06 => r1=-2, r2=+3, mark=?\nitem 07 => r1=+1, r2=+1, mark=?\nitem 08 => r1=-1, r2=-3, mark=?\nitem 09 => r1=+3, r2=-3, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0073.\n\nExamples:\n1. r1=-3, r2=-3 -> zark\n2. r1=-2, r2=-1 -> zark\n3. r1=+2, r2=+3 -> blim\n4. r1=+1, r2=-2 -> blim\n5. r1=-3, r2=+1 -> blim\n\nProbes:\n6. r1=-1, r2=-1 -> ?\n7. r1=-1, r2=-2 -> ?\n8. r1=-2, r2=+3 -> ?\n9. r1=-1, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_a",
+        "type_b",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "hard",
+      "rule_id": "both_negative",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "sum_at_most_minus_two"
+    }
   },
   {
     "episode_id": "0074",
-    "group_id": "multi-step",
-    "prompt": "Solve the multi-step inference slice for two markers. Episode 0074.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-2, r2=+3, mark=zark\nitem 02 => r1=-2, r2=-3, mark=blim\nitem 03 => r1=-2, r2=-1, mark=blim\nitem 04 => r1=-3, r2=-1, mark=zark\nitem 05 => r1=+1, r2=-3, mark=blim\n\nProbe block:\nitem 06 => r1=-3, r2=-2, mark=?\nitem 07 => r1=-1, r2=+3, mark=?\nitem 08 => r1=+3, r2=+1, mark=?\nitem 09 => r1=+1, r2=-1, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_a",
-      "type_b",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0074.\n\nExamples:\n1. r1=-1, r2=+2 -> blim\n2. r1=+2, r2=-2 -> blim\n3. r1=+2, r2=+3 -> zark\n4. r1=-2, r2=+3 -> blim\n5. r1=-1, r2=-3 -> zark\n\nProbes:\n6. r1=-3, r2=-1 -> ?\n7. r1=-2, r2=+1 -> ?\n8. r1=-2, r2=-2 -> ?\n9. r1=-1, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "hard",
+      "rule_id": "same_sign",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "sum_at_least_two"
+    }
   },
   {
     "episode_id": "0075",
-    "group_id": "multi-step",
-    "prompt": "Solve the multi-step inference slice for two markers. Episode 0075.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-3, r2=+1, mark=zark\nitem 02 => r1=-2, r2=+3, mark=zark\nitem 03 => r1=+3, r2=-2, mark=zark\nitem 04 => r1=-1, r2=-3, mark=zark\nitem 05 => r1=-3, r2=+2, mark=blim\n\nProbe block:\nitem 06 => r1=-1, r2=+1, mark=?\nitem 07 => r1=+3, r2=+3, mark=?\nitem 08 => r1=+1, r2=-3, mark=?\nitem 09 => r1=-1, r2=-1, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_b",
-      "type_a",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0075.\n\nExamples:\n1. r1=-3, r2=-2 -> blim\n2. r1=-3, r2=+1 -> zark\n3. r1=-1, r2=-2 -> blim\n4. r1=-2, r2=-3 -> blim\n5. r1=+2, r2=-1 -> zark\n\nProbes:\n6. r1=+3, r2=+1 -> ?\n7. r1=+3, r2=-1 -> ?\n8. r1=+1, r2=+3 -> ?\n9. r1=+2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "hard",
+      "rule_id": "opposite_sign",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "r2_positive"
+    }
   },
   {
     "episode_id": "0076",
-    "group_id": "multi-step",
-    "prompt": "Solve the multi-step inference slice for two markers. Episode 0076.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-2, r2=-2, mark=blim\nitem 02 => r1=+1, r2=+2, mark=zark\nitem 03 => r1=+1, r2=+3, mark=zark\nitem 04 => r1=+3, r2=-1, mark=blim\nitem 05 => r1=+3, r2=+1, mark=zark\n\nProbe block:\nitem 06 => r1=+2, r2=+1, mark=?\nitem 07 => r1=-1, r2=-2, mark=?\nitem 08 => r1=-1, r2=+1, mark=?\nitem 09 => r1=+1, r2=-3, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0076.\n\nExamples:\n1. r1=+2, r2=+2 -> zark\n2. r1=+3, r2=-2 -> blim\n3. r1=-3, r2=+1 -> blim\n4. r1=-3, r2=+3 -> blim\n5. r1=-1, r2=+3 -> zark\n\nProbes:\n6. r1=+3, r2=-1 -> ?\n7. r1=-3, r2=-2 -> ?\n8. r1=-3, r2=-3 -> ?\n9. r1=+2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "hard",
+      "rule_id": "sum_at_least_two",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "same_sign"
+    }
   },
   {
     "episode_id": "0077",
-    "group_id": "multi-step",
-    "prompt": "Solve the multi-step inference slice for two markers. Episode 0077.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-3, r2=+1, mark=zark\nitem 02 => r1=+2, r2=-3, mark=blim\nitem 03 => r1=+3, r2=-3, mark=blim\nitem 04 => r1=-1, r2=-1, mark=zark\nitem 05 => r1=+3, r2=-1, mark=blim\n\nProbe block:\nitem 06 => r1=-1, r2=+2, mark=?\nitem 07 => r1=+1, r2=-3, mark=?\nitem 08 => r1=-1, r2=-2, mark=?\nitem 09 => r1=+2, r2=+2, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0077.\n\nExamples:\n1. r1=+2, r2=+2 -> blim\n2. r1=+3, r2=+2 -> blim\n3. r1=-2, r2=-1 -> zark\n4. r1=+1, r2=-3 -> zark\n5. r1=+2, r2=-3 -> blim\n\nProbes:\n6. r1=-3, r2=+1 -> ?\n7. r1=+3, r2=-3 -> ?\n8. r1=-1, r2=-3 -> ?\n9. r1=-2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "hard",
+      "rule_id": "sum_at_most_minus_two",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "sum_negative"
+    }
   },
   {
     "episode_id": "0078",
-    "group_id": "multi-step",
-    "prompt": "Solve the multi-step inference slice for two markers. Episode 0078.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-3, r2=+2, mark=zark\nitem 02 => r1=+1, r2=+2, mark=zark\nitem 03 => r1=+3, r2=-2, mark=blim\nitem 04 => r1=+2, r2=+1, mark=zark\nitem 05 => r1=+1, r2=-1, mark=blim\n\nProbe block:\nitem 06 => r1=+3, r2=-1, mark=?\nitem 07 => r1=-1, r2=+2, mark=?\nitem 08 => r1=+1, r2=+1, mark=?\nitem 09 => r1=-3, r2=-2, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_a",
-      "type_b"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0078.\n\nExamples:\n1. r1=-3, r2=+2 -> blim\n2. r1=-1, r2=+1 -> blim\n3. r1=+2, r2=-3 -> zark\n4. r1=+3, r2=+1 -> zark\n5. r1=+3, r2=+2 -> blim\n\nProbes:\n6. r1=+3, r2=-3 -> ?\n7. r1=+2, r2=+1 -> ?\n8. r1=+1, r2=+1 -> ?\n9. r1=-1, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_b",
+        "type_b",
+        "type_a"
+      ]
+    },
+    "analysis": {
+      "group_id": "hard",
+      "rule_id": "diff_at_least_two",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "r1_positive"
+    }
   },
   {
     "episode_id": "0079",
-    "group_id": "multi-step",
-    "prompt": "Solve the multi-step inference slice for two markers. Episode 0079.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=-2, r2=-2, mark=blim\nitem 02 => r1=-1, r2=-2, mark=blim\nitem 03 => r1=-1, r2=-3, mark=zark\nitem 04 => r1=-1, r2=+3, mark=blim\nitem 05 => r1=-3, r2=+1, mark=blim\n\nProbe block:\nitem 06 => r1=+2, r2=-3, mark=?\nitem 07 => r1=+1, r2=+1, mark=?\nitem 08 => r1=-2, r2=+1, mark=?\nitem 09 => r1=-3, r2=-2, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_b",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0079.\n\nExamples:\n1. r1=-3, r2=+1 -> zark\n2. r1=-1, r2=-3 -> blim\n3. r1=+2, r2=+3 -> blim\n4. r1=-3, r2=+2 -> zark\n5. r1=+2, r2=-1 -> blim\n\nProbes:\n6. r1=+3, r2=-2 -> ?\n7. r1=-3, r2=+3 -> ?\n8. r1=-3, r2=-1 -> ?\n9. r1=+3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_b",
+        "type_a",
+        "type_a",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "hard",
+      "rule_id": "diff_at_most_minus_two",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "opposite_sign"
+    }
   },
   {
     "episode_id": "0080",
-    "group_id": "multi-step",
-    "prompt": "Solve the multi-step inference slice for two markers. Episode 0080.\nStep 1: infer the latent labeling rule from the evidence block.\nStep 2: apply that rule to the probe block.\nStep 3: convert zark to type_a and blim to type_b in the final answer.\n\nEvidence block:\nitem 01 => r1=+1, r2=+3, mark=blim\nitem 02 => r1=+2, r2=+2, mark=blim\nitem 03 => r1=+3, r2=+1, mark=zark\nitem 04 => r1=-1, r2=+3, mark=blim\nitem 05 => r1=-2, r2=+3, mark=blim\n\nProbe block:\nitem 06 => r1=-3, r2=+1, mark=?\nitem 07 => r1=-1, r2=-2, mark=?\nitem 08 => r1=+2, r2=+3, mark=?\nitem 09 => r1=+2, r2=-2, mark=?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_b",
-      "type_a",
-      "type_a"
-    ]
-  },
-  {
-    "episode_id": "0081",
-    "group_id": "hard",
-    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0081.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+2, r2=-3 -> zark\n2. r1=+1, r2=-3 -> zark\n3. r1=+3, r2=+2 -> blim\n4. r1=-3, r2=+3 -> blim\n5. r1=+1, r2=+3 -> blim\n\nDecision set:\n6. r1=-1, r2=+3 -> ?\n7. r1=+2, r2=-2 -> ?\n8. r1=+1, r2=+1 -> ?\n9. r1=-2, r2=-1 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_b",
-      "type_a",
-      "type_a"
-    ]
-  },
-  {
-    "episode_id": "0082",
-    "group_id": "hard",
-    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0082.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+2, r2=+1 -> blim\n2. r1=-1, r2=+1 -> zark\n3. r1=+3, r2=+2 -> blim\n4. r1=+1, r2=-1 -> blim\n5. r1=+1, r2=+2 -> blim\n\nDecision set:\n6. r1=-1, r2=-1 -> ?\n7. r1=+1, r2=+1 -> ?\n8. r1=+2, r2=-2 -> ?\n9. r1=-3, r2=+2 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_a",
-      "type_b"
-    ]
-  },
-  {
-    "episode_id": "0083",
-    "group_id": "hard",
-    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0083.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=-2, r2=-3 -> blim\n2. r1=+2, r2=-2 -> zark\n3. r1=-1, r2=-1 -> blim\n4. r1=-3, r2=+3 -> blim\n5. r1=-3, r2=-2 -> zark\n\nDecision set:\n6. r1=-3, r2=-1 -> ?\n7. r1=+1, r2=-2 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=-3, r2=+2 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_b",
-      "type_a"
-    ]
-  },
-  {
-    "episode_id": "0084",
-    "group_id": "hard",
-    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0084.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+1, r2=+2 -> blim\n2. r1=+3, r2=+3 -> blim\n3. r1=-1, r2=+3 -> zark\n4. r1=-2, r2=-2 -> zark\n5. r1=-3, r2=-3 -> zark\n\nDecision set:\n6. r1=+2, r2=-3 -> ?\n7. r1=-2, r2=+1 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=-3, r2=-1 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_b",
-      "type_a",
-      "type_a"
-    ]
-  },
-  {
-    "episode_id": "0085",
-    "group_id": "hard",
-    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0085.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+3, r2=-3 -> zark\n2. r1=+1, r2=-3 -> zark\n3. r1=+3, r2=+3 -> blim\n4. r1=-2, r2=+3 -> blim\n5. r1=+2, r2=+2 -> zark\n\nDecision set:\n6. r1=-3, r2=-3 -> ?\n7. r1=+2, r2=-1 -> ?\n8. r1=+3, r2=+2 -> ?\n9. r1=-3, r2=+2 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_b",
-      "type_a"
-    ]
-  },
-  {
-    "episode_id": "0086",
-    "group_id": "hard",
-    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0086.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+3, r2=+2 -> blim\n2. r1=+2, r2=+3 -> zark\n3. r1=-1, r2=+1 -> zark\n4. r1=-1, r2=+2 -> blim\n5. r1=-3, r2=+3 -> blim\n\nDecision set:\n6. r1=+2, r2=+1 -> ?\n7. r1=-2, r2=+2 -> ?\n8. r1=+2, r2=-3 -> ?\n9. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_b",
-      "type_a",
-      "type_a"
-    ]
-  },
-  {
-    "episode_id": "0087",
-    "group_id": "hard",
-    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0087.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+1, r2=-1 -> zark\n2. r1=-3, r2=-2 -> zark\n3. r1=-2, r2=-2 -> blim\n4. r1=-1, r2=-2 -> zark\n5. r1=-2, r2=-3 -> zark\n\nDecision set:\n6. r1=-2, r2=+1 -> ?\n7. r1=+1, r2=+2 -> ?\n8. r1=-1, r2=-3 -> ?\n9. r1=+1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_b",
-      "type_a",
-      "type_a"
-    ]
-  },
-  {
-    "episode_id": "0088",
-    "group_id": "hard",
-    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0088.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+3, r2=-3 -> zark\n2. r1=-2, r2=+2 -> blim\n3. r1=+2, r2=+3 -> blim\n4. r1=-1, r2=-3 -> zark\n5. r1=-1, r2=+3 -> blim\n\nDecision set:\n6. r1=+3, r2=+3 -> ?\n7. r1=+1, r2=-2 -> ?\n8. r1=-1, r2=+2 -> ?\n9. r1=-2, r2=-1 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_b",
-      "type_a",
-      "type_a"
-    ]
-  },
-  {
-    "episode_id": "0089",
-    "group_id": "hard",
-    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0089.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=-3, r2=-1 -> blim\n2. r1=-3, r2=-2 -> blim\n3. r1=+1, r2=-1 -> zark\n4. r1=+3, r2=+1 -> zark\n5. r1=+2, r2=-2 -> zark\n\nDecision set:\n6. r1=-2, r2=-1 -> ?\n7. r1=-1, r2=+2 -> ?\n8. r1=+1, r2=+2 -> ?\n9. r1=+3, r2=-2 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_a",
-      "type_b"
-    ]
-  },
-  {
-    "episode_id": "0090",
-    "group_id": "hard",
-    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0090.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=-3, r2=+3 -> zark\n2. r1=-3, r2=+1 -> zark\n3. r1=-1, r2=+2 -> zark\n4. r1=+2, r2=+1 -> zark\n5. r1=-1, r2=-1 -> blim\n\nDecision set:\n6. r1=+3, r2=+3 -> ?\n7. r1=-2, r2=-2 -> ?\n8. r1=-2, r2=+2 -> ?\n9. r1=+3, r2=-1 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_a",
-      "type_b",
-      "type_b"
-    ]
-  },
-  {
-    "episode_id": "0091",
-    "group_id": "hard",
-    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0091.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=-1, r2=+2 -> zark\n2. r1=-3, r2=+3 -> zark\n3. r1=+1, r2=+1 -> blim\n4. r1=-2, r2=-1 -> zark\n5. r1=-1, r2=+1 -> zark\n\nDecision set:\n6. r1=-3, r2=-1 -> ?\n7. r1=+2, r2=+1 -> ?\n8. r1=+1, r2=-2 -> ?\n9. r1=-1, r2=+3 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_a",
-      "type_b"
-    ]
-  },
-  {
-    "episode_id": "0092",
-    "group_id": "hard",
-    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0092.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+1, r2=-3 -> zark\n2. r1=+3, r2=+1 -> blim\n3. r1=+3, r2=-2 -> zark\n4. r1=-2, r2=+3 -> blim\n5. r1=-1, r2=+3 -> blim\n\nDecision set:\n6. r1=+2, r2=-3 -> ?\n7. r1=-3, r2=-1 -> ?\n8. r1=-3, r2=+1 -> ?\n9. r1=+1, r2=+3 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_b",
-      "type_a"
-    ]
-  },
-  {
-    "episode_id": "0093",
-    "group_id": "hard",
-    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0093.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=-1, r2=-1 -> blim\n2. r1=+3, r2=-2 -> zark\n3. r1=+3, r2=-1 -> zark\n4. r1=+2, r2=-3 -> blim\n5. r1=+2, r2=+2 -> zark\n\nDecision set:\n6. r1=-3, r2=-2 -> ?\n7. r1=-3, r2=+2 -> ?\n8. r1=+2, r2=-1 -> ?\n9. r1=+3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_a",
-      "type_b"
-    ]
-  },
-  {
-    "episode_id": "0094",
-    "group_id": "hard",
-    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0094.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+2, r2=+3 -> blim\n2. r1=+1, r2=+2 -> blim\n3. r1=+3, r2=-2 -> zark\n4. r1=+3, r2=-1 -> blim\n5. r1=-1, r2=+3 -> blim\n\nDecision set:\n6. r1=-3, r2=-1 -> ?\n7. r1=+2, r2=-1 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=-2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_b",
-      "type_a"
-    ]
-  },
-  {
-    "episode_id": "0095",
-    "group_id": "hard",
-    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0095.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+2, r2=-1 -> zark\n2. r1=-3, r2=-2 -> zark\n3. r1=-1, r2=-1 -> blim\n4. r1=-3, r2=-3 -> zark\n5. r1=-2, r2=-2 -> zark\n\nDecision set:\n6. r1=-1, r2=-3 -> ?\n7. r1=+1, r2=-2 -> ?\n8. r1=+3, r2=+3 -> ?\n9. r1=-3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_b",
-      "type_a"
-    ]
-  },
-  {
-    "episode_id": "0096",
-    "group_id": "hard",
-    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0096.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+1, r2=-3 -> zark\n2. r1=-2, r2=-3 -> zark\n3. r1=+3, r2=+1 -> blim\n4. r1=+3, r2=+3 -> zark\n5. r1=+3, r2=-1 -> blim\n\nDecision set:\n6. r1=+2, r2=-2 -> ?\n7. r1=+2, r2=+1 -> ?\n8. r1=-2, r2=+2 -> ?\n9. r1=-1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_a",
-      "type_b"
-    ]
-  },
-  {
-    "episode_id": "0097",
-    "group_id": "hard",
-    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0097.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=-2, r2=+2 -> zark\n2. r1=+3, r2=+2 -> zark\n3. r1=-2, r2=-2 -> blim\n4. r1=+2, r2=+3 -> zark\n5. r1=-1, r2=+3 -> blim\n\nDecision set:\n6. r1=+2, r2=-2 -> ?\n7. r1=-3, r2=-1 -> ?\n8. r1=-1, r2=+1 -> ?\n9. r1=+2, r2=+2 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_b",
-      "type_a",
-      "type_b"
-    ]
-  },
-  {
-    "episode_id": "0098",
-    "group_id": "hard",
-    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0098.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=-2, r2=+2 -> zark\n2. r1=-3, r2=-2 -> blim\n3. r1=-1, r2=-3 -> blim\n4. r1=-1, r2=-2 -> zark\n5. r1=-1, r2=+3 -> zark\n\nDecision set:\n6. r1=-3, r2=+3 -> ?\n7. r1=+2, r2=-1 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=-3, r2=-1 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_a",
-      "type_a",
-      "type_b",
-      "type_b"
-    ]
-  },
-  {
-    "episode_id": "0099",
-    "group_id": "hard",
-    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0099.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+3, r2=-3 -> zark\n2. r1=-1, r2=-1 -> blim\n3. r1=+3, r2=-1 -> zark\n4. r1=+2, r2=+1 -> zark\n5. r1=-2, r2=-2 -> blim\n\nDecision set:\n6. r1=-2, r2=+2 -> ?\n7. r1=+1, r2=+3 -> ?\n8. r1=-1, r2=-2 -> ?\n9. r1=+1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_b",
-      "type_a",
-      "type_a"
-    ]
-  },
-  {
-    "episode_id": "0100",
-    "group_id": "hard",
-    "prompt": "Handle the hardest ambiguity-set for two markers. Episode 0100.\nThe easy shortcut is unreliable here because the evidence includes competing local patterns.\nUse the full set before deciding any probe.\n\nCalibration set:\n1. r1=+2, r2=-3 -> zark\n2. r1=+3, r2=+2 -> blim\n3. r1=+2, r2=-1 -> zark\n4. r1=-3, r2=-1 -> zark\n5. r1=+1, r2=+2 -> blim\n\nDecision set:\n6. r1=-1, r2=-3 -> ?\n7. r1=+2, r2=-2 -> ?\n8. r1=-3, r2=+3 -> ?\n9. r1=+2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order for the displayed probes. Use only type_a or type_b. Map zark to type_a and blim to type_b.",
-    "probe_targets": [
-      "type_b",
-      "type_a",
-      "type_b",
-      "type_a"
-    ]
+    "inference": {
+      "prompt": "RuleShift classification task. Episode 0080.\n\nExamples:\n1. r1=-3, r2=+2 -> zark\n2. r1=-1, r2=-3 -> blim\n3. r1=+1, r2=+2 -> blim\n4. r1=+1, r2=-3 -> blim\n5. r1=-2, r2=-2 -> zark\n\nProbes:\n6. r1=-2, r2=+2 -> ?\n7. r1=-2, r2=+3 -> ?\n8. r1=+3, r2=+1 -> ?\n9. r1=-1, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    },
+    "scoring": {
+      "probe_targets": [
+        "type_a",
+        "type_a",
+        "type_b",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "group_id": "hard",
+      "rule_id": "both_large_abs",
+      "shortcut_type": "rule_shortcut",
+      "shortcut_rule_id": "diff_at_most_minus_two"
+    }
   }
 ]
