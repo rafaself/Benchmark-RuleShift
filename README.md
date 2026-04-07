@@ -19,7 +19,9 @@ kaggle/
       public_leaderboard_rows.json
     private/
       dataset-metadata.json
+      private_answer_key.json
       private_leaderboard_rows.json
+      private_split_manifest.json
   notebook/
     kernel-metadata.json
     ruleshift_notebook_task.ipynb
@@ -58,12 +60,13 @@ The scoped Release 1 benchmark evaluates only the `simple`, `exception`, `distra
 
 The cleaned prompt contract for the scoped benchmark is fixed: `RuleShift classification task. Episode XXXX.`, then `Examples:`, then `Probes:`, then one shared output instruction. Group differences now come from the row content rather than coaching in the prompt wrapper.
 
-The dataset and internal answer key are generated deterministically from a formal rule catalog in `scripts/build_ruleshift_dataset.py`. The audit record (`kaggle/dataset/audit_key.json`) is generated locally and is not committed to the public repo.
+The public dataset is generated deterministically from a formal rule catalog in `scripts/build_ruleshift_dataset.py`. The private split now depends on a maintainer-only manifest at `kaggle/dataset/private/private_split_manifest.json`, and the private answer key is generated locally as `kaggle/dataset/private/private_answer_key.json`.
 
 Dataset rows are split into explicit layers:
 
 * `inference.prompt` is the only task content sent to the model.
-* `scoring.probe_targets` is used only by the evaluator.
+* `scoring.probe_targets` is shipped only in the public sample split.
+* The private split is published as inference-only rows; private scoring comes from a separate maintainer-only answer key.
 * `analysis.group_id` is retained for balance checks and debugging, but is not passed to the model.
 
 ## Requirements
@@ -88,6 +91,8 @@ kaggle/notebook/ruleshift_notebook_task.ipynb
 
 Select the evaluation split by setting `RULESHIFT_EVAL_SPLIT` to `public` or `private` before running the notebook.
 
+Private scoring also requires `RULESHIFT_PRIVATE_ANSWER_KEY_PATH` to point at a local maintainer-only `private_answer_key.json`.
+
 ## Verification
 
 Run the deterministic local verification path:
@@ -99,7 +104,7 @@ make verify-private
 
 `make verify-public` works from a clean clone.
 
-`make verify-private` requires the local private dataset artifacts under `kaggle/dataset/private/`, including `private_leaderboard_rows.json` and `dataset-metadata.json`. These files are intentionally gitignored and not committed to the public repository.
+`make verify-private` requires the local private dataset artifacts under `kaggle/dataset/private/`, including `private_leaderboard_rows.json`, `private_answer_key.json`, `private_split_manifest.json`, and `dataset-metadata.json`. These files are intentionally gitignored and not committed to the public repository.
 
 When both split files are present locally, verification also asserts that the private split is semantically disjoint from the public split.
 
@@ -153,6 +158,7 @@ Override the CLI path with `KAGGLE_BIN` if needed:
 KAGGLE_API_TOKEN=your_token_here
 KAGGLE_BIN=/path/to/kaggle   # optional; defaults to kaggle in PATH
 RULESHIFT_EVAL_SPLIT=public  # optional for local notebook runs
+RULESHIFT_PRIVATE_ANSWER_KEY_PATH=/abs/path/to/private_answer_key.json  # required for private scoring
 ```
 
 ## Kaggle Asset IDs
@@ -182,9 +188,9 @@ raptorengineer/ruleshift-notebook
 * The private dataset contains 400 audited benchmark rows, with 100 rows per scoped group.
 * The notebook uses `EVAL_SPLIT = "public"` by default and supports `EVAL_SPLIT = "private"` when the private dataset is available.
 * Benchmark invariants are enforced while rows are loaded.
-* Private dataset artifacts remain local-only in this repository; `kaggle/dataset/private/` and `kaggle/dataset/audit_key.json` are gitignored.
-* The generator preserves the current public split and builds the private split from a disjoint deterministic variant range so the private rows do not overlap the public rows.
-* Running `scripts/build_ruleshift_dataset.py` regenerates both split payloads, the local private dataset metadata, and the local audit key before deployment.
+* Private dataset artifacts remain local-only in this repository; `kaggle/dataset/private/` is gitignored.
+* The private dataset published to Kaggle is inference-only; `private_answer_key.json` and `private_split_manifest.json` stay maintainer-only and are excluded from deploy.
+* Running `scripts/build_ruleshift_dataset.py` regenerates the public payload, the inference-only private payload, the local private dataset metadata, and the local private answer key before deployment.
 * The repository is intentionally kept small and Kaggle-oriented, with minimal abstraction and minimal supporting files.
 
 ## References

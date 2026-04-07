@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import random
 from collections import Counter
 from dataclasses import dataclass
@@ -12,7 +13,8 @@ from typing import Callable
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC_ROWS_PATH = ROOT / "kaggle/dataset/public/public_leaderboard_rows.json"
 PRIVATE_ROWS_PATH = ROOT / "kaggle/dataset/private/private_leaderboard_rows.json"
-ANSWER_KEY_PATH = ROOT / "kaggle/dataset/audit_key.json"
+PRIVATE_ANSWER_KEY_PATH = ROOT / "kaggle/dataset/private/private_answer_key.json"
+PRIVATE_MANIFEST_PATH = ROOT / "kaggle/dataset/private/private_split_manifest.json"
 PRIVATE_METADATA_PATH = ROOT / "kaggle/dataset/private/dataset-metadata.json"
 PRIVATE_DATASET_ID = "raptorengineer/ruleshift-runtime-private"
 
@@ -504,6 +506,7 @@ def episode_record(
         "group_id": group_id,
         "rule_id": rule.rule_id,
         "rule_description": rule.description,
+        "probe_targets": probe_targets(rule, probes),
         **shortcut_payload,
         "examples": [
             {
@@ -578,21 +581,73 @@ def validate_split_isolation(
         )
 
 
+def load_private_manifest(path: Path = PRIVATE_MANIFEST_PATH) -> dict[str, str]:
+    if not path.exists():
+        raise FileNotFoundError(
+            f"Missing private split manifest at {path}. "
+            "Create kaggle/dataset/private/private_split_manifest.json with a non-empty private_seed."
+        )
+
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError("private split manifest must be a JSON object")
+
+    private_seed = payload.get("private_seed")
+    if not isinstance(private_seed, str) or not private_seed.strip():
+        raise ValueError("private split manifest must define a non-empty string private_seed")
+
+    return {"private_seed": private_seed.strip()}
+
+
+def derive_private_episode_seed(
+    private_seed: str,
+    group_id: str,
+    rule_id: str,
+    variant: int,
+    purpose: str,
+) -> int:
+    payload = "::".join((private_seed, group_id, rule_id, str(variant), purpose)).encode("utf-8")
+    digest = hashlib.sha256(payload).digest()
+    return int.from_bytes(digest[:8], byteorder="big", signed=False)
+
+
 def build_split(
     split_name: str,
     variants_per_rule: int,
     variant_start: int = 0,
+    private_seed: str | None = None,
 ) -> tuple[list[dict[str, object]], list[dict[str, object]]]:
+    if split_name == "private" and private_seed is None:
+        raise ValueError("private split generation requires a private_seed")
+
     rows: list[dict[str, object]] = []
     answers: list[dict[str, object]] = []
     episode_counter = 1
     for group_index, group_id in enumerate(GROUPS):
         for variant in range(variant_start, variant_start + variants_per_rule):
             for rule_index, rule in enumerate(RULES):
-                seed = 10_000 * group_index + 1_000 * variant + rule_index
+                if split_name == "public":
+                    seed = 10_000 * group_index + 1_000 * variant + rule_index
+                    memo_seed = seed + 7
+                else:
+                    assert private_seed is not None
+                    seed = derive_private_episode_seed(
+                        private_seed,
+                        group_id,
+                        rule.rule_id,
+                        variant,
+                        "episode",
+                    )
+                    memo_seed = derive_private_episode_seed(
+                        private_seed,
+                        group_id,
+                        rule.rule_id,
+                        variant,
+                        "memo",
+                    )
                 rng = random.Random(seed)
                 examples, probes, shortcut = GROUP_BUILDERS[group_id](rule, rng)
-                memo_cycle = memo_cycle_for_episode(random.Random(seed + 7))
+                memo_cycle = memo_cycle_for_episode(random.Random(memo_seed))
                 episode_id = f"{episode_counter:04d}"
                 row, answer = episode_record(
                     episode_id,
@@ -611,7 +666,58 @@ def build_split(
     return (rows, answers)
 
 
-def validate_rows(rows: list[dict[str, object]], expected_count: int, per_group: int) -> None:
+def sanitize_private_rows(rows: list[dict[str, object]]) -> list[dict[str, object]]:
+    sanitized_rows: list[dict[str, object]] = []
+    for row in rows:
+        sanitized_rows.append(
+            {
+                "episode_id": row["episode_id"],
+                "inference": {
+                    "prompt": row["inference"]["prompt"],
+                },
+                "analysis": {
+                    "group_id": row["analysis"]["group_id"],
+                    "rule_id": row["analysis"]["rule_id"],
+                    "shortcut_type": row["analysis"]["shortcut_type"],
+                    "shortcut_rule_id": row["analysis"]["shortcut_rule_id"],
+                },
+            }
+        )
+    return sanitized_rows
+
+
+def private_answer_key_payload(private_answers: list[dict[str, object]]) -> dict[str, object]:
+    sanitized_answers: list[dict[str, object]] = []
+    for answer in private_answers:
+        item = dict(answer)
+        item.pop("split", None)
+        sanitized_answers.append(item)
+    return {
+        "version": "scoped_single_turn",
+        "split": "private",
+        "episodes": sanitized_answers,
+    }
+
+
+def build_private_artifacts(
+    manifest_path: Path = PRIVATE_MANIFEST_PATH,
+) -> tuple[list[dict[str, object]], list[dict[str, object]], dict[str, object]]:
+    manifest = load_private_manifest(manifest_path)
+    private_rows, private_answers = build_split(
+        "private",
+        variants_per_rule=5,
+        variant_start=1,
+        private_seed=manifest["private_seed"],
+    )
+    return (private_rows, private_answers, manifest)
+
+
+def validate_rows(
+    rows: list[dict[str, object]],
+    expected_count: int,
+    per_group: int,
+    require_scoring: bool,
+) -> None:
     assert len(rows) == expected_count, (len(rows), expected_count)
     counts = Counter(str(row["analysis"]["group_id"]) for row in rows)
     assert counts == Counter({group: per_group for group in GROUPS}), counts
@@ -623,7 +729,10 @@ def validate_rows(rows: list[dict[str, object]], expected_count: int, per_group:
         assert parts[1].startswith("Examples:\n"), row["episode_id"]
         assert parts[2].startswith("Probes:\n"), row["episode_id"]
         assert parts[3] == OUTPUT_INSTRUCTION, row["episode_id"]
-        assert len(row["scoring"]["probe_targets"]) == 4, row["episode_id"]
+        if require_scoring:
+            assert len(row["scoring"]["probe_targets"]) == 4, row["episode_id"]
+        else:
+            assert "scoring" not in row, row["episode_id"]
 
 
 def write_json(path: Path, payload: object) -> None:
@@ -641,40 +750,31 @@ def dataset_metadata(dataset_id: str, title: str) -> dict[str, object]:
 
 def main() -> None:
     public_rows, public_answers = build_split("public", variants_per_rule=1)
-    private_rows, private_answers = build_split(
-        "private",
-        variants_per_rule=5,
-        variant_start=1,
-    )
+    private_rows, private_answers, _manifest = build_private_artifacts()
 
     for row in public_rows:
         row.pop("split")
-    for row in private_rows:
-        row.pop("split")
+    private_publish_rows = sanitize_private_rows(private_rows)
 
-    validate_rows(public_rows, expected_count=80, per_group=20)
-    validate_rows(private_rows, expected_count=400, per_group=100)
+    validate_rows(public_rows, expected_count=80, per_group=20, require_scoring=True)
+    validate_rows(private_publish_rows, expected_count=400, per_group=100, require_scoring=False)
     validate_split_isolation(public_answers, private_answers)
 
     write_json(PUBLIC_ROWS_PATH, public_rows)
-    write_json(PRIVATE_ROWS_PATH, private_rows)
+    write_json(PRIVATE_ROWS_PATH, private_publish_rows)
     write_json(
         PRIVATE_METADATA_PATH,
         dataset_metadata(PRIVATE_DATASET_ID, "RuleShift Runtime Private"),
     )
     write_json(
-        ANSWER_KEY_PATH,
-        {
-            "version": "scoped_single_turn",
-            "public": public_answers,
-            "private": private_answers,
-        },
+        PRIVATE_ANSWER_KEY_PATH,
+        private_answer_key_payload(private_answers),
     )
 
     print(f"Wrote {len(public_rows)} public episodes to {PUBLIC_ROWS_PATH}")
-    print(f"Wrote {len(private_rows)} private episodes to {PRIVATE_ROWS_PATH}")
+    print(f"Wrote {len(private_publish_rows)} private inference-only episodes to {PRIVATE_ROWS_PATH}")
     print(f"Wrote private metadata to {PRIVATE_METADATA_PATH}")
-    print(f"Wrote answer key to {ANSWER_KEY_PATH}")
+    print(f"Wrote private answer key to {PRIVATE_ANSWER_KEY_PATH}")
 
 
 if __name__ == "__main__":

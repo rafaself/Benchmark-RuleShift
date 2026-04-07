@@ -1,7 +1,10 @@
 .venv/
 __pycache__/
 *.pyc
+.pytest_cache/
 .env
 .ipynb_checkpoints/
-kaggle/dataset/private/
+.claude/
+.codex
 kaggle/dataset/audit_key.json
+kaggle/dataset/private/
