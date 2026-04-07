@@ -105,6 +105,43 @@ def verify_schema(rows: list[dict[str, object]], split: str) -> dict[str, dict[s
     }
 
 
+def semantic_signature(row: dict[str, object]) -> tuple[object, ...]:
+    prompt = str(row["inference"]["prompt"])
+    parts = prompt.split("\n\n")
+    if len(parts) != 4:
+        raise RuntimeError(f"row {row.get('episode_id')} has malformed prompt blocks")
+    _, examples_block, probes_block, _ = parts
+    targets = normalize_labels(row["scoring"]["probe_targets"])
+    if targets is None:
+        raise RuntimeError(f"row {row.get('episode_id')} has invalid probe targets")
+    return (
+        row["analysis"]["group_id"],
+        row["analysis"]["rule_id"],
+        examples_block,
+        probes_block,
+        targets,
+    )
+
+
+def verify_split_isolation(
+    public_rows: list[dict[str, object]],
+    private_rows: list[dict[str, object]],
+) -> None:
+    public_signatures = {
+        semantic_signature(row): str(row["episode_id"])
+        for row in public_rows
+    }
+    for row in private_rows:
+        signature = semantic_signature(row)
+        public_episode_id = public_signatures.get(signature)
+        if public_episode_id is None:
+            continue
+        raise RuntimeError(
+            "public/private split isolation violated: "
+            f"public episode {public_episode_id} overlaps private episode {row['episode_id']}"
+        )
+
+
 def run_oracle(rows: list[dict[str, object]]) -> tuple[int, int]:
     numerator = 0
     denominator = 0
@@ -128,6 +165,10 @@ def run_invalid(rows: list[dict[str, object]]) -> tuple[int, int]:
 def verify_split(split: str) -> None:
     rows = load_rows(split)
     schema_summary = verify_schema(rows, split)
+    if PUBLIC_ROWS_PATH.exists() and PRIVATE_ROWS_PATH.exists():
+        public_rows = rows if split == "public" else load_rows("public")
+        private_rows = rows if split == "private" else load_rows("private")
+        verify_split_isolation(public_rows, private_rows)
     oracle_a = run_oracle(rows)
     oracle_b = run_oracle(rows)
     invalid_score = run_invalid(rows)

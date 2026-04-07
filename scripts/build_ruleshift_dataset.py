@@ -526,12 +526,66 @@ def episode_record(
     return (row, answer)
 
 
-def build_split(split_name: str, variants_per_rule: int) -> tuple[list[dict[str, object]], list[dict[str, object]]]:
+def episode_signature(answer: dict[str, object]) -> tuple[object, ...]:
+    return (
+        answer["group_id"],
+        answer["rule_id"],
+        tuple(
+            (example["r1"], example["r2"], example["label"])
+            for example in answer["examples"]
+        ),
+        tuple(
+            (probe["r1"], probe["r2"], probe["label"])
+            for probe in answer["probes"]
+        ),
+    )
+
+
+def validate_answer_uniqueness(answers: list[dict[str, object]], split_name: str) -> None:
+    seen: dict[tuple[object, ...], str] = {}
+    for answer in answers:
+        signature = episode_signature(answer)
+        previous_episode_id = seen.get(signature)
+        if previous_episode_id is not None:
+            raise ValueError(
+                f"{split_name} split contains duplicate semantic episode content: "
+                f"{previous_episode_id} and {answer['episode_id']}"
+            )
+        seen[signature] = str(answer["episode_id"])
+
+
+def validate_split_isolation(
+    public_answers: list[dict[str, object]],
+    private_answers: list[dict[str, object]],
+) -> None:
+    validate_answer_uniqueness(public_answers, "public")
+    validate_answer_uniqueness(private_answers, "private")
+
+    public_signatures = {
+        episode_signature(answer): str(answer["episode_id"])
+        for answer in public_answers
+    }
+    for answer in private_answers:
+        signature = episode_signature(answer)
+        public_episode_id = public_signatures.get(signature)
+        if public_episode_id is None:
+            continue
+        raise ValueError(
+            "public/private split isolation violated: "
+            f"public episode {public_episode_id} overlaps private episode {answer['episode_id']}"
+        )
+
+
+def build_split(
+    split_name: str,
+    variants_per_rule: int,
+    variant_start: int = 0,
+) -> tuple[list[dict[str, object]], list[dict[str, object]]]:
     rows: list[dict[str, object]] = []
     answers: list[dict[str, object]] = []
     episode_counter = 1
     for group_index, group_id in enumerate(GROUPS):
-        for variant in range(variants_per_rule):
+        for variant in range(variant_start, variant_start + variants_per_rule):
             for rule_index, rule in enumerate(RULES):
                 seed = 10_000 * group_index + 1_000 * variant + rule_index
                 rng = random.Random(seed)
@@ -571,12 +625,17 @@ def validate_rows(rows: list[dict[str, object]], expected_count: int, per_group:
 
 
 def write_json(path: Path, payload: object) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
 def main() -> None:
     public_rows, public_answers = build_split("public", variants_per_rule=1)
-    private_rows, private_answers = build_split("private", variants_per_rule=5)
+    private_rows, private_answers = build_split(
+        "private",
+        variants_per_rule=5,
+        variant_start=1,
+    )
 
     for row in public_rows:
         row.pop("split")
@@ -585,6 +644,7 @@ def main() -> None:
 
     validate_rows(public_rows, expected_count=80, per_group=20)
     validate_rows(private_rows, expected_count=400, per_group=100)
+    validate_split_isolation(public_answers, private_answers)
 
     write_json(PUBLIC_ROWS_PATH, public_rows)
     write_json(PRIVATE_ROWS_PATH, private_rows)

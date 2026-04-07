@@ -2,9 +2,10 @@
 
 Minimal Kaggle benchmark project for the **RuleShift** task.
 
-This repository contains only the assets required to publish and run the benchmark on Kaggle:
+This repository contains the public benchmark assets required to publish and run the benchmark on Kaggle, plus the scripts used to generate the private artifacts locally:
 
-* the packaged public and private datasets
+* the packaged public dataset
+* the private dataset generator and deploy path
 * the benchmark notebook
 * small deploy scripts
 
@@ -17,7 +18,6 @@ kaggle/
       dataset-metadata.json
       public_leaderboard_rows.json
     private/
-      dataset-metadata.json
       private_leaderboard_rows.json
   notebook/
     kernel-metadata.json
@@ -96,7 +96,11 @@ make verify-public
 make verify-private
 ```
 
-These checks validate row structure, split balance, and deterministic scoring behavior for the packaged public and private datasets.
+`make verify-public` works from a clean clone.
+
+`make verify-private` requires a local private dataset artifact at `kaggle/dataset/private/private_leaderboard_rows.json`, which is intentionally gitignored and not committed to the public repository.
+
+When both split files are present locally, verification also asserts that the private split is semantically disjoint from the public split.
 
 ## Diagnostics
 
@@ -177,6 +181,8 @@ raptorengineer/ruleshift-notebook
 * The private dataset contains 400 audited benchmark rows, with 100 rows per scoped group.
 * The notebook uses `EVAL_SPLIT = "public"` by default and supports `EVAL_SPLIT = "private"` when the private dataset is available.
 * Benchmark invariants are enforced while rows are loaded.
+* Private dataset artifacts remain local-only in this repository; `kaggle/dataset/private/` and `kaggle/dataset/audit_key.json` are gitignored.
+* The generator preserves the current public split and builds the private split from a disjoint deterministic variant range so the private rows do not overlap the public rows.
 * The repository is intentionally kept small and Kaggle-oriented, with minimal abstraction and minimal supporting files.
 
 ## References
