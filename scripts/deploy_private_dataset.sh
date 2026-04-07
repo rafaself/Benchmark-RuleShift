@@ -7,7 +7,10 @@ ENV_FILE="$ROOT_DIR/.env"
 DATASET_DIR="$ROOT_DIR/kaggle/dataset/private"
 METADATA_FILE="$DATASET_DIR/dataset-metadata.json"
 ROWS_FILE="$DATASET_DIR/private_leaderboard_rows.json"
-KAGGLE_BIN="${KAGGLE_BIN:-kaggle}"
+DEFAULT_KAGGLE_BIN="$ROOT_DIR/.venv/bin/kaggle"
+KAGGLE_BIN="${KAGGLE_BIN:-$DEFAULT_KAGGLE_BIN}"
+KAGGLE_TMP_HOME="$(mktemp -d)"
+KAGGLE_TMPDIR="$KAGGLE_TMP_HOME/tmp"
 
 if [[ ! -f "$ENV_FILE" ]]; then
   echo "Missing .env file at $ENV_FILE" >&2
@@ -40,10 +43,25 @@ fi
 
 MESSAGE="${1:-Update RuleShift CogFlex v2 private dataset}"
 STAGING_DIR="$(mktemp -d)"
-trap 'rm -rf "$STAGING_DIR"' EXIT
+
+cleanup() {
+  rm -rf "$STAGING_DIR" "$KAGGLE_TMP_HOME"
+}
+
+trap cleanup EXIT
 
 cp "$METADATA_FILE" "$STAGING_DIR/dataset-metadata.json"
 cp "$ROWS_FILE" "$STAGING_DIR/private_leaderboard_rows.json"
 
+mkdir -p "$KAGGLE_TMP_HOME/.kaggle"
+mkdir -p "$KAGGLE_TMPDIR"
+printf '%s' "$KAGGLE_API_TOKEN" > "$KAGGLE_TMP_HOME/.kaggle/access_token"
+chmod 600 "$KAGGLE_TMP_HOME/.kaggle/access_token"
+
 echo "Publishing private dataset from staged payload $STAGING_DIR"
-"$KAGGLE_BIN" datasets version -p "$STAGING_DIR" -m "$MESSAGE"
+if HOME="$KAGGLE_TMP_HOME" TMPDIR="$KAGGLE_TMPDIR" "$KAGGLE_BIN" datasets version -p "$STAGING_DIR" -m "$MESSAGE"; then
+  exit 0
+fi
+
+echo "Private dataset version failed; attempting dataset creation instead."
+HOME="$KAGGLE_TMP_HOME" TMPDIR="$KAGGLE_TMPDIR" "$KAGGLE_BIN" datasets create -p "$STAGING_DIR"
