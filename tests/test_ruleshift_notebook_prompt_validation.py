@@ -1,9 +1,13 @@
 import contextlib
 import io
 import json
+import os
+import sys
 import tempfile
+import types
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from scripts.build_ruleshift_dataset import build_split, private_answer_key_payload, sanitize_private_rows
 
@@ -22,13 +26,44 @@ class _BenchStub:
         return decorator
 
 
-def load_notebook_namespace() -> dict[str, object]:
+def _load_code_cells() -> dict[str, str]:
     notebook = json.loads(NOTEBOOK_PATH.read_text(encoding="utf-8"))
-    code_cells = {
+    return {
         cell["id"]: "".join(cell["source"])
         for cell in notebook["cells"]
         if cell["cell_type"] == "code"
     }
+
+
+def load_bootstrap_namespace() -> dict[str, object]:
+    code_cells = _load_code_cells()
+    fake_kbench = types.ModuleType("kaggle_benchmarks")
+    fake_kbench.task = _BenchStub.task
+    fake_pd = types.ModuleType("pandas")
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        dataset_root = Path(tmpdir)
+        (dataset_root / "public_leaderboard_rows.json").write_text("[]", encoding="utf-8")
+        namespace: dict[str, object] = {}
+        with patch.dict(
+            sys.modules,
+            {"kaggle_benchmarks": fake_kbench, "pandas": fake_pd},
+        ), patch.dict(
+            os.environ,
+            {
+                "RULESHIFT_EVAL_SPLIT": "public",
+                "RULESHIFT_DATASET_ROOT": str(dataset_root),
+                "RULESHIFT_PRIVATE_DATASET_ROOT": "",
+                "RULESHIFT_PRIVATE_ANSWER_KEY_PATH": "",
+            },
+            clear=False,
+        ):
+            exec(code_cells["cell-bootstrap"], namespace)
+    return namespace
+
+
+def load_notebook_namespace() -> dict[str, object]:
+    code_cells = _load_code_cells()
     namespace: dict[str, object] = {"Path": Path, "kbench": _BenchStub(), "pd": None}
     exec(code_cells["cell-runtime-types"], namespace)
     exec(code_cells["cell-runtime-normalize"], namespace)
@@ -67,6 +102,7 @@ class FakeLLM:
 class RuleshiftNotebookRuntimeTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        cls.bootstrap_namespace = load_bootstrap_namespace()
         cls.namespace = load_notebook_namespace()
         cls.rows = json.loads(PUBLIC_ROWS_PATH.read_text(encoding="utf-8"))
         private_rows, private_answers = build_split(
@@ -83,6 +119,23 @@ class RuleshiftNotebookRuntimeTests(unittest.TestCase):
             loaded_rows = self.namespace["_load_rows"](PUBLIC_ROWS_PATH)
         self.assertEqual(len(loaded_rows), 80)
         self.assertEqual(len(loaded_rows[0]["inference"]["turns"]), 3)
+
+    def test_resolve_rows_path_falls_back_to_slug_mount(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            kaggle_input_root = Path(tmpdir)
+            rows_path = kaggle_input_root / "ruleshift-cogflex-runtime" / "public_leaderboard_rows.json"
+            rows_path.parent.mkdir(parents=True)
+            rows_path.write_text("[]", encoding="utf-8")
+
+            resolved = self.bootstrap_namespace["_resolve_rows_path"](
+                split="public",
+                filename="public_leaderboard_rows.json",
+                explicit_root=None,
+                default_roots=(kaggle_input_root / "datasets" / "raptorengineer" / "ruleshift-cogflex-runtime",),
+                search_roots=(kaggle_input_root,),
+            )
+
+        self.assertEqual(resolved, rows_path)
 
     def test_load_rows_accepts_private_inference_only_split(self) -> None:
         self.namespace["EVAL_SPLIT"] = "private"
