@@ -26,6 +26,17 @@ class _BenchStub:
         return decorator
 
 
+class _StrictBenchStub:
+    @staticmethod
+    def task(*args, **kwargs):
+        def decorator(fn):
+            if fn.__annotations__.get("return") is not dict:
+                raise TypeError("task return annotation must be plain dict")
+            return fn
+
+        return decorator
+
+
 def _load_code_cells() -> dict[str, str]:
     notebook = json.loads(NOTEBOOK_PATH.read_text(encoding="utf-8"))
     return {
@@ -120,22 +131,23 @@ class RuleshiftNotebookRuntimeTests(unittest.TestCase):
         self.assertEqual(len(loaded_rows), 80)
         self.assertEqual(len(loaded_rows[0]["inference"]["turns"]), 3)
 
-    def test_resolve_rows_path_falls_back_to_slug_mount(self) -> None:
-        with tempfile.TemporaryDirectory() as tmpdir:
-            kaggle_input_root = Path(tmpdir)
-            rows_path = kaggle_input_root / "ruleshift-cogflex-runtime" / "public_leaderboard_rows.json"
-            rows_path.parent.mkdir(parents=True)
-            rows_path.write_text("[]", encoding="utf-8")
+    def test_runtime_score_cell_uses_plain_dict_return_type_for_kbench_task(self) -> None:
+        code_cells = _load_code_cells()
+        namespace: dict[str, object] = {"Path": Path, "kbench": _StrictBenchStub(), "pd": None}
+        exec(code_cells["cell-runtime-types"], namespace)
+        exec(code_cells["cell-runtime-normalize"], namespace)
+        exec(code_cells["cell-runtime-score"], namespace)
+        self.assertIs(namespace["run_binary_task"].__annotations__["return"], dict)
 
-            resolved = self.bootstrap_namespace["_resolve_rows_path"](
-                split="public",
-                filename="public_leaderboard_rows.json",
-                explicit_root=None,
-                default_roots=(kaggle_input_root / "datasets" / "raptorengineer" / "ruleshift-cogflex-runtime",),
-                search_roots=(kaggle_input_root,),
-            )
-
-        self.assertEqual(resolved, rows_path)
+    def test_bootstrap_uses_expected_kaggle_dataset_roots(self) -> None:
+        self.assertEqual(
+            self.bootstrap_namespace["DEFAULT_DATASET_ROOT"],
+            Path("/kaggle/input/datasets/raptorengineer/ruleshift-cogflex-runtime"),
+        )
+        self.assertEqual(
+            self.bootstrap_namespace["DEFAULT_PRIVATE_DATASET_ROOT"],
+            Path("/kaggle/input/datasets/raptorengineer/ruleshift-cogflex-runtime-private"),
+        )
 
     def test_load_rows_accepts_private_inference_only_split(self) -> None:
         self.namespace["EVAL_SPLIT"] = "private"
@@ -177,10 +189,20 @@ class RuleshiftNotebookRuntimeTests(unittest.TestCase):
         llm = FakeLLM({"probe_1": "type_b", "probe_2": "type_b", "probe_3": "type_a", "probe_4": "type_a"})
         result = self.namespace["run_binary_task"](llm, row["inference"]["turns"], tuple(row["scoring"]["final_probe_targets"]))
         self.assertEqual(result["denominator"], 4)
+        self.assertIsInstance(result["predictions"], list)
+        self.assertEqual(len(result["predictions"]), 4)
         self.assertEqual(len(llm.calls), 3)
         self.assertIsNone(llm.calls[0][1])
         self.assertIsNone(llm.calls[1][1])
         self.assertIs(self.namespace["BinaryResponse"], llm.calls[2][1])
+
+    def test_score_episode_returns_json_safe_predictions(self) -> None:
+        result = self.namespace["score_episode"](
+            ("type_a", "type_b", "type_a", "type_b"),
+            ("type_a", "type_b", "type_a", "type_b"),
+        )
+        self.assertEqual(result["predictions"], ["type_a", "type_b", "type_a", "type_b"])
+        self.assertIsInstance(result["predictions"], list)
 
     def test_normalize_binary_response_accepts_plain_text(self) -> None:
         normalized = self.namespace["normalize_binary_response"]("type_a, type_b\ntype_a, type_b")
