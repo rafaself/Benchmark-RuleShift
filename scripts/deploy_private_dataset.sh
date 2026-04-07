@@ -5,6 +5,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_FILE="$ROOT_DIR/.env"
 DATASET_DIR="$ROOT_DIR/kaggle/dataset/private"
+METADATA_FILE="$DATASET_DIR/dataset-metadata.json"
 KAGGLE_BIN="${KAGGLE_BIN:-kaggle}"
 
 if [[ ! -f "$ENV_FILE" ]]; then
@@ -23,6 +24,11 @@ set +a
 
 if [[ -z "${KAGGLE_API_TOKEN:-}" ]]; then
   echo "Missing KAGGLE_API_TOKEN in .env" >&2
+  exit 1
+fi
+
+if [[ ! -f "$METADATA_FILE" ]]; then
+  echo "Missing private dataset metadata at $METADATA_FILE. Run scripts/build_ruleshift_dataset.py first." >&2
   exit 1
 fi
 

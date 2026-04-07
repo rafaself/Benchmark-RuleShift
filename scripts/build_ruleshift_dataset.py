@@ -13,6 +13,8 @@ ROOT = Path(__file__).resolve().parents[1]
 PUBLIC_ROWS_PATH = ROOT / "kaggle/dataset/public/public_leaderboard_rows.json"
 PRIVATE_ROWS_PATH = ROOT / "kaggle/dataset/private/private_leaderboard_rows.json"
 ANSWER_KEY_PATH = ROOT / "kaggle/dataset/audit_key.json"
+PRIVATE_METADATA_PATH = ROOT / "kaggle/dataset/private/dataset-metadata.json"
+PRIVATE_DATASET_ID = "raptorengineer/ruleshift-runtime-private"
 
 VALUES = (-3, -2, -1, 1, 2, 3)
 DOMAIN = [(r1, r2) for r1 in VALUES for r2 in VALUES]
@@ -629,6 +631,14 @@ def write_json(path: Path, payload: object) -> None:
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
+def dataset_metadata(dataset_id: str, title: str) -> dict[str, object]:
+    return {
+        "id": dataset_id,
+        "title": title,
+        "licenses": [{"name": "CC0-1.0"}],
+    }
+
+
 def main() -> None:
     public_rows, public_answers = build_split("public", variants_per_rule=1)
     private_rows, private_answers = build_split(
@@ -649,6 +659,10 @@ def main() -> None:
     write_json(PUBLIC_ROWS_PATH, public_rows)
     write_json(PRIVATE_ROWS_PATH, private_rows)
     write_json(
+        PRIVATE_METADATA_PATH,
+        dataset_metadata(PRIVATE_DATASET_ID, "RuleShift Runtime Private"),
+    )
+    write_json(
         ANSWER_KEY_PATH,
         {
             "version": "scoped_single_turn",
@@ -659,6 +673,7 @@ def main() -> None:
 
     print(f"Wrote {len(public_rows)} public episodes to {PUBLIC_ROWS_PATH}")
     print(f"Wrote {len(private_rows)} private episodes to {PRIVATE_ROWS_PATH}")
+    print(f"Wrote private metadata to {PRIVATE_METADATA_PATH}")
     print(f"Wrote answer key to {ANSWER_KEY_PATH}")
 
 

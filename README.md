@@ -18,6 +18,7 @@ kaggle/
       dataset-metadata.json
       public_leaderboard_rows.json
     private/
+      dataset-metadata.json
       private_leaderboard_rows.json
   notebook/
     kernel-metadata.json
@@ -98,7 +99,7 @@ make verify-private
 
 `make verify-public` works from a clean clone.
 
-`make verify-private` requires a local private dataset artifact at `kaggle/dataset/private/private_leaderboard_rows.json`, which is intentionally gitignored and not committed to the public repository.
+`make verify-private` requires the local private dataset artifacts under `kaggle/dataset/private/`, including `private_leaderboard_rows.json` and `dataset-metadata.json`. These files are intentionally gitignored and not committed to the public repository.
 
 When both split files are present locally, verification also asserts that the private split is semantically disjoint from the public split.
 
@@ -183,6 +184,7 @@ raptorengineer/ruleshift-notebook
 * Benchmark invariants are enforced while rows are loaded.
 * Private dataset artifacts remain local-only in this repository; `kaggle/dataset/private/` and `kaggle/dataset/audit_key.json` are gitignored.
 * The generator preserves the current public split and builds the private split from a disjoint deterministic variant range so the private rows do not overlap the public rows.
+* Running `scripts/build_ruleshift_dataset.py` regenerates both split payloads, the local private dataset metadata, and the local audit key before deployment.
 * The repository is intentionally kept small and Kaggle-oriented, with minimal abstraction and minimal supporting files.
 
 ## References

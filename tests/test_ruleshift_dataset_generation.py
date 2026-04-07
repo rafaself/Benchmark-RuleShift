@@ -3,7 +3,12 @@ import unittest
 from collections import Counter
 from pathlib import Path
 
-from scripts.build_ruleshift_dataset import build_split, episode_signature
+from scripts.build_ruleshift_dataset import (
+    PRIVATE_DATASET_ID,
+    build_split,
+    dataset_metadata,
+    episode_signature,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -51,3 +56,13 @@ class RuleshiftDatasetGenerationTests(unittest.TestCase):
         public_signatures = {episode_signature(answer) for answer in self.public_answers}
         private_signatures = {episode_signature(answer) for answer in self.private_answers}
         self.assertFalse(public_signatures & private_signatures)
+
+    def test_private_dataset_metadata_payload_matches_expected_id(self) -> None:
+        self.assertEqual(
+            dataset_metadata(PRIVATE_DATASET_ID, "RuleShift Runtime Private"),
+            {
+                "id": "raptorengineer/ruleshift-runtime-private",
+                "title": "RuleShift Runtime Private",
+                "licenses": [{"name": "CC0-1.0"}],
+            },
+        )
