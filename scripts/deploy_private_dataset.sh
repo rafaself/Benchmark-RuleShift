@@ -38,7 +38,7 @@ if [[ ! -f "$ROWS_FILE" ]]; then
   exit 1
 fi
 
-MESSAGE="${1:-Update RuleShift private dataset}"
+MESSAGE="${1:-Update RuleShift CogFlex v2 private dataset}"
 STAGING_DIR="$(mktemp -d)"
 trap 'rm -rf "$STAGING_DIR"' EXIT
 

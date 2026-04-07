@@ -13,6 +13,15 @@ NOTEBOOK_PATH = ROOT / "kaggle/notebook/ruleshift_notebook_task.ipynb"
 PUBLIC_ROWS_PATH = ROOT / "kaggle/dataset/public/public_leaderboard_rows.json"
 
 
+class _BenchStub:
+    @staticmethod
+    def task(*args, **kwargs):
+        def decorator(fn):
+            return fn
+
+        return decorator
+
+
 def load_notebook_namespace() -> dict[str, object]:
     notebook = json.loads(NOTEBOOK_PATH.read_text(encoding="utf-8"))
     code_cells = {
@@ -20,9 +29,10 @@ def load_notebook_namespace() -> dict[str, object]:
         for cell in notebook["cells"]
         if cell["cell_type"] == "code"
     }
-    namespace: dict[str, object] = {"Path": Path}
+    namespace: dict[str, object] = {"Path": Path, "kbench": _BenchStub(), "pd": None}
     exec(code_cells["cell-runtime-types"], namespace)
     exec(code_cells["cell-runtime-normalize"], namespace)
+    exec(code_cells["cell-runtime-score"], namespace)
     runtime_load_prefix = code_cells["cell-runtime-load"].split(
         "leaderboard_rows = load_selected_rows()",
         1,
@@ -42,7 +52,19 @@ def load_notebook_namespace() -> dict[str, object]:
     return namespace
 
 
-class RuleshiftNotebookPromptValidationTests(unittest.TestCase):
+class FakeLLM:
+    def __init__(self, final_response: object) -> None:
+        self.final_response = final_response
+        self.calls: list[tuple[str, object | None]] = []
+
+    def prompt(self, prompt: str, schema: object | None = None) -> object:
+        self.calls.append((prompt, schema))
+        if schema is None:
+            return "ack"
+        return self.final_response
+
+
+class RuleshiftNotebookRuntimeTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.namespace = load_notebook_namespace()
@@ -56,14 +78,11 @@ class RuleshiftNotebookPromptValidationTests(unittest.TestCase):
         cls.private_rows = sanitize_private_rows(private_rows)
         cls.private_answer_key = private_answer_key_payload(private_answers)
 
-    def test_count_prompt_rows_matches_public_prompt_contract(self) -> None:
-        prompt = self.rows[0]["inference"]["prompt"]
-        self.assertEqual(self.namespace["_count_prompt_rows"](prompt), (5, 4))
-
     def test_load_rows_accepts_the_public_split(self) -> None:
         with contextlib.redirect_stdout(io.StringIO()):
             loaded_rows = self.namespace["_load_rows"](PUBLIC_ROWS_PATH)
         self.assertEqual(len(loaded_rows), 80)
+        self.assertEqual(len(loaded_rows[0]["inference"]["turns"]), 3)
 
     def test_load_rows_accepts_private_inference_only_split(self) -> None:
         self.namespace["EVAL_SPLIT"] = "private"
@@ -83,7 +102,7 @@ class RuleshiftNotebookPromptValidationTests(unittest.TestCase):
             self.namespace["PRIVATE_ANSWER_KEY_PATH"] = answer_key_path
             attached_rows = self.namespace["_attach_private_scoring"](self.private_rows)
         self.assertIn("scoring", attached_rows[0])
-        self.assertEqual(len(attached_rows[0]["scoring"]["probe_targets"]), 4)
+        self.assertEqual(len(attached_rows[0]["scoring"]["final_probe_targets"]), 4)
         self.namespace["PRIVATE_ANSWER_KEY_PATH"] = None
         self.namespace["EVAL_SPLIT"] = "public"
 
@@ -94,15 +113,22 @@ class RuleshiftNotebookPromptValidationTests(unittest.TestCase):
             self.namespace["attach_selected_scoring"](self.private_rows)
         self.namespace["EVAL_SPLIT"] = "public"
 
-    def test_validate_row_rejects_missing_labeled_example(self) -> None:
+    def test_validate_row_rejects_missing_turn(self) -> None:
         row = json.loads(json.dumps(self.rows[0]))
-        row["inference"]["prompt"] = row["inference"]["prompt"].replace(
-            "1. r1=+1, r2=+3 -> blim",
-            "1. r1=+1, r2=+3 -> ?",
-            1,
-        )
-        with self.assertRaisesRegex(
-            ValueError,
-            "expected 5 labeled examples, found 4",
-        ):
+        row["inference"]["turns"] = row["inference"]["turns"][:2]
+        with self.assertRaisesRegex(ValueError, "expected exactly 3 turns"):
             self.namespace["_validate_row"](row)
+
+    def test_run_binary_task_sends_first_two_turns_before_scored_turn(self) -> None:
+        row = self.rows[0]
+        llm = FakeLLM({"probe_1": "type_b", "probe_2": "type_b", "probe_3": "type_a", "probe_4": "type_a"})
+        result = self.namespace["run_binary_task"](llm, row["inference"]["turns"], tuple(row["scoring"]["final_probe_targets"]))
+        self.assertEqual(result["denominator"], 4)
+        self.assertEqual(len(llm.calls), 3)
+        self.assertIsNone(llm.calls[0][1])
+        self.assertIsNone(llm.calls[1][1])
+        self.assertIs(self.namespace["BinaryResponse"], llm.calls[2][1])
+
+    def test_normalize_binary_response_accepts_plain_text(self) -> None:
+        normalized = self.namespace["normalize_binary_response"]("type_a, type_b\ntype_a, type_b")
+        self.assertEqual(normalized, ("type_a", "type_b", "type_a", "type_b"))

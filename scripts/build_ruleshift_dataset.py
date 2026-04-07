@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-import json
 import hashlib
+import json
+import math
 import random
 from collections import Counter
 from dataclasses import dataclass
@@ -12,24 +13,40 @@ from typing import Callable
 
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC_ROWS_PATH = ROOT / "kaggle/dataset/public/public_leaderboard_rows.json"
+PUBLIC_METADATA_PATH = ROOT / "kaggle/dataset/public/dataset-metadata.json"
 PRIVATE_ROWS_PATH = ROOT / "kaggle/dataset/private/private_leaderboard_rows.json"
 PRIVATE_ANSWER_KEY_PATH = ROOT / "kaggle/dataset/private/private_answer_key.json"
 PRIVATE_MANIFEST_PATH = ROOT / "kaggle/dataset/private/private_split_manifest.json"
 PRIVATE_METADATA_PATH = ROOT / "kaggle/dataset/private/dataset-metadata.json"
-PRIVATE_DATASET_ID = "raptorengineer/ruleshift-runtime-private"
+
+PUBLIC_DATASET_ID = "raptorengineer/ruleshift-cogflex-runtime-v2"
+PRIVATE_DATASET_ID = "raptorengineer/ruleshift-cogflex-runtime-private-v2"
+NOTEBOOK_ID = "raptorengineer/ruleshift-cogflex-notebook-v2"
+TASK_NAME = "ruleshift_cogflex_v2_binary"
+FACULTY_ID = "executive_functions/cognitive_flexibility"
 
 VALUES = (-3, -2, -1, 1, 2, 3)
 DOMAIN = [(r1, r2) for r1 in VALUES for r2 in VALUES]
-LABEL_TRUE = "zark"
-LABEL_FALSE = "blim"
 TYPE_TRUE = "type_a"
 TYPE_FALSE = "type_b"
-GROUPS = ("simple", "exception", "distractor", "hard")
-MEMOS = ("archived", "reviewed", "queue-ok", "duplicate-check", "carry-forward")
-OUTPUT_INSTRUCTION = (
+GROUPS = ("explicit_switch", "reversal", "latent_switch", "context_switch")
+CONTEXTS = ("alpha", "beta")
+LEARN_EXAMPLE_COUNT = 4
+SHIFT_EXAMPLE_COUNT = 4
+FINAL_PROBE_COUNT = 4
+PAIR_FAMILY_COUNT = 20
+REVERSAL_FAMILY_COUNT = 20
+FINAL_OUTPUT_INSTRUCTION = (
     "Return exactly 4 outputs in order, one per probe. "
-    "Use only type_a or type_b. Map zark to type_a and blim to type_b."
+    "Use only type_a or type_b."
 )
+
+GROUP_SHIFT_MODES = {
+    "explicit_switch": "explicit_instruction",
+    "reversal": "label_reversal",
+    "latent_switch": "latent_example_change",
+    "context_switch": "context_gate",
+}
 
 
 def fmt_signed(value: int) -> str:
@@ -40,509 +57,611 @@ def fmt_signed(value: int) -> str:
 class RuleSpec:
     rule_id: str
     description: str
-    shortcut_text: str
     predicate: Callable[[int, int], bool]
-    true_reason: Callable[[int, int], str]
-    false_reason: Callable[[int, int], str]
 
     def label(self, point: tuple[int, int]) -> bool:
         return self.predicate(*point)
 
-    def explain(self, point: tuple[int, int]) -> str:
+    def explain(self, point: tuple[int, int], label: str) -> str:
         return (
-            self.true_reason(*point)
-            if self.label(point)
-            else self.false_reason(*point)
+            f"{self.description}. For r1={fmt_signed(point[0])}, "
+            f"r2={fmt_signed(point[1])}, the correct label is {label}."
         )
 
 
-def make_rule(
-    rule_id: str,
-    description: str,
-    shortcut_text: str,
-    predicate: Callable[[int, int], bool],
-    true_reason: Callable[[int, int], str],
-    false_reason: Callable[[int, int], str],
-) -> RuleSpec:
-    return RuleSpec(
-        rule_id=rule_id,
-        description=description,
-        shortcut_text=shortcut_text,
-        predicate=predicate,
-        true_reason=true_reason,
-        false_reason=false_reason,
+@dataclass(frozen=True)
+class TransitionFamily:
+    family_id: str
+    initial_rule_id: str
+    shift_rule_id: str
+
+
+def make_rule(rule_id: str, description: str, predicate: Callable[[int, int], bool]) -> RuleSpec:
+    return RuleSpec(rule_id=rule_id, description=description, predicate=predicate)
+
+
+def _candidate_rules() -> list[RuleSpec]:
+    return [
+        make_rule("r1_at_least_minus_1", "type_a iff r1 is at least -1", lambda r1, r2: r1 >= -1),
+        make_rule("r1_at_least_plus_2", "type_a iff r1 is at least +2", lambda r1, r2: r1 >= 2),
+        make_rule("r2_at_least_minus_1", "type_a iff r2 is at least -1", lambda r1, r2: r2 >= -1),
+        make_rule("r2_at_least_plus_2", "type_a iff r2 is at least +2", lambda r1, r2: r2 >= 2),
+        make_rule("r1_at_most_minus_1", "type_a iff r1 is at most -1", lambda r1, r2: r1 <= -1),
+        make_rule("r1_at_most_plus_1", "type_a iff r1 is at most +1", lambda r1, r2: r1 <= 1),
+        make_rule("r2_at_most_minus_1", "type_a iff r2 is at most -1", lambda r1, r2: r2 <= -1),
+        make_rule("r2_at_most_plus_1", "type_a iff r2 is at most +1", lambda r1, r2: r2 <= 1),
+        make_rule("sum_at_least_plus_1", "type_a iff r1 + r2 is at least +1", lambda r1, r2: r1 + r2 >= 1),
+        make_rule("sum_at_least_plus_4", "type_a iff r1 + r2 is at least +4", lambda r1, r2: r1 + r2 >= 4),
+        make_rule("sum_at_most_minus_1", "type_a iff r1 + r2 is at most -1", lambda r1, r2: r1 + r2 <= -1),
+        make_rule("sum_at_most_minus_4", "type_a iff r1 + r2 is at most -4", lambda r1, r2: r1 + r2 <= -4),
+        make_rule("diff_at_least_plus_1", "type_a iff r1 - r2 is at least +1", lambda r1, r2: r1 - r2 >= 1),
+        make_rule("diff_at_least_plus_4", "type_a iff r1 - r2 is at least +4", lambda r1, r2: r1 - r2 >= 4),
+        make_rule("diff_at_most_minus_1", "type_a iff r1 - r2 is at most -1", lambda r1, r2: r1 - r2 <= -1),
+        make_rule("diff_at_most_minus_4", "type_a iff r1 - r2 is at most -4", lambda r1, r2: r1 - r2 <= -4),
+        make_rule("abs_r1_at_least_2", "type_a iff |r1| is at least 2", lambda r1, r2: abs(r1) >= 2),
+        make_rule("abs_r2_at_least_2", "type_a iff |r2| is at least 2", lambda r1, r2: abs(r2) >= 2),
+        make_rule("same_sign", "type_a iff r1 and r2 share the same sign", lambda r1, r2: (r1 > 0) == (r2 > 0)),
+        make_rule("r1_positive", "type_a iff r1 is positive", lambda r1, r2: r1 > 0),
+        make_rule("abs_equal", "type_a iff |r1| equals |r2|", lambda r1, r2: abs(r1) == abs(r2)),
+        make_rule(
+            "abs_r1_greater_than_abs_r2",
+            "type_a iff |r1| is greater than |r2|",
+            lambda r1, r2: abs(r1) > abs(r2),
+        ),
+        make_rule(
+            "abs_r1_less_than_abs_r2",
+            "type_a iff |r1| is less than |r2|",
+            lambda r1, r2: abs(r1) < abs(r2),
+        ),
+        make_rule("both_positive", "type_a iff both r1 and r2 are positive", lambda r1, r2: r1 > 0 and r2 > 0),
+        make_rule("both_negative", "type_a iff both r1 and r2 are negative", lambda r1, r2: r1 < 0 and r2 < 0),
+        make_rule("same_parity", "type_a iff r1 and r2 have the same parity", lambda r1, r2: (r1 % 2) == (r2 % 2)),
+        make_rule("r1_even", "type_a iff r1 is even", lambda r1, r2: r1 % 2 == 0),
+        make_rule("r2_even", "type_a iff r2 is even", lambda r1, r2: r2 % 2 == 0),
+        make_rule("r2_positive", "type_a iff r2 is positive", lambda r1, r2: r2 > 0),
+        make_rule("both_even", "type_a iff both r1 and r2 are even", lambda r1, r2: r1 % 2 == 0 and r2 % 2 == 0),
+        make_rule(
+            "abs_sum_at_least_4",
+            "type_a iff |r1| + |r2| is at least 4",
+            lambda r1, r2: abs(r1) + abs(r2) >= 4,
+        ),
+        make_rule(
+            "abs_sum_at_least_5",
+            "type_a iff |r1| + |r2| is at least 5",
+            lambda r1, r2: abs(r1) + abs(r2) >= 5,
+        ),
+        make_rule(
+            "abs_diff_at_least_2",
+            "type_a iff ||r1| - |r2|| is at least 2",
+            lambda r1, r2: abs(abs(r1) - abs(r2)) >= 2,
+        ),
+        make_rule(
+            "abs_diff_at_most_1",
+            "type_a iff ||r1| - |r2|| is at most 1",
+            lambda r1, r2: abs(abs(r1) - abs(r2)) <= 1,
+        ),
+        make_rule("max_at_least_2", "type_a iff max(r1, r2) is at least +2", lambda r1, r2: max(r1, r2) >= 2),
+        make_rule("min_at_most_minus_2", "type_a iff min(r1, r2) is at most -2", lambda r1, r2: min(r1, r2) <= -2),
+        make_rule(
+            "exactly_one_large_abs",
+            "type_a iff exactly one marker has absolute value at least 2",
+            lambda r1, r2: (abs(r1) >= 2) ^ (abs(r2) >= 2),
+        ),
+        make_rule(
+            "at_least_one_positive",
+            "type_a iff at least one of r1 and r2 is positive",
+            lambda r1, r2: r1 > 0 or r2 > 0,
+        ),
+        make_rule(
+            "at_least_one_negative",
+            "type_a iff at least one of r1 and r2 is negative",
+            lambda r1, r2: r1 < 0 or r2 < 0,
+        ),
+        make_rule("r1_odd", "type_a iff r1 is odd", lambda r1, r2: r1 % 2 != 0),
+    ]
+
+
+def _rule_signature(rule: RuleSpec) -> tuple[bool, ...]:
+    return tuple(rule.label(point) for point in DOMAIN)
+
+
+def _build_rule_catalog() -> tuple[RuleSpec, ...]:
+    unique_rules: list[RuleSpec] = []
+    seen_signatures: set[tuple[bool, ...]] = set()
+    for rule in _candidate_rules():
+        signature = _rule_signature(rule)
+        if signature in seen_signatures:
+            continue
+        unique_rules.append(rule)
+        seen_signatures.add(signature)
+    if len(unique_rules) != 40:
+        raise RuntimeError(f"Expected 40 unique rules, found {len(unique_rules)}")
+    return tuple(unique_rules)
+
+
+RULES = _build_rule_catalog()
+RULE_BY_ID = {rule.rule_id: rule for rule in RULES}
+PUBLIC_RULE_IDS = tuple(rule.rule_id for rule in RULES[:20])
+PRIVATE_RULE_IDS = tuple(rule.rule_id for rule in RULES[20:])
+
+
+def label_from_bool(value: bool) -> str:
+    return TYPE_TRUE if value else TYPE_FALSE
+
+
+def flip_label(label: str) -> str:
+    return TYPE_FALSE if label == TYPE_TRUE else TYPE_TRUE
+
+
+def rule_label(rule: RuleSpec, point: tuple[int, int], *, reversed_labels: bool = False) -> str:
+    label = label_from_bool(rule.label(point))
+    return flip_label(label) if reversed_labels else label
+
+
+def disagreement_count(initial_rule_id: str, shift_rule_id: str) -> int:
+    initial_rule = RULE_BY_ID[initial_rule_id]
+    shift_rule = RULE_BY_ID[shift_rule_id]
+    return sum(initial_rule.label(point) != shift_rule.label(point) for point in DOMAIN)
+
+
+def build_pair_families(rule_ids: tuple[str, ...], split_name: str) -> tuple[TransitionFamily, ...]:
+    offsets = (7, 9, 11, 13, 17, 3, 1)
+    for offset in offsets:
+        if math.gcd(offset, len(rule_ids)) != 1:
+            continue
+        families = []
+        for index, initial_rule_id in enumerate(rule_ids):
+            shift_rule_id = rule_ids[(index + offset) % len(rule_ids)]
+            if disagreement_count(initial_rule_id, shift_rule_id) < 8:
+                families = []
+                break
+            family_id = f"{split_name}::transition::{initial_rule_id}__to__{shift_rule_id}"
+            families.append(TransitionFamily(family_id, initial_rule_id, shift_rule_id))
+        if len(families) == PAIR_FAMILY_COUNT:
+            return tuple(families)
+    raise RuntimeError(f"Unable to derive pair families for split {split_name}")
+
+
+PUBLIC_PAIR_FAMILIES = build_pair_families(PUBLIC_RULE_IDS, "public")
+PRIVATE_PAIR_FAMILIES = build_pair_families(PRIVATE_RULE_IDS, "private")
+PUBLIC_REVERSAL_FAMILIES = tuple(
+    TransitionFamily(f"public::reversal::{rule_id}", rule_id, rule_id) for rule_id in PUBLIC_RULE_IDS
+)
+PRIVATE_REVERSAL_FAMILIES = tuple(
+    TransitionFamily(f"private::reversal::{rule_id}", rule_id, rule_id) for rule_id in PRIVATE_RULE_IDS
+)
+
+
+def families_for_group(split_name: str, group_id: str) -> tuple[TransitionFamily, ...]:
+    if group_id == "reversal":
+        return PUBLIC_REVERSAL_FAMILIES if split_name == "public" else PRIVATE_REVERSAL_FAMILIES
+    return PUBLIC_PAIR_FAMILIES if split_name == "public" else PRIVATE_PAIR_FAMILIES
+
+
+def derive_episode_seed(split_name: str, group_id: str, family_id: str, variant: int, purpose: str, private_seed: str | None) -> int:
+    parts = [split_name, group_id, family_id, str(variant), purpose]
+    if private_seed is not None:
+        parts.insert(0, private_seed)
+    payload = "::".join(parts).encode("utf-8")
+    digest = hashlib.sha256(payload).digest()
+    return int.from_bytes(digest[:8], byteorder="big", signed=False)
+
+
+def has_label_balance(labels: list[str], min_true: int = 1, min_false: int = 1) -> bool:
+    counts = Counter(labels)
+    return counts[TYPE_TRUE] >= min_true and counts[TYPE_FALSE] >= min_false
+
+
+def pick_points(
+    rng: random.Random,
+    candidates: list[tuple[int, int]],
+    count: int,
+    predicate: Callable[[list[tuple[int, int]]], bool],
+    *,
+    attempts: int = 6000,
+) -> list[tuple[int, int]]:
+    if len(candidates) < count:
+        raise RuntimeError(f"Need {count} candidates, found {len(candidates)}")
+    for _ in range(attempts):
+        sample = rng.sample(candidates, count)
+        if predicate(sample):
+            rng.shuffle(sample)
+            return sample
+    raise RuntimeError("Unable to pick points that satisfy benchmark constraints")
+
+
+def serialize_case(
+    index: int,
+    point: tuple[int, int],
+    label: str,
+    *,
+    context: str | None = None,
+    previous_rule_label: str | None = None,
+    justification: str | None = None,
+) -> dict[str, object]:
+    item: dict[str, object] = {
+        "index": index,
+        "r1": point[0],
+        "r2": point[1],
+        "label": label,
+    }
+    if context is not None:
+        item["context"] = context
+    if previous_rule_label is not None:
+        item["previous_rule_label"] = previous_rule_label
+    if justification is not None:
+        item["justification"] = justification
+    return item
+
+
+def render_case_text(point: tuple[int, int], context: str | None = None) -> str:
+    if context is None:
+        return f"r1={fmt_signed(point[0])}, r2={fmt_signed(point[1])}"
+    return f"context={context} | r1={fmt_signed(point[0])}, r2={fmt_signed(point[1])}"
+
+
+def render_labeled_lines(items: list[dict[str, object]]) -> str:
+    return "\n".join(
+        f"{item['index']}. {render_case_text((int(item['r1']), int(item['r2'])), item.get('context'))} -> {item['label']}"
+        for item in items
     )
 
 
-RULES: tuple[RuleSpec, ...] = (
-    make_rule(
-        "r1_gt_r2",
-        "type_a iff r1 is greater than r2",
-        "guess from the sign of r1 instead of comparing both markers",
-        lambda r1, r2: r1 > r2,
-        lambda r1, r2: f"{fmt_signed(r1)} is greater than {fmt_signed(r2)}.",
-        lambda r1, r2: f"{fmt_signed(r1)} is not greater than {fmt_signed(r2)}.",
-    ),
-    make_rule(
-        "r1_lt_r2",
-        "type_a iff r1 is less than r2",
-        "guess from the sign of r2 instead of comparing both markers",
-        lambda r1, r2: r1 < r2,
-        lambda r1, r2: f"{fmt_signed(r1)} is less than {fmt_signed(r2)}.",
-        lambda r1, r2: f"{fmt_signed(r1)} is not less than {fmt_signed(r2)}.",
-    ),
-    make_rule(
-        "sum_positive",
-        "type_a iff r1 + r2 is positive",
-        "focus on one marker instead of the combined total",
-        lambda r1, r2: r1 + r2 > 0,
-        lambda r1, r2: f"{fmt_signed(r1)} + {fmt_signed(r2)} = {r1 + r2:+d}, which is positive.",
-        lambda r1, r2: f"{fmt_signed(r1)} + {fmt_signed(r2)} = {r1 + r2:+d}, which is not positive.",
-    ),
-    make_rule(
-        "sum_negative",
-        "type_a iff r1 + r2 is negative",
-        "focus on one marker instead of the combined total",
-        lambda r1, r2: r1 + r2 < 0,
-        lambda r1, r2: f"{fmt_signed(r1)} + {fmt_signed(r2)} = {r1 + r2:+d}, which is negative.",
-        lambda r1, r2: f"{fmt_signed(r1)} + {fmt_signed(r2)} = {r1 + r2:+d}, which is not negative.",
-    ),
-    make_rule(
-        "abs_r1_gt_abs_r2",
-        "type_a iff |r1| is greater than |r2|",
-        "look at raw signs instead of comparing magnitudes",
-        lambda r1, r2: abs(r1) > abs(r2),
-        lambda r1, r2: f"|{fmt_signed(r1)}| = {abs(r1)} is greater than |{fmt_signed(r2)}| = {abs(r2)}.",
-        lambda r1, r2: f"|{fmt_signed(r1)}| = {abs(r1)} is not greater than |{fmt_signed(r2)}| = {abs(r2)}.",
-    ),
-    make_rule(
-        "abs_r1_lt_abs_r2",
-        "type_a iff |r1| is less than |r2|",
-        "look at raw signs instead of comparing magnitudes",
-        lambda r1, r2: abs(r1) < abs(r2),
-        lambda r1, r2: f"|{fmt_signed(r1)}| = {abs(r1)} is less than |{fmt_signed(r2)}| = {abs(r2)}.",
-        lambda r1, r2: f"|{fmt_signed(r1)}| = {abs(r1)} is not less than |{fmt_signed(r2)}| = {abs(r2)}.",
-    ),
-    make_rule(
-        "abs_equal",
-        "type_a iff |r1| equals |r2|",
-        "treat sign match as sufficient instead of matching magnitudes",
-        lambda r1, r2: abs(r1) == abs(r2),
-        lambda r1, r2: f"|{fmt_signed(r1)}| and |{fmt_signed(r2)}| are both {abs(r1)}.",
-        lambda r1, r2: f"|{fmt_signed(r1)}| = {abs(r1)} and |{fmt_signed(r2)}| = {abs(r2)}, so they differ.",
-    ),
-    make_rule(
-        "r1_positive",
-        "type_a iff r1 is positive",
-        "overweight the second marker even though only the first matters",
-        lambda r1, r2: r1 > 0,
-        lambda r1, r2: f"r1 is {fmt_signed(r1)}, which is positive.",
-        lambda r1, r2: f"r1 is {fmt_signed(r1)}, which is not positive.",
-    ),
-    make_rule(
-        "r2_positive",
-        "type_a iff r2 is positive",
-        "overweight the first marker even though only the second matters",
-        lambda r1, r2: r2 > 0,
-        lambda r1, r2: f"r2 is {fmt_signed(r2)}, which is positive.",
-        lambda r1, r2: f"r2 is {fmt_signed(r2)}, which is not positive.",
-    ),
-    make_rule(
-        "r1_negative",
-        "type_a iff r1 is negative",
-        "overweight the second marker even though only the first matters",
-        lambda r1, r2: r1 < 0,
-        lambda r1, r2: f"r1 is {fmt_signed(r1)}, which is negative.",
-        lambda r1, r2: f"r1 is {fmt_signed(r1)}, which is not negative.",
-    ),
-    make_rule(
-        "r2_negative",
-        "type_a iff r2 is negative",
-        "overweight the first marker even though only the second matters",
-        lambda r1, r2: r2 < 0,
-        lambda r1, r2: f"r2 is {fmt_signed(r2)}, which is negative.",
-        lambda r1, r2: f"r2 is {fmt_signed(r2)}, which is not negative.",
-    ),
-    make_rule(
-        "both_positive",
-        "type_a iff both markers are positive",
-        "treat any positive marker as sufficient",
-        lambda r1, r2: r1 > 0 and r2 > 0,
-        lambda r1, r2: f"both r1={fmt_signed(r1)} and r2={fmt_signed(r2)} are positive.",
-        lambda r1, r2: f"at least one of r1={fmt_signed(r1)} or r2={fmt_signed(r2)} is not positive.",
-    ),
-    make_rule(
-        "both_negative",
-        "type_a iff both markers are negative",
-        "treat any negative marker as sufficient",
-        lambda r1, r2: r1 < 0 and r2 < 0,
-        lambda r1, r2: f"both r1={fmt_signed(r1)} and r2={fmt_signed(r2)} are negative.",
-        lambda r1, r2: f"at least one of r1={fmt_signed(r1)} or r2={fmt_signed(r2)} is not negative.",
-    ),
-    make_rule(
-        "same_sign",
-        "type_a iff r1 and r2 have the same sign",
-        "track only magnitude and ignore sign agreement",
-        lambda r1, r2: (r1 > 0) == (r2 > 0),
-        lambda r1, r2: f"r1={fmt_signed(r1)} and r2={fmt_signed(r2)} share the same sign.",
-        lambda r1, r2: f"r1={fmt_signed(r1)} and r2={fmt_signed(r2)} do not share the same sign.",
-    ),
-    make_rule(
-        "opposite_sign",
-        "type_a iff r1 and r2 have different signs",
-        "track only magnitude and ignore sign mismatch",
-        lambda r1, r2: (r1 > 0) != (r2 > 0),
-        lambda r1, r2: f"r1={fmt_signed(r1)} and r2={fmt_signed(r2)} have different signs.",
-        lambda r1, r2: f"r1={fmt_signed(r1)} and r2={fmt_signed(r2)} have the same sign.",
-    ),
-    make_rule(
-        "sum_at_least_two",
-        "type_a iff r1 + r2 is at least +2",
-        "use a looser positive-sum shortcut and miss the threshold",
-        lambda r1, r2: r1 + r2 >= 2,
-        lambda r1, r2: f"{fmt_signed(r1)} + {fmt_signed(r2)} = {r1 + r2:+d}, which meets the +2 threshold.",
-        lambda r1, r2: f"{fmt_signed(r1)} + {fmt_signed(r2)} = {r1 + r2:+d}, which does not meet the +2 threshold.",
-    ),
-    make_rule(
-        "sum_at_most_minus_two",
-        "type_a iff r1 + r2 is at most -2",
-        "use a looser negative-sum shortcut and miss the threshold",
-        lambda r1, r2: r1 + r2 <= -2,
-        lambda r1, r2: f"{fmt_signed(r1)} + {fmt_signed(r2)} = {r1 + r2:+d}, which meets the -2 threshold.",
-        lambda r1, r2: f"{fmt_signed(r1)} + {fmt_signed(r2)} = {r1 + r2:+d}, which does not meet the -2 threshold.",
-    ),
-    make_rule(
-        "diff_at_least_two",
-        "type_a iff r1 - r2 is at least +2",
-        "compare direction but miss the distance threshold",
-        lambda r1, r2: r1 - r2 >= 2,
-        lambda r1, r2: f"{fmt_signed(r1)} - {fmt_signed(r2)} = {r1 - r2:+d}, which meets the +2 threshold.",
-        lambda r1, r2: f"{fmt_signed(r1)} - {fmt_signed(r2)} = {r1 - r2:+d}, which does not meet the +2 threshold.",
-    ),
-    make_rule(
-        "diff_at_most_minus_two",
-        "type_a iff r1 - r2 is at most -2",
-        "compare direction but miss the distance threshold",
-        lambda r1, r2: r1 - r2 <= -2,
-        lambda r1, r2: f"{fmt_signed(r1)} - {fmt_signed(r2)} = {r1 - r2:+d}, which meets the -2 threshold.",
-        lambda r1, r2: f"{fmt_signed(r1)} - {fmt_signed(r2)} = {r1 - r2:+d}, which does not meet the -2 threshold.",
-    ),
-    make_rule(
-        "both_large_abs",
-        "type_a iff both markers have absolute value at least 2",
-        "use one large marker as a shortcut instead of checking both",
-        lambda r1, r2: abs(r1) >= 2 and abs(r2) >= 2,
-        lambda r1, r2: f"both |{fmt_signed(r1)}|={abs(r1)} and |{fmt_signed(r2)}|={abs(r2)} are at least 2.",
-        lambda r1, r2: f"at least one of |{fmt_signed(r1)}|={abs(r1)} or |{fmt_signed(r2)}|={abs(r2)} is below 2.",
-    ),
-)
-
-RULE_BY_ID = {rule.rule_id: rule for rule in RULES}
+def render_probe_lines(items: list[dict[str, object]]) -> str:
+    return "\n".join(
+        f"{item['index']}. {render_case_text((int(item['r1']), int(item['r2'])), item.get('context'))} -> ?"
+        for item in items
+    )
 
 
-def format_line(
-    idx: int,
-    point: tuple[int, int],
-    label: str,
-    group_id: str,
-    memo: str | None,
-) -> str:
-    r1, r2 = point
-    rendered_label = label
-    if group_id == "distractor":
-        return (
-            f"{idx}. memo={memo} | r1={fmt_signed(r1)} | "
-            f"r2={fmt_signed(r2)} -> {rendered_label}"
-        )
-    return f"{idx}. r1={fmt_signed(r1)}, r2={fmt_signed(r2)} -> {rendered_label}"
+def render_turn_header(episode_id: str, turn_index: int) -> str:
+    return f"RuleShift cognitive flexibility task. Episode {episode_id}. Turn {turn_index} of 3."
 
 
-def render_prompt(
-    episode_id: str,
-    group_id: str,
-    examples: list[tuple[int, int]],
-    probes: list[tuple[int, int]],
-    rule: RuleSpec,
-    memo_cycle: list[str],
-) -> str:
-    example_lines = [
-        format_line(i + 1, point, LABEL_TRUE if rule.label(point) else LABEL_FALSE, group_id, memo_cycle[i])
-        for i, point in enumerate(examples)
-    ]
-    probe_lines = [
-        format_line(i + 6, point, "?", group_id, memo_cycle[i + 5])
-        for i, point in enumerate(probes)
-    ]
+def render_learn_turn(episode_id: str, examples: list[dict[str, object]], *, context: str | None = None) -> str:
+    guidance = "Learn the current classification rule from these labeled examples."
+    if context is not None:
+        guidance = f"Learn the active rule for context={context} from these labeled examples."
     return "\n\n".join(
         [
-            f"RuleShift classification task. Episode {episode_id}.",
-            "Examples:\n" + "\n".join(example_lines),
-            "Probes:\n" + "\n".join(probe_lines),
-            OUTPUT_INSTRUCTION,
+            render_turn_header(episode_id, 1),
+            guidance,
+            "Examples:\n" + render_labeled_lines(examples),
         ]
     )
 
 
-def labeled_points(rule: RuleSpec, points: list[tuple[int, int]]) -> list[tuple[tuple[int, int], bool]]:
-    return [(point, rule.label(point)) for point in points]
-
-
-def consistent_rules(points: list[tuple[tuple[int, int], bool]]) -> list[RuleSpec]:
-    survivors: list[RuleSpec] = []
-    for rule in RULES:
-        if all(rule.label(point) == label for point, label in points):
-            survivors.append(rule)
-    return survivors
-
-
-def score_probe_set(points: list[tuple[int, int]], candidates: list[RuleSpec]) -> int:
-    score = 0
-    for point in points:
-        values = {rule.label(point) for rule in candidates}
-        score += len(values)
-    return score
-
-
-def choose_shortcut(
-    actual_rule: RuleSpec,
-    labeled_example_points: list[tuple[tuple[int, int], bool]],
-) -> RuleSpec:
-    ranked: list[tuple[int, int, str, RuleSpec]] = []
-    for rule in RULES:
-        if rule.rule_id == actual_rule.rule_id:
-            continue
-        matches = sum(
-            rule.label(point) == label
-            for point, label in labeled_example_points
+def render_shift_turn(
+    episode_id: str,
+    group_id: str,
+    examples: list[dict[str, object]],
+    *,
+    context: str | None = None,
+) -> str:
+    if group_id == "explicit_switch":
+        guidance = "The active rule has changed. Update your classification rule using these labeled examples."
+    elif group_id == "reversal":
+        guidance = (
+            "The condition stays the same, but the label mapping is reversed. "
+            "Items that were type_a are now type_b, and items that were type_b are now type_a."
         )
-        first_four_matches = sum(
-            rule.label(point) == label
-            for point, label in labeled_example_points[:4]
-        )
-        ranked.append((matches, first_four_matches, rule.rule_id, rule))
-    ranked.sort(reverse=True)
-    return ranked[0][3]
+    elif group_id == "latent_switch":
+        guidance = "Continue the task using the following labeled examples."
+    elif group_id == "context_switch":
+        assert context is not None
+        guidance = f"Now learn the active rule for context={context} from these labeled examples."
+    else:
+        raise ValueError(f"Unsupported group_id {group_id}")
+    return "\n\n".join(
+        [
+            render_turn_header(episode_id, 2),
+            guidance,
+            "Examples:\n" + render_labeled_lines(examples),
+        ]
+    )
 
 
-def balanced_points(
+def render_decision_turn(episode_id: str, probes: list[dict[str, object]], *, context_switch: bool) -> str:
+    guidance = "Classify each probe with the active rule."
+    if context_switch:
+        guidance = "Classify each probe with the active rule for that probe's context."
+    return "\n\n".join(
+        [
+            render_turn_header(episode_id, 3),
+            guidance,
+            "Probes:\n" + render_probe_lines(probes),
+            FINAL_OUTPUT_INSTRUCTION,
+        ]
+    )
+
+
+def pick_balanced_examples(
     rng: random.Random,
-    points: list[tuple[int, int]],
     rule: RuleSpec,
     count: int,
-    min_positive: int | None = None,
-    min_negative: int | None = None,
+    *,
+    reversed_labels: bool = False,
+    exclude: set[tuple[int, int]] | None = None,
 ) -> list[tuple[int, int]]:
-    positives = [point for point in points if rule.label(point)]
-    negatives = [point for point in points if not rule.label(point)]
-    pos_need = count // 2 if min_positive is None else min_positive
-    neg_need = count - pos_need if min_negative is None else min_negative
-    if pos_need + neg_need > count:
-        raise ValueError("Requested label minimums exceed requested point count")
-    rng.shuffle(positives)
-    rng.shuffle(negatives)
-    if len(positives) < pos_need or len(negatives) < neg_need:
-        raise ValueError(f"Not enough balanced points for {rule.rule_id}")
-    chosen = positives[:pos_need] + negatives[:neg_need]
-    remaining = [point for point in points if point not in chosen]
-    rng.shuffle(remaining)
-    chosen.extend(remaining[: count - len(chosen)])
-    rng.shuffle(chosen)
-    return chosen
+    excluded = set() if exclude is None else exclude
+    candidates = [point for point in DOMAIN if point not in excluded]
+    return pick_points(
+        rng,
+        candidates,
+        count,
+        lambda sample: has_label_balance([rule_label(rule, point, reversed_labels=reversed_labels) for point in sample]),
+    )
 
 
-def find_simple_episode(rule: RuleSpec, rng: random.Random) -> tuple[list[tuple[int, int]], list[tuple[int, int]], RuleSpec]:
-    for _ in range(20_000):
-        examples = balanced_points(rng, DOMAIN[:], rule, 5)
-        example_labels = labeled_points(rule, examples)
-        survivors = consistent_rules(example_labels)
-        if [item.rule_id for item in survivors] != [rule.rule_id]:
+def build_rule_examples(
+    points: list[tuple[int, int]],
+    rule: RuleSpec,
+    *,
+    start_index: int,
+    reversed_labels: bool = False,
+    context: str | None = None,
+) -> list[dict[str, object]]:
+    return [
+        serialize_case(index, point, rule_label(rule, point, reversed_labels=reversed_labels), context=context)
+        for index, point in enumerate(points, start=start_index)
+    ]
+
+
+def build_probe_items(
+    points: list[tuple[int, int]],
+    rule: RuleSpec,
+    *,
+    start_index: int,
+    previous_rule: RuleSpec,
+    reversed_labels: bool = False,
+    context: str | None = None,
+) -> list[dict[str, object]]:
+    items: list[dict[str, object]] = []
+    for index, point in enumerate(points, start=start_index):
+        label = rule_label(rule, point, reversed_labels=reversed_labels)
+        items.append(
+            serialize_case(
+                index,
+                point,
+                label,
+                context=context,
+                previous_rule_label=rule_label(previous_rule, point),
+                justification=rule.explain(point, label),
+            )
+        )
+    return items
+
+
+def build_context_probe_items(
+    items: list[tuple[str, tuple[int, int]]],
+    initial_rule: RuleSpec,
+    shift_rule: RuleSpec,
+    *,
+    start_index: int,
+) -> list[dict[str, object]]:
+    probes: list[dict[str, object]] = []
+    for index, (context, point) in enumerate(items, start=start_index):
+        active_rule = initial_rule if context == CONTEXTS[0] else shift_rule
+        label = rule_label(active_rule, point)
+        probes.append(
+            serialize_case(
+                index,
+                point,
+                label,
+                context=context,
+                previous_rule_label=rule_label(initial_rule, point),
+                justification=active_rule.explain(point, label),
+            )
+        )
+    return probes
+
+
+def build_transition_episode(
+    group_id: str,
+    family: TransitionFamily,
+    rng: random.Random,
+) -> tuple[list[dict[str, object]], list[dict[str, object]], list[dict[str, object]]]:
+    initial_rule = RULE_BY_ID[family.initial_rule_id]
+    shift_rule = RULE_BY_ID[family.shift_rule_id]
+    for _ in range(4000):
+        initial_points = pick_balanced_examples(rng, initial_rule, LEARN_EXAMPLE_COUNT)
+        used = set(initial_points)
+        disagreement_points = [
+            point for point in DOMAIN if initial_rule.label(point) != shift_rule.label(point) and point not in used
+        ]
+        if len(disagreement_points) < FINAL_PROBE_COUNT:
             continue
-        remaining = [point for point in DOMAIN if point not in examples]
-        probes = balanced_points(rng, remaining, rule, 4)
-        shortcut = choose_shortcut(rule, example_labels)
-        return (examples, probes, shortcut)
-    raise RuntimeError(f"Failed to find simple episode for {rule.rule_id}")
-
-
-def find_exception_episode(rule: RuleSpec, rng: random.Random) -> tuple[list[tuple[int, int]], list[tuple[int, int]], RuleSpec]:
-    alternatives = [alt for alt in RULES if alt.rule_id != rule.rule_id]
-    rng.shuffle(alternatives)
-    for alt in alternatives:
-        overlap = [point for point in DOMAIN if rule.label(point) == alt.label(point)]
-        divergence = [point for point in DOMAIN if rule.label(point) != alt.label(point)]
-        for _ in range(4_000):
-            try:
-                first_four = balanced_points(
-                    rng,
-                    overlap[:],
-                    rule,
-                    4,
-                    min_positive=1,
-                    min_negative=1,
-                )
-            except ValueError:
-                continue
-            first_four_labels = labeled_points(rule, first_four)
-            first_four_survivors = {item.rule_id for item in consistent_rules(first_four_labels)}
-            if rule.rule_id not in first_four_survivors or alt.rule_id not in first_four_survivors:
-                continue
-            divergence_points = divergence[:]
-            rng.shuffle(divergence_points)
-            for exception_point in divergence_points:
-                examples = first_four + [exception_point]
-                example_labels = labeled_points(rule, examples)
-                survivors = consistent_rules(example_labels)
-                if [item.rule_id for item in survivors] != [rule.rule_id]:
-                    continue
-                disagreement_points = [
-                    point
-                    for point in DOMAIN
-                    if point not in examples and rule.label(point) != alt.label(point)
-                ]
-                same_points = [
-                    point
-                    for point in DOMAIN
-                    if point not in examples and rule.label(point) == alt.label(point)
-                ]
-                if len(disagreement_points) < 2 or len(same_points) < 2:
-                    continue
-                rng.shuffle(disagreement_points)
-                rng.shuffle(same_points)
-                probes = disagreement_points[:2] + same_points[:2]
-                rng.shuffle(probes)
-                return (examples, probes, alt)
-    raise RuntimeError(f"Failed to find exception episode for {rule.rule_id}")
-
-
-def find_distractor_episode(rule: RuleSpec, rng: random.Random) -> tuple[list[tuple[int, int]], list[tuple[int, int]], RuleSpec]:
-    examples, probes, shortcut = find_simple_episode(rule, rng)
-    return (examples, probes, shortcut)
-
-
-def find_hard_episode(rule: RuleSpec, rng: random.Random) -> tuple[list[tuple[int, int]], list[tuple[int, int]], RuleSpec]:
-    for _ in range(40_000):
-        examples = balanced_points(rng, DOMAIN[:], rule, 5)
-        first_four_labels = labeled_points(rule, examples[:4])
-        first_four_survivors = consistent_rules(first_four_labels)
-        if len(first_four_survivors) < 3:
+        try:
+            shift_points = pick_points(
+                rng,
+                [point for point in DOMAIN if point not in used],
+                SHIFT_EXAMPLE_COUNT,
+                lambda sample: (
+                    sum(point in disagreement_points for point in sample) >= 3
+                    and has_label_balance([rule_label(shift_rule, point) for point in sample])
+                ),
+            )
+        except RuntimeError:
             continue
-        example_labels = labeled_points(rule, examples)
-        survivors = consistent_rules(example_labels)
-        if [item.rule_id for item in survivors] != [rule.rule_id]:
+        used.update(shift_points)
+        remaining_disagreement = [point for point in disagreement_points if point not in used]
+        if len(remaining_disagreement) < FINAL_PROBE_COUNT:
             continue
-        remaining = [point for point in DOMAIN if point not in examples]
-        probe_pool = [point for point in remaining if rule.label(point)] + [point for point in remaining if not rule.label(point)]
-        best: tuple[int, list[tuple[int, int]]] | None = None
-        for _ in range(200):
-            probes = balanced_points(rng, probe_pool[:], rule, 4)
-            score = score_probe_set(probes, first_four_survivors)
-            if best is None or score > best[0]:
-                best = (score, probes)
-        if best is None:
+        probe_points = pick_points(
+            rng,
+            remaining_disagreement,
+            FINAL_PROBE_COUNT,
+            lambda sample: True,
+        )
+        return (
+            build_rule_examples(initial_points, initial_rule, start_index=1),
+            build_rule_examples(shift_points, shift_rule, start_index=1),
+            build_probe_items(probe_points, shift_rule, start_index=1, previous_rule=initial_rule),
+        )
+    raise RuntimeError(f"Unable to build transition episode for family {family.family_id} ({group_id})")
+
+
+def build_reversal_episode(
+    family: TransitionFamily,
+    rng: random.Random,
+) -> tuple[list[dict[str, object]], list[dict[str, object]], list[dict[str, object]]]:
+    rule = RULE_BY_ID[family.initial_rule_id]
+    for _ in range(2000):
+        initial_points = pick_balanced_examples(rng, rule, LEARN_EXAMPLE_COUNT)
+        used = set(initial_points)
+        try:
+            shift_points = pick_balanced_examples(rng, rule, SHIFT_EXAMPLE_COUNT, reversed_labels=True, exclude=used)
+            used.update(shift_points)
+            probe_points = pick_balanced_examples(rng, rule, FINAL_PROBE_COUNT, reversed_labels=True, exclude=used)
+        except RuntimeError:
             continue
-        shortcut = choose_shortcut(rule, first_four_labels)
-        return (examples, best[1], shortcut)
-    raise RuntimeError(f"Failed to find hard episode for {rule.rule_id}")
+        return (
+            build_rule_examples(initial_points, rule, start_index=1),
+            build_rule_examples(shift_points, rule, start_index=1, reversed_labels=True),
+            build_probe_items(probe_points, rule, start_index=1, previous_rule=rule, reversed_labels=True),
+        )
+    raise RuntimeError(f"Unable to build reversal episode for family {family.family_id}")
 
 
-GROUP_BUILDERS = {
-    "simple": find_simple_episode,
-    "exception": find_exception_episode,
-    "distractor": find_distractor_episode,
-    "hard": find_hard_episode,
-}
-
-
-def probe_targets(rule: RuleSpec, probes: list[tuple[int, int]]) -> list[str]:
-    return [TYPE_TRUE if rule.label(point) else TYPE_FALSE for point in probes]
-
-
-def memo_cycle_for_episode(rng: random.Random) -> list[str]:
-    cycle = list(MEMOS) * 2
-    rng.shuffle(cycle)
-    return cycle[:9]
+def build_context_switch_episode(
+    family: TransitionFamily,
+    rng: random.Random,
+) -> tuple[list[dict[str, object]], list[dict[str, object]], list[dict[str, object]]]:
+    initial_rule = RULE_BY_ID[family.initial_rule_id]
+    shift_rule = RULE_BY_ID[family.shift_rule_id]
+    for _ in range(4000):
+        initial_points = pick_balanced_examples(rng, initial_rule, LEARN_EXAMPLE_COUNT)
+        used = set(initial_points)
+        try:
+            shift_points = pick_balanced_examples(rng, shift_rule, SHIFT_EXAMPLE_COUNT, exclude=used)
+        except RuntimeError:
+            continue
+        used.update(shift_points)
+        disagreement_points = [point for point in DOMAIN if initial_rule.label(point) != shift_rule.label(point) and point not in used]
+        if len(disagreement_points) < FINAL_PROBE_COUNT:
+            continue
+        alpha_points = pick_points(rng, disagreement_points, 2, lambda sample: True)
+        used.update(alpha_points)
+        remaining = [point for point in disagreement_points if point not in used]
+        if len(remaining) < 2:
+            continue
+        beta_points = pick_points(rng, remaining, 2, lambda sample: True)
+        probes = [(CONTEXTS[0], point) for point in alpha_points] + [(CONTEXTS[1], point) for point in beta_points]
+        rng.shuffle(probes)
+        return (
+            build_rule_examples(initial_points, initial_rule, start_index=1, context=CONTEXTS[0]),
+            build_rule_examples(shift_points, shift_rule, start_index=1, context=CONTEXTS[1]),
+            build_context_probe_items(probes, initial_rule, shift_rule, start_index=1),
+        )
+    raise RuntimeError(f"Unable to build context-switch episode for family {family.family_id}")
 
 
 def episode_record(
+    split_name: str,
     episode_id: str,
     group_id: str,
-    rule: RuleSpec,
-    examples: list[tuple[int, int]],
-    probes: list[tuple[int, int]],
-    shortcut: RuleSpec | None,
-    memo_cycle: list[str],
+    family: TransitionFamily,
+    learn_examples: list[dict[str, object]],
+    shift_examples: list[dict[str, object]],
+    final_probes: list[dict[str, object]],
 ) -> tuple[dict[str, object], dict[str, object]]:
-    prompt = render_prompt(episode_id, group_id, examples, probes, rule, memo_cycle)
-    shortcut_payload: dict[str, object]
-    if group_id == "distractor":
-        shortcut_payload = {
-            "shortcut_type": "metadata_noise",
-            "shortcut_text": "treat memo tags as if they carried label information",
-        }
-    else:
-        assert shortcut is not None
-        shortcut_payload = {
-            "shortcut_type": "rule_shortcut",
-            "shortcut_rule_id": shortcut.rule_id,
-            "shortcut_text": shortcut.description,
-        }
+    context_switch = group_id == "context_switch"
+    turns = [
+        render_learn_turn(episode_id, learn_examples, context=CONTEXTS[0] if context_switch else None),
+        render_shift_turn(
+            episode_id,
+            group_id,
+            shift_examples,
+            context=CONTEXTS[1] if context_switch else None,
+        ),
+        render_decision_turn(episode_id, final_probes, context_switch=context_switch),
+    ]
+    analysis = {
+        "faculty_id": FACULTY_ID,
+        "group_id": group_id,
+        "transition_family_id": family.family_id,
+        "initial_rule_id": family.initial_rule_id,
+        "shift_rule_id": family.shift_rule_id,
+        "shift_mode": GROUP_SHIFT_MODES[group_id],
+    }
     row = {
         "episode_id": episode_id,
         "inference": {
-            "prompt": prompt,
+            "turns": turns,
         },
         "scoring": {
-            "probe_targets": probe_targets(rule, probes),
+            "final_probe_targets": [str(item["label"]) for item in final_probes],
         },
-        "analysis": {
-            "group_id": group_id,
-            "rule_id": rule.rule_id,
-            "shortcut_type": shortcut_payload["shortcut_type"],
-            "shortcut_rule_id": shortcut_payload.get("shortcut_rule_id"),
-        },
+        "analysis": analysis,
+        "split": split_name,
     }
     answer = {
         "episode_id": episode_id,
-        "group_id": group_id,
-        "rule_id": rule.rule_id,
-        "rule_description": rule.description,
-        "probe_targets": probe_targets(rule, probes),
-        **shortcut_payload,
-        "examples": [
-            {
-                "index": idx + 1,
-                "r1": point[0],
-                "r2": point[1],
-                "label": TYPE_TRUE if rule.label(point) else TYPE_FALSE,
-            }
-            for idx, point in enumerate(examples)
-        ],
-        "probes": [
-            {
-                "index": idx + 6,
-                "r1": point[0],
-                "r2": point[1],
-                "label": TYPE_TRUE if rule.label(point) else TYPE_FALSE,
-                "justification": rule.explain(point),
-            }
-            for idx, point in enumerate(probes)
-        ],
+        **analysis,
+        "learn_turn_examples": learn_examples,
+        "shift_turn_examples": shift_examples,
+        "final_probes": final_probes,
+        "final_probe_targets": [str(item["label"]) for item in final_probes],
+        "turns": turns,
+        "split": split_name,
     }
     return (row, answer)
+
+
+def build_episode(
+    split_name: str,
+    episode_id: str,
+    group_id: str,
+    family: TransitionFamily,
+    rng: random.Random,
+) -> tuple[dict[str, object], dict[str, object]]:
+    if group_id in {"explicit_switch", "latent_switch"}:
+        learn_examples, shift_examples, final_probes = build_transition_episode(group_id, family, rng)
+    elif group_id == "reversal":
+        learn_examples, shift_examples, final_probes = build_reversal_episode(family, rng)
+    elif group_id == "context_switch":
+        learn_examples, shift_examples, final_probes = build_context_switch_episode(family, rng)
+    else:
+        raise ValueError(f"Unsupported group_id {group_id}")
+    row, answer = episode_record(split_name, episode_id, group_id, family, learn_examples, shift_examples, final_probes)
+    validate_episode_constraints(row, answer)
+    return (row, answer)
+
+
+def validate_episode_constraints(row: dict[str, object], answer: dict[str, object]) -> None:
+    analysis = row["analysis"]
+    group_id = str(analysis["group_id"])
+    initial_rule = RULE_BY_ID[str(analysis["initial_rule_id"])]
+    shift_rule = RULE_BY_ID[str(analysis["shift_rule_id"])]
+    final_probes = answer["final_probes"]
+    final_targets = tuple(answer["final_probe_targets"])
+    previous_rule_targets = tuple(str(item["previous_rule_label"]) for item in final_probes)
+    previous_accuracy = sum(pred == target for pred, target in zip(previous_rule_targets, final_targets))
+
+    if group_id in {"explicit_switch", "reversal", "latent_switch"} and previous_accuracy > 1:
+        raise ValueError(
+            f"episode {row['episode_id']} violates perseveration threshold: previous-rule accuracy={previous_accuracy}"
+        )
+
+    if group_id == "context_switch":
+        contexts = [str(item["context"]) for item in final_probes]
+        counts = Counter(contexts)
+        if counts != Counter({CONTEXTS[0]: 2, CONTEXTS[1]: 2}):
+            raise ValueError(f"episode {row['episode_id']} must expose exactly two probes per context: {counts}")
+        shift_rule_targets = tuple(
+            rule_label(shift_rule, (int(item["r1"]), int(item["r2"])))
+            for item in final_probes
+        )
+        if previous_accuracy > 2 or sum(pred == target for pred, target in zip(shift_rule_targets, final_targets)) > 2:
+            raise ValueError(f"episode {row['episode_id']} violates context-switch one-rule thresholds")
 
 
 def episode_signature(answer: dict[str, object]) -> tuple[object, ...]:
     return (
         answer["group_id"],
-        answer["rule_id"],
-        tuple(
-            (example["r1"], example["r2"], example["label"])
-            for example in answer["examples"]
-        ),
-        tuple(
-            (probe["r1"], probe["r2"], probe["label"])
-            for probe in answer["probes"]
-        ),
+        answer["transition_family_id"],
+        tuple(answer["turns"]),
+        tuple(answer["final_probe_targets"]),
     )
 
 
@@ -559,26 +678,25 @@ def validate_answer_uniqueness(answers: list[dict[str, object]], split_name: str
         seen[signature] = str(answer["episode_id"])
 
 
-def validate_split_isolation(
-    public_answers: list[dict[str, object]],
-    private_answers: list[dict[str, object]],
-) -> None:
+def validate_split_isolation(public_answers: list[dict[str, object]], private_answers: list[dict[str, object]]) -> None:
     validate_answer_uniqueness(public_answers, "public")
     validate_answer_uniqueness(private_answers, "private")
 
-    public_signatures = {
-        episode_signature(answer): str(answer["episode_id"])
-        for answer in public_answers
-    }
+    public_signatures = {episode_signature(answer): str(answer["episode_id"]) for answer in public_answers}
     for answer in private_answers:
         signature = episode_signature(answer)
         public_episode_id = public_signatures.get(signature)
-        if public_episode_id is None:
-            continue
-        raise ValueError(
-            "public/private split isolation violated: "
-            f"public episode {public_episode_id} overlaps private episode {answer['episode_id']}"
-        )
+        if public_episode_id is not None:
+            raise ValueError(
+                "public/private split isolation violated: "
+                f"public episode {public_episode_id} overlaps private episode {answer['episode_id']}"
+            )
+
+    public_families = {str(answer["transition_family_id"]) for answer in public_answers}
+    private_families = {str(answer["transition_family_id"]) for answer in private_answers}
+    overlap = sorted(public_families & private_families)
+    if overlap:
+        raise ValueError(f"public/private transition families overlap: {overlap}")
 
 
 def load_private_manifest(path: Path = PRIVATE_MANIFEST_PATH) -> dict[str, str]:
@@ -595,20 +713,7 @@ def load_private_manifest(path: Path = PRIVATE_MANIFEST_PATH) -> dict[str, str]:
     private_seed = payload.get("private_seed")
     if not isinstance(private_seed, str) or not private_seed.strip():
         raise ValueError("private split manifest must define a non-empty string private_seed")
-
     return {"private_seed": private_seed.strip()}
-
-
-def derive_private_episode_seed(
-    private_seed: str,
-    group_id: str,
-    rule_id: str,
-    variant: int,
-    purpose: str,
-) -> int:
-    payload = "::".join((private_seed, group_id, rule_id, str(variant), purpose)).encode("utf-8")
-    digest = hashlib.sha256(payload).digest()
-    return int.from_bytes(digest[:8], byteorder="big", signed=False)
 
 
 def build_split(
@@ -623,43 +728,22 @@ def build_split(
     rows: list[dict[str, object]] = []
     answers: list[dict[str, object]] = []
     episode_counter = 1
-    for group_index, group_id in enumerate(GROUPS):
+
+    for group_id in GROUPS:
+        families = families_for_group(split_name, group_id)
         for variant in range(variant_start, variant_start + variants_per_rule):
-            for rule_index, rule in enumerate(RULES):
-                if split_name == "public":
-                    seed = 10_000 * group_index + 1_000 * variant + rule_index
-                    memo_seed = seed + 7
-                else:
-                    assert private_seed is not None
-                    seed = derive_private_episode_seed(
-                        private_seed,
-                        group_id,
-                        rule.rule_id,
-                        variant,
-                        "episode",
-                    )
-                    memo_seed = derive_private_episode_seed(
-                        private_seed,
-                        group_id,
-                        rule.rule_id,
-                        variant,
-                        "memo",
-                    )
-                rng = random.Random(seed)
-                examples, probes, shortcut = GROUP_BUILDERS[group_id](rule, rng)
-                memo_cycle = memo_cycle_for_episode(random.Random(memo_seed))
-                episode_id = f"{episode_counter:04d}"
-                row, answer = episode_record(
-                    episode_id,
+            for family in families:
+                seed = derive_episode_seed(
+                    split_name,
                     group_id,
-                    rule,
-                    examples,
-                    probes,
-                    shortcut,
-                    memo_cycle,
+                    family.family_id,
+                    variant,
+                    "episode",
+                    private_seed,
                 )
-                row["split"] = split_name
-                answer["split"] = split_name
+                rng = random.Random(seed)
+                episode_id = f"{episode_counter:04d}"
+                row, answer = build_episode(split_name, episode_id, group_id, family, rng)
                 rows.append(row)
                 answers.append(answer)
                 episode_counter += 1
@@ -673,13 +757,15 @@ def sanitize_private_rows(rows: list[dict[str, object]]) -> list[dict[str, objec
             {
                 "episode_id": row["episode_id"],
                 "inference": {
-                    "prompt": row["inference"]["prompt"],
+                    "turns": list(row["inference"]["turns"]),
                 },
                 "analysis": {
+                    "faculty_id": row["analysis"]["faculty_id"],
                     "group_id": row["analysis"]["group_id"],
-                    "rule_id": row["analysis"]["rule_id"],
-                    "shortcut_type": row["analysis"]["shortcut_type"],
-                    "shortcut_rule_id": row["analysis"]["shortcut_rule_id"],
+                    "transition_family_id": row["analysis"]["transition_family_id"],
+                    "initial_rule_id": row["analysis"]["initial_rule_id"],
+                    "shift_rule_id": row["analysis"]["shift_rule_id"],
+                    "shift_mode": row["analysis"]["shift_mode"],
                 },
             }
         )
@@ -693,7 +779,7 @@ def private_answer_key_payload(private_answers: list[dict[str, object]]) -> dict
         item.pop("split", None)
         sanitized_answers.append(item)
     return {
-        "version": "scoped_single_turn",
+        "version": "cogflex_v2_multi_turn",
         "split": "private",
         "episodes": sanitized_answers,
     }
@@ -712,6 +798,14 @@ def build_private_artifacts(
     return (private_rows, private_answers, manifest)
 
 
+def dataset_metadata(dataset_id: str, title: str) -> dict[str, object]:
+    return {
+        "id": dataset_id,
+        "title": title,
+        "licenses": [{"name": "CC0-1.0"}],
+    }
+
+
 def validate_rows(
     rows: list[dict[str, object]],
     expected_count: int,
@@ -721,16 +815,16 @@ def validate_rows(
     assert len(rows) == expected_count, (len(rows), expected_count)
     counts = Counter(str(row["analysis"]["group_id"]) for row in rows)
     assert counts == Counter({group: per_group for group in GROUPS}), counts
+    family_counts = Counter(str(row["analysis"]["transition_family_id"]) for row in rows)
+    assert family_counts, "transition_family_id must be populated"
     for row in rows:
-        prompt = str(row["inference"]["prompt"])
-        parts = prompt.split("\n\n")
-        assert len(parts) == 4, row["episode_id"]
-        assert parts[0] == f"RuleShift classification task. Episode {row['episode_id']}.", row["episode_id"]
-        assert parts[1].startswith("Examples:\n"), row["episode_id"]
-        assert parts[2].startswith("Probes:\n"), row["episode_id"]
-        assert parts[3] == OUTPUT_INSTRUCTION, row["episode_id"]
+        turns = row["inference"]["turns"]
+        assert isinstance(turns, list) and len(turns) == 3, row["episode_id"]
+        for turn_index, turn in enumerate(turns, start=1):
+            assert turn.startswith(f"RuleShift cognitive flexibility task. Episode {row['episode_id']}. Turn {turn_index} of 3.")
         if require_scoring:
-            assert len(row["scoring"]["probe_targets"]) == 4, row["episode_id"]
+            targets = row["scoring"]["final_probe_targets"]
+            assert len(targets) == FINAL_PROBE_COUNT, row["episode_id"]
         else:
             assert "scoring" not in row, row["episode_id"]
 
@@ -740,20 +834,12 @@ def write_json(path: Path, payload: object) -> None:
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
-def dataset_metadata(dataset_id: str, title: str) -> dict[str, object]:
-    return {
-        "id": dataset_id,
-        "title": title,
-        "licenses": [{"name": "CC0-1.0"}],
-    }
-
-
 def main() -> None:
     public_rows, public_answers = build_split("public", variants_per_rule=1)
     private_rows, private_answers, _manifest = build_private_artifacts()
 
     for row in public_rows:
-        row.pop("split")
+        row.pop("split", None)
     private_publish_rows = sanitize_private_rows(private_rows)
 
     validate_rows(public_rows, expected_count=80, per_group=20, require_scoring=True)
@@ -761,19 +847,15 @@ def main() -> None:
     validate_split_isolation(public_answers, private_answers)
 
     write_json(PUBLIC_ROWS_PATH, public_rows)
+    write_json(PUBLIC_METADATA_PATH, dataset_metadata(PUBLIC_DATASET_ID, "RuleShift CogFlex Runtime v2"))
     write_json(PRIVATE_ROWS_PATH, private_publish_rows)
-    write_json(
-        PRIVATE_METADATA_PATH,
-        dataset_metadata(PRIVATE_DATASET_ID, "RuleShift Runtime Private"),
-    )
-    write_json(
-        PRIVATE_ANSWER_KEY_PATH,
-        private_answer_key_payload(private_answers),
-    )
+    write_json(PRIVATE_METADATA_PATH, dataset_metadata(PRIVATE_DATASET_ID, "RuleShift CogFlex Runtime Private v2"))
+    write_json(PRIVATE_ANSWER_KEY_PATH, private_answer_key_payload(private_answers))
 
     print(f"Wrote {len(public_rows)} public episodes to {PUBLIC_ROWS_PATH}")
+    print(f"Wrote public dataset metadata to {PUBLIC_METADATA_PATH}")
     print(f"Wrote {len(private_publish_rows)} private inference-only episodes to {PRIVATE_ROWS_PATH}")
-    print(f"Wrote private metadata to {PRIVATE_METADATA_PATH}")
+    print(f"Wrote private dataset metadata to {PRIVATE_METADATA_PATH}")
     print(f"Wrote private answer key to {PRIVATE_ANSWER_KEY_PATH}")
 
 

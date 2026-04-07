@@ -2,610 +2,794 @@
   {
     "episode_id": "0001",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0001.\n\nExamples:\n1. r1=+1, r2=+3 -> blim\n2. r1=-1, r2=-1 -> blim\n3. r1=-3, r2=+2 -> blim\n4. r1=+3, r2=+2 -> zark\n5. r1=+2, r2=-3 -> zark\n\nProbes:\n6. r1=+1, r2=+2 -> ?\n7. r1=-1, r2=-3 -> ?\n8. r1=-2, r2=+1 -> ?\n9. r1=+2, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0001. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-2, r2=-3 -> type_b\n2. r1=+3, r2=-1 -> type_a\n3. r1=-3, r2=+2 -> type_b\n4. r1=+1, r2=+2 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0001. Turn 2 of 3.\n\nThe active rule has changed. Update your classification rule using these labeled examples.\n\nExamples:\n1. r1=+1, r2=-2 -> type_a\n2. r1=+3, r2=+2 -> type_b\n3. r1=-1, r2=+2 -> type_b\n4. r1=-3, r2=-3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0001. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-1, r2=+3 -> ?\n2. r1=+2, r2=+2 -> ?\n3. r1=-3, r2=-2 -> ?\n4. r1=-2, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
+        "type_b",
         "type_b",
         "type_a",
-        "type_b",
         "type_a"
       ]
     },
     "analysis": {
-      "group_id": "simple",
-      "rule_id": "r1_gt_r2",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "r1_positive"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "explicit_switch",
+      "transition_family_id": "public::transition::r1_at_least_minus_1__to__r2_at_most_plus_1",
+      "initial_rule_id": "r1_at_least_minus_1",
+      "shift_rule_id": "r2_at_most_plus_1",
+      "shift_mode": "explicit_instruction"
     }
   },
   {
     "episode_id": "0002",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0002.\n\nExamples:\n1. r1=+2, r2=+3 -> zark\n2. r1=-1, r2=+2 -> zark\n3. r1=+3, r2=+1 -> blim\n4. r1=+2, r2=-3 -> blim\n5. r1=-2, r2=-2 -> blim\n\nProbes:\n6. r1=-3, r2=+1 -> ?\n7. r1=-1, r2=+3 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=-2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0002. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-2, r2=-3 -> type_b\n2. r1=+1, r2=-3 -> type_b\n3. r1=+2, r2=-2 -> type_a\n4. r1=-2, r2=+2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0002. Turn 2 of 3.\n\nThe active rule has changed. Update your classification rule using these labeled examples.\n\nExamples:\n1. r1=+1, r2=+1 -> type_a\n2. r1=-2, r2=+3 -> type_a\n3. r1=-3, r2=+2 -> type_b\n4. r1=-1, r2=+3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0002. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+1, r2=+3 -> ?\n2. r1=+3, r2=-3 -> ?\n3. r1=+1, r2=+2 -> ?\n4. r1=-1, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_a",
+      "final_probe_targets": [
         "type_a",
         "type_b",
-        "type_b"
+        "type_a",
+        "type_a"
       ]
     },
     "analysis": {
-      "group_id": "simple",
-      "rule_id": "r1_lt_r2",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "sum_positive"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "explicit_switch",
+      "transition_family_id": "public::transition::r1_at_least_plus_2__to__sum_at_least_plus_1",
+      "initial_rule_id": "r1_at_least_plus_2",
+      "shift_rule_id": "sum_at_least_plus_1",
+      "shift_mode": "explicit_instruction"
     }
   },
   {
     "episode_id": "0003",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0003.\n\nExamples:\n1. r1=-2, r2=-2 -> blim\n2. r1=-2, r2=+3 -> zark\n3. r1=+3, r2=-3 -> blim\n4. r1=+3, r2=-2 -> zark\n5. r1=+1, r2=-1 -> blim\n\nProbes:\n6. r1=+1, r2=+3 -> ?\n7. r1=+1, r2=-3 -> ?\n8. r1=+2, r2=+3 -> ?\n9. r1=+2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0003. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-1, r2=+2 -> type_a\n2. r1=+3, r2=-1 -> type_a\n3. r1=+3, r2=-3 -> type_b\n4. r1=+3, r2=-2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0003. Turn 2 of 3.\n\nThe active rule has changed. Update your classification rule using these labeled examples.\n\nExamples:\n1. r1=+1, r2=+1 -> type_b\n2. r1=+3, r2=+1 -> type_a\n3. r1=-3, r2=+3 -> type_b\n4. r1=-3, r2=+1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0003. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-2, r2=+1 -> ?\n2. r1=-3, r2=-1 -> ?\n3. r1=+2, r2=-1 -> ?\n4. r1=+2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_a",
+      "final_probe_targets": [
         "type_b",
-        "type_a",
+        "type_b",
+        "type_b",
         "type_b"
       ]
     },
     "analysis": {
-      "group_id": "simple",
-      "rule_id": "sum_positive",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "r2_positive"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "explicit_switch",
+      "transition_family_id": "public::transition::r2_at_least_minus_1__to__sum_at_least_plus_4",
+      "initial_rule_id": "r2_at_least_minus_1",
+      "shift_rule_id": "sum_at_least_plus_4",
+      "shift_mode": "explicit_instruction"
     }
   },
   {
     "episode_id": "0004",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0004.\n\nExamples:\n1. r1=-2, r2=+3 -> blim\n2. r1=-3, r2=-2 -> zark\n3. r1=-1, r2=+1 -> blim\n4. r1=+3, r2=-3 -> blim\n5. r1=+1, r2=-2 -> zark\n\nProbes:\n6. r1=-3, r2=+3 -> ?\n7. r1=+1, r2=+3 -> ?\n8. r1=-2, r2=-1 -> ?\n9. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0004. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+3, r2=+2 -> type_a\n2. r1=+1, r2=-2 -> type_b\n3. r1=+2, r2=-2 -> type_b\n4. r1=-2, r2=+3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0004. Turn 2 of 3.\n\nThe active rule has changed. Update your classification rule using these labeled examples.\n\nExamples:\n1. r1=-2, r2=-1 -> type_a\n2. r1=-3, r2=-2 -> type_a\n3. r1=-3, r2=+3 -> type_b\n4. r1=+3, r2=+1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0004. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-2, r2=-2 -> ?\n2. r1=-1, r2=-1 -> ?\n3. r1=-1, r2=+3 -> ?\n4. r1=-2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_b",
-        "type_b",
+      "final_probe_targets": [
         "type_a",
+        "type_a",
+        "type_b",
         "type_a"
       ]
     },
     "analysis": {
-      "group_id": "simple",
-      "rule_id": "sum_negative",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "sum_at_most_minus_two"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "explicit_switch",
+      "transition_family_id": "public::transition::r2_at_least_plus_2__to__sum_at_most_minus_1",
+      "initial_rule_id": "r2_at_least_plus_2",
+      "shift_rule_id": "sum_at_most_minus_1",
+      "shift_mode": "explicit_instruction"
     }
   },
   {
     "episode_id": "0005",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0005.\n\nExamples:\n1. r1=+3, r2=+2 -> zark\n2. r1=-3, r2=+1 -> zark\n3. r1=+3, r2=-3 -> blim\n4. r1=+3, r2=+3 -> blim\n5. r1=-1, r2=+1 -> blim\n\nProbes:\n6. r1=+2, r2=-1 -> ?\n7. r1=-2, r2=+1 -> ?\n8. r1=-1, r2=+2 -> ?\n9. r1=-2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0005. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+3, r2=-2 -> type_b\n2. r1=+3, r2=+1 -> type_b\n3. r1=-1, r2=+2 -> type_a\n4. r1=+1, r2=-1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0005. Turn 2 of 3.\n\nThe active rule has changed. Update your classification rule using these labeled examples.\n\nExamples:\n1. r1=-3, r2=-2 -> type_a\n2. r1=-3, r2=+3 -> type_b\n3. r1=-2, r2=+1 -> type_b\n4. r1=-1, r2=-1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0005. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-2, r2=-1 -> ?\n2. r1=-3, r2=+1 -> ?\n3. r1=-2, r2=+3 -> ?\n4. r1=-1, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_a",
-        "type_a",
+      "final_probe_targets": [
+        "type_b",
+        "type_b",
         "type_b",
         "type_b"
       ]
     },
     "analysis": {
-      "group_id": "simple",
-      "rule_id": "abs_r1_gt_abs_r2",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "sum_negative"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "explicit_switch",
+      "transition_family_id": "public::transition::r1_at_most_minus_1__to__sum_at_most_minus_4",
+      "initial_rule_id": "r1_at_most_minus_1",
+      "shift_rule_id": "sum_at_most_minus_4",
+      "shift_mode": "explicit_instruction"
     }
   },
   {
     "episode_id": "0006",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0006.\n\nExamples:\n1. r1=+3, r2=-3 -> blim\n2. r1=-2, r2=+1 -> blim\n3. r1=-1, r2=-3 -> zark\n4. r1=-3, r2=+3 -> blim\n5. r1=+2, r2=-3 -> zark\n\nProbes:\n6. r1=+2, r2=+3 -> ?\n7. r1=-2, r2=-2 -> ?\n8. r1=+1, r2=-1 -> ?\n9. r1=+1, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0006. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+2, r2=-1 -> type_b\n2. r1=+2, r2=+2 -> type_b\n3. r1=-2, r2=+2 -> type_a\n4. r1=-2, r2=+1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0006. Turn 2 of 3.\n\nThe active rule has changed. Update your classification rule using these labeled examples.\n\nExamples:\n1. r1=+1, r2=+1 -> type_b\n2. r1=-1, r2=+3 -> type_b\n3. r1=-3, r2=-3 -> type_b\n4. r1=+1, r2=-3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0006. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-2, r2=-1 -> ?\n2. r1=-1, r2=+2 -> ?\n3. r1=-3, r2=+1 -> ?\n4. r1=-3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_a",
+      "final_probe_targets": [
         "type_b",
         "type_b",
-        "type_a"
+        "type_b",
+        "type_b"
       ]
     },
     "analysis": {
-      "group_id": "simple",
-      "rule_id": "abs_r1_lt_abs_r2",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "sum_at_most_minus_two"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "explicit_switch",
+      "transition_family_id": "public::transition::r1_at_most_plus_1__to__diff_at_least_plus_1",
+      "initial_rule_id": "r1_at_most_plus_1",
+      "shift_rule_id": "diff_at_least_plus_1",
+      "shift_mode": "explicit_instruction"
     }
   },
   {
     "episode_id": "0007",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0007.\n\nExamples:\n1. r1=-1, r2=-1 -> zark\n2. r1=-1, r2=+1 -> zark\n3. r1=+1, r2=-2 -> blim\n4. r1=-3, r2=-2 -> blim\n5. r1=-3, r2=+1 -> blim\n\nProbes:\n6. r1=-2, r2=-1 -> ?\n7. r1=-3, r2=-3 -> ?\n8. r1=-1, r2=-3 -> ?\n9. r1=+1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0007. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-1, r2=+2 -> type_b\n2. r1=+3, r2=-1 -> type_a\n3. r1=-3, r2=+1 -> type_b\n4. r1=-2, r2=-3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0007. Turn 2 of 3.\n\nThe active rule has changed. Update your classification rule using these labeled examples.\n\nExamples:\n1. r1=-2, r2=-1 -> type_b\n2. r1=-1, r2=-1 -> type_b\n3. r1=+2, r2=-3 -> type_a\n4. r1=+1, r2=-2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0007. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-1, r2=-3 -> ?\n2. r1=+1, r2=-1 -> ?\n3. r1=-2, r2=-2 -> ?\n4. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_b",
-        "type_a",
         "type_b",
-        "type_a"
+        "type_b",
+        "type_b"
       ]
     },
     "analysis": {
-      "group_id": "simple",
-      "rule_id": "abs_equal",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "r2_positive"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "explicit_switch",
+      "transition_family_id": "public::transition::r2_at_most_minus_1__to__diff_at_least_plus_4",
+      "initial_rule_id": "r2_at_most_minus_1",
+      "shift_rule_id": "diff_at_least_plus_4",
+      "shift_mode": "explicit_instruction"
     }
   },
   {
     "episode_id": "0008",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0008.\n\nExamples:\n1. r1=-1, r2=+1 -> blim\n2. r1=+1, r2=-3 -> zark\n3. r1=+1, r2=+3 -> zark\n4. r1=-1, r2=-2 -> blim\n5. r1=-2, r2=-3 -> blim\n\nProbes:\n6. r1=+2, r2=+3 -> ?\n7. r1=+3, r2=+3 -> ?\n8. r1=-3, r2=+1 -> ?\n9. r1=-3, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0008. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+3, r2=-1 -> type_a\n2. r1=+2, r2=+2 -> type_b\n3. r1=-3, r2=+3 -> type_b\n4. r1=-2, r2=+1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0008. Turn 2 of 3.\n\nThe active rule has changed. Update your classification rule using these labeled examples.\n\nExamples:\n1. r1=+2, r2=-1 -> type_b\n2. r1=+2, r2=+3 -> type_a\n3. r1=-3, r2=-3 -> type_b\n4. r1=+1, r2=+2 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0008. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-2, r2=-2 -> ?\n2. r1=-2, r2=+3 -> ?\n3. r1=-1, r2=+2 -> ?\n4. r1=+3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_a",
-        "type_a",
+      "final_probe_targets": [
         "type_b",
+        "type_a",
+        "type_a",
         "type_b"
       ]
     },
     "analysis": {
-      "group_id": "simple",
-      "rule_id": "r1_positive",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "sum_positive"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "explicit_switch",
+      "transition_family_id": "public::transition::r2_at_most_plus_1__to__diff_at_most_minus_1",
+      "initial_rule_id": "r2_at_most_plus_1",
+      "shift_rule_id": "diff_at_most_minus_1",
+      "shift_mode": "explicit_instruction"
     }
   },
   {
     "episode_id": "0009",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0009.\n\nExamples:\n1. r1=-1, r2=-1 -> blim\n2. r1=-2, r2=+2 -> zark\n3. r1=+1, r2=+1 -> zark\n4. r1=-3, r2=-1 -> blim\n5. r1=+1, r2=-1 -> blim\n\nProbes:\n6. r1=-2, r2=-1 -> ?\n7. r1=+3, r2=+1 -> ?\n8. r1=-3, r2=+1 -> ?\n9. r1=-1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0009. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+3, r2=-1 -> type_a\n2. r1=-1, r2=+2 -> type_a\n3. r1=-1, r2=-3 -> type_b\n4. r1=+2, r2=+3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0009. Turn 2 of 3.\n\nThe active rule has changed. Update your classification rule using these labeled examples.\n\nExamples:\n1. r1=-2, r2=-2 -> type_b\n2. r1=-3, r2=+1 -> type_a\n3. r1=-2, r2=+2 -> type_a\n4. r1=+3, r2=+1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0009. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+1, r2=+1 -> ?\n2. r1=+1, r2=+3 -> ?\n3. r1=+3, r2=+2 -> ?\n4. r1=+2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_b",
-        "type_a",
-        "type_a",
+        "type_b",
+        "type_b",
         "type_b"
       ]
     },
     "analysis": {
-      "group_id": "simple",
-      "rule_id": "r2_positive",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "sum_positive"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "explicit_switch",
+      "transition_family_id": "public::transition::sum_at_least_plus_1__to__diff_at_most_minus_4",
+      "initial_rule_id": "sum_at_least_plus_1",
+      "shift_rule_id": "diff_at_most_minus_4",
+      "shift_mode": "explicit_instruction"
     }
   },
   {
     "episode_id": "0010",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0010.\n\nExamples:\n1. r1=+1, r2=+3 -> blim\n2. r1=-3, r2=+1 -> zark\n3. r1=+3, r2=-3 -> blim\n4. r1=+2, r2=-2 -> blim\n5. r1=-2, r2=+2 -> zark\n\nProbes:\n6. r1=+2, r2=+2 -> ?\n7. r1=+3, r2=-1 -> ?\n8. r1=-3, r2=-1 -> ?\n9. r1=-2, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0010. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+1, r2=-2 -> type_b\n2. r1=-2, r2=+3 -> type_b\n3. r1=+2, r2=+2 -> type_a\n4. r1=-3, r2=-2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0010. Turn 2 of 3.\n\nThe active rule has changed. Update your classification rule using these labeled examples.\n\nExamples:\n1. r1=-3, r2=-1 -> type_a\n2. r1=+2, r2=-1 -> type_a\n3. r1=+3, r2=-2 -> type_a\n4. r1=-1, r2=+2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0010. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+3, r2=-1 -> ?\n2. r1=-2, r2=-2 -> ?\n3. r1=-2, r2=+2 -> ?\n4. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_b",
-        "type_b",
+      "final_probe_targets": [
+        "type_a",
+        "type_a",
         "type_a",
         "type_a"
       ]
     },
     "analysis": {
-      "group_id": "simple",
-      "rule_id": "r1_negative",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "sum_negative"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "explicit_switch",
+      "transition_family_id": "public::transition::sum_at_least_plus_4__to__abs_r1_at_least_2",
+      "initial_rule_id": "sum_at_least_plus_4",
+      "shift_rule_id": "abs_r1_at_least_2",
+      "shift_mode": "explicit_instruction"
     }
   },
   {
     "episode_id": "0011",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0011.\n\nExamples:\n1. r1=+1, r2=+1 -> blim\n2. r1=+2, r2=+1 -> blim\n3. r1=-3, r2=-1 -> zark\n4. r1=+1, r2=-1 -> zark\n5. r1=-2, r2=+1 -> blim\n\nProbes:\n6. r1=-2, r2=+3 -> ?\n7. r1=+2, r2=-3 -> ?\n8. r1=-3, r2=-2 -> ?\n9. r1=+3, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0011. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+3, r2=-1 -> type_b\n2. r1=+1, r2=-1 -> type_b\n3. r1=-3, r2=+2 -> type_a\n4. r1=-2, r2=+2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0011. Turn 2 of 3.\n\nThe active rule has changed. Update your classification rule using these labeled examples.\n\nExamples:\n1. r1=+2, r2=-3 -> type_a\n2. r1=-2, r2=+1 -> type_b\n3. r1=-3, r2=+1 -> type_b\n4. r1=-1, r2=+2 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0011. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+1, r2=+3 -> ?\n2. r1=-3, r2=+3 -> ?\n3. r1=+2, r2=-2 -> ?\n4. r1=-1, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_b",
+      "final_probe_targets": [
         "type_a",
         "type_a",
-        "type_b"
+        "type_a",
+        "type_a"
       ]
     },
     "analysis": {
-      "group_id": "simple",
-      "rule_id": "r2_negative",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "sum_at_most_minus_two"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "explicit_switch",
+      "transition_family_id": "public::transition::sum_at_most_minus_1__to__abs_r2_at_least_2",
+      "initial_rule_id": "sum_at_most_minus_1",
+      "shift_rule_id": "abs_r2_at_least_2",
+      "shift_mode": "explicit_instruction"
     }
   },
   {
     "episode_id": "0012",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0012.\n\nExamples:\n1. r1=-3, r2=-3 -> blim\n2. r1=+3, r2=+2 -> zark\n3. r1=+3, r2=-1 -> blim\n4. r1=+2, r2=+2 -> zark\n5. r1=-2, r2=+1 -> blim\n\nProbes:\n6. r1=+1, r2=+1 -> ?\n7. r1=-2, r2=+3 -> ?\n8. r1=+3, r2=+1 -> ?\n9. r1=-3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0012. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-1, r2=+1 -> type_b\n2. r1=+1, r2=-2 -> type_b\n3. r1=-2, r2=-2 -> type_a\n4. r1=+3, r2=+1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0012. Turn 2 of 3.\n\nThe active rule has changed. Update your classification rule using these labeled examples.\n\nExamples:\n1. r1=+3, r2=-1 -> type_b\n2. r1=-1, r2=-2 -> type_a\n3. r1=+3, r2=+3 -> type_a\n4. r1=+2, r2=+2 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0012. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-1, r2=-1 -> ?\n2. r1=+2, r2=+1 -> ?\n3. r1=-2, r2=-1 -> ?\n4. r1=+2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_a",
-        "type_b",
         "type_a",
-        "type_b"
+        "type_a",
+        "type_a"
       ]
     },
     "analysis": {
-      "group_id": "simple",
-      "rule_id": "both_positive",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "r2_positive"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "explicit_switch",
+      "transition_family_id": "public::transition::sum_at_most_minus_4__to__same_sign",
+      "initial_rule_id": "sum_at_most_minus_4",
+      "shift_rule_id": "same_sign",
+      "shift_mode": "explicit_instruction"
     }
   },
   {
     "episode_id": "0013",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0013.\n\nExamples:\n1. r1=-2, r2=-3 -> zark\n2. r1=-3, r2=+1 -> blim\n3. r1=+2, r2=-2 -> blim\n4. r1=+3, r2=+1 -> blim\n5. r1=-1, r2=-1 -> zark\n\nProbes:\n6. r1=+1, r2=-2 -> ?\n7. r1=-3, r2=+3 -> ?\n8. r1=-3, r2=-1 -> ?\n9. r1=-2, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0013. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+2, r2=-2 -> type_a\n2. r1=-1, r2=+3 -> type_b\n3. r1=+3, r2=+3 -> type_b\n4. r1=-3, r2=-1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0013. Turn 2 of 3.\n\nThe active rule has changed. Update your classification rule using these labeled examples.\n\nExamples:\n1. r1=-3, r2=+1 -> type_b\n2. r1=-2, r2=-3 -> type_b\n3. r1=+1, r2=+1 -> type_a\n4. r1=+1, r2=+3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0013. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+2, r2=+3 -> ?\n2. r1=-1, r2=-2 -> ?\n3. r1=+2, r2=+2 -> ?\n4. r1=-1, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_b",
+      "final_probe_targets": [
+        "type_a",
         "type_b",
         "type_a",
-        "type_a"
+        "type_b"
       ]
     },
     "analysis": {
-      "group_id": "simple",
-      "rule_id": "both_negative",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "abs_r1_lt_abs_r2"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "explicit_switch",
+      "transition_family_id": "public::transition::diff_at_least_plus_1__to__r1_positive",
+      "initial_rule_id": "diff_at_least_plus_1",
+      "shift_rule_id": "r1_positive",
+      "shift_mode": "explicit_instruction"
     }
   },
   {
     "episode_id": "0014",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0014.\n\nExamples:\n1. r1=-2, r2=+3 -> blim\n2. r1=-1, r2=-3 -> zark\n3. r1=+3, r2=-1 -> blim\n4. r1=+2, r2=+1 -> zark\n5. r1=+1, r2=-3 -> blim\n\nProbes:\n6. r1=+1, r2=+1 -> ?\n7. r1=-3, r2=+1 -> ?\n8. r1=+3, r2=-2 -> ?\n9. r1=+2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0014. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-1, r2=+3 -> type_b\n2. r1=+2, r2=-3 -> type_a\n3. r1=+3, r2=-2 -> type_a\n4. r1=-1, r2=-1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0014. Turn 2 of 3.\n\nThe active rule has changed. Update your classification rule using these labeled examples.\n\nExamples:\n1. r1=-2, r2=-1 -> type_b\n2. r1=-1, r2=-3 -> type_a\n3. r1=+2, r2=+1 -> type_a\n4. r1=+1, r2=+3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0014. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+2, r2=+2 -> ?\n2. r1=+1, r2=-2 -> ?\n3. r1=+1, r2=+2 -> ?\n4. r1=-1, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_a",
-        "type_b",
-        "type_b",
+        "type_a",
+        "type_a",
         "type_a"
       ]
     },
     "analysis": {
-      "group_id": "simple",
-      "rule_id": "same_sign",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "both_positive"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "explicit_switch",
+      "transition_family_id": "public::transition::diff_at_least_plus_4__to__r1_at_least_minus_1",
+      "initial_rule_id": "diff_at_least_plus_4",
+      "shift_rule_id": "r1_at_least_minus_1",
+      "shift_mode": "explicit_instruction"
     }
   },
   {
     "episode_id": "0015",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0015.\n\nExamples:\n1. r1=-2, r2=-1 -> blim\n2. r1=+1, r2=+2 -> blim\n3. r1=-3, r2=+3 -> zark\n4. r1=-3, r2=-2 -> blim\n5. r1=+2, r2=-3 -> zark\n\nProbes:\n6. r1=+1, r2=+1 -> ?\n7. r1=-1, r2=+3 -> ?\n8. r1=-2, r2=-3 -> ?\n9. r1=-2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0015. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-3, r2=+3 -> type_a\n2. r1=+1, r2=-2 -> type_b\n3. r1=+1, r2=+3 -> type_a\n4. r1=+3, r2=+3 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0015. Turn 2 of 3.\n\nThe active rule has changed. Update your classification rule using these labeled examples.\n\nExamples:\n1. r1=+1, r2=+2 -> type_b\n2. r1=-2, r2=-2 -> type_b\n3. r1=-3, r2=-2 -> type_b\n4. r1=+3, r2=-1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0015. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+2, r2=+2 -> ?\n2. r1=-2, r2=+3 -> ?\n3. r1=-2, r2=+2 -> ?\n4. r1=+2, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_b",
+      "final_probe_targets": [
         "type_a",
+        "type_b",
         "type_b",
         "type_a"
       ]
     },
     "analysis": {
-      "group_id": "simple",
-      "rule_id": "opposite_sign",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "diff_at_most_minus_two"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "explicit_switch",
+      "transition_family_id": "public::transition::diff_at_most_minus_1__to__r1_at_least_plus_2",
+      "initial_rule_id": "diff_at_most_minus_1",
+      "shift_rule_id": "r1_at_least_plus_2",
+      "shift_mode": "explicit_instruction"
     }
   },
   {
     "episode_id": "0016",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0016.\n\nExamples:\n1. r1=-1, r2=+2 -> blim\n2. r1=-1, r2=+3 -> zark\n3. r1=-3, r2=-3 -> blim\n4. r1=+2, r2=+2 -> zark\n5. r1=+3, r2=-3 -> blim\n\nProbes:\n6. r1=+3, r2=+2 -> ?\n7. r1=-2, r2=+2 -> ?\n8. r1=+3, r2=+3 -> ?\n9. r1=-1, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0016. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+2, r2=+1 -> type_b\n2. r1=-2, r2=+3 -> type_a\n3. r1=+2, r2=-3 -> type_b\n4. r1=-2, r2=+2 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0016. Turn 2 of 3.\n\nThe active rule has changed. Update your classification rule using these labeled examples.\n\nExamples:\n1. r1=+1, r2=-1 -> type_a\n2. r1=+3, r2=-3 -> type_b\n3. r1=+1, r2=+3 -> type_a\n4. r1=-2, r2=-1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0016. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+1, r2=+1 -> ?\n2. r1=+3, r2=+3 -> ?\n3. r1=-1, r2=-1 -> ?\n4. r1=+3, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_a",
-        "type_b",
         "type_a",
-        "type_b"
+        "type_a",
+        "type_a"
       ]
     },
     "analysis": {
-      "group_id": "simple",
-      "rule_id": "sum_at_least_two",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "sum_positive"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "explicit_switch",
+      "transition_family_id": "public::transition::diff_at_most_minus_4__to__r2_at_least_minus_1",
+      "initial_rule_id": "diff_at_most_minus_4",
+      "shift_rule_id": "r2_at_least_minus_1",
+      "shift_mode": "explicit_instruction"
     }
   },
   {
     "episode_id": "0017",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0017.\n\nExamples:\n1. r1=-3, r2=-1 -> zark\n2. r1=-3, r2=+1 -> zark\n3. r1=+2, r2=+3 -> blim\n4. r1=-2, r2=+1 -> blim\n5. r1=-2, r2=+3 -> blim\n\nProbes:\n6. r1=-1, r2=+1 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=-3, r2=-2 -> ?\n9. r1=-2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0017. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-1, r2=+3 -> type_b\n2. r1=-1, r2=+2 -> type_b\n3. r1=-2, r2=-3 -> type_a\n4. r1=+1, r2=+2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0017. Turn 2 of 3.\n\nThe active rule has changed. Update your classification rule using these labeled examples.\n\nExamples:\n1. r1=+3, r2=+3 -> type_a\n2. r1=-3, r2=-3 -> type_b\n3. r1=-2, r2=-2 -> type_b\n4. r1=-3, r2=+1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0017. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+2, r2=+1 -> ?\n2. r1=+3, r2=-3 -> ?\n3. r1=+2, r2=-2 -> ?\n4. r1=+3, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_b",
         "type_b",
-        "type_a",
-        "type_a"
+        "type_b",
+        "type_b"
       ]
     },
     "analysis": {
-      "group_id": "simple",
-      "rule_id": "sum_at_most_minus_two",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "sum_negative"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "explicit_switch",
+      "transition_family_id": "public::transition::abs_r1_at_least_2__to__r2_at_least_plus_2",
+      "initial_rule_id": "abs_r1_at_least_2",
+      "shift_rule_id": "r2_at_least_plus_2",
+      "shift_mode": "explicit_instruction"
     }
   },
   {
     "episode_id": "0018",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0018.\n\nExamples:\n1. r1=+2, r2=+2 -> blim\n2. r1=+1, r2=-1 -> zark\n3. r1=+3, r2=-1 -> zark\n4. r1=-2, r2=+2 -> blim\n5. r1=-1, r2=-2 -> blim\n\nProbes:\n6. r1=+1, r2=+3 -> ?\n7. r1=+1, r2=-2 -> ?\n8. r1=+3, r2=-2 -> ?\n9. r1=-1, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0018. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+3, r2=+1 -> type_b\n2. r1=+2, r2=+1 -> type_b\n3. r1=-2, r2=+3 -> type_a\n4. r1=+3, r2=-1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0018. Turn 2 of 3.\n\nThe active rule has changed. Update your classification rule using these labeled examples.\n\nExamples:\n1. r1=-2, r2=-3 -> type_a\n2. r1=-2, r2=-1 -> type_a\n3. r1=+1, r2=+2 -> type_b\n4. r1=+2, r2=-2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0018. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+2, r2=+3 -> ?\n2. r1=-3, r2=-1 -> ?\n3. r1=+3, r2=-3 -> ?\n4. r1=-2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_b",
         "type_a",
-        "type_a",
-        "type_b"
+        "type_b",
+        "type_a"
       ]
     },
     "analysis": {
-      "group_id": "simple",
-      "rule_id": "diff_at_least_two",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "r2_negative"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "explicit_switch",
+      "transition_family_id": "public::transition::abs_r2_at_least_2__to__r1_at_most_minus_1",
+      "initial_rule_id": "abs_r2_at_least_2",
+      "shift_rule_id": "r1_at_most_minus_1",
+      "shift_mode": "explicit_instruction"
     }
   },
   {
     "episode_id": "0019",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0019.\n\nExamples:\n1. r1=+2, r2=+1 -> blim\n2. r1=+2, r2=+3 -> blim\n3. r1=+1, r2=+3 -> zark\n4. r1=+3, r2=+1 -> blim\n5. r1=-2, r2=+2 -> zark\n\nProbes:\n6. r1=+3, r2=-1 -> ?\n7. r1=-3, r2=+2 -> ?\n8. r1=+1, r2=-1 -> ?\n9. r1=-2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0019. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-1, r2=-2 -> type_a\n2. r1=+2, r2=-2 -> type_b\n3. r1=-1, r2=-1 -> type_a\n4. r1=+1, r2=+2 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0019. Turn 2 of 3.\n\nThe active rule has changed. Update your classification rule using these labeled examples.\n\nExamples:\n1. r1=+3, r2=+3 -> type_b\n2. r1=-2, r2=+2 -> type_a\n3. r1=+1, r2=-3 -> type_a\n4. r1=+3, r2=+2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0019. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-3, r2=+3 -> ?\n2. r1=-2, r2=+3 -> ?\n3. r1=-1, r2=+3 -> ?\n4. r1=-2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_b",
+      "final_probe_targets": [
         "type_a",
-        "type_b",
+        "type_a",
+        "type_a",
         "type_a"
       ]
     },
     "analysis": {
-      "group_id": "simple",
-      "rule_id": "diff_at_most_minus_two",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "r1_negative"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "explicit_switch",
+      "transition_family_id": "public::transition::same_sign__to__r1_at_most_plus_1",
+      "initial_rule_id": "same_sign",
+      "shift_rule_id": "r1_at_most_plus_1",
+      "shift_mode": "explicit_instruction"
     }
   },
   {
     "episode_id": "0020",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0020.\n\nExamples:\n1. r1=+2, r2=+1 -> blim\n2. r1=-2, r2=-1 -> blim\n3. r1=+2, r2=+3 -> zark\n4. r1=-1, r2=-1 -> blim\n5. r1=+2, r2=+2 -> zark\n\nProbes:\n6. r1=-3, r2=-1 -> ?\n7. r1=+3, r2=-3 -> ?\n8. r1=-1, r2=+1 -> ?\n9. r1=-3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0020. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+2, r2=-3 -> type_a\n2. r1=-2, r2=-3 -> type_b\n3. r1=-2, r2=-1 -> type_b\n4. r1=+1, r2=-3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0020. Turn 2 of 3.\n\nThe active rule has changed. Update your classification rule using these labeled examples.\n\nExamples:\n1. r1=-3, r2=+1 -> type_b\n2. r1=-1, r2=-3 -> type_a\n3. r1=-1, r2=-2 -> type_a\n4. r1=+2, r2=+3 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0020. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+1, r2=+2 -> ?\n2. r1=+3, r2=+2 -> ?\n3. r1=+3, r2=+3 -> ?\n4. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_b",
-        "type_a",
+        "type_b",
         "type_b",
         "type_a"
       ]
     },
     "analysis": {
-      "group_id": "simple",
-      "rule_id": "both_large_abs",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "abs_r1_lt_abs_r2"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "explicit_switch",
+      "transition_family_id": "public::transition::r1_positive__to__r2_at_most_minus_1",
+      "initial_rule_id": "r1_positive",
+      "shift_rule_id": "r2_at_most_minus_1",
+      "shift_mode": "explicit_instruction"
     }
   },
   {
     "episode_id": "0021",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0021.\n\nExamples:\n1. r1=-1, r2=-2 -> zark\n2. r1=-1, r2=+1 -> blim\n3. r1=+1, r2=-2 -> zark\n4. r1=-2, r2=+3 -> blim\n5. r1=+3, r2=+1 -> zark\n\nProbes:\n6. r1=-1, r2=+3 -> ?\n7. r1=+1, r2=-3 -> ?\n8. r1=-1, r2=-1 -> ?\n9. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0021. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-2, r2=-2 -> type_b\n2. r1=+3, r2=+3 -> type_a\n3. r1=-2, r2=+2 -> type_b\n4. r1=+1, r2=+1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0021. Turn 2 of 3.\n\nThe condition stays the same, but the label mapping is reversed. Items that were type_a are now type_b, and items that were type_b are now type_a.\n\nExamples:\n1. r1=-1, r2=+3 -> type_b\n2. r1=+1, r2=-2 -> type_b\n3. r1=+2, r2=-2 -> type_b\n4. r1=-3, r2=+3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0021. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-3, r2=+2 -> ?\n2. r1=+3, r2=-3 -> ?\n3. r1=+3, r2=-2 -> ?\n4. r1=+2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_b",
+      "final_probe_targets": [
         "type_a",
+        "type_b",
         "type_b",
         "type_b"
       ]
     },
     "analysis": {
-      "group_id": "exception",
-      "rule_id": "r1_gt_r2",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "sum_negative"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "reversal",
+      "transition_family_id": "public::reversal::r1_at_least_minus_1",
+      "initial_rule_id": "r1_at_least_minus_1",
+      "shift_rule_id": "r1_at_least_minus_1",
+      "shift_mode": "label_reversal"
     }
   },
   {
     "episode_id": "0022",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0022.\n\nExamples:\n1. r1=+2, r2=-1 -> blim\n2. r1=-3, r2=+1 -> zark\n3. r1=-2, r2=-2 -> blim\n4. r1=+3, r2=-2 -> blim\n5. r1=-3, r2=-2 -> zark\n\nProbes:\n6. r1=+3, r2=+3 -> ?\n7. r1=+2, r2=+1 -> ?\n8. r1=+1, r2=+2 -> ?\n9. r1=-2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0022. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+1, r2=+3 -> type_b\n2. r1=-2, r2=-1 -> type_b\n3. r1=+1, r2=-2 -> type_b\n4. r1=+2, r2=+3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0022. Turn 2 of 3.\n\nThe condition stays the same, but the label mapping is reversed. Items that were type_a are now type_b, and items that were type_b are now type_a.\n\nExamples:\n1. r1=+2, r2=-3 -> type_b\n2. r1=+3, r2=-3 -> type_b\n3. r1=+3, r2=+2 -> type_b\n4. r1=+1, r2=+1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0022. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+3, r2=+3 -> ?\n2. r1=-3, r2=+1 -> ?\n3. r1=+1, r2=-3 -> ?\n4. r1=+2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_b",
+      "final_probe_targets": [
         "type_b",
         "type_a",
-        "type_a"
+        "type_a",
+        "type_b"
       ]
     },
     "analysis": {
-      "group_id": "exception",
-      "rule_id": "r1_lt_r2",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "r2_positive"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "reversal",
+      "transition_family_id": "public::reversal::r1_at_least_plus_2",
+      "initial_rule_id": "r1_at_least_plus_2",
+      "shift_rule_id": "r1_at_least_plus_2",
+      "shift_mode": "label_reversal"
     }
   },
   {
     "episode_id": "0023",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0023.\n\nExamples:\n1. r1=+2, r2=-2 -> blim\n2. r1=+2, r2=+3 -> zark\n3. r1=+3, r2=+2 -> zark\n4. r1=+3, r2=+1 -> zark\n5. r1=+3, r2=-2 -> zark\n\nProbes:\n6. r1=-2, r2=+3 -> ?\n7. r1=+1, r2=+2 -> ?\n8. r1=+2, r2=+2 -> ?\n9. r1=-1, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0023. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-3, r2=-3 -> type_b\n2. r1=-3, r2=-1 -> type_a\n3. r1=+2, r2=+1 -> type_a\n4. r1=-1, r2=+3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0023. Turn 2 of 3.\n\nThe condition stays the same, but the label mapping is reversed. Items that were type_a are now type_b, and items that were type_b are now type_a.\n\nExamples:\n1. r1=+3, r2=-3 -> type_a\n2. r1=-2, r2=-3 -> type_a\n3. r1=-2, r2=-1 -> type_b\n4. r1=+2, r2=+2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0023. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+1, r2=-3 -> ?\n2. r1=+3, r2=-1 -> ?\n3. r1=+3, r2=-2 -> ?\n4. r1=-2, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_a",
-        "type_a",
+        "type_b",
         "type_a",
         "type_a"
       ]
     },
     "analysis": {
-      "group_id": "exception",
-      "rule_id": "sum_positive",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "both_positive"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "reversal",
+      "transition_family_id": "public::reversal::r2_at_least_minus_1",
+      "initial_rule_id": "r2_at_least_minus_1",
+      "shift_rule_id": "r2_at_least_minus_1",
+      "shift_mode": "label_reversal"
     }
   },
   {
     "episode_id": "0024",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0024.\n\nExamples:\n1. r1=-2, r2=+3 -> blim\n2. r1=+2, r2=+3 -> blim\n3. r1=-2, r2=+1 -> zark\n4. r1=+1, r2=-1 -> blim\n5. r1=-1, r2=-2 -> zark\n\nProbes:\n6. r1=-3, r2=-2 -> ?\n7. r1=+3, r2=+2 -> ?\n8. r1=+1, r2=-2 -> ?\n9. r1=-2, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0024. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+3, r2=+2 -> type_a\n2. r1=+2, r2=+2 -> type_a\n3. r1=+2, r2=-1 -> type_b\n4. r1=-3, r2=-1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0024. Turn 2 of 3.\n\nThe condition stays the same, but the label mapping is reversed. Items that were type_a are now type_b, and items that were type_b are now type_a.\n\nExamples:\n1. r1=-3, r2=-3 -> type_a\n2. r1=-3, r2=+3 -> type_b\n3. r1=-3, r2=+2 -> type_b\n4. r1=+1, r2=+2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0024. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+3, r2=+3 -> ?\n2. r1=+1, r2=-1 -> ?\n3. r1=-2, r2=-3 -> ?\n4. r1=-2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_a",
+      "final_probe_targets": [
         "type_b",
+        "type_a",
         "type_a",
         "type_b"
       ]
     },
     "analysis": {
-      "group_id": "exception",
-      "rule_id": "sum_negative",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "abs_r1_gt_abs_r2"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "reversal",
+      "transition_family_id": "public::reversal::r2_at_least_plus_2",
+      "initial_rule_id": "r2_at_least_plus_2",
+      "shift_rule_id": "r2_at_least_plus_2",
+      "shift_mode": "label_reversal"
     }
   },
   {
     "episode_id": "0025",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0025.\n\nExamples:\n1. r1=+3, r2=+3 -> blim\n2. r1=+1, r2=-2 -> blim\n3. r1=-3, r2=+2 -> zark\n4. r1=-3, r2=-2 -> zark\n5. r1=+3, r2=+1 -> zark\n\nProbes:\n6. r1=-2, r2=-2 -> ?\n7. r1=+2, r2=+3 -> ?\n8. r1=+1, r2=+2 -> ?\n9. r1=+3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0025. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+2, r2=+1 -> type_b\n2. r1=-3, r2=-1 -> type_a\n3. r1=-1, r2=-1 -> type_a\n4. r1=+3, r2=-2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0025. Turn 2 of 3.\n\nThe condition stays the same, but the label mapping is reversed. Items that were type_a are now type_b, and items that were type_b are now type_a.\n\nExamples:\n1. r1=-3, r2=-2 -> type_b\n2. r1=-3, r2=+3 -> type_b\n3. r1=-1, r2=-2 -> type_b\n4. r1=+3, r2=+3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0025. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-1, r2=+3 -> ?\n2. r1=+3, r2=+1 -> ?\n3. r1=-3, r2=+1 -> ?\n4. r1=+2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_b",
+        "type_a",
         "type_b",
-        "type_b",
-        "type_b"
+        "type_a"
       ]
     },
     "analysis": {
-      "group_id": "exception",
-      "rule_id": "abs_r1_gt_abs_r2",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "r1_lt_r2"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "reversal",
+      "transition_family_id": "public::reversal::r1_at_most_minus_1",
+      "initial_rule_id": "r1_at_most_minus_1",
+      "shift_rule_id": "r1_at_most_minus_1",
+      "shift_mode": "label_reversal"
     }
   },
   {
     "episode_id": "0026",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0026.\n\nExamples:\n1. r1=-3, r2=+3 -> blim\n2. r1=-3, r2=-3 -> blim\n3. r1=-1, r2=-3 -> zark\n4. r1=+2, r2=+2 -> blim\n5. r1=-2, r2=+3 -> zark\n\nProbes:\n6. r1=+3, r2=+1 -> ?\n7. r1=-1, r2=+3 -> ?\n8. r1=-3, r2=+2 -> ?\n9. r1=-1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0026. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-1, r2=-3 -> type_a\n2. r1=+2, r2=+1 -> type_b\n3. r1=-3, r2=-1 -> type_a\n4. r1=+2, r2=+3 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0026. Turn 2 of 3.\n\nThe condition stays the same, but the label mapping is reversed. Items that were type_a are now type_b, and items that were type_b are now type_a.\n\nExamples:\n1. r1=+2, r2=-3 -> type_a\n2. r1=-2, r2=-1 -> type_b\n3. r1=-2, r2=+2 -> type_b\n4. r1=+3, r2=-3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0026. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+1, r2=+3 -> ?\n2. r1=-1, r2=+3 -> ?\n3. r1=-1, r2=+1 -> ?\n4. r1=+3, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_b",
-        "type_a",
         "type_b",
-        "type_b"
+        "type_b",
+        "type_a"
       ]
     },
     "analysis": {
-      "group_id": "exception",
-      "rule_id": "abs_r1_lt_abs_r2",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "diff_at_least_two"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "reversal",
+      "transition_family_id": "public::reversal::r1_at_most_plus_1",
+      "initial_rule_id": "r1_at_most_plus_1",
+      "shift_rule_id": "r1_at_most_plus_1",
+      "shift_mode": "label_reversal"
     }
   },
   {
     "episode_id": "0027",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0027.\n\nExamples:\n1. r1=+2, r2=+2 -> zark\n2. r1=+2, r2=-3 -> blim\n3. r1=-2, r2=+3 -> blim\n4. r1=-1, r2=+2 -> blim\n5. r1=-1, r2=+1 -> zark\n\nProbes:\n6. r1=-3, r2=-1 -> ?\n7. r1=+1, r2=-3 -> ?\n8. r1=-3, r2=+3 -> ?\n9. r1=-1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0027. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-1, r2=+1 -> type_b\n2. r1=+3, r2=+2 -> type_b\n3. r1=+3, r2=-3 -> type_a\n4. r1=-3, r2=-1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0027. Turn 2 of 3.\n\nThe condition stays the same, but the label mapping is reversed. Items that were type_a are now type_b, and items that were type_b are now type_a.\n\nExamples:\n1. r1=+1, r2=+2 -> type_a\n2. r1=-1, r2=+3 -> type_a\n3. r1=-3, r2=+2 -> type_a\n4. r1=+1, r2=-3 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0027. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-2, r2=-3 -> ?\n2. r1=+1, r2=+1 -> ?\n3. r1=+2, r2=-1 -> ?\n4. r1=-2, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_b",
+      "final_probe_targets": [
         "type_b",
         "type_a",
-        "type_a"
+        "type_b",
+        "type_b"
       ]
     },
     "analysis": {
-      "group_id": "exception",
-      "rule_id": "abs_equal",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "both_positive"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "reversal",
+      "transition_family_id": "public::reversal::r2_at_most_minus_1",
+      "initial_rule_id": "r2_at_most_minus_1",
+      "shift_rule_id": "r2_at_most_minus_1",
+      "shift_mode": "label_reversal"
     }
   },
   {
     "episode_id": "0028",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0028.\n\nExamples:\n1. r1=+1, r2=+2 -> zark\n2. r1=-3, r2=-3 -> blim\n3. r1=+2, r2=+3 -> zark\n4. r1=-2, r2=-3 -> blim\n5. r1=+1, r2=-1 -> zark\n\nProbes:\n6. r1=-1, r2=+1 -> ?\n7. r1=-2, r2=-2 -> ?\n8. r1=-1, r2=-1 -> ?\n9. r1=-2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0028. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-3, r2=-2 -> type_a\n2. r1=-3, r2=+3 -> type_b\n3. r1=-3, r2=-1 -> type_a\n4. r1=+3, r2=-2 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0028. Turn 2 of 3.\n\nThe condition stays the same, but the label mapping is reversed. Items that were type_a are now type_b, and items that were type_b are now type_a.\n\nExamples:\n1. r1=+2, r2=+1 -> type_b\n2. r1=+1, r2=+1 -> type_b\n3. r1=-1, r2=+3 -> type_a\n4. r1=+3, r2=+3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0028. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-3, r2=-3 -> ?\n2. r1=-1, r2=-3 -> ?\n3. r1=+2, r2=+3 -> ?\n4. r1=+3, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_b",
         "type_b",
-        "type_b",
-        "type_b"
+        "type_a",
+        "type_a"
       ]
     },
     "analysis": {
-      "group_id": "exception",
-      "rule_id": "r1_positive",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "r1_lt_r2"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "reversal",
+      "transition_family_id": "public::reversal::r2_at_most_plus_1",
+      "initial_rule_id": "r2_at_most_plus_1",
+      "shift_rule_id": "r2_at_most_plus_1",
+      "shift_mode": "label_reversal"
     }
   },
   {
     "episode_id": "0029",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0029.\n\nExamples:\n1. r1=-3, r2=-2 -> blim\n2. r1=-2, r2=-3 -> blim\n3. r1=-1, r2=-3 -> blim\n4. r1=+3, r2=+3 -> zark\n5. r1=-3, r2=+2 -> zark\n\nProbes:\n6. r1=+3, r2=-2 -> ?\n7. r1=+1, r2=-2 -> ?\n8. r1=-1, r2=-1 -> ?\n9. r1=+2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0029. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+3, r2=+1 -> type_a\n2. r1=+1, r2=-2 -> type_b\n3. r1=-2, r2=+1 -> type_b\n4. r1=-2, r2=-1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0029. Turn 2 of 3.\n\nThe condition stays the same, but the label mapping is reversed. Items that were type_a are now type_b, and items that were type_b are now type_a.\n\nExamples:\n1. r1=+1, r2=-1 -> type_a\n2. r1=+1, r2=+1 -> type_b\n3. r1=-3, r2=+3 -> type_a\n4. r1=+2, r2=+3 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0029. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+2, r2=-1 -> ?\n2. r1=+2, r2=-3 -> ?\n3. r1=-1, r2=+3 -> ?\n4. r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_b",
-        "type_b",
+        "type_a",
         "type_b",
         "type_a"
       ]
     },
     "analysis": {
-      "group_id": "exception",
-      "rule_id": "r2_positive",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "r1_positive"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "reversal",
+      "transition_family_id": "public::reversal::sum_at_least_plus_1",
+      "initial_rule_id": "sum_at_least_plus_1",
+      "shift_rule_id": "sum_at_least_plus_1",
+      "shift_mode": "label_reversal"
     }
   },
   {
     "episode_id": "0030",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0030.\n\nExamples:\n1. r1=+2, r2=+1 -> blim\n2. r1=+1, r2=+1 -> blim\n3. r1=+1, r2=+3 -> blim\n4. r1=-1, r2=-3 -> zark\n5. r1=-2, r2=+3 -> zark\n\nProbes:\n6. r1=+3, r2=+2 -> ?\n7. r1=+3, r2=-1 -> ?\n8. r1=-3, r2=-3 -> ?\n9. r1=+1, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0030. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+1, r2=-2 -> type_b\n2. r1=+3, r2=+3 -> type_a\n3. r1=-2, r2=-3 -> type_b\n4. r1=-1, r2=-2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0030. Turn 2 of 3.\n\nThe condition stays the same, but the label mapping is reversed. Items that were type_a are now type_b, and items that were type_b are now type_a.\n\nExamples:\n1. r1=+1, r2=+3 -> type_b\n2. r1=+1, r2=-3 -> type_a\n3. r1=-2, r2=+1 -> type_a\n4. r1=-3, r2=+2 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0030. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+2, r2=+3 -> ?\n2. r1=-1, r2=-3 -> ?\n3. r1=+1, r2=-1 -> ?\n4. r1=-3, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_b",
+      "final_probe_targets": [
         "type_b",
         "type_a",
-        "type_b"
+        "type_a",
+        "type_a"
       ]
     },
     "analysis": {
-      "group_id": "exception",
-      "rule_id": "r1_negative",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "diff_at_least_two"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "reversal",
+      "transition_family_id": "public::reversal::sum_at_least_plus_4",
+      "initial_rule_id": "sum_at_least_plus_4",
+      "shift_rule_id": "sum_at_least_plus_4",
+      "shift_mode": "label_reversal"
     }
   },
   {
     "episode_id": "0031",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0031.\n\nExamples:\n1. r1=-3, r2=+1 -> blim\n2. r1=-2, r2=+2 -> blim\n3. r1=+3, r2=-1 -> zark\n4. r1=-3, r2=+3 -> blim\n5. r1=-3, r2=-3 -> zark\n\nProbes:\n6. r1=+2, r2=-3 -> ?\n7. r1=-2, r2=+1 -> ?\n8. r1=+2, r2=+2 -> ?\n9. r1=-2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0031. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-1, r2=+3 -> type_b\n2. r1=+2, r2=-1 -> type_b\n3. r1=-3, r2=+1 -> type_a\n4. r1=+2, r2=+2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0031. Turn 2 of 3.\n\nThe condition stays the same, but the label mapping is reversed. Items that were type_a are now type_b, and items that were type_b are now type_a.\n\nExamples:\n1. r1=+1, r2=+1 -> type_a\n2. r1=+2, r2=-2 -> type_a\n3. r1=+2, r2=+1 -> type_a\n4. r1=-1, r2=-2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0031. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+3, r2=+3 -> ?\n2. r1=-2, r2=-2 -> ?\n3. r1=+2, r2=-3 -> ?\n4. r1=-2, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_a",
         "type_b",
         "type_b",
@@ -613,119 +797,155 @@
       ]
     },
     "analysis": {
-      "group_id": "exception",
-      "rule_id": "r2_negative",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "sum_at_least_two"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "reversal",
+      "transition_family_id": "public::reversal::sum_at_most_minus_1",
+      "initial_rule_id": "sum_at_most_minus_1",
+      "shift_rule_id": "sum_at_most_minus_1",
+      "shift_mode": "label_reversal"
     }
   },
   {
     "episode_id": "0032",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0032.\n\nExamples:\n1. r1=+2, r2=+3 -> zark\n2. r1=+1, r2=-1 -> blim\n3. r1=-3, r2=+1 -> blim\n4. r1=+3, r2=-1 -> blim\n5. r1=-2, r2=-3 -> blim\n\nProbes:\n6. r1=-2, r2=+2 -> ?\n7. r1=+1, r2=-2 -> ?\n8. r1=-1, r2=+3 -> ?\n9. r1=-2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0032. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+3, r2=+3 -> type_b\n2. r1=-3, r2=-1 -> type_a\n3. r1=+2, r2=+3 -> type_b\n4. r1=-2, r2=+1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0032. Turn 2 of 3.\n\nThe condition stays the same, but the label mapping is reversed. Items that were type_a are now type_b, and items that were type_b are now type_a.\n\nExamples:\n1. r1=-1, r2=-3 -> type_b\n2. r1=+3, r2=+1 -> type_a\n3. r1=-1, r2=-1 -> type_a\n4. r1=-2, r2=-2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0032. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-3, r2=-3 -> ?\n2. r1=-3, r2=+2 -> ?\n3. r1=+1, r2=+1 -> ?\n4. r1=-2, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_b",
-        "type_b",
-        "type_b",
-        "type_b"
+        "type_a",
+        "type_a",
+        "type_a"
       ]
     },
     "analysis": {
-      "group_id": "exception",
-      "rule_id": "both_positive",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "both_large_abs"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "reversal",
+      "transition_family_id": "public::reversal::sum_at_most_minus_4",
+      "initial_rule_id": "sum_at_most_minus_4",
+      "shift_rule_id": "sum_at_most_minus_4",
+      "shift_mode": "label_reversal"
     }
   },
   {
     "episode_id": "0033",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0033.\n\nExamples:\n1. r1=+2, r2=-3 -> blim\n2. r1=+1, r2=-3 -> blim\n3. r1=-1, r2=+3 -> blim\n4. r1=-2, r2=-2 -> zark\n5. r1=+3, r2=+3 -> blim\n\nProbes:\n6. r1=+1, r2=+1 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=+1, r2=+3 -> ?\n9. r1=+3, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0033. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-3, r2=+1 -> type_b\n2. r1=-2, r2=-2 -> type_b\n3. r1=+2, r2=+1 -> type_a\n4. r1=-1, r2=+1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0033. Turn 2 of 3.\n\nThe condition stays the same, but the label mapping is reversed. Items that were type_a are now type_b, and items that were type_b are now type_a.\n\nExamples:\n1. r1=-3, r2=-1 -> type_a\n2. r1=+2, r2=-1 -> type_b\n3. r1=-3, r2=+3 -> type_a\n4. r1=-1, r2=+2 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0033. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-3, r2=+2 -> ?\n2. r1=-2, r2=+3 -> ?\n3. r1=-1, r2=-3 -> ?\n4. r1=+3, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_b",
-        "type_b",
+      "final_probe_targets": [
+        "type_a",
+        "type_a",
         "type_b",
         "type_b"
       ]
     },
     "analysis": {
-      "group_id": "exception",
-      "rule_id": "both_negative",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "abs_equal"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "reversal",
+      "transition_family_id": "public::reversal::diff_at_least_plus_1",
+      "initial_rule_id": "diff_at_least_plus_1",
+      "shift_rule_id": "diff_at_least_plus_1",
+      "shift_mode": "label_reversal"
     }
   },
   {
     "episode_id": "0034",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0034.\n\nExamples:\n1. r1=+2, r2=-1 -> blim\n2. r1=+3, r2=-3 -> blim\n3. r1=+1, r2=+2 -> zark\n4. r1=+3, r2=+1 -> zark\n5. r1=-2, r2=-2 -> zark\n\nProbes:\n6. r1=-2, r2=+2 -> ?\n7. r1=+1, r2=+3 -> ?\n8. r1=-2, r2=+1 -> ?\n9. r1=+2, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0034. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+1, r2=+2 -> type_b\n2. r1=+2, r2=-1 -> type_b\n3. r1=+1, r2=-3 -> type_a\n4. r1=+2, r2=+3 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0034. Turn 2 of 3.\n\nThe condition stays the same, but the label mapping is reversed. Items that were type_a are now type_b, and items that were type_b are now type_a.\n\nExamples:\n1. r1=-2, r2=-2 -> type_a\n2. r1=+2, r2=-3 -> type_b\n3. r1=-3, r2=-3 -> type_a\n4. r1=+1, r2=+3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0034. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+3, r2=-1 -> ?\n2. r1=-1, r2=-3 -> ?\n3. r1=-2, r2=+1 -> ?\n4. r1=-2, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_b",
         "type_a",
-        "type_b",
+        "type_a",
         "type_a"
       ]
     },
     "analysis": {
-      "group_id": "exception",
-      "rule_id": "same_sign",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "r2_positive"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "reversal",
+      "transition_family_id": "public::reversal::diff_at_least_plus_4",
+      "initial_rule_id": "diff_at_least_plus_4",
+      "shift_rule_id": "diff_at_least_plus_4",
+      "shift_mode": "label_reversal"
     }
   },
   {
     "episode_id": "0035",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0035.\n\nExamples:\n1. r1=-3, r2=-2 -> blim\n2. r1=+1, r2=+3 -> blim\n3. r1=+2, r2=-3 -> zark\n4. r1=-3, r2=-3 -> blim\n5. r1=+3, r2=+1 -> blim\n\nProbes:\n6. r1=+1, r2=+2 -> ?\n7. r1=-1, r2=+1 -> ?\n8. r1=+2, r2=-2 -> ?\n9. r1=-3, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0035. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-3, r2=+1 -> type_a\n2. r1=-1, r2=+2 -> type_a\n3. r1=+1, r2=-2 -> type_b\n4. r1=-3, r2=+2 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0035. Turn 2 of 3.\n\nThe condition stays the same, but the label mapping is reversed. Items that were type_a are now type_b, and items that were type_b are now type_a.\n\nExamples:\n1. r1=+3, r2=-1 -> type_a\n2. r1=-2, r2=+2 -> type_b\n3. r1=-2, r2=-3 -> type_a\n4. r1=-1, r2=-1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0035. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-2, r2=+1 -> ?\n2. r1=+1, r2=-3 -> ?\n3. r1=-1, r2=+1 -> ?\n4. r1=-1, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_b",
         "type_a",
-        "type_a",
+        "type_b",
         "type_a"
       ]
     },
     "analysis": {
-      "group_id": "exception",
-      "rule_id": "opposite_sign",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "r1_gt_r2"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "reversal",
+      "transition_family_id": "public::reversal::diff_at_most_minus_1",
+      "initial_rule_id": "diff_at_most_minus_1",
+      "shift_rule_id": "diff_at_most_minus_1",
+      "shift_mode": "label_reversal"
     }
   },
   {
     "episode_id": "0036",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0036.\n\nExamples:\n1. r1=-2, r2=-3 -> blim\n2. r1=+2, r2=-2 -> blim\n3. r1=+3, r2=-2 -> blim\n4. r1=+1, r2=+3 -> zark\n5. r1=+3, r2=-1 -> zark\n\nProbes:\n6. r1=-3, r2=+3 -> ?\n7. r1=+3, r2=-3 -> ?\n8. r1=+3, r2=+2 -> ?\n9. r1=+1, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0036. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-2, r2=-3 -> type_b\n2. r1=-1, r2=-1 -> type_b\n3. r1=-2, r2=-1 -> type_b\n4. r1=-3, r2=+3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0036. Turn 2 of 3.\n\nThe condition stays the same, but the label mapping is reversed. Items that were type_a are now type_b, and items that were type_b are now type_a.\n\nExamples:\n1. r1=+3, r2=+3 -> type_a\n2. r1=-2, r2=+2 -> type_b\n3. r1=-1, r2=-2 -> type_a\n4. r1=-1, r2=-3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0036. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-2, r2=+3 -> ?\n2. r1=+2, r2=+3 -> ?\n3. r1=+3, r2=+2 -> ?\n4. r1=-3, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_b",
+      "final_probe_targets": [
         "type_b",
         "type_a",
-        "type_b"
+        "type_a",
+        "type_a"
       ]
     },
     "analysis": {
-      "group_id": "exception",
-      "rule_id": "sum_at_least_two",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "diff_at_most_minus_two"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "reversal",
+      "transition_family_id": "public::reversal::diff_at_most_minus_4",
+      "initial_rule_id": "diff_at_most_minus_4",
+      "shift_rule_id": "diff_at_most_minus_4",
+      "shift_mode": "label_reversal"
     }
   },
   {
     "episode_id": "0037",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0037.\n\nExamples:\n1. r1=+2, r2=-1 -> blim\n2. r1=-3, r2=-3 -> zark\n3. r1=+3, r2=-1 -> blim\n4. r1=+1, r2=-2 -> blim\n5. r1=+1, r2=-3 -> zark\n\nProbes:\n6. r1=-3, r2=+1 -> ?\n7. r1=+3, r2=+3 -> ?\n8. r1=+1, r2=+2 -> ?\n9. r1=-2, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0037. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+1, r2=-1 -> type_b\n2. r1=-2, r2=+2 -> type_a\n3. r1=-3, r2=-2 -> type_a\n4. r1=+2, r2=-2 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0037. Turn 2 of 3.\n\nThe condition stays the same, but the label mapping is reversed. Items that were type_a are now type_b, and items that were type_b are now type_a.\n\nExamples:\n1. r1=+2, r2=-1 -> type_b\n2. r1=-1, r2=-3 -> type_a\n3. r1=+2, r2=-3 -> type_b\n4. r1=+3, r2=+3 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0037. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+1, r2=+1 -> ?\n2. r1=-3, r2=+2 -> ?\n3. r1=+3, r2=-1 -> ?\n4. r1=+1, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_a",
         "type_b",
         "type_b",
@@ -733,419 +953,545 @@
       ]
     },
     "analysis": {
-      "group_id": "exception",
-      "rule_id": "sum_at_most_minus_two",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "abs_equal"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "reversal",
+      "transition_family_id": "public::reversal::abs_r1_at_least_2",
+      "initial_rule_id": "abs_r1_at_least_2",
+      "shift_rule_id": "abs_r1_at_least_2",
+      "shift_mode": "label_reversal"
     }
   },
   {
     "episode_id": "0038",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0038.\n\nExamples:\n1. r1=-2, r2=+1 -> blim\n2. r1=-2, r2=-2 -> blim\n3. r1=-3, r2=-2 -> blim\n4. r1=+3, r2=+1 -> zark\n5. r1=+3, r2=+2 -> blim\n\nProbes:\n6. r1=+3, r2=-2 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=-1, r2=-2 -> ?\n9. r1=-1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0038. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+2, r2=-1 -> type_b\n2. r1=+3, r2=-1 -> type_b\n3. r1=-1, r2=+1 -> type_b\n4. r1=+1, r2=-3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0038. Turn 2 of 3.\n\nThe condition stays the same, but the label mapping is reversed. Items that were type_a are now type_b, and items that were type_b are now type_a.\n\nExamples:\n1. r1=-3, r2=-3 -> type_b\n2. r1=-3, r2=+3 -> type_b\n3. r1=-2, r2=-3 -> type_b\n4. r1=-3, r2=+1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0038. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+3, r2=-2 -> ?\n2. r1=-1, r2=-2 -> ?\n3. r1=-1, r2=-1 -> ?\n4. r1=+3, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
+        "type_b",
+        "type_b",
         "type_a",
-        "type_b",
-        "type_b",
         "type_b"
       ]
     },
     "analysis": {
-      "group_id": "exception",
-      "rule_id": "diff_at_least_two",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "both_positive"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "reversal",
+      "transition_family_id": "public::reversal::abs_r2_at_least_2",
+      "initial_rule_id": "abs_r2_at_least_2",
+      "shift_rule_id": "abs_r2_at_least_2",
+      "shift_mode": "label_reversal"
     }
   },
   {
     "episode_id": "0039",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0039.\n\nExamples:\n1. r1=-3, r2=-2 -> blim\n2. r1=-1, r2=+3 -> zark\n3. r1=+3, r2=+1 -> blim\n4. r1=+3, r2=+2 -> blim\n5. r1=+1, r2=-2 -> blim\n\nProbes:\n6. r1=+2, r2=-1 -> ?\n7. r1=-2, r2=+2 -> ?\n8. r1=-3, r2=-1 -> ?\n9. r1=+2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0039. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+1, r2=-2 -> type_b\n2. r1=+3, r2=+3 -> type_a\n3. r1=-1, r2=-2 -> type_a\n4. r1=-1, r2=-1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0039. Turn 2 of 3.\n\nThe condition stays the same, but the label mapping is reversed. Items that were type_a are now type_b, and items that were type_b are now type_a.\n\nExamples:\n1. r1=-2, r2=+3 -> type_a\n2. r1=-3, r2=-3 -> type_b\n3. r1=+2, r2=+1 -> type_b\n4. r1=-3, r2=+1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0039. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+3, r2=-3 -> ?\n2. r1=+2, r2=+2 -> ?\n3. r1=+1, r2=+1 -> ?\n4. r1=+1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
+        "type_a",
         "type_b",
-        "type_a",
-        "type_a",
-        "type_b"
+        "type_b",
+        "type_a"
       ]
     },
     "analysis": {
-      "group_id": "exception",
-      "rule_id": "diff_at_most_minus_two",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "abs_r1_lt_abs_r2"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "reversal",
+      "transition_family_id": "public::reversal::same_sign",
+      "initial_rule_id": "same_sign",
+      "shift_rule_id": "same_sign",
+      "shift_mode": "label_reversal"
     }
   },
   {
     "episode_id": "0040",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0040.\n\nExamples:\n1. r1=-2, r2=-2 -> zark\n2. r1=+2, r2=-2 -> zark\n3. r1=+2, r2=+1 -> blim\n4. r1=-3, r2=-2 -> zark\n5. r1=+2, r2=+3 -> zark\n\nProbes:\n6. r1=+1, r2=+3 -> ?\n7. r1=-1, r2=-1 -> ?\n8. r1=+2, r2=-3 -> ?\n9. r1=+3, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0040. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+2, r2=-2 -> type_a\n2. r1=-1, r2=+1 -> type_b\n3. r1=+1, r2=+1 -> type_a\n4. r1=+1, r2=-3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0040. Turn 2 of 3.\n\nThe condition stays the same, but the label mapping is reversed. Items that were type_a are now type_b, and items that were type_b are now type_a.\n\nExamples:\n1. r1=-1, r2=+2 -> type_a\n2. r1=+3, r2=+3 -> type_b\n3. r1=-3, r2=-3 -> type_a\n4. r1=-3, r2=-2 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0040. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-2, r2=+1 -> ?\n2. r1=+3, r2=-1 -> ?\n3. r1=-3, r2=+1 -> ?\n4. r1=+2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_b",
+      "final_probe_targets": [
+        "type_a",
         "type_b",
         "type_a",
-        "type_a"
+        "type_b"
       ]
     },
     "analysis": {
-      "group_id": "exception",
-      "rule_id": "both_large_abs",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "r2_negative"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "reversal",
+      "transition_family_id": "public::reversal::r1_positive",
+      "initial_rule_id": "r1_positive",
+      "shift_rule_id": "r1_positive",
+      "shift_mode": "label_reversal"
     }
   },
   {
     "episode_id": "0041",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0041.\n\nExamples:\n1. memo=queue-ok | r1=-1 | r2=-1 -> blim\n2. memo=reviewed | r1=+3 | r2=+1 -> zark\n3. memo=duplicate-check | r1=-1 | r2=+1 -> blim\n4. memo=carry-forward | r1=-2 | r2=-2 -> blim\n5. memo=duplicate-check | r1=-2 | r2=-3 -> zark\n\nProbes:\n6. memo=carry-forward | r1=+1 | r2=-1 -> ?\n7. memo=archived | r1=-3 | r2=+3 -> ?\n8. memo=reviewed | r1=+3 | r2=-1 -> ?\n9. memo=archived | r1=-1 | r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0041. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+2, r2=+3 -> type_a\n2. r1=-1, r2=+3 -> type_a\n3. r1=-2, r2=+2 -> type_b\n4. r1=+2, r2=-3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0041. Turn 2 of 3.\n\nContinue the task using the following labeled examples.\n\nExamples:\n1. r1=-2, r2=+1 -> type_a\n2. r1=+1, r2=+2 -> type_b\n3. r1=+1, r2=-1 -> type_a\n4. r1=-1, r2=+2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0041. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-2, r2=-2 -> ?\n2. r1=+2, r2=+2 -> ?\n3. r1=-3, r2=+1 -> ?\n4. r1=-3, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_a",
         "type_b",
         "type_a",
-        "type_b"
+        "type_a"
       ]
     },
     "analysis": {
-      "group_id": "distractor",
-      "rule_id": "r1_gt_r2",
-      "shortcut_type": "metadata_noise",
-      "shortcut_rule_id": null
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "latent_switch",
+      "transition_family_id": "public::transition::r1_at_least_minus_1__to__r2_at_most_plus_1",
+      "initial_rule_id": "r1_at_least_minus_1",
+      "shift_rule_id": "r2_at_most_plus_1",
+      "shift_mode": "latent_example_change"
     }
   },
   {
     "episode_id": "0042",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0042.\n\nExamples:\n1. memo=duplicate-check | r1=-1 | r2=-1 -> blim\n2. memo=reviewed | r1=-2 | r2=+3 -> zark\n3. memo=carry-forward | r1=+2 | r2=-3 -> blim\n4. memo=carry-forward | r1=-2 | r2=-1 -> zark\n5. memo=duplicate-check | r1=+3 | r2=+1 -> blim\n\nProbes:\n6. memo=reviewed | r1=+3 | r2=+2 -> ?\n7. memo=archived | r1=+1 | r2=+2 -> ?\n8. memo=queue-ok | r1=+3 | r2=-1 -> ?\n9. memo=archived | r1=-3 | r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0042. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+3, r2=+3 -> type_a\n2. r1=-3, r2=+2 -> type_b\n3. r1=-2, r2=+2 -> type_b\n4. r1=+1, r2=+2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0042. Turn 2 of 3.\n\nContinue the task using the following labeled examples.\n\nExamples:\n1. r1=+1, r2=+1 -> type_a\n2. r1=+2, r2=-3 -> type_b\n3. r1=+2, r2=+1 -> type_a\n4. r1=+1, r2=+3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0042. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+2, r2=-2 -> ?\n2. r1=-1, r2=+2 -> ?\n3. r1=-1, r2=+3 -> ?\n4. r1=-2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_b",
         "type_a",
-        "type_b",
+        "type_a",
         "type_a"
       ]
     },
     "analysis": {
-      "group_id": "distractor",
-      "rule_id": "r1_lt_r2",
-      "shortcut_type": "metadata_noise",
-      "shortcut_rule_id": null
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "latent_switch",
+      "transition_family_id": "public::transition::r1_at_least_plus_2__to__sum_at_least_plus_1",
+      "initial_rule_id": "r1_at_least_plus_2",
+      "shift_rule_id": "sum_at_least_plus_1",
+      "shift_mode": "latent_example_change"
     }
   },
   {
     "episode_id": "0043",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0043.\n\nExamples:\n1. memo=carry-forward | r1=-1 | r2=-2 -> blim\n2. memo=archived | r1=-2 | r2=+3 -> zark\n3. memo=queue-ok | r1=-3 | r2=+2 -> blim\n4. memo=duplicate-check | r1=+2 | r2=-3 -> blim\n5. memo=reviewed | r1=+2 | r2=-1 -> zark\n\nProbes:\n6. memo=archived | r1=+1 | r2=+3 -> ?\n7. memo=duplicate-check | r1=-3 | r2=+3 -> ?\n8. memo=reviewed | r1=+3 | r2=-3 -> ?\n9. memo=queue-ok | r1=+2 | r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0043. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+3, r2=-2 -> type_b\n2. r1=+2, r2=-1 -> type_a\n3. r1=+1, r2=+1 -> type_a\n4. r1=-1, r2=-3 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0043. Turn 2 of 3.\n\nContinue the task using the following labeled examples.\n\nExamples:\n1. r1=-1, r2=+1 -> type_b\n2. r1=-1, r2=-1 -> type_b\n3. r1=-3, r2=+2 -> type_b\n4. r1=+2, r2=+2 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0043. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+1, r2=-1 -> ?\n2. r1=-3, r2=-1 -> ?\n3. r1=-2, r2=+2 -> ?\n4. r1=+1, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_a",
+      "final_probe_targets": [
         "type_b",
         "type_b",
-        "type_a"
+        "type_b",
+        "type_b"
       ]
     },
     "analysis": {
-      "group_id": "distractor",
-      "rule_id": "sum_positive",
-      "shortcut_type": "metadata_noise",
-      "shortcut_rule_id": null
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "latent_switch",
+      "transition_family_id": "public::transition::r2_at_least_minus_1__to__sum_at_least_plus_4",
+      "initial_rule_id": "r2_at_least_minus_1",
+      "shift_rule_id": "sum_at_least_plus_4",
+      "shift_mode": "latent_example_change"
     }
   },
   {
     "episode_id": "0044",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0044.\n\nExamples:\n1. memo=carry-forward | r1=+3 | r2=+2 -> blim\n2. memo=carry-forward | r1=-1 | r2=+2 -> blim\n3. memo=queue-ok | r1=-2 | r2=+1 -> zark\n4. memo=duplicate-check | r1=-3 | r2=+2 -> zark\n5. memo=queue-ok | r1=+1 | r2=+3 -> blim\n\nProbes:\n6. memo=duplicate-check | r1=-1 | r2=-1 -> ?\n7. memo=reviewed | r1=+3 | r2=-3 -> ?\n8. memo=archived | r1=-2 | r2=-1 -> ?\n9. memo=reviewed | r1=+2 | r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0044. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-2, r2=-3 -> type_b\n2. r1=+2, r2=+3 -> type_a\n3. r1=-1, r2=-1 -> type_b\n4. r1=-2, r2=+1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0044. Turn 2 of 3.\n\nContinue the task using the following labeled examples.\n\nExamples:\n1. r1=+1, r2=-2 -> type_a\n2. r1=-1, r2=+3 -> type_b\n3. r1=+3, r2=+1 -> type_b\n4. r1=-3, r2=+1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0044. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-3, r2=-3 -> ?\n2. r1=+2, r2=+2 -> ?\n3. r1=-3, r2=+3 -> ?\n4. r1=-3, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_a",
         "type_b",
-        "type_a",
-        "type_b"
+        "type_b",
+        "type_a"
       ]
     },
     "analysis": {
-      "group_id": "distractor",
-      "rule_id": "sum_negative",
-      "shortcut_type": "metadata_noise",
-      "shortcut_rule_id": null
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "latent_switch",
+      "transition_family_id": "public::transition::r2_at_least_plus_2__to__sum_at_most_minus_1",
+      "initial_rule_id": "r2_at_least_plus_2",
+      "shift_rule_id": "sum_at_most_minus_1",
+      "shift_mode": "latent_example_change"
     }
   },
   {
     "episode_id": "0045",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0045.\n\nExamples:\n1. memo=queue-ok | r1=+1 | r2=-2 -> blim\n2. memo=archived | r1=+3 | r2=+2 -> zark\n3. memo=queue-ok | r1=+1 | r2=+2 -> blim\n4. memo=duplicate-check | r1=-3 | r2=+1 -> zark\n5. memo=duplicate-check | r1=+1 | r2=-1 -> blim\n\nProbes:\n6. memo=carry-forward | r1=-3 | r2=-2 -> ?\n7. memo=carry-forward | r1=-2 | r2=+3 -> ?\n8. memo=reviewed | r1=-3 | r2=+3 -> ?\n9. memo=reviewed | r1=-3 | r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0045. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-2, r2=+2 -> type_a\n2. r1=+3, r2=+3 -> type_b\n3. r1=+2, r2=-2 -> type_b\n4. r1=+3, r2=-3 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0045. Turn 2 of 3.\n\nContinue the task using the following labeled examples.\n\nExamples:\n1. r1=-2, r2=+3 -> type_b\n2. r1=-1, r2=+3 -> type_b\n3. r1=-3, r2=-3 -> type_a\n4. r1=-3, r2=+1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0045. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-1, r2=-1 -> ?\n2. r1=-3, r2=+3 -> ?\n3. r1=-2, r2=+1 -> ?\n4. r1=-2, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_a",
+      "final_probe_targets": [
         "type_b",
         "type_b",
-        "type_a"
+        "type_b",
+        "type_b"
       ]
     },
     "analysis": {
-      "group_id": "distractor",
-      "rule_id": "abs_r1_gt_abs_r2",
-      "shortcut_type": "metadata_noise",
-      "shortcut_rule_id": null
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "latent_switch",
+      "transition_family_id": "public::transition::r1_at_most_minus_1__to__sum_at_most_minus_4",
+      "initial_rule_id": "r1_at_most_minus_1",
+      "shift_rule_id": "sum_at_most_minus_4",
+      "shift_mode": "latent_example_change"
     }
   },
   {
     "episode_id": "0046",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0046.\n\nExamples:\n1. memo=reviewed | r1=+2 | r2=+1 -> blim\n2. memo=queue-ok | r1=-1 | r2=+3 -> zark\n3. memo=carry-forward | r1=+3 | r2=-1 -> blim\n4. memo=archived | r1=+3 | r2=-3 -> blim\n5. memo=reviewed | r1=+1 | r2=-3 -> zark\n\nProbes:\n6. memo=carry-forward | r1=+1 | r2=+1 -> ?\n7. memo=queue-ok | r1=+1 | r2=+2 -> ?\n8. memo=duplicate-check | r1=+2 | r2=+3 -> ?\n9. memo=archived | r1=+1 | r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0046. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-3, r2=-1 -> type_a\n2. r1=+3, r2=+3 -> type_b\n3. r1=+2, r2=+1 -> type_b\n4. r1=+1, r2=-1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0046. Turn 2 of 3.\n\nContinue the task using the following labeled examples.\n\nExamples:\n1. r1=-1, r2=+2 -> type_b\n2. r1=+2, r2=-1 -> type_a\n3. r1=+1, r2=-3 -> type_a\n4. r1=+3, r2=+1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0046. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-1, r2=+3 -> ?\n2. r1=-2, r2=-2 -> ?\n3. r1=+2, r2=-2 -> ?\n4. r1=+1, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_b",
-        "type_a",
+        "type_b",
         "type_a",
         "type_b"
       ]
     },
     "analysis": {
-      "group_id": "distractor",
-      "rule_id": "abs_r1_lt_abs_r2",
-      "shortcut_type": "metadata_noise",
-      "shortcut_rule_id": null
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "latent_switch",
+      "transition_family_id": "public::transition::r1_at_most_plus_1__to__diff_at_least_plus_1",
+      "initial_rule_id": "r1_at_most_plus_1",
+      "shift_rule_id": "diff_at_least_plus_1",
+      "shift_mode": "latent_example_change"
     }
   },
   {
     "episode_id": "0047",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0047.\n\nExamples:\n1. memo=duplicate-check | r1=+1 | r2=-3 -> blim\n2. memo=carry-forward | r1=+2 | r2=+1 -> blim\n3. memo=carry-forward | r1=-1 | r2=-1 -> zark\n4. memo=archived | r1=+2 | r2=-1 -> blim\n5. memo=archived | r1=+3 | r2=-3 -> zark\n\nProbes:\n6. memo=queue-ok | r1=+2 | r2=+2 -> ?\n7. memo=duplicate-check | r1=+1 | r2=+1 -> ?\n8. memo=reviewed | r1=+3 | r2=+1 -> ?\n9. memo=reviewed | r1=+3 | r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0047. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-1, r2=+3 -> type_b\n2. r1=+2, r2=+1 -> type_b\n3. r1=+2, r2=-3 -> type_a\n4. r1=-2, r2=-1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0047. Turn 2 of 3.\n\nContinue the task using the following labeled examples.\n\nExamples:\n1. r1=+1, r2=-2 -> type_b\n2. r1=-2, r2=-3 -> type_b\n3. r1=+3, r2=-1 -> type_a\n4. r1=+2, r2=-1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0047. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+1, r2=-1 -> ?\n2. r1=-1, r2=-2 -> ?\n3. r1=-2, r2=-2 -> ?\n4. r1=-3, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_a",
-        "type_a",
+      "final_probe_targets": [
+        "type_b",
+        "type_b",
         "type_b",
         "type_b"
       ]
     },
     "analysis": {
-      "group_id": "distractor",
-      "rule_id": "abs_equal",
-      "shortcut_type": "metadata_noise",
-      "shortcut_rule_id": null
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "latent_switch",
+      "transition_family_id": "public::transition::r2_at_most_minus_1__to__diff_at_least_plus_4",
+      "initial_rule_id": "r2_at_most_minus_1",
+      "shift_rule_id": "diff_at_least_plus_4",
+      "shift_mode": "latent_example_change"
     }
   },
   {
     "episode_id": "0048",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0048.\n\nExamples:\n1. memo=carry-forward | r1=-1 | r2=-3 -> blim\n2. memo=carry-forward | r1=+3 | r2=+2 -> zark\n3. memo=duplicate-check | r1=-3 | r2=+3 -> blim\n4. memo=archived | r1=+2 | r2=-3 -> zark\n5. memo=archived | r1=-3 | r2=-2 -> blim\n\nProbes:\n6. memo=queue-ok | r1=+1 | r2=-2 -> ?\n7. memo=duplicate-check | r1=+1 | r2=+2 -> ?\n8. memo=queue-ok | r1=-2 | r2=+3 -> ?\n9. memo=reviewed | r1=-1 | r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0048. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+2, r2=-1 -> type_a\n2. r1=+3, r2=-3 -> type_a\n3. r1=+2, r2=+2 -> type_b\n4. r1=+1, r2=+1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0048. Turn 2 of 3.\n\nContinue the task using the following labeled examples.\n\nExamples:\n1. r1=-1, r2=-1 -> type_b\n2. r1=+1, r2=+2 -> type_a\n3. r1=-3, r2=-2 -> type_a\n4. r1=-2, r2=+3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0048. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+3, r2=+1 -> ?\n2. r1=-3, r2=-3 -> ?\n3. r1=-1, r2=-3 -> ?\n4. r1=-2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_a",
-        "type_a",
+      "final_probe_targets": [
+        "type_b",
+        "type_b",
         "type_b",
         "type_b"
       ]
     },
     "analysis": {
-      "group_id": "distractor",
-      "rule_id": "r1_positive",
-      "shortcut_type": "metadata_noise",
-      "shortcut_rule_id": null
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "latent_switch",
+      "transition_family_id": "public::transition::r2_at_most_plus_1__to__diff_at_most_minus_1",
+      "initial_rule_id": "r2_at_most_plus_1",
+      "shift_rule_id": "diff_at_most_minus_1",
+      "shift_mode": "latent_example_change"
     }
   },
   {
     "episode_id": "0049",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0049.\n\nExamples:\n1. memo=duplicate-check | r1=+3 | r2=+1 -> zark\n2. memo=reviewed | r1=-3 | r2=-2 -> blim\n3. memo=queue-ok | r1=+2 | r2=-3 -> blim\n4. memo=carry-forward | r1=-3 | r2=-3 -> blim\n5. memo=carry-forward | r1=-2 | r2=+2 -> zark\n\nProbes:\n6. memo=queue-ok | r1=-2 | r2=+1 -> ?\n7. memo=reviewed | r1=+1 | r2=-2 -> ?\n8. memo=duplicate-check | r1=+2 | r2=+3 -> ?\n9. memo=archived | r1=+1 | r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0049. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-2, r2=-2 -> type_b\n2. r1=+1, r2=-2 -> type_b\n3. r1=+1, r2=+1 -> type_a\n4. r1=-1, r2=+1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0049. Turn 2 of 3.\n\nContinue the task using the following labeled examples.\n\nExamples:\n1. r1=+1, r2=-3 -> type_b\n2. r1=+3, r2=+1 -> type_b\n3. r1=-3, r2=+3 -> type_a\n4. r1=+3, r2=-2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0049. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-3, r2=+1 -> ?\n2. r1=+2, r2=+2 -> ?\n3. r1=+2, r2=+1 -> ?\n4. r1=+1, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_a",
         "type_b",
-        "type_a",
+        "type_b",
         "type_b"
       ]
     },
     "analysis": {
-      "group_id": "distractor",
-      "rule_id": "r2_positive",
-      "shortcut_type": "metadata_noise",
-      "shortcut_rule_id": null
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "latent_switch",
+      "transition_family_id": "public::transition::sum_at_least_plus_1__to__diff_at_most_minus_4",
+      "initial_rule_id": "sum_at_least_plus_1",
+      "shift_rule_id": "diff_at_most_minus_4",
+      "shift_mode": "latent_example_change"
     }
   },
   {
     "episode_id": "0050",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0050.\n\nExamples:\n1. memo=reviewed | r1=+2 | r2=+3 -> blim\n2. memo=queue-ok | r1=+2 | r2=-3 -> blim\n3. memo=duplicate-check | r1=+3 | r2=-2 -> blim\n4. memo=archived | r1=-2 | r2=+3 -> zark\n5. memo=reviewed | r1=-2 | r2=-1 -> zark\n\nProbes:\n6. memo=queue-ok | r1=+1 | r2=+2 -> ?\n7. memo=duplicate-check | r1=-3 | r2=+1 -> ?\n8. memo=carry-forward | r1=+1 | r2=+3 -> ?\n9. memo=archived | r1=-2 | r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0050. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+3, r2=-3 -> type_b\n2. r1=+2, r2=+2 -> type_a\n3. r1=+3, r2=+1 -> type_a\n4. r1=+2, r2=-1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0050. Turn 2 of 3.\n\nContinue the task using the following labeled examples.\n\nExamples:\n1. r1=-3, r2=-3 -> type_a\n2. r1=-2, r2=+1 -> type_a\n3. r1=-1, r2=-3 -> type_b\n4. r1=+1, r2=+3 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0050. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-3, r2=+1 -> ?\n2. r1=-2, r2=+2 -> ?\n3. r1=-2, r2=-2 -> ?\n4. r1=-3, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_b",
+      "final_probe_targets": [
         "type_a",
-        "type_b",
+        "type_a",
+        "type_a",
         "type_a"
       ]
     },
     "analysis": {
-      "group_id": "distractor",
-      "rule_id": "r1_negative",
-      "shortcut_type": "metadata_noise",
-      "shortcut_rule_id": null
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "latent_switch",
+      "transition_family_id": "public::transition::sum_at_least_plus_4__to__abs_r1_at_least_2",
+      "initial_rule_id": "sum_at_least_plus_4",
+      "shift_rule_id": "abs_r1_at_least_2",
+      "shift_mode": "latent_example_change"
     }
   },
   {
     "episode_id": "0051",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0051.\n\nExamples:\n1. memo=queue-ok | r1=+2 | r2=+1 -> blim\n2. memo=carry-forward | r1=-1 | r2=+1 -> blim\n3. memo=reviewed | r1=+2 | r2=-1 -> zark\n4. memo=duplicate-check | r1=-3 | r2=-1 -> zark\n5. memo=archived | r1=+2 | r2=+2 -> blim\n\nProbes:\n6. memo=queue-ok | r1=-3 | r2=-3 -> ?\n7. memo=reviewed | r1=-3 | r2=+3 -> ?\n8. memo=archived | r1=-3 | r2=-2 -> ?\n9. memo=carry-forward | r1=-2 | r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0051. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+3, r2=+1 -> type_b\n2. r1=+3, r2=+3 -> type_b\n3. r1=+3, r2=-3 -> type_b\n4. r1=-3, r2=-2 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0051. Turn 2 of 3.\n\nContinue the task using the following labeled examples.\n\nExamples:\n1. r1=+1, r2=+2 -> type_a\n2. r1=+1, r2=-3 -> type_a\n3. r1=-2, r2=-1 -> type_b\n4. r1=-3, r2=+1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0051. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+2, r2=+3 -> ?\n2. r1=+1, r2=+3 -> ?\n3. r1=-2, r2=+2 -> ?\n4. r1=-3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_a",
-        "type_b",
         "type_a",
-        "type_b"
+        "type_a",
+        "type_a"
       ]
     },
     "analysis": {
-      "group_id": "distractor",
-      "rule_id": "r2_negative",
-      "shortcut_type": "metadata_noise",
-      "shortcut_rule_id": null
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "latent_switch",
+      "transition_family_id": "public::transition::sum_at_most_minus_1__to__abs_r2_at_least_2",
+      "initial_rule_id": "sum_at_most_minus_1",
+      "shift_rule_id": "abs_r2_at_least_2",
+      "shift_mode": "latent_example_change"
     }
   },
   {
     "episode_id": "0052",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0052.\n\nExamples:\n1. memo=reviewed | r1=-2 | r2=-3 -> blim\n2. memo=duplicate-check | r1=+2 | r2=+1 -> zark\n3. memo=carry-forward | r1=-3 | r2=+2 -> blim\n4. memo=archived | r1=+3 | r2=-1 -> blim\n5. memo=duplicate-check | r1=+3 | r2=+3 -> zark\n\nProbes:\n6. memo=reviewed | r1=-1 | r2=-1 -> ?\n7. memo=archived | r1=+3 | r2=+2 -> ?\n8. memo=queue-ok | r1=+1 | r2=+3 -> ?\n9. memo=queue-ok | r1=-2 | r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0052. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-2, r2=+2 -> type_b\n2. r1=-3, r2=-2 -> type_a\n3. r1=+3, r2=-2 -> type_b\n4. r1=+2, r2=+3 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0052. Turn 2 of 3.\n\nContinue the task using the following labeled examples.\n\nExamples:\n1. r1=+2, r2=-3 -> type_b\n2. r1=+3, r2=+1 -> type_a\n3. r1=+1, r2=+2 -> type_a\n4. r1=-1, r2=-1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0052. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+3, r2=+3 -> ?\n2. r1=-1, r2=-2 -> ?\n3. r1=-2, r2=-1 -> ?\n4. r1=+1, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_b",
+      "final_probe_targets": [
         "type_a",
         "type_a",
-        "type_b"
+        "type_a",
+        "type_a"
       ]
     },
     "analysis": {
-      "group_id": "distractor",
-      "rule_id": "both_positive",
-      "shortcut_type": "metadata_noise",
-      "shortcut_rule_id": null
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "latent_switch",
+      "transition_family_id": "public::transition::sum_at_most_minus_4__to__same_sign",
+      "initial_rule_id": "sum_at_most_minus_4",
+      "shift_rule_id": "same_sign",
+      "shift_mode": "latent_example_change"
     }
   },
   {
     "episode_id": "0053",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0053.\n\nExamples:\n1. memo=reviewed | r1=-2 | r2=-1 -> zark\n2. memo=reviewed | r1=+3 | r2=+1 -> blim\n3. memo=queue-ok | r1=-2 | r2=+1 -> blim\n4. memo=queue-ok | r1=-1 | r2=-3 -> zark\n5. memo=archived | r1=+1 | r2=-3 -> blim\n\nProbes:\n6. memo=carry-forward | r1=-1 | r2=+2 -> ?\n7. memo=duplicate-check | r1=-1 | r2=-2 -> ?\n8. memo=duplicate-check | r1=-3 | r2=+3 -> ?\n9. memo=archived | r1=-1 | r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0053. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+3, r2=-3 -> type_a\n2. r1=-3, r2=+2 -> type_b\n3. r1=+2, r2=+2 -> type_b\n4. r1=+2, r2=-3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0053. Turn 2 of 3.\n\nContinue the task using the following labeled examples.\n\nExamples:\n1. r1=-1, r2=-3 -> type_b\n2. r1=+1, r2=+2 -> type_a\n3. r1=-1, r2=-2 -> type_b\n4. r1=+2, r2=-1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0053. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+1, r2=+3 -> ?\n2. r1=+1, r2=+1 -> ?\n3. r1=+3, r2=+3 -> ?\n4. r1=-2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_b",
+      "final_probe_targets": [
         "type_a",
-        "type_b",
-        "type_a"
+        "type_a",
+        "type_a",
+        "type_b"
       ]
     },
     "analysis": {
-      "group_id": "distractor",
-      "rule_id": "both_negative",
-      "shortcut_type": "metadata_noise",
-      "shortcut_rule_id": null
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "latent_switch",
+      "transition_family_id": "public::transition::diff_at_least_plus_1__to__r1_positive",
+      "initial_rule_id": "diff_at_least_plus_1",
+      "shift_rule_id": "r1_positive",
+      "shift_mode": "latent_example_change"
     }
   },
   {
     "episode_id": "0054",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0054.\n\nExamples:\n1. memo=archived | r1=-3 | r2=-3 -> zark\n2. memo=duplicate-check | r1=+1 | r2=-2 -> blim\n3. memo=archived | r1=-2 | r2=+1 -> blim\n4. memo=queue-ok | r1=+1 | r2=-1 -> blim\n5. memo=duplicate-check | r1=+2 | r2=+1 -> zark\n\nProbes:\n6. memo=carry-forward | r1=-1 | r2=-3 -> ?\n7. memo=reviewed | r1=-3 | r2=+1 -> ?\n8. memo=reviewed | r1=-2 | r2=+2 -> ?\n9. memo=carry-forward | r1=-1 | r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0054. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+1, r2=-3 -> type_a\n2. r1=-2, r2=+2 -> type_b\n3. r1=-3, r2=-1 -> type_b\n4. r1=-1, r2=-2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0054. Turn 2 of 3.\n\nContinue the task using the following labeled examples.\n\nExamples:\n1. r1=-2, r2=-1 -> type_b\n2. r1=+2, r2=+2 -> type_a\n3. r1=+1, r2=+1 -> type_a\n4. r1=-1, r2=-3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0054. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-1, r2=+2 -> ?\n2. r1=+3, r2=+3 -> ?\n3. r1=+1, r2=+2 -> ?\n4. r1=+2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_a",
-        "type_b",
-        "type_b",
+        "type_a",
+        "type_a",
         "type_a"
       ]
     },
     "analysis": {
-      "group_id": "distractor",
-      "rule_id": "same_sign",
-      "shortcut_type": "metadata_noise",
-      "shortcut_rule_id": null
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "latent_switch",
+      "transition_family_id": "public::transition::diff_at_least_plus_4__to__r1_at_least_minus_1",
+      "initial_rule_id": "diff_at_least_plus_4",
+      "shift_rule_id": "r1_at_least_minus_1",
+      "shift_mode": "latent_example_change"
     }
   },
   {
     "episode_id": "0055",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0055.\n\nExamples:\n1. memo=carry-forward | r1=+2 | r2=-1 -> zark\n2. memo=queue-ok | r1=-2 | r2=+3 -> zark\n3. memo=queue-ok | r1=+3 | r2=+2 -> blim\n4. memo=archived | r1=-2 | r2=-1 -> blim\n5. memo=duplicate-check | r1=-3 | r2=-3 -> blim\n\nProbes:\n6. memo=reviewed | r1=+2 | r2=+3 -> ?\n7. memo=reviewed | r1=+1 | r2=+2 -> ?\n8. memo=carry-forward | r1=+2 | r2=-3 -> ?\n9. memo=archived | r1=+1 | r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0055. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=-2, r2=+2 -> type_a\n2. r1=+3, r2=-3 -> type_b\n3. r1=+3, r2=+3 -> type_b\n4. r1=-1, r2=+1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0055. Turn 2 of 3.\n\nContinue the task using the following labeled examples.\n\nExamples:\n1. r1=-2, r2=-1 -> type_b\n2. r1=-1, r2=-1 -> type_b\n3. r1=-2, r2=+1 -> type_b\n4. r1=+2, r2=+2 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0055. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-3, r2=-2 -> ?\n2. r1=+3, r2=-2 -> ?\n3. r1=-3, r2=+3 -> ?\n4. r1=+2, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_b",
+      "final_probe_targets": [
         "type_b",
         "type_a",
+        "type_b",
         "type_a"
       ]
     },
     "analysis": {
-      "group_id": "distractor",
-      "rule_id": "opposite_sign",
-      "shortcut_type": "metadata_noise",
-      "shortcut_rule_id": null
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "latent_switch",
+      "transition_family_id": "public::transition::diff_at_most_minus_1__to__r1_at_least_plus_2",
+      "initial_rule_id": "diff_at_most_minus_1",
+      "shift_rule_id": "r1_at_least_plus_2",
+      "shift_mode": "latent_example_change"
     }
   },
   {
     "episode_id": "0056",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0056.\n\nExamples:\n1. memo=queue-ok | r1=-1 | r2=+1 -> blim\n2. memo=reviewed | r1=-1 | r2=+2 -> blim\n3. memo=carry-forward | r1=-3 | r2=+2 -> blim\n4. memo=carry-forward | r1=-1 | r2=+3 -> zark\n5. memo=archived | r1=+2 | r2=+3 -> zark\n\nProbes:\n6. memo=reviewed | r1=+3 | r2=+3 -> ?\n7. memo=duplicate-check | r1=-3 | r2=-1 -> ?\n8. memo=archived | r1=-3 | r2=+3 -> ?\n9. memo=queue-ok | r1=+3 | r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0056. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+2, r2=-3 -> type_b\n2. r1=-2, r2=+3 -> type_a\n3. r1=-1, r2=+3 -> type_a\n4. r1=-3, r2=-1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0056. Turn 2 of 3.\n\nContinue the task using the following labeled examples.\n\nExamples:\n1. r1=+1, r2=-3 -> type_b\n2. r1=+2, r2=+1 -> type_a\n3. r1=-1, r2=+2 -> type_a\n4. r1=+3, r2=-1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0056. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+3, r2=+1 -> ?\n2. r1=-1, r2=+1 -> ?\n3. r1=+1, r2=+2 -> ?\n4. r1=+2, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_a",
-        "type_b",
-        "type_b",
+        "type_a",
+        "type_a",
         "type_a"
       ]
     },
     "analysis": {
-      "group_id": "distractor",
-      "rule_id": "sum_at_least_two",
-      "shortcut_type": "metadata_noise",
-      "shortcut_rule_id": null
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "latent_switch",
+      "transition_family_id": "public::transition::diff_at_most_minus_4__to__r2_at_least_minus_1",
+      "initial_rule_id": "diff_at_most_minus_4",
+      "shift_rule_id": "r2_at_least_minus_1",
+      "shift_mode": "latent_example_change"
     }
   },
   {
     "episode_id": "0057",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0057.\n\nExamples:\n1. memo=archived | r1=+3 | r2=-1 -> blim\n2. memo=reviewed | r1=+1 | r2=-3 -> zark\n3. memo=queue-ok | r1=-3 | r2=-1 -> zark\n4. memo=carry-forward | r1=-3 | r2=+2 -> blim\n5. memo=duplicate-check | r1=+3 | r2=+1 -> blim\n\nProbes:\n6. memo=duplicate-check | r1=+2 | r2=+3 -> ?\n7. memo=queue-ok | r1=-3 | r2=-2 -> ?\n8. memo=reviewed | r1=+3 | r2=+3 -> ?\n9. memo=carry-forward | r1=-1 | r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0057. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+3, r2=+3 -> type_a\n2. r1=-1, r2=-3 -> type_b\n3. r1=+3, r2=-3 -> type_a\n4. r1=-3, r2=+1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0057. Turn 2 of 3.\n\nContinue the task using the following labeled examples.\n\nExamples:\n1. r1=+2, r2=-3 -> type_b\n2. r1=-3, r2=+2 -> type_a\n3. r1=-1, r2=+3 -> type_a\n4. r1=-2, r2=-3 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0057. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-2, r2=+1 -> ?\n2. r1=+2, r2=-1 -> ?\n3. r1=+3, r2=-2 -> ?\n4. r1=+3, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_b",
-        "type_a",
         "type_b",
-        "type_a"
+        "type_b",
+        "type_b"
       ]
     },
     "analysis": {
-      "group_id": "distractor",
-      "rule_id": "sum_at_most_minus_two",
-      "shortcut_type": "metadata_noise",
-      "shortcut_rule_id": null
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "latent_switch",
+      "transition_family_id": "public::transition::abs_r1_at_least_2__to__r2_at_least_plus_2",
+      "initial_rule_id": "abs_r1_at_least_2",
+      "shift_rule_id": "r2_at_least_plus_2",
+      "shift_mode": "latent_example_change"
     }
   },
   {
     "episode_id": "0058",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0058.\n\nExamples:\n1. memo=carry-forward | r1=-1 | r2=-3 -> zark\n2. memo=reviewed | r1=+1 | r2=+1 -> blim\n3. memo=queue-ok | r1=-1 | r2=+1 -> blim\n4. memo=duplicate-check | r1=+2 | r2=+1 -> blim\n5. memo=carry-forward | r1=+3 | r2=+1 -> zark\n\nProbes:\n6. memo=duplicate-check | r1=-1 | r2=+3 -> ?\n7. memo=queue-ok | r1=+2 | r2=-1 -> ?\n8. memo=archived | r1=+1 | r2=-2 -> ?\n9. memo=reviewed | r1=-1 | r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0058. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+3, r2=-3 -> type_a\n2. r1=+3, r2=-2 -> type_a\n3. r1=-2, r2=+1 -> type_b\n4. r1=+2, r2=-3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0058. Turn 2 of 3.\n\nContinue the task using the following labeled examples.\n\nExamples:\n1. r1=-3, r2=+1 -> type_a\n2. r1=+1, r2=+2 -> type_b\n3. r1=-1, r2=-1 -> type_a\n4. r1=-2, r2=-3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0058. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+3, r2=+2 -> ?\n2. r1=-1, r2=+1 -> ?\n3. r1=-2, r2=-1 -> ?\n4. r1=+2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_b",
         "type_a",
         "type_a",
@@ -1153,239 +1499,311 @@
       ]
     },
     "analysis": {
-      "group_id": "distractor",
-      "rule_id": "diff_at_least_two",
-      "shortcut_type": "metadata_noise",
-      "shortcut_rule_id": null
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "latent_switch",
+      "transition_family_id": "public::transition::abs_r2_at_least_2__to__r1_at_most_minus_1",
+      "initial_rule_id": "abs_r2_at_least_2",
+      "shift_rule_id": "r1_at_most_minus_1",
+      "shift_mode": "latent_example_change"
     }
   },
   {
     "episode_id": "0059",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0059.\n\nExamples:\n1. memo=archived | r1=-3 | r2=-2 -> blim\n2. memo=duplicate-check | r1=-2 | r2=+1 -> zark\n3. memo=archived | r1=-2 | r2=+2 -> zark\n4. memo=queue-ok | r1=+3 | r2=+2 -> blim\n5. memo=reviewed | r1=+2 | r2=-2 -> blim\n\nProbes:\n6. memo=carry-forward | r1=-3 | r2=-1 -> ?\n7. memo=reviewed | r1=+3 | r2=-1 -> ?\n8. memo=queue-ok | r1=-2 | r2=+3 -> ?\n9. memo=duplicate-check | r1=+3 | r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0059. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+3, r2=+2 -> type_a\n2. r1=-1, r2=-2 -> type_a\n3. r1=+2, r2=-2 -> type_b\n4. r1=+3, r2=-2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0059. Turn 2 of 3.\n\nContinue the task using the following labeled examples.\n\nExamples:\n1. r1=-3, r2=+2 -> type_a\n2. r1=-2, r2=+2 -> type_a\n3. r1=-2, r2=-2 -> type_a\n4. r1=+2, r2=+1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0059. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=-2, r2=+3 -> ?\n2. r1=+1, r2=-2 -> ?\n3. r1=-1, r2=+1 -> ?\n4. r1=-2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_a",
-        "type_b",
         "type_a",
-        "type_b"
+        "type_a",
+        "type_a"
       ]
     },
     "analysis": {
-      "group_id": "distractor",
-      "rule_id": "diff_at_most_minus_two",
-      "shortcut_type": "metadata_noise",
-      "shortcut_rule_id": null
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "latent_switch",
+      "transition_family_id": "public::transition::same_sign__to__r1_at_most_plus_1",
+      "initial_rule_id": "same_sign",
+      "shift_rule_id": "r1_at_most_plus_1",
+      "shift_mode": "latent_example_change"
     }
   },
   {
     "episode_id": "0060",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0060.\n\nExamples:\n1. memo=carry-forward | r1=-2 | r2=-2 -> zark\n2. memo=reviewed | r1=-3 | r2=+3 -> zark\n3. memo=reviewed | r1=+3 | r2=+1 -> blim\n4. memo=queue-ok | r1=-3 | r2=-1 -> blim\n5. memo=archived | r1=-1 | r2=+1 -> blim\n\nProbes:\n6. memo=queue-ok | r1=-1 | r2=+3 -> ?\n7. memo=duplicate-check | r1=-2 | r2=-1 -> ?\n8. memo=carry-forward | r1=-2 | r2=+2 -> ?\n9. memo=duplicate-check | r1=+2 | r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0060. Turn 1 of 3.\n\nLearn the current classification rule from these labeled examples.\n\nExamples:\n1. r1=+1, r2=-2 -> type_a\n2. r1=+2, r2=-3 -> type_a\n3. r1=-1, r2=+1 -> type_b\n4. r1=-2, r2=+1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0060. Turn 2 of 3.\n\nContinue the task using the following labeled examples.\n\nExamples:\n1. r1=-2, r2=+2 -> type_b\n2. r1=+2, r2=+2 -> type_b\n3. r1=+2, r2=+3 -> type_b\n4. r1=-1, r2=-1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0060. Turn 3 of 3.\n\nClassify each probe with the active rule.\n\nProbes:\n1. r1=+3, r2=+3 -> ?\n2. r1=+1, r2=+3 -> ?\n3. r1=+1, r2=+2 -> ?\n4. r1=-3, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_b",
         "type_b",
-        "type_a",
+        "type_b",
         "type_a"
       ]
     },
     "analysis": {
-      "group_id": "distractor",
-      "rule_id": "both_large_abs",
-      "shortcut_type": "metadata_noise",
-      "shortcut_rule_id": null
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "latent_switch",
+      "transition_family_id": "public::transition::r1_positive__to__r2_at_most_minus_1",
+      "initial_rule_id": "r1_positive",
+      "shift_rule_id": "r2_at_most_minus_1",
+      "shift_mode": "latent_example_change"
     }
   },
   {
     "episode_id": "0061",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0061.\n\nExamples:\n1. r1=-3, r2=-1 -> blim\n2. r1=+1, r2=-3 -> zark\n3. r1=-3, r2=-2 -> blim\n4. r1=+1, r2=+3 -> blim\n5. r1=+3, r2=+2 -> zark\n\nProbes:\n6. r1=-1, r2=-3 -> ?\n7. r1=-1, r2=+2 -> ?\n8. r1=-1, r2=-2 -> ?\n9. r1=-3, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0061. Turn 1 of 3.\n\nLearn the active rule for context=alpha from these labeled examples.\n\nExamples:\n1. context=alpha | r1=-1, r2=+1 -> type_a\n2. context=alpha | r1=-3, r2=-2 -> type_b\n3. context=alpha | r1=-1, r2=-3 -> type_a\n4. context=alpha | r1=+3, r2=-1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0061. Turn 2 of 3.\n\nNow learn the active rule for context=beta from these labeled examples.\n\nExamples:\n1. context=beta | r1=+1, r2=-3 -> type_a\n2. context=beta | r1=-3, r2=+3 -> type_b\n3. context=beta | r1=-3, r2=-1 -> type_a\n4. context=beta | r1=-1, r2=-1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0061. Turn 3 of 3.\n\nClassify each probe with the active rule for that probe's context.\n\nProbes:\n1. context=alpha | r1=-2, r2=-3 -> ?\n2. context=beta | r1=+3, r2=+2 -> ?\n3. context=alpha | r1=+2, r2=+3 -> ?\n4. context=beta | r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_a",
+      "final_probe_targets": [
+        "type_b",
         "type_b",
         "type_a",
-        "type_b"
+        "type_a"
       ]
     },
     "analysis": {
-      "group_id": "hard",
-      "rule_id": "r1_gt_r2",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "opposite_sign"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "context_switch",
+      "transition_family_id": "public::transition::r1_at_least_minus_1__to__r2_at_most_plus_1",
+      "initial_rule_id": "r1_at_least_minus_1",
+      "shift_rule_id": "r2_at_most_plus_1",
+      "shift_mode": "context_gate"
     }
   },
   {
     "episode_id": "0062",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0062.\n\nExamples:\n1. r1=-3, r2=-3 -> blim\n2. r1=-1, r2=+3 -> zark\n3. r1=+1, r2=+1 -> blim\n4. r1=-1, r2=-2 -> blim\n5. r1=-2, r2=-1 -> zark\n\nProbes:\n6. r1=+2, r2=+3 -> ?\n7. r1=+1, r2=-1 -> ?\n8. r1=+1, r2=-2 -> ?\n9. r1=+1, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0062. Turn 1 of 3.\n\nLearn the active rule for context=alpha from these labeled examples.\n\nExamples:\n1. context=alpha | r1=-3, r2=+2 -> type_b\n2. context=alpha | r1=+2, r2=+3 -> type_a\n3. context=alpha | r1=+3, r2=+3 -> type_a\n4. context=alpha | r1=+1, r2=+2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0062. Turn 2 of 3.\n\nNow learn the active rule for context=beta from these labeled examples.\n\nExamples:\n1. context=beta | r1=-1, r2=+2 -> type_a\n2. context=beta | r1=-2, r2=+2 -> type_b\n3. context=beta | r1=-3, r2=+1 -> type_b\n4. context=beta | r1=-2, r2=+3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0062. Turn 3 of 3.\n\nClassify each probe with the active rule for that probe's context.\n\nProbes:\n1. context=alpha | r1=+2, r2=-3 -> ?\n2. context=alpha | r1=+1, r2=+3 -> ?\n3. context=beta | r1=-1, r2=+3 -> ?\n4. context=beta | r1=+3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_a",
         "type_b",
-        "type_b",
-        "type_a"
+        "type_a",
+        "type_b"
       ]
     },
     "analysis": {
-      "group_id": "hard",
-      "rule_id": "r1_lt_r2",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "opposite_sign"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "context_switch",
+      "transition_family_id": "public::transition::r1_at_least_plus_2__to__sum_at_least_plus_1",
+      "initial_rule_id": "r1_at_least_plus_2",
+      "shift_rule_id": "sum_at_least_plus_1",
+      "shift_mode": "context_gate"
     }
   },
   {
     "episode_id": "0063",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0063.\n\nExamples:\n1. r1=+3, r2=-2 -> zark\n2. r1=-2, r2=-2 -> blim\n3. r1=-2, r2=-1 -> blim\n4. r1=+2, r2=-1 -> zark\n5. r1=+2, r2=-2 -> blim\n\nProbes:\n6. r1=-2, r2=+1 -> ?\n7. r1=+1, r2=+3 -> ?\n8. r1=+2, r2=+2 -> ?\n9. r1=-1, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0063. Turn 1 of 3.\n\nLearn the active rule for context=alpha from these labeled examples.\n\nExamples:\n1. context=alpha | r1=-1, r2=-2 -> type_b\n2. context=alpha | r1=+3, r2=+1 -> type_a\n3. context=alpha | r1=-2, r2=+1 -> type_a\n4. context=alpha | r1=+2, r2=-3 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0063. Turn 2 of 3.\n\nNow learn the active rule for context=beta from these labeled examples.\n\nExamples:\n1. context=beta | r1=+2, r2=-1 -> type_b\n2. context=beta | r1=-3, r2=-3 -> type_b\n3. context=beta | r1=+3, r2=-3 -> type_b\n4. context=beta | r1=+3, r2=+3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0063. Turn 3 of 3.\n\nClassify each probe with the active rule for that probe's context.\n\nProbes:\n1. context=alpha | r1=+1, r2=+1 -> ?\n2. context=beta | r1=-2, r2=-1 -> ?\n3. context=alpha | r1=-2, r2=+2 -> ?\n4. context=beta | r1=+3, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_b",
+      "final_probe_targets": [
         "type_a",
+        "type_b",
         "type_a",
         "type_b"
       ]
     },
     "analysis": {
-      "group_id": "hard",
-      "rule_id": "sum_positive",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "r1_positive"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "context_switch",
+      "transition_family_id": "public::transition::r2_at_least_minus_1__to__sum_at_least_plus_4",
+      "initial_rule_id": "r2_at_least_minus_1",
+      "shift_rule_id": "sum_at_least_plus_4",
+      "shift_mode": "context_gate"
     }
   },
   {
     "episode_id": "0064",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0064.\n\nExamples:\n1. r1=+1, r2=+2 -> blim\n2. r1=+1, r2=-2 -> zark\n3. r1=-1, r2=-3 -> zark\n4. r1=-1, r2=+2 -> blim\n5. r1=+3, r2=-1 -> blim\n\nProbes:\n6. r1=+2, r2=+1 -> ?\n7. r1=-2, r2=-2 -> ?\n8. r1=+2, r2=-1 -> ?\n9. r1=-2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0064. Turn 1 of 3.\n\nLearn the active rule for context=alpha from these labeled examples.\n\nExamples:\n1. context=alpha | r1=-1, r2=-3 -> type_b\n2. context=alpha | r1=-1, r2=+2 -> type_a\n3. context=alpha | r1=-2, r2=-1 -> type_b\n4. context=alpha | r1=+1, r2=+1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0064. Turn 2 of 3.\n\nNow learn the active rule for context=beta from these labeled examples.\n\nExamples:\n1. context=beta | r1=-3, r2=-2 -> type_a\n2. context=beta | r1=+3, r2=+2 -> type_b\n3. context=beta | r1=+3, r2=+3 -> type_b\n4. context=beta | r1=-3, r2=-3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0064. Turn 3 of 3.\n\nClassify each probe with the active rule for that probe's context.\n\nProbes:\n1. context=alpha | r1=+1, r2=-2 -> ?\n2. context=beta | r1=+2, r2=+2 -> ?\n3. context=beta | r1=-3, r2=+1 -> ?\n4. context=alpha | r1=-3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
+        "type_b",
         "type_b",
         "type_a",
-        "type_b",
         "type_a"
       ]
     },
     "analysis": {
-      "group_id": "hard",
-      "rule_id": "sum_negative",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "r2_negative"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "context_switch",
+      "transition_family_id": "public::transition::r2_at_least_plus_2__to__sum_at_most_minus_1",
+      "initial_rule_id": "r2_at_least_plus_2",
+      "shift_rule_id": "sum_at_most_minus_1",
+      "shift_mode": "context_gate"
     }
   },
   {
     "episode_id": "0065",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0065.\n\nExamples:\n1. r1=+3, r2=+2 -> zark\n2. r1=-1, r2=-3 -> blim\n3. r1=-1, r2=-2 -> blim\n4. r1=+2, r2=-2 -> blim\n5. r1=-3, r2=-1 -> zark\n\nProbes:\n6. r1=+2, r2=+2 -> ?\n7. r1=+2, r2=-1 -> ?\n8. r1=-3, r2=+2 -> ?\n9. r1=-2, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0065. Turn 1 of 3.\n\nLearn the active rule for context=alpha from these labeled examples.\n\nExamples:\n1. context=alpha | r1=-1, r2=+3 -> type_a\n2. context=alpha | r1=-3, r2=-1 -> type_a\n3. context=alpha | r1=+2, r2=-3 -> type_b\n4. context=alpha | r1=-2, r2=+2 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0065. Turn 2 of 3.\n\nNow learn the active rule for context=beta from these labeled examples.\n\nExamples:\n1. context=beta | r1=+2, r2=+1 -> type_b\n2. context=beta | r1=+3, r2=+2 -> type_b\n3. context=beta | r1=+1, r2=-1 -> type_b\n4. context=beta | r1=-2, r2=-2 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0065. Turn 3 of 3.\n\nClassify each probe with the active rule for that probe's context.\n\nProbes:\n1. context=beta | r1=-2, r2=+1 -> ?\n2. context=alpha | r1=-3, r2=+1 -> ?\n3. context=beta | r1=-1, r2=-2 -> ?\n4. context=alpha | r1=-1, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_b",
         "type_a",
-        "type_a",
-        "type_b"
+        "type_b",
+        "type_a"
       ]
     },
     "analysis": {
-      "group_id": "hard",
-      "rule_id": "abs_r1_gt_abs_r2",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "sum_positive"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "context_switch",
+      "transition_family_id": "public::transition::r1_at_most_minus_1__to__sum_at_most_minus_4",
+      "initial_rule_id": "r1_at_most_minus_1",
+      "shift_rule_id": "sum_at_most_minus_4",
+      "shift_mode": "context_gate"
     }
   },
   {
     "episode_id": "0066",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0066.\n\nExamples:\n1. r1=+1, r2=+2 -> zark\n2. r1=+1, r2=+3 -> zark\n3. r1=-3, r2=-1 -> blim\n4. r1=+1, r2=-1 -> blim\n5. r1=+3, r2=+1 -> blim\n\nProbes:\n6. r1=+3, r2=-2 -> ?\n7. r1=+1, r2=-3 -> ?\n8. r1=-2, r2=+3 -> ?\n9. r1=-1, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0066. Turn 1 of 3.\n\nLearn the active rule for context=alpha from these labeled examples.\n\nExamples:\n1. context=alpha | r1=+1, r2=+3 -> type_a\n2. context=alpha | r1=+2, r2=-3 -> type_b\n3. context=alpha | r1=+3, r2=+1 -> type_b\n4. context=alpha | r1=-1, r2=-3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0066. Turn 2 of 3.\n\nNow learn the active rule for context=beta from these labeled examples.\n\nExamples:\n1. context=beta | r1=-2, r2=+3 -> type_b\n2. context=beta | r1=+2, r2=-2 -> type_a\n3. context=beta | r1=+1, r2=-2 -> type_a\n4. context=beta | r1=-2, r2=-2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0066. Turn 3 of 3.\n\nClassify each probe with the active rule for that probe's context.\n\nProbes:\n1. context=alpha | r1=-3, r2=+3 -> ?\n2. context=beta | r1=-1, r2=+3 -> ?\n3. context=beta | r1=+3, r2=-3 -> ?\n4. context=alpha | r1=-3, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
+        "type_a",
         "type_b",
         "type_a",
-        "type_a",
-        "type_b"
+        "type_a"
       ]
     },
     "analysis": {
-      "group_id": "hard",
-      "rule_id": "abs_r1_lt_abs_r2",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "sum_positive"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "context_switch",
+      "transition_family_id": "public::transition::r1_at_most_plus_1__to__diff_at_least_plus_1",
+      "initial_rule_id": "r1_at_most_plus_1",
+      "shift_rule_id": "diff_at_least_plus_1",
+      "shift_mode": "context_gate"
     }
   },
   {
     "episode_id": "0067",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0067.\n\nExamples:\n1. r1=-2, r2=-2 -> zark\n2. r1=+1, r2=-2 -> blim\n3. r1=-3, r2=-3 -> zark\n4. r1=+1, r2=+3 -> blim\n5. r1=-3, r2=-2 -> blim\n\nProbes:\n6. r1=-3, r2=-1 -> ?\n7. r1=+1, r2=+1 -> ?\n8. r1=-1, r2=-1 -> ?\n9. r1=+2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0067. Turn 1 of 3.\n\nLearn the active rule for context=alpha from these labeled examples.\n\nExamples:\n1. context=alpha | r1=+2, r2=-2 -> type_a\n2. context=alpha | r1=+2, r2=+2 -> type_b\n3. context=alpha | r1=-2, r2=+3 -> type_b\n4. context=alpha | r1=-1, r2=+2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0067. Turn 2 of 3.\n\nNow learn the active rule for context=beta from these labeled examples.\n\nExamples:\n1. context=beta | r1=+1, r2=+1 -> type_b\n2. context=beta | r1=+1, r2=-3 -> type_a\n3. context=beta | r1=-1, r2=-2 -> type_b\n4. context=beta | r1=+3, r2=-3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0067. Turn 3 of 3.\n\nClassify each probe with the active rule for that probe's context.\n\nProbes:\n1. context=alpha | r1=-1, r2=-1 -> ?\n2. context=alpha | r1=+2, r2=-1 -> ?\n3. context=beta | r1=-2, r2=-1 -> ?\n4. context=beta | r1=-3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
+        "type_a",
+        "type_a",
         "type_b",
-        "type_a",
-        "type_a",
         "type_b"
       ]
     },
     "analysis": {
-      "group_id": "hard",
-      "rule_id": "abs_equal",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "sum_at_most_minus_two"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "context_switch",
+      "transition_family_id": "public::transition::r2_at_most_minus_1__to__diff_at_least_plus_4",
+      "initial_rule_id": "r2_at_most_minus_1",
+      "shift_rule_id": "diff_at_least_plus_4",
+      "shift_mode": "context_gate"
     }
   },
   {
     "episode_id": "0068",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0068.\n\nExamples:\n1. r1=-3, r2=+3 -> blim\n2. r1=-3, r2=+1 -> blim\n3. r1=+2, r2=-2 -> zark\n4. r1=-2, r2=-2 -> blim\n5. r1=+1, r2=+1 -> zark\n\nProbes:\n6. r1=-2, r2=-3 -> ?\n7. r1=-1, r2=-2 -> ?\n8. r1=+2, r2=+1 -> ?\n9. r1=+3, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0068. Turn 1 of 3.\n\nLearn the active rule for context=alpha from these labeled examples.\n\nExamples:\n1. context=alpha | r1=-1, r2=+1 -> type_a\n2. context=alpha | r1=+3, r2=-1 -> type_a\n3. context=alpha | r1=+1, r2=-3 -> type_a\n4. context=alpha | r1=-1, r2=+3 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0068. Turn 2 of 3.\n\nNow learn the active rule for context=beta from these labeled examples.\n\nExamples:\n1. context=beta | r1=-1, r2=-1 -> type_b\n2. context=beta | r1=-1, r2=+2 -> type_a\n3. context=beta | r1=-3, r2=-2 -> type_a\n4. context=beta | r1=+3, r2=+1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0068. Turn 3 of 3.\n\nClassify each probe with the active rule for that probe's context.\n\nProbes:\n1. context=alpha | r1=+1, r2=-2 -> ?\n2. context=beta | r1=+1, r2=+2 -> ?\n3. context=alpha | r1=-3, r2=-3 -> ?\n4. context=beta | r1=+1, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_b",
-        "type_b",
+      "final_probe_targets": [
+        "type_a",
+        "type_a",
         "type_a",
         "type_a"
       ]
     },
     "analysis": {
-      "group_id": "hard",
-      "rule_id": "r1_positive",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "r1_gt_r2"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "context_switch",
+      "transition_family_id": "public::transition::r2_at_most_plus_1__to__diff_at_most_minus_1",
+      "initial_rule_id": "r2_at_most_plus_1",
+      "shift_rule_id": "diff_at_most_minus_1",
+      "shift_mode": "context_gate"
     }
   },
   {
     "episode_id": "0069",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0069.\n\nExamples:\n1. r1=-1, r2=-3 -> blim\n2. r1=+3, r2=+3 -> zark\n3. r1=+3, r2=-2 -> blim\n4. r1=-1, r2=-2 -> blim\n5. r1=-2, r2=+3 -> zark\n\nProbes:\n6. r1=-3, r2=+3 -> ?\n7. r1=-1, r2=-1 -> ?\n8. r1=+1, r2=-1 -> ?\n9. r1=-3, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0069. Turn 1 of 3.\n\nLearn the active rule for context=alpha from these labeled examples.\n\nExamples:\n1. context=alpha | r1=+3, r2=-1 -> type_a\n2. context=alpha | r1=-1, r2=-1 -> type_b\n3. context=alpha | r1=-3, r2=+1 -> type_b\n4. context=alpha | r1=+3, r2=-2 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0069. Turn 2 of 3.\n\nNow learn the active rule for context=beta from these labeled examples.\n\nExamples:\n1. context=beta | r1=-2, r2=-1 -> type_b\n2. context=beta | r1=-3, r2=+2 -> type_a\n3. context=beta | r1=+3, r2=+2 -> type_b\n4. context=beta | r1=-1, r2=-3 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0069. Turn 3 of 3.\n\nClassify each probe with the active rule for that probe's context.\n\nProbes:\n1. context=beta | r1=-1, r2=+2 -> ?\n2. context=alpha | r1=+2, r2=+1 -> ?\n3. context=alpha | r1=+2, r2=+3 -> ?\n4. context=beta | r1=+2, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
+        "type_b",
         "type_a",
-        "type_b",
-        "type_b",
-        "type_a"
+        "type_a",
+        "type_b"
       ]
     },
     "analysis": {
-      "group_id": "hard",
-      "rule_id": "r2_positive",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "sum_at_least_two"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "context_switch",
+      "transition_family_id": "public::transition::sum_at_least_plus_1__to__diff_at_most_minus_4",
+      "initial_rule_id": "sum_at_least_plus_1",
+      "shift_rule_id": "diff_at_most_minus_4",
+      "shift_mode": "context_gate"
     }
   },
   {
     "episode_id": "0070",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0070.\n\nExamples:\n1. r1=+2, r2=-2 -> blim\n2. r1=-3, r2=+1 -> zark\n3. r1=+3, r2=-1 -> blim\n4. r1=+1, r2=-3 -> blim\n5. r1=-1, r2=-2 -> zark\n\nProbes:\n6. r1=-2, r2=-2 -> ?\n7. r1=+2, r2=+2 -> ?\n8. r1=+3, r2=+3 -> ?\n9. r1=-1, r2=-1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0070. Turn 1 of 3.\n\nLearn the active rule for context=alpha from these labeled examples.\n\nExamples:\n1. context=alpha | r1=-2, r2=-2 -> type_b\n2. context=alpha | r1=+2, r2=+2 -> type_a\n3. context=alpha | r1=+3, r2=+2 -> type_a\n4. context=alpha | r1=-1, r2=+3 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0070. Turn 2 of 3.\n\nNow learn the active rule for context=beta from these labeled examples.\n\nExamples:\n1. context=beta | r1=-3, r2=-3 -> type_a\n2. context=beta | r1=-2, r2=+3 -> type_a\n3. context=beta | r1=-3, r2=-2 -> type_a\n4. context=beta | r1=+1, r2=-2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0070. Turn 3 of 3.\n\nClassify each probe with the active rule for that probe's context.\n\nProbes:\n1. context=beta | r1=-3, r2=+2 -> ?\n2. context=alpha | r1=+3, r2=-3 -> ?\n3. context=alpha | r1=+2, r2=-3 -> ?\n4. context=beta | r1=+3, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_a",
         "type_b",
         "type_b",
@@ -1393,210 +1811,272 @@
       ]
     },
     "analysis": {
-      "group_id": "hard",
-      "rule_id": "r1_negative",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "r2_positive"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "context_switch",
+      "transition_family_id": "public::transition::sum_at_least_plus_4__to__abs_r1_at_least_2",
+      "initial_rule_id": "sum_at_least_plus_4",
+      "shift_rule_id": "abs_r1_at_least_2",
+      "shift_mode": "context_gate"
     }
   },
   {
     "episode_id": "0071",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0071.\n\nExamples:\n1. r1=-2, r2=+2 -> blim\n2. r1=-2, r2=+3 -> blim\n3. r1=-3, r2=+1 -> blim\n4. r1=+1, r2=-2 -> zark\n5. r1=-3, r2=-3 -> zark\n\nProbes:\n6. r1=+1, r2=+1 -> ?\n7. r1=-1, r2=-2 -> ?\n8. r1=-2, r2=-3 -> ?\n9. r1=+2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0071. Turn 1 of 3.\n\nLearn the active rule for context=alpha from these labeled examples.\n\nExamples:\n1. context=alpha | r1=+1, r2=+3 -> type_b\n2. context=alpha | r1=+2, r2=-1 -> type_b\n3. context=alpha | r1=-3, r2=+3 -> type_b\n4. context=alpha | r1=-3, r2=+2 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0071. Turn 2 of 3.\n\nNow learn the active rule for context=beta from these labeled examples.\n\nExamples:\n1. context=beta | r1=+1, r2=-2 -> type_a\n2. context=beta | r1=-2, r2=+1 -> type_b\n3. context=beta | r1=+1, r2=-1 -> type_b\n4. context=beta | r1=+2, r2=+1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0071. Turn 3 of 3.\n\nClassify each probe with the active rule for that probe's context.\n\nProbes:\n1. context=beta | r1=+2, r2=+3 -> ?\n2. context=beta | r1=-1, r2=-1 -> ?\n3. context=alpha | r1=-2, r2=-1 -> ?\n4. context=alpha | r1=+1, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_b",
+      "final_probe_targets": [
         "type_a",
+        "type_b",
         "type_a",
         "type_b"
       ]
     },
     "analysis": {
-      "group_id": "hard",
-      "rule_id": "r2_negative",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "r1_positive"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "context_switch",
+      "transition_family_id": "public::transition::sum_at_most_minus_1__to__abs_r2_at_least_2",
+      "initial_rule_id": "sum_at_most_minus_1",
+      "shift_rule_id": "abs_r2_at_least_2",
+      "shift_mode": "context_gate"
     }
   },
   {
     "episode_id": "0072",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0072.\n\nExamples:\n1. r1=+2, r2=+1 -> zark\n2. r1=+2, r2=-1 -> blim\n3. r1=-1, r2=-3 -> blim\n4. r1=+3, r2=+1 -> zark\n5. r1=-1, r2=+3 -> blim\n\nProbes:\n6. r1=+2, r2=+2 -> ?\n7. r1=+3, r2=+2 -> ?\n8. r1=-3, r2=+1 -> ?\n9. r1=-2, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0072. Turn 1 of 3.\n\nLearn the active rule for context=alpha from these labeled examples.\n\nExamples:\n1. context=alpha | r1=-3, r2=+2 -> type_b\n2. context=alpha | r1=-1, r2=+1 -> type_b\n3. context=alpha | r1=-2, r2=+1 -> type_b\n4. context=alpha | r1=-2, r2=-3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0072. Turn 2 of 3.\n\nNow learn the active rule for context=beta from these labeled examples.\n\nExamples:\n1. context=beta | r1=+1, r2=-1 -> type_b\n2. context=beta | r1=+3, r2=-3 -> type_b\n3. context=beta | r1=+1, r2=+2 -> type_a\n4. context=beta | r1=-3, r2=+3 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0072. Turn 3 of 3.\n\nClassify each probe with the active rule for that probe's context.\n\nProbes:\n1. context=alpha | r1=+3, r2=+1 -> ?\n2. context=alpha | r1=-2, r2=-1 -> ?\n3. context=beta | r1=+2, r2=+1 -> ?\n4. context=beta | r1=+3, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_a",
-        "type_a",
+      "final_probe_targets": [
         "type_b",
-        "type_b"
+        "type_b",
+        "type_a",
+        "type_a"
       ]
     },
     "analysis": {
-      "group_id": "hard",
-      "rule_id": "both_positive",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "sum_at_least_two"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "context_switch",
+      "transition_family_id": "public::transition::sum_at_most_minus_4__to__same_sign",
+      "initial_rule_id": "sum_at_most_minus_4",
+      "shift_rule_id": "same_sign",
+      "shift_mode": "context_gate"
     }
   },
   {
     "episode_id": "0073",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0073.\n\nExamples:\n1. r1=-3, r2=-3 -> zark\n2. r1=-2, r2=-1 -> zark\n3. r1=+2, r2=+3 -> blim\n4. r1=+1, r2=-2 -> blim\n5. r1=-3, r2=+1 -> blim\n\nProbes:\n6. r1=-1, r2=-1 -> ?\n7. r1=-1, r2=-2 -> ?\n8. r1=-2, r2=+3 -> ?\n9. r1=-1, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0073. Turn 1 of 3.\n\nLearn the active rule for context=alpha from these labeled examples.\n\nExamples:\n1. context=alpha | r1=-3, r2=+2 -> type_b\n2. context=alpha | r1=-1, r2=-2 -> type_a\n3. context=alpha | r1=+3, r2=+3 -> type_b\n4. context=alpha | r1=-3, r2=+1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0073. Turn 2 of 3.\n\nNow learn the active rule for context=beta from these labeled examples.\n\nExamples:\n1. context=beta | r1=-3, r2=-1 -> type_b\n2. context=beta | r1=+1, r2=-3 -> type_a\n3. context=beta | r1=-2, r2=-3 -> type_b\n4. context=beta | r1=+2, r2=-2 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0073. Turn 3 of 3.\n\nClassify each probe with the active rule for that probe's context.\n\nProbes:\n1. context=alpha | r1=+1, r2=+2 -> ?\n2. context=beta | r1=+2, r2=+2 -> ?\n3. context=beta | r1=+1, r2=+3 -> ?\n4. context=alpha | r1=+1, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_a",
-        "type_a",
+      "final_probe_targets": [
         "type_b",
+        "type_a",
+        "type_a",
         "type_b"
       ]
     },
     "analysis": {
-      "group_id": "hard",
-      "rule_id": "both_negative",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "sum_at_most_minus_two"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "context_switch",
+      "transition_family_id": "public::transition::diff_at_least_plus_1__to__r1_positive",
+      "initial_rule_id": "diff_at_least_plus_1",
+      "shift_rule_id": "r1_positive",
+      "shift_mode": "context_gate"
     }
   },
   {
     "episode_id": "0074",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0074.\n\nExamples:\n1. r1=-1, r2=+2 -> blim\n2. r1=+2, r2=-2 -> blim\n3. r1=+2, r2=+3 -> zark\n4. r1=-2, r2=+3 -> blim\n5. r1=-1, r2=-3 -> zark\n\nProbes:\n6. r1=-3, r2=-1 -> ?\n7. r1=-2, r2=+1 -> ?\n8. r1=-2, r2=-2 -> ?\n9. r1=-1, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0074. Turn 1 of 3.\n\nLearn the active rule for context=alpha from these labeled examples.\n\nExamples:\n1. context=alpha | r1=+1, r2=-3 -> type_a\n2. context=alpha | r1=-1, r2=+2 -> type_b\n3. context=alpha | r1=+1, r2=+3 -> type_b\n4. context=alpha | r1=-2, r2=+3 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0074. Turn 2 of 3.\n\nNow learn the active rule for context=beta from these labeled examples.\n\nExamples:\n1. context=beta | r1=+1, r2=+1 -> type_a\n2. context=beta | r1=-1, r2=-1 -> type_a\n3. context=beta | r1=+3, r2=+3 -> type_a\n4. context=beta | r1=-3, r2=-2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0074. Turn 3 of 3.\n\nClassify each probe with the active rule for that probe's context.\n\nProbes:\n1. context=alpha | r1=+3, r2=+1 -> ?\n2. context=beta | r1=+2, r2=+2 -> ?\n3. context=alpha | r1=+2, r2=+1 -> ?\n4. context=beta | r1=-1, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_a",
+      "final_probe_targets": [
         "type_b",
         "type_a",
-        "type_b"
+        "type_b",
+        "type_a"
       ]
     },
     "analysis": {
-      "group_id": "hard",
-      "rule_id": "same_sign",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "sum_at_least_two"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "context_switch",
+      "transition_family_id": "public::transition::diff_at_least_plus_4__to__r1_at_least_minus_1",
+      "initial_rule_id": "diff_at_least_plus_4",
+      "shift_rule_id": "r1_at_least_minus_1",
+      "shift_mode": "context_gate"
     }
   },
   {
     "episode_id": "0075",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0075.\n\nExamples:\n1. r1=-3, r2=-2 -> blim\n2. r1=-3, r2=+1 -> zark\n3. r1=-1, r2=-2 -> blim\n4. r1=-2, r2=-3 -> blim\n5. r1=+2, r2=-1 -> zark\n\nProbes:\n6. r1=+3, r2=+1 -> ?\n7. r1=+3, r2=-1 -> ?\n8. r1=+1, r2=+3 -> ?\n9. r1=+2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0075. Turn 1 of 3.\n\nLearn the active rule for context=alpha from these labeled examples.\n\nExamples:\n1. context=alpha | r1=+2, r2=-3 -> type_b\n2. context=alpha | r1=-3, r2=-2 -> type_a\n3. context=alpha | r1=+1, r2=+1 -> type_b\n4. context=alpha | r1=-2, r2=+2 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0075. Turn 2 of 3.\n\nNow learn the active rule for context=beta from these labeled examples.\n\nExamples:\n1. context=beta | r1=-1, r2=-3 -> type_b\n2. context=beta | r1=-3, r2=-1 -> type_b\n3. context=beta | r1=+2, r2=+3 -> type_a\n4. context=beta | r1=+3, r2=+3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0075. Turn 3 of 3.\n\nClassify each probe with the active rule for that probe's context.\n\nProbes:\n1. context=beta | r1=-2, r2=-1 -> ?\n2. context=alpha | r1=+3, r2=-3 -> ?\n3. context=beta | r1=+3, r2=+1 -> ?\n4. context=alpha | r1=+2, r2=-2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
+        "type_b",
         "type_b",
         "type_a",
-        "type_b",
-        "type_a"
+        "type_b"
       ]
     },
     "analysis": {
-      "group_id": "hard",
-      "rule_id": "opposite_sign",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "r2_positive"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "context_switch",
+      "transition_family_id": "public::transition::diff_at_most_minus_1__to__r1_at_least_plus_2",
+      "initial_rule_id": "diff_at_most_minus_1",
+      "shift_rule_id": "r1_at_least_plus_2",
+      "shift_mode": "context_gate"
     }
   },
   {
     "episode_id": "0076",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0076.\n\nExamples:\n1. r1=+2, r2=+2 -> zark\n2. r1=+3, r2=-2 -> blim\n3. r1=-3, r2=+1 -> blim\n4. r1=-3, r2=+3 -> blim\n5. r1=-1, r2=+3 -> zark\n\nProbes:\n6. r1=+3, r2=-1 -> ?\n7. r1=-3, r2=-2 -> ?\n8. r1=-3, r2=-3 -> ?\n9. r1=+2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0076. Turn 1 of 3.\n\nLearn the active rule for context=alpha from these labeled examples.\n\nExamples:\n1. context=alpha | r1=-3, r2=+2 -> type_a\n2. context=alpha | r1=-1, r2=+1 -> type_b\n3. context=alpha | r1=+3, r2=-3 -> type_b\n4. context=alpha | r1=+2, r2=+1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0076. Turn 2 of 3.\n\nNow learn the active rule for context=beta from these labeled examples.\n\nExamples:\n1. context=beta | r1=-2, r2=-1 -> type_a\n2. context=beta | r1=-3, r2=-3 -> type_b\n3. context=beta | r1=-2, r2=-2 -> type_b\n4. context=beta | r1=+1, r2=-2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0076. Turn 3 of 3.\n\nClassify each probe with the active rule for that probe's context.\n\nProbes:\n1. context=beta | r1=+1, r2=+1 -> ?\n2. context=alpha | r1=+3, r2=-1 -> ?\n3. context=beta | r1=+3, r2=+2 -> ?\n4. context=alpha | r1=+1, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
+      "final_probe_targets": [
         "type_a",
         "type_b",
-        "type_b",
-        "type_a"
+        "type_a",
+        "type_b"
       ]
     },
     "analysis": {
-      "group_id": "hard",
-      "rule_id": "sum_at_least_two",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "same_sign"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "context_switch",
+      "transition_family_id": "public::transition::diff_at_most_minus_4__to__r2_at_least_minus_1",
+      "initial_rule_id": "diff_at_most_minus_4",
+      "shift_rule_id": "r2_at_least_minus_1",
+      "shift_mode": "context_gate"
     }
   },
   {
     "episode_id": "0077",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0077.\n\nExamples:\n1. r1=+2, r2=+2 -> blim\n2. r1=+3, r2=+2 -> blim\n3. r1=-2, r2=-1 -> zark\n4. r1=+1, r2=-3 -> zark\n5. r1=+2, r2=-3 -> blim\n\nProbes:\n6. r1=-3, r2=+1 -> ?\n7. r1=+3, r2=-3 -> ?\n8. r1=-1, r2=-3 -> ?\n9. r1=-2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
-    },
-    "scoring": {
-      "probe_targets": [
-        "type_a",
-        "type_b",
-        "type_a",
-        "type_b"
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0077. Turn 1 of 3.\n\nLearn the active rule for context=alpha from these labeled examples.\n\nExamples:\n1. context=alpha | r1=-2, r2=+3 -> type_a\n2. context=alpha | r1=+2, r2=-3 -> type_a\n3. context=alpha | r1=+1, r2=-3 -> type_b\n4. context=alpha | r1=-3, r2=+1 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0077. Turn 2 of 3.\n\nNow learn the active rule for context=beta from these labeled examples.\n\nExamples:\n1. context=beta | r1=+1, r2=+2 -> type_a\n2. context=beta | r1=-3, r2=-2 -> type_b\n3. context=beta | r1=-3, r2=+3 -> type_a\n4. context=beta | r1=+2, r2=-2 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0077. Turn 3 of 3.\n\nClassify each probe with the active rule for that probe's context.\n\nProbes:\n1. context=beta | r1=-3, r2=-3 -> ?\n2. context=alpha | r1=-2, r2=+1 -> ?\n3. context=beta | r1=+3, r2=-3 -> ?\n4. context=alpha | r1=-2, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
       ]
     },
-    "analysis": {
-      "group_id": "hard",
-      "rule_id": "sum_at_most_minus_two",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "sum_negative"
-    }
-  },
-  {
-    "episode_id": "0078",
-    "inference": {
-      "prompt": "RuleShift classification task. Episode 0078.\n\nExamples:\n1. r1=-3, r2=+2 -> blim\n2. r1=-1, r2=+1 -> blim\n3. r1=+2, r2=-3 -> zark\n4. r1=+3, r2=+1 -> zark\n5. r1=+3, r2=+2 -> blim\n\nProbes:\n6. r1=+3, r2=-3 -> ?\n7. r1=+2, r2=+1 -> ?\n8. r1=+1, r2=+1 -> ?\n9. r1=-1, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
-    },
     "scoring": {
-      "probe_targets": [
-        "type_a",
+      "final_probe_targets": [
         "type_b",
+        "type_a",
         "type_b",
         "type_a"
       ]
     },
     "analysis": {
-      "group_id": "hard",
-      "rule_id": "diff_at_least_two",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "r1_positive"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "context_switch",
+      "transition_family_id": "public::transition::abs_r1_at_least_2__to__r2_at_least_plus_2",
+      "initial_rule_id": "abs_r1_at_least_2",
+      "shift_rule_id": "r2_at_least_plus_2",
+      "shift_mode": "context_gate"
+    }
+  },
+  {
+    "episode_id": "0078",
+    "inference": {
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0078. Turn 1 of 3.\n\nLearn the active rule for context=alpha from these labeled examples.\n\nExamples:\n1. context=alpha | r1=-3, r2=+2 -> type_a\n2. context=alpha | r1=+2, r2=+3 -> type_a\n3. context=alpha | r1=+2, r2=+2 -> type_a\n4. context=alpha | r1=+3, r2=-1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0078. Turn 2 of 3.\n\nNow learn the active rule for context=beta from these labeled examples.\n\nExamples:\n1. context=beta | r1=-2, r2=-3 -> type_a\n2. context=beta | r1=+1, r2=+3 -> type_b\n3. context=beta | r1=-3, r2=-1 -> type_a\n4. context=beta | r1=+2, r2=+1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0078. Turn 3 of 3.\n\nClassify each probe with the active rule for that probe's context.\n\nProbes:\n1. context=alpha | r1=+1, r2=-2 -> ?\n2. context=alpha | r1=+3, r2=-2 -> ?\n3. context=beta | r1=+1, r2=-3 -> ?\n4. context=beta | r1=+1, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
+    },
+    "scoring": {
+      "final_probe_targets": [
+        "type_a",
+        "type_a",
+        "type_b",
+        "type_b"
+      ]
+    },
+    "analysis": {
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "context_switch",
+      "transition_family_id": "public::transition::abs_r2_at_least_2__to__r1_at_most_minus_1",
+      "initial_rule_id": "abs_r2_at_least_2",
+      "shift_rule_id": "r1_at_most_minus_1",
+      "shift_mode": "context_gate"
     }
   },
   {
     "episode_id": "0079",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0079.\n\nExamples:\n1. r1=-3, r2=+1 -> zark\n2. r1=-1, r2=-3 -> blim\n3. r1=+2, r2=+3 -> blim\n4. r1=-3, r2=+2 -> zark\n5. r1=+2, r2=-1 -> blim\n\nProbes:\n6. r1=+3, r2=-2 -> ?\n7. r1=-3, r2=+3 -> ?\n8. r1=-3, r2=-1 -> ?\n9. r1=+3, r2=-3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0079. Turn 1 of 3.\n\nLearn the active rule for context=alpha from these labeled examples.\n\nExamples:\n1. context=alpha | r1=-2, r2=-3 -> type_a\n2. context=alpha | r1=+1, r2=+2 -> type_a\n3. context=alpha | r1=+1, r2=-3 -> type_b\n4. context=alpha | r1=+3, r2=+3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0079. Turn 2 of 3.\n\nNow learn the active rule for context=beta from these labeled examples.\n\nExamples:\n1. context=beta | r1=-2, r2=-1 -> type_a\n2. context=beta | r1=-2, r2=+1 -> type_a\n3. context=beta | r1=+2, r2=+1 -> type_b\n4. context=beta | r1=+3, r2=-1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0079. Turn 3 of 3.\n\nClassify each probe with the active rule for that probe's context.\n\nProbes:\n1. context=alpha | r1=+3, r2=+2 -> ?\n2. context=beta | r1=+1, r2=-2 -> ?\n3. context=beta | r1=-3, r2=+1 -> ?\n4. context=alpha | r1=-1, r2=+3 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_b",
+      "final_probe_targets": [
+        "type_a",
         "type_a",
         "type_a",
         "type_b"
       ]
     },
     "analysis": {
-      "group_id": "hard",
-      "rule_id": "diff_at_most_minus_two",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "opposite_sign"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "context_switch",
+      "transition_family_id": "public::transition::same_sign__to__r1_at_most_plus_1",
+      "initial_rule_id": "same_sign",
+      "shift_rule_id": "r1_at_most_plus_1",
+      "shift_mode": "context_gate"
     }
   },
   {
     "episode_id": "0080",
     "inference": {
-      "prompt": "RuleShift classification task. Episode 0080.\n\nExamples:\n1. r1=-3, r2=+2 -> zark\n2. r1=-1, r2=-3 -> blim\n3. r1=+1, r2=+2 -> blim\n4. r1=+1, r2=-3 -> blim\n5. r1=-2, r2=-2 -> zark\n\nProbes:\n6. r1=-2, r2=+2 -> ?\n7. r1=-2, r2=+3 -> ?\n8. r1=+3, r2=+1 -> ?\n9. r1=-1, r2=+2 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b. Map zark to type_a and blim to type_b."
+      "turns": [
+        "RuleShift cognitive flexibility task. Episode 0080. Turn 1 of 3.\n\nLearn the active rule for context=alpha from these labeled examples.\n\nExamples:\n1. context=alpha | r1=-2, r2=-3 -> type_b\n2. context=alpha | r1=+1, r2=-2 -> type_a\n3. context=alpha | r1=+1, r2=-1 -> type_a\n4. context=alpha | r1=-2, r2=+1 -> type_b",
+        "RuleShift cognitive flexibility task. Episode 0080. Turn 2 of 3.\n\nNow learn the active rule for context=beta from these labeled examples.\n\nExamples:\n1. context=beta | r1=+2, r2=-2 -> type_a\n2. context=beta | r1=+3, r2=+1 -> type_b\n3. context=beta | r1=+1, r2=+2 -> type_b\n4. context=beta | r1=+2, r2=-3 -> type_a",
+        "RuleShift cognitive flexibility task. Episode 0080. Turn 3 of 3.\n\nClassify each probe with the active rule for that probe's context.\n\nProbes:\n1. context=beta | r1=+3, r2=+2 -> ?\n2. context=alpha | r1=+1, r2=+1 -> ?\n3. context=beta | r1=+1, r2=+3 -> ?\n4. context=alpha | r1=+2, r2=+1 -> ?\n\nReturn exactly 4 outputs in order, one per probe. Use only type_a or type_b."
+      ]
     },
     "scoring": {
-      "probe_targets": [
-        "type_a",
+      "final_probe_targets": [
+        "type_b",
         "type_a",
         "type_b",
-        "type_b"
+        "type_a"
       ]
     },
     "analysis": {
-      "group_id": "hard",
-      "rule_id": "both_large_abs",
-      "shortcut_type": "rule_shortcut",
-      "shortcut_rule_id": "diff_at_most_minus_two"
+      "faculty_id": "executive_functions/cognitive_flexibility",
+      "group_id": "context_switch",
+      "transition_family_id": "public::transition::r1_positive__to__r2_at_most_minus_1",
+      "initial_rule_id": "r1_positive",
+      "shift_rule_id": "r2_at_most_minus_1",
+      "shift_mode": "context_gate"
     }
   }
 ]

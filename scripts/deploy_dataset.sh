@@ -26,7 +26,7 @@ if [[ -z "${KAGGLE_API_TOKEN:-}" ]]; then
   exit 1
 fi
 
-MESSAGE="${1:-Update RuleShift public dataset}"
+MESSAGE="${1:-Update RuleShift CogFlex v2 public dataset}"
 
 echo "Publishing dataset from $DATASET_DIR"
 "$KAGGLE_BIN" datasets version -p "$DATASET_DIR" -m "$MESSAGE"

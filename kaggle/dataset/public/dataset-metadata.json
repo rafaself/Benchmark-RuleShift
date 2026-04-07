@@ -1,5 +1,9 @@
 {
-  "id": "raptorengineer/ruleshift-runtime",
-  "title": "RuleShift Runtime",
-  "licenses": [{"name": "CC0-1.0"}]
+  "id": "raptorengineer/ruleshift-cogflex-runtime-v2",
+  "title": "RuleShift CogFlex Runtime v2",
+  "licenses": [
+    {
+      "name": "CC0-1.0"
+    }
+  ]
 }

@@ -4,10 +4,10 @@ notelab:
 	.venv/bin/jupyter lab --no-browser kaggle/notebook/ruleshift_notebook_task.ipynb
 
 verify-public:
-	.venv/bin/python scripts/verify_ruleshift.py --split public
+	.venv/bin/python -m scripts.verify_ruleshift --split public
 
 verify-private:
-	.venv/bin/python scripts/verify_ruleshift.py --split private
+	.venv/bin/python -m scripts.verify_ruleshift --split private
 
 deploy-dataset:
 	./scripts/deploy_dataset.sh

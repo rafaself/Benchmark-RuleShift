@@ -1,13 +1,12 @@
-# RuleShift Benchmark
+# RuleShift CogFlex v2 Benchmark
 
-Minimal Kaggle benchmark project for the **RuleShift** task.
+Minimal Kaggle benchmark project for a targeted executive-functions task:
 
-This repository contains the public benchmark assets required to publish and run the benchmark on Kaggle, plus the scripts used to generate the private artifacts locally:
+- faculty: `executive_functions/cognitive_flexibility`
+- benchmark form: multi-turn dataset evaluation
+- official task name: `ruleshift_cogflex_v2_binary`
 
-* the packaged public dataset
-* the private dataset generator and deploy path
-* the benchmark notebook
-* small deploy scripts
+This repository keeps the original Kaggle-oriented structure, but replaces the old single-turn RuleShift task with a three-turn cognitive-flexibility benchmark focused on switching between active classification rules.
 
 ## Repository Layout
 
@@ -30,50 +29,56 @@ scripts/
   deploy_dataset.sh
   deploy_private_dataset.sh
   deploy_notebook.sh
+  verify_ruleshift.py
+tests/
+  test_ruleshift_dataset_generation.py
+  test_ruleshift_notebook_prompt_validation.py
+  test_ruleshift_verification.py
 Makefile
 ```
 
-## What the Notebook Does
+## Benchmark Shape
 
-The notebook implements the full benchmark flow in a clear, sequential format:
+Each scored episode contains:
 
-1. locate the packaged dataset
-2. define the benchmark types and constants
-3. normalize model responses
-4. score each benchmark episode
-5. load the frozen benchmark rows
-6. register the official Kaggle task
-7. define optional diagnostics helpers outside the official score
-8. mark the official entry point with `%choose`
+1. `learn_turn`: 4 labeled examples for the initial rule
+2. `shift_turn`: 4 labeled examples for the shifted rule regime
+3. `decision_turn`: 4 probes scored only on the final turn
 
-Official task name:
+Public and private rows share the same schema:
 
-```text
-ruleshift_benchmark_v1_binary
-```
+- `inference.turns`: exactly 3 user turns
+- `analysis.faculty_id`: always `executive_functions/cognitive_flexibility`
+- `analysis.group_id`: one of `explicit_switch`, `reversal`, `latent_switch`, `context_switch`
+- `analysis.transition_family_id`
+- `analysis.initial_rule_id`
+- `analysis.shift_rule_id`
+- `analysis.shift_mode`
 
-## Release 1 Scope
+Public rows include `scoring.final_probe_targets`.
 
-Release 1 is a single-turn cognitive-flexibility benchmark. Each scored episode contains exactly 5 labeled examples, 4 probes, one response, and probe-wise scoring over `type_a` / `type_b`.
+Private rows are inference-only. Private scoring is attached locally from `kaggle/dataset/private/private_answer_key.json`.
 
-The scoped Release 1 benchmark evaluates only the `simple`, `exception`, `distractor`, and `hard` groups.
+## Groups
 
-The cleaned prompt contract for the scoped benchmark is fixed: `RuleShift classification task. Episode XXXX.`, then `Examples:`, then `Probes:`, then one shared output instruction. Group differences now come from the row content rather than coaching in the prompt wrapper.
+- `explicit_switch`: turn 2 explicitly says the active rule changed
+- `reversal`: the condition stays fixed but the label mapping flips
+- `latent_switch`: turn 2 changes the rule without explicit switch language
+- `context_switch`: turns 1 and 2 teach context-bound rules; turn 3 mixes contexts
 
-The public dataset is generated deterministically from a formal rule catalog in `scripts/build_ruleshift_dataset.py`. The private split now depends on a maintainer-only manifest at `kaggle/dataset/private/private_split_manifest.json`, and the private answer key is generated locally as `kaggle/dataset/private/private_answer_key.json`.
+The generator enforces adversarial probe constraints:
 
-Dataset rows are split into explicit layers:
+- `explicit_switch`, `reversal`, `latent_switch`: following the previous rule scores at most `1/4`
+- `context_switch`: using one rule across all probes scores at most `2/4`
 
-* `inference.prompt` is the only task content sent to the model.
-* `scoring.probe_targets` is shipped only in the public sample split.
-* The private split is published as inference-only rows; private scoring comes from a separate maintainer-only answer key.
-* `analysis.group_id` is retained for balance checks and debugging, but is not passed to the model.
+## Split Design
 
-## Requirements
+- Public split: 80 rows, 20 per group
+- Private split: 400 rows, 100 per group
+- Public/private splits use disjoint `transition_family_id` values
+- Private rows are regenerated from a maintainer-only manifest seed
 
-* Python environment with the Kaggle CLI installed
-* Kaggle API token available through `.env`
-* access to the Kaggle account that owns these assets
+The public split is tracked in the repository. The private split remains local-only and is expected under `kaggle/dataset/private/`.
 
 ## Local Usage
 
@@ -83,115 +88,89 @@ Open the notebook locally:
 make notelab
 ```
 
-This launches Jupyter Lab with:
-
-```text
-kaggle/notebook/ruleshift_notebook_task.ipynb
-```
-
-Select the evaluation split by setting `RULESHIFT_EVAL_SPLIT` to `public` or `private` before running the notebook.
-
-Private scoring also requires `RULESHIFT_PRIVATE_ANSWER_KEY_PATH` to point at a local maintainer-only `private_answer_key.json`.
-
-## Verification
-
-Run the deterministic local verification path:
+Verify the tracked public split:
 
 ```bash
 make verify-public
+```
+
+Verify the local private split:
+
+```bash
 make verify-private
 ```
 
-`make verify-public` works from a clean clone.
+`make verify-private` requires:
 
-`make verify-private` requires the local private dataset artifacts under `kaggle/dataset/private/`, including `private_leaderboard_rows.json`, `private_answer_key.json`, `private_split_manifest.json`, and `dataset-metadata.json`. These files are intentionally gitignored and not committed to the public repository.
+- `kaggle/dataset/private/private_leaderboard_rows.json`
+- `kaggle/dataset/private/private_answer_key.json`
+- `kaggle/dataset/private/private_split_manifest.json`
+- `kaggle/dataset/private/dataset-metadata.json`
 
-When both split files are present locally, verification also asserts that the private split is semantically disjoint from the public split.
+Private scoring in the notebook also requires:
 
-## Diagnostics
+```bash
+RULESHIFT_PRIVATE_ANSWER_KEY_PATH=/abs/path/to/private_answer_key.json
+```
 
-The notebook keeps one simple official score and a separate optional diagnostics helper. After a run, `build_ruleshift_diagnostics(runs, leaderboard_rows)` can summarize accuracy by `group_id`, `rule_id`, `shortcut_type`, and episode miss-count pattern without affecting the benchmark score.
+## Regeneration
+
+`scripts/build_ruleshift_dataset.py` regenerates:
+
+- `kaggle/dataset/public/public_leaderboard_rows.json`
+- `kaggle/dataset/public/dataset-metadata.json`
+- `kaggle/dataset/private/private_leaderboard_rows.json`
+- `kaggle/dataset/private/dataset-metadata.json`
+- `kaggle/dataset/private/private_answer_key.json`
+
+The script requires a local private manifest because private artifacts are deterministic from the maintainer seed.
 
 ## Deployment
 
-### 1. Publish the public dataset
+Publish the public dataset:
 
 ```bash
 make deploy-dataset
 ```
 
-Or with a custom version message:
-
-```bash
-./scripts/deploy_dataset.sh "Update RuleShift public dataset"
-```
-
-### 2. Publish the private dataset
+Publish the private dataset:
 
 ```bash
 make deploy-private-dataset
 ```
 
-Or with a custom version message:
-
-```bash
-./scripts/deploy_private_dataset.sh "Update RuleShift private dataset"
-```
-
-### 3. Publish the notebook
+Publish the notebook:
 
 ```bash
 make deploy-notebook
 ```
 
-## Environment
-
-The deploy scripts expect:
-
-* a `.env` file at the repository root
-* `KAGGLE_API_TOKEN` defined in that file
-* the Kaggle CLI available on `PATH` (i.e. `kaggle` resolves)
-
-Override the CLI path with `KAGGLE_BIN` if needed:
-
-```bash
-KAGGLE_API_TOKEN=your_token_here
-KAGGLE_BIN=/path/to/kaggle   # optional; defaults to kaggle in PATH
-RULESHIFT_EVAL_SPLIT=public  # optional for local notebook runs
-RULESHIFT_PRIVATE_ANSWER_KEY_PATH=/abs/path/to/private_answer_key.json  # required for private scoring
-```
-
 ## Kaggle Asset IDs
 
-Dataset:
+Public dataset:
 
 ```text
-raptorengineer/ruleshift-runtime
+raptorengineer/ruleshift-cogflex-runtime-v2
 ```
 
 Private dataset:
 
 ```text
-raptorengineer/ruleshift-runtime-private
+raptorengineer/ruleshift-cogflex-runtime-private-v2
 ```
 
 Notebook:
 
 ```text
-raptorengineer/ruleshift-notebook
+raptorengineer/ruleshift-cogflex-notebook-v2
 ```
 
 ## Notes
 
-* The notebook is the source of truth for the benchmark runtime logic and the baseline artifact.
-* The public dataset contains 80 audited benchmark rows, with 20 rows per scoped group.
-* The private dataset contains 400 audited benchmark rows, with 100 rows per scoped group.
-* The notebook uses `EVAL_SPLIT = "public"` by default and supports `EVAL_SPLIT = "private"` when the private dataset is available.
-* Benchmark invariants are enforced while rows are loaded.
-* Private dataset artifacts remain local-only in this repository; `kaggle/dataset/private/` is gitignored.
-* The private dataset published to Kaggle is inference-only; `private_answer_key.json` and `private_split_manifest.json` stay maintainer-only and are excluded from deploy.
-* Running `scripts/build_ruleshift_dataset.py` regenerates the public payload, the inference-only private payload, the local private dataset metadata, and the local private answer key before deployment.
-* The repository is intentionally kept small and Kaggle-oriented, with minimal abstraction and minimal supporting files.
+- The notebook is the source of truth for the Kaggle runtime contract.
+- The verifier checks row counts, turn counts, final probe counts, family disjointness, semantic split isolation, and baseline behavior.
+- Local verification reports deterministic non-LLM baselines: oracle, invalid response, previous-rule heuristic, majority-label heuristic, and context-agnostic heuristic.
+- Human-baseline collection is intentionally out of scope for this repository revision.
 
 ## References
 
@@ -199,10 +178,4 @@ raptorengineer/ruleshift-notebook
 - [Competition Rules](https://www.kaggle.com/competitions/kaggle-measuring-agi/rules)
 - [Kaggle Benchmarks Repository](https://github.com/Kaggle/kaggle-benchmarks)
 - [Kaggle Benchmarks Cookbook](https://github.com/Kaggle/kaggle-benchmarks/blob/ci/cookbook.md)
-- [Kaggle Notebooks Documentation](https://www.kaggle.com/docs/notebooks)
-- [Kaggle Public API / CLI Documentation](https://www.kaggle.com/docs/api)
-- [Kaggle CLI Repository](https://github.com/Kaggle/kaggle-cli)
-- [Kaggle CLI — General Docs](https://github.com/Kaggle/kaggle-cli/blob/main/docs/README.md)
-- [Kaggle CLI — Kernels / Notebooks Commands](https://github.com/Kaggle/kaggle-cli/blob/main/docs/kernels.md)
 - [DeepMind Paper PDF — Measuring Progress Toward AGI: A Cognitive Framework](https://storage.googleapis.com/deepmind-media/DeepMind.com/Blog/measuring-progress-toward-agi/measuring-progress-toward-agi-a-cognitive-framework.pdf)
-- [DeepMind Blog Post — Measuring progress toward AGI: A cognitive framework](https://blog.google/innovation-and-ai/models-and-research/google-deepmind/measuring-agi-cognitive-framework/)
