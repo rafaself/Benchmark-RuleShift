@@ -192,6 +192,10 @@ def verify_schema(rows: list[dict[str, object]], split: str) -> dict[str, object
         probes = _parse_probes(turns[2])
         if len(learn_examples) != 4 or len(shift_examples) != 4 or len(probes) != FINAL_PROBE_COUNT:
             raise RuntimeError(f"row {episode_id} has malformed example/probe counts")
+        for item in learn_examples + shift_examples + probes:
+            for key in ("shape", "tone"):
+                if key not in item or not str(item[key]).strip():
+                    raise RuntimeError(f"row {episode_id} is missing required stimulus attribute {key!r}")
 
         if split == "public":
             scoring = row["scoring"]
@@ -266,6 +270,8 @@ def verify_private_answer_key(
             "initial_rule_template_id",
             "shift_rule_template_id",
             "cue_template_id",
+            "context_template_id",
+            "surface_template_id",
             "learn_turn_examples",
             "shift_turn_examples",
             "final_probes",
@@ -390,8 +396,21 @@ def summarize_generator_diagnostics(answers: list[dict[str, object]]) -> dict[st
         ),
         "previous_rule_baseline": summarize_metric("previous_rule_accuracy"),
         "majority_label_baseline": summarize_metric("majority_label_accuracy"),
+        "nearest_neighbor_baseline": summarize_metric("nearest_neighbor_accuracy"),
         "cue_agnostic_baseline": summarize_metric("cue_agnostic_accuracy"),
         "symbolic_baseline": summarize_metric("symbolic_majority_accuracy"),
+        "adversarial_baseline": summarize_metric("adversarial_baseline_accuracy"),
+        "shift_conflict_counts": {
+            suite_task_id: dict(
+                sorted(
+                    Counter(
+                        int(answer["generator_diagnostics"]["shift_evidence_conflict_count"])
+                        for answer in task_buckets[suite_task_id]
+                    ).items()
+                )
+            )
+            for suite_task_id in SUITE_TASKS
+        },
         "learning_ambiguity_counts": learning_ambiguity_counts,
         "symbolic_unanimous_counts": unanimous_counts,
     }
@@ -464,8 +483,10 @@ def verify_split(split: str) -> None:
                     else {}
                 ),
                 "baseline_ceilings": {
-                    "symbolic_micro_accuracy_max": 0.65,
-                    "symbolic_task_accuracy_max": 0.70,
+                    "symbolic_micro_accuracy_max": 0.58,
+                    "symbolic_task_accuracy_max": 0.60,
+                    "adversarial_micro_accuracy_max": 0.65,
+                    "adversarial_task_accuracy_max": 0.65,
                     "explicit_or_latent_previous_rule_max": 0.25,
                     "context_or_cued_one_rule_max": 0.50,
                 },

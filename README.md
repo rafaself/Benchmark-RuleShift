@@ -6,7 +6,7 @@ Kaggle-oriented benchmark project for a targeted executive-functions suite:
 - benchmark form: multi-turn suite evaluation
 - official task name: `cogflex_suite_binary`
 
-This repository replaces the old single RuleShift microbenchmark with a four-task cognitive-flexibility suite designed to be harder to game with simple symbolic shortcuts while keeping the same dataset and notebook publishing workflow.
+This repository replaces the old single RuleShift microbenchmark with a four-task cognitive-flexibility suite designed to resist simple symbolic shortcuts, increase stimulus diversity, and preserve the same Kaggle dataset and notebook publishing workflow.
 
 ## Repository Layout
 
@@ -45,6 +45,12 @@ Each scored episode contains:
 2. `shift_turn`: 4 labeled examples after a task-specific shift
 3. `decision_turn`: 4 probes scored only on the final turn
 
+Each item now mixes numeric and symbolic stimulus attributes:
+
+- `r1`, `r2`
+- `shape`
+- `tone`
+
 Published public and private rows share the same analysis schema:
 
 - `analysis.faculty_id`
@@ -59,7 +65,7 @@ Private rows are inference-only. Private scoring is attached locally from `kaggl
 ## Suite Tasks
 
 - `explicit_rule_update`: turn 2 explicitly states that the rule changed
-- `latent_rule_update`: turn 2 changes the rule without explicit switch language
+- `latent_rule_update`: turn 2 changes the rule without explicit switch language and exposes only partial conflicting evidence
 - `context_binding`: turn 1 teaches `context=alpha`, turn 2 teaches `context=beta`, turn 3 mixes contexts
 - `trial_cued_switch`: turn 2 introduces a cue legend that selects either the original rule or an alternate rule
 
@@ -67,17 +73,20 @@ The generator enforces stronger acceptance checks than the prior benchmark:
 
 - `explicit_rule_update` and `latent_rule_update`: previous-rule accuracy must stay at or below `1/4`
 - `context_binding` and `trial_cued_switch`: one-rule or cue-agnostic accuracy must stay at or below `2/4`
+- `explicit_rule_update`: turn-2 evidence must include at least 3 rule-conflicting examples
+- `latent_rule_update`: turn-2 evidence must include exactly 2 rule-conflicting examples
 - every episode must keep the symbolic version-space majority baseline at or below `3/4`
-- every split must keep symbolic-majority micro accuracy at or below `0.65`
-- every suite task must keep symbolic-majority accuracy at or below `0.70`
+- every split must keep symbolic-majority micro accuracy at or below `0.58`
+- every suite task must keep symbolic-majority accuracy at or below `0.60`
+- every split must keep the blended adversarial baseline at or below `0.65` micro and per task
 
 ## Split Design
 
 - Public split: 80 rows, 20 per suite task
 - Private split: 400 rows, 100 per suite task
-- Public rows are generated only from held-in rule families: axis-threshold, sign, parity, and max/min simple predicates
-- Private rows are generated only from held-out rule families: linear, relational, and absolute-value comparisons
-- Public/private validation checks semantic disjointness, rule-template isolation, and cue-template isolation
+- Public rows are generated only from held-in rule families: axis-threshold, sign, parity, shape-identity, and tone-state predicates
+- Private rows are generated only from held-out rule families: linear, relational, absolute-value, cross-feature binding, and gated predicates
+- Public/private validation checks semantic disjointness, rule-template isolation, cue-template isolation, and context-template isolation
 
 The public split is tracked in the repository. The private split remains local-only and is expected under `kaggle/dataset/private/`.
 
@@ -169,9 +178,10 @@ raptorengineer/cogflex-suite-notebook
 ## Notes
 
 - The notebook is the source of truth for the Kaggle runtime contract.
-- The verifier checks schema, reproducibility, split isolation, label balance, difficulty bins, and stronger symbolic baselines.
+- The verifier checks schema, reproducibility, split isolation, label balance, difficulty bins, prompt-compatible rows, and stronger symbolic plus adversarial baselines.
 - Public/private published rows intentionally omit answer-relevant latent rule identifiers.
-- Human-baseline collection is intentionally out of scope for this repository revision.
+- Difficulty bins are derived from a blended adversarial proxy baseline instead of a single symbolic solver.
+- The notebook includes a final `%choose` cell so the main benchmark task is publishable through Kaggle Benchmarks.
 
 ## References
 

@@ -54,6 +54,8 @@ class CogflexDatasetGenerationTests(unittest.TestCase):
         )
         self.assertNotIn("initial_rule_id", row["analysis"])
         self.assertNotIn("shift_rule_id", row["analysis"])
+        self.assertIn("shape=", row["inference"]["turns"][0])
+        self.assertIn("tone=", row["inference"]["turns"][0])
 
     def test_generated_private_split_has_expected_counts(self) -> None:
         self.assertEqual(len(self.sanitized_private_rows), 400)
@@ -79,8 +81,24 @@ class CogflexDatasetGenerationTests(unittest.TestCase):
         self.assertIn("initial_rule_id", episode)
         self.assertIn("shift_rule_id", episode)
         self.assertIn("cue_template_id", episode)
+        self.assertIn("context_template_id", episode)
+        self.assertIn("surface_template_id", episode)
         self.assertIn("generator_diagnostics", episode)
         self.assertEqual(len(episode["final_probe_targets"]), 4)
+
+    def test_shift_tasks_use_distinct_structural_evidence_profiles(self) -> None:
+        explicit_conflicts = {
+            answer["generator_diagnostics"]["shift_evidence_conflict_count"]
+            for answer in self.public_answers
+            if answer["suite_task_id"] == "explicit_rule_update"
+        }
+        latent_conflicts = {
+            answer["generator_diagnostics"]["shift_evidence_conflict_count"]
+            for answer in self.public_answers
+            if answer["suite_task_id"] == "latent_rule_update"
+        }
+        self.assertTrue(all(conflicts >= 3 for conflicts in explicit_conflicts))
+        self.assertEqual(latent_conflicts, {2})
 
     def test_generated_public_and_private_splits_are_disjoint(self) -> None:
         public_signatures = {episode_signature(answer) for answer in self.public_answers}

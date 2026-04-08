@@ -114,4 +114,6 @@ class CogflexVerificationTests(unittest.TestCase):
             verify_split("public")
         payload = json.loads(stdout.getvalue())
         self.assertIn("symbolic_baseline", payload)
+        self.assertIn("adversarial_baseline", payload)
+        self.assertIn("nearest_neighbor_baseline", payload)
         self.assertIn("suite_task_counts", payload)

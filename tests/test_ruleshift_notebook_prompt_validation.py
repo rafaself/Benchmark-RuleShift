@@ -154,6 +154,8 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
             sorted(loaded_rows[0]["analysis"]),
             ["difficulty_bin", "faculty_id", "shift_mode", "suite_task_id"],
         )
+        self.assertIn("shape=", loaded_rows[0]["inference"]["turns"][0])
+        self.assertIn("tone=", loaded_rows[0]["inference"]["turns"][0])
 
     def test_runtime_score_cell_uses_plain_dict_return_type_for_kbench_task(self) -> None:
         code_cells = _load_code_cells()
@@ -172,6 +174,11 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
             self.bootstrap_namespace["DEFAULT_PRIVATE_DATASET_ROOT"],
             Path("/kaggle/input/datasets/raptorengineer/cogflex-suite-runtime-private"),
         )
+
+    def test_notebook_selects_main_task_with_choose_cell(self) -> None:
+        code_cells = _load_code_cells()
+        self.assertIn("cell-choose", code_cells)
+        self.assertIn("%choose cogflex_suite_binary", code_cells["cell-choose"])
 
     def test_load_rows_accepts_private_inference_only_split(self) -> None:
         self.namespace["EVAL_SPLIT"] = "private"

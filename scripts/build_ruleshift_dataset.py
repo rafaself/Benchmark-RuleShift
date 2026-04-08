@@ -24,8 +24,18 @@ NOTEBOOK_ID = "raptorengineer/cogflex-suite-notebook"
 TASK_NAME = "cogflex_suite_binary"
 FACULTY_ID = "executive_functions/cognitive_flexibility"
 
+Point = tuple[int, int, str, str]
+
 VALUES = (-3, -2, -1, 1, 2, 3)
-DOMAIN = [(r1, r2) for r1 in VALUES for r2 in VALUES]
+SHAPES = ("circle", "triangle", "square")
+TONES = ("warm", "cool")
+DOMAIN: list[Point] = [
+    (r1, r2, shape, tone)
+    for r1 in VALUES
+    for r2 in VALUES
+    for shape in SHAPES
+    for tone in TONES
+]
 TYPE_TRUE = "type_a"
 TYPE_FALSE = "type_b"
 SUITE_TASKS = (
@@ -34,7 +44,8 @@ SUITE_TASKS = (
     "context_binding",
     "trial_cued_switch",
 )
-CONTEXTS = ("alpha", "beta")
+PUBLIC_CONTEXTS = ("alpha", "beta")
+PRIVATE_CONTEXTS = ("mesa", "fjord")
 PUBLIC_CUES = ("sun", "moon")
 PRIVATE_CUES = ("copper", "silver")
 LEARN_EXAMPLE_COUNT = 4
@@ -60,10 +71,10 @@ class RuleSpec:
     family_id: str
     template_id: str
     description: str
-    predicate: Callable[[int, int], bool]
+    predicate: Callable[[Point], bool]
 
-    def label(self, point: tuple[int, int]) -> bool:
-        return self.predicate(*point)
+    def label(self, point: Point) -> bool:
+        return self.predicate(point)
 
 
 @dataclass(frozen=True)
@@ -81,7 +92,7 @@ def label_from_bool(value: bool) -> str:
     return TYPE_TRUE if value else TYPE_FALSE
 
 
-def rule_label(rule: RuleSpec, point: tuple[int, int]) -> str:
+def rule_label(rule: RuleSpec, point: Point) -> str:
     return label_from_bool(rule.label(point))
 
 
@@ -90,7 +101,7 @@ def make_rule(
     family_id: str,
     template_id: str,
     description: str,
-    predicate: Callable[[int, int], bool],
+    predicate: Callable[[Point], bool],
 ) -> RuleSpec:
     return RuleSpec(
         rule_id=rule_id,
@@ -108,84 +119,105 @@ def _public_rules() -> list[RuleSpec]:
             "axis_threshold",
             "axis_threshold::r1::ge::-1",
             "type_a iff r1 is at least -1",
-            lambda r1, r2: r1 >= -1,
+            lambda point: point[0] >= -1,
         ),
         make_rule(
             "axis_r1_le_1",
             "axis_threshold",
             "axis_threshold::r1::le::+1",
             "type_a iff r1 is at most +1",
-            lambda r1, r2: r1 <= 1,
+            lambda point: point[0] <= 1,
         ),
         make_rule(
             "axis_r2_ge_-1",
             "axis_threshold",
             "axis_threshold::r2::ge::-1",
             "type_a iff r2 is at least -1",
-            lambda r1, r2: r2 >= -1,
+            lambda point: point[1] >= -1,
         ),
         make_rule(
             "axis_r2_le_1",
             "axis_threshold",
             "axis_threshold::r2::le::+1",
             "type_a iff r2 is at most +1",
-            lambda r1, r2: r2 <= 1,
+            lambda point: point[1] <= 1,
         ),
         make_rule(
             "sign_r1_positive",
             "sign",
             "sign::r1_positive",
             "type_a iff r1 is positive",
-            lambda r1, r2: r1 > 0,
+            lambda point: point[0] > 0,
         ),
         make_rule(
             "sign_r2_positive",
             "sign",
             "sign::r2_positive",
             "type_a iff r2 is positive",
-            lambda r1, r2: r2 > 0,
-        ),
-        make_rule(
-            "sign_same_sign",
-            "sign",
-            "sign::same_sign",
-            "type_a iff r1 and r2 share the same sign",
-            lambda r1, r2: (r1 > 0) == (r2 > 0),
+            lambda point: point[1] > 0,
         ),
         make_rule(
             "parity_r1_even",
             "parity",
             "parity::r1_even",
             "type_a iff r1 is even",
-            lambda r1, r2: r1 % 2 == 0,
+            lambda point: point[0] % 2 == 0,
         ),
         make_rule(
             "parity_r2_even",
             "parity",
             "parity::r2_even",
             "type_a iff r2 is even",
-            lambda r1, r2: r2 % 2 == 0,
+            lambda point: point[1] % 2 == 0,
+        ),
+        make_rule(
+            "shape_circle",
+            "shape_identity",
+            "shape_identity::circle",
+            "type_a iff shape is circle",
+            lambda point: point[2] == "circle",
+        ),
+        make_rule(
+            "shape_triangle",
+            "shape_identity",
+            "shape_identity::triangle",
+            "type_a iff shape is triangle",
+            lambda point: point[2] == "triangle",
+        ),
+        make_rule(
+            "shape_square",
+            "shape_identity",
+            "shape_identity::square",
+            "type_a iff shape is square",
+            lambda point: point[2] == "square",
+        ),
+        make_rule(
+            "tone_warm",
+            "tone_state",
+            "tone_state::warm",
+            "type_a iff tone is warm",
+            lambda point: point[3] == "warm",
+        ),
+        make_rule(
+            "tone_cool",
+            "tone_state",
+            "tone_state::cool",
+            "type_a iff tone is cool",
+            lambda point: point[3] == "cool",
+        ),
+        make_rule(
+            "sign_same_sign",
+            "sign",
+            "sign::same_sign",
+            "type_a iff r1 and r2 share the same sign",
+            lambda point: (point[0] > 0) == (point[1] > 0),
         ),
         make_rule(
             "parity_same_parity",
             "parity",
             "parity::same_parity",
             "type_a iff r1 and r2 have the same parity",
-            lambda r1, r2: (r1 % 2) == (r2 % 2),
-        ),
-        make_rule(
-            "maxmin_max_ge_2",
-            "maxmin_simple",
-            "maxmin_simple::max_ge_2",
-            "type_a iff max(r1, r2) is at least +2",
-            lambda r1, r2: max(r1, r2) >= 2,
-        ),
-        make_rule(
-            "maxmin_min_le_-2",
-            "maxmin_simple",
-            "maxmin_simple::min_le_-2",
-            "type_a iff min(r1, r2) is at most -2",
-            lambda r1, r2: min(r1, r2) <= -2,
+            lambda point: (point[0] % 2) == (point[1] % 2),
         ),
     ]
 
@@ -197,140 +229,126 @@ def _private_rules() -> list[RuleSpec]:
             "linear",
             "linear::sum::ge::+1",
             "type_a iff r1 + r2 is at least +1",
-            lambda r1, r2: r1 + r2 >= 1,
+            lambda point: point[0] + point[1] >= 1,
         ),
         make_rule(
             "linear_sum_ge_4",
             "linear",
             "linear::sum::ge::+4",
             "type_a iff r1 + r2 is at least +4",
-            lambda r1, r2: r1 + r2 >= 4,
+            lambda point: point[0] + point[1] >= 4,
         ),
         make_rule(
             "linear_sum_le_-1",
             "linear",
             "linear::sum::le::-1",
             "type_a iff r1 + r2 is at most -1",
-            lambda r1, r2: r1 + r2 <= -1,
-        ),
-        make_rule(
-            "linear_sum_le_-4",
-            "linear",
-            "linear::sum::le::-4",
-            "type_a iff r1 + r2 is at most -4",
-            lambda r1, r2: r1 + r2 <= -4,
+            lambda point: point[0] + point[1] <= -1,
         ),
         make_rule(
             "linear_diff_ge_1",
             "linear",
             "linear::diff::ge::+1",
             "type_a iff r1 - r2 is at least +1",
-            lambda r1, r2: r1 - r2 >= 1,
-        ),
-        make_rule(
-            "linear_diff_ge_4",
-            "linear",
-            "linear::diff::ge::+4",
-            "type_a iff r1 - r2 is at least +4",
-            lambda r1, r2: r1 - r2 >= 4,
+            lambda point: point[0] - point[1] >= 1,
         ),
         make_rule(
             "linear_diff_le_-1",
             "linear",
             "linear::diff::le::-1",
             "type_a iff r1 - r2 is at most -1",
-            lambda r1, r2: r1 - r2 <= -1,
-        ),
-        make_rule(
-            "linear_diff_le_-4",
-            "linear",
-            "linear::diff::le::-4",
-            "type_a iff r1 - r2 is at most -4",
-            lambda r1, r2: r1 - r2 <= -4,
+            lambda point: point[0] - point[1] <= -1,
         ),
         make_rule(
             "rel_r1_gt_r2",
             "relational",
             "relational::r1_gt_r2",
             "type_a iff r1 is greater than r2",
-            lambda r1, r2: r1 > r2,
-        ),
-        make_rule(
-            "rel_r1_lt_r2",
-            "relational",
-            "relational::r1_lt_r2",
-            "type_a iff r1 is less than r2",
-            lambda r1, r2: r1 < r2,
+            lambda point: point[0] > point[1],
         ),
         make_rule(
             "rel_r1_ge_r2_plus_2",
             "relational",
             "relational::r1_ge_r2_plus_2",
             "type_a iff r1 is at least r2 + 2",
-            lambda r1, r2: r1 >= r2 + 2,
+            lambda point: point[0] >= point[1] + 2,
         ),
         make_rule(
             "rel_r2_ge_r1_plus_2",
             "relational",
             "relational::r2_ge_r1_plus_2",
             "type_a iff r2 is at least r1 + 2",
-            lambda r1, r2: r2 >= r1 + 2,
+            lambda point: point[1] >= point[0] + 2,
         ),
         make_rule(
             "abs_abs_equal",
             "absolute_comparison",
             "absolute::abs_equal",
             "type_a iff |r1| equals |r2|",
-            lambda r1, r2: abs(r1) == abs(r2),
-        ),
-        make_rule(
-            "abs_abs_r1_gt_abs_r2",
-            "absolute_comparison",
-            "absolute::abs_r1_gt_abs_r2",
-            "type_a iff |r1| is greater than |r2|",
-            lambda r1, r2: abs(r1) > abs(r2),
-        ),
-        make_rule(
-            "abs_abs_r1_lt_abs_r2",
-            "absolute_comparison",
-            "absolute::abs_r1_lt_abs_r2",
-            "type_a iff |r1| is less than |r2|",
-            lambda r1, r2: abs(r1) < abs(r2),
+            lambda point: abs(point[0]) == abs(point[1]),
         ),
         make_rule(
             "abs_abs_sum_ge_4",
             "absolute_comparison",
             "absolute::abs_sum_ge_4",
             "type_a iff |r1| + |r2| is at least 4",
-            lambda r1, r2: abs(r1) + abs(r2) >= 4,
-        ),
-        make_rule(
-            "abs_abs_sum_ge_5",
-            "absolute_comparison",
-            "absolute::abs_sum_ge_5",
-            "type_a iff |r1| + |r2| is at least 5",
-            lambda r1, r2: abs(r1) + abs(r2) >= 5,
+            lambda point: abs(point[0]) + abs(point[1]) >= 4,
         ),
         make_rule(
             "abs_abs_diff_ge_2",
             "absolute_comparison",
             "absolute::abs_diff_ge_2",
             "type_a iff ||r1| - |r2|| is at least 2",
-            lambda r1, r2: abs(abs(r1) - abs(r2)) >= 2,
+            lambda point: abs(abs(point[0]) - abs(point[1])) >= 2,
         ),
         make_rule(
             "abs_abs_diff_le_1",
             "absolute_comparison",
             "absolute::abs_diff_le_1",
             "type_a iff ||r1| - |r2|| is at most 1",
-            lambda r1, r2: abs(abs(r1) - abs(r2)) <= 1,
+            lambda point: abs(abs(point[0]) - abs(point[1])) <= 1,
         ),
         make_rule(
-            "abs_exactly_one_large",
-            "absolute_comparison",
-            "absolute::exactly_one_large",
-            "type_a iff exactly one marker has absolute value at least 2",
-            lambda r1, r2: (abs(r1) >= 2) ^ (abs(r2) >= 2),
+            "cross_tone_matches_r1_sign",
+            "cross_feature_binding",
+            "cross_feature_binding::tone_matches_r1_sign",
+            "type_a iff tone=warm matches whether r1 is positive",
+            lambda point: (point[3] == "warm") == (point[0] > 0),
+        ),
+        make_rule(
+            "cross_tone_matches_r2_sign",
+            "cross_feature_binding",
+            "cross_feature_binding::tone_matches_r2_sign",
+            "type_a iff tone=warm matches whether r2 is positive",
+            lambda point: (point[3] == "warm") == (point[1] > 0),
+        ),
+        make_rule(
+            "cross_shape_square_or_sum_ge_2",
+            "cross_feature_binding",
+            "cross_feature_binding::shape_square_or_sum_ge_2",
+            "type_a iff shape is square or r1 + r2 is at least +2",
+            lambda point: point[2] == "square" or point[0] + point[1] >= 2,
+        ),
+        make_rule(
+            "cross_shape_circle_xor_tone_warm",
+            "cross_feature_binding",
+            "cross_feature_binding::shape_circle_xor_tone_warm",
+            "type_a iff exactly one of shape=circle and tone=warm is true",
+            lambda point: (point[2] == "circle") ^ (point[3] == "warm"),
+        ),
+        make_rule(
+            "gate_tone_warm_then_r1_ge_1_else_r2_ge_1",
+            "feature_gate",
+            "feature_gate::tone_warm_then_r1_ge_1_else_r2_ge_1",
+            "type_a iff tone=warm uses r1>=+1 and tone=cool uses r2>=+1",
+            lambda point: point[0] >= 1 if point[3] == "warm" else point[1] >= 1,
+        ),
+        make_rule(
+            "gate_shape_circle_then_sum_positive_else_diff_positive",
+            "feature_gate",
+            "feature_gate::shape_circle_then_sum_positive_else_diff_positive",
+            "type_a iff shape=circle uses r1+r2>0 and otherwise uses r1-r2>0",
+            lambda point: (point[0] + point[1] > 0) if point[2] == "circle" else (point[0] - point[1] > 0),
         ),
     ]
 
@@ -399,6 +417,14 @@ def families_for_split(split_name: str) -> tuple[TransitionFamily, ...]:
     return PUBLIC_PAIR_FAMILIES if split_name == "public" else PRIVATE_PAIR_FAMILIES
 
 
+def contexts_for_split(split_name: str) -> tuple[str, str]:
+    return PUBLIC_CONTEXTS if split_name == "public" else PRIVATE_CONTEXTS
+
+
+def cues_for_split(split_name: str) -> tuple[str, str]:
+    return PUBLIC_CUES if split_name == "public" else PRIVATE_CUES
+
+
 def derive_episode_seed(
     split_name: str,
     suite_task_id: str,
@@ -422,12 +448,12 @@ def has_label_balance(labels: list[str], min_true: int = 1, min_false: int = 1) 
 
 def pick_points(
     rng: random.Random,
-    candidates: list[tuple[int, int]],
+    candidates: list[Point],
     count: int,
-    predicate: Callable[[list[tuple[int, int]]], bool],
+    predicate: Callable[[list[Point]], bool],
     *,
     attempts: int = 6000,
-) -> list[tuple[int, int]]:
+) -> list[Point]:
     if len(candidates) < count:
         raise RuntimeError(f"Need {count} candidates, found {len(candidates)}")
     for _ in range(attempts):
@@ -440,7 +466,7 @@ def pick_points(
 
 def serialize_case(
     index: int,
-    point: tuple[int, int],
+    point: Point,
     label: str,
     *,
     context: str | None = None,
@@ -451,6 +477,8 @@ def serialize_case(
         "index": index,
         "r1": point[0],
         "r2": point[1],
+        "shape": point[2],
+        "tone": point[3],
         "label": label,
     }
     if context is not None:
@@ -462,12 +490,14 @@ def serialize_case(
     return item
 
 
-def render_case_text(point: tuple[int, int], *, context: str | None = None, cue: str | None = None) -> str:
+def render_case_text(point: Point, *, context: str | None = None, cue: str | None = None) -> str:
     parts: list[str] = []
     if context is not None:
         parts.append(f"context={context}")
     if cue is not None:
         parts.append(f"cue={cue}")
+    parts.append(f"shape={point[2]}")
+    parts.append(f"tone={point[3]}")
     parts.append(f"r1={fmt_signed(point[0])}, r2={fmt_signed(point[1])}")
     return " | ".join(parts)
 
@@ -475,7 +505,7 @@ def render_case_text(point: tuple[int, int], *, context: str | None = None, cue:
 def render_labeled_lines(items: list[dict[str, object]]) -> str:
     return "\n".join(
         f"{item['index']}. "
-        f"{render_case_text((int(item['r1']), int(item['r2'])), context=item.get('context'), cue=item.get('cue'))} "
+        f"{render_case_text((int(item['r1']), int(item['r2']), str(item['shape']), str(item['tone'])), context=item.get('context'), cue=item.get('cue'))} "
         f"-> {item['label']}"
         for item in items
     )
@@ -484,7 +514,7 @@ def render_labeled_lines(items: list[dict[str, object]]) -> str:
 def render_probe_lines(items: list[dict[str, object]]) -> str:
     return "\n".join(
         f"{item['index']}. "
-        f"{render_case_text((int(item['r1']), int(item['r2'])), context=item.get('context'), cue=item.get('cue'))} "
+        f"{render_case_text((int(item['r1']), int(item['r2']), str(item['shape']), str(item['tone'])), context=item.get('context'), cue=item.get('cue'))} "
         "-> ?"
         for item in items
     )
@@ -495,14 +525,27 @@ def render_turn_header(episode_id: str, turn_index: int) -> str:
 
 
 def render_learn_turn(
+    split_name: str,
     episode_id: str,
     suite_task_id: str,
     examples: list[dict[str, object]],
+    *,
+    surface_variant: int,
 ) -> str:
+    contexts = contexts_for_split(split_name)
     if suite_task_id == "context_binding":
-        guidance = f"Learn the active rule for context={CONTEXTS[0]} from these labeled examples."
+        variants = (
+            f"Learn the active rule for context={contexts[0]} from these labeled examples.",
+            f"Use these labeled items to identify the rule that applies when context={contexts[0]}.",
+            f"Study these labeled cases and infer the current rule for context={contexts[0]}.",
+        )
     else:
-        guidance = "Learn the current classification rule from these labeled examples."
+        variants = (
+            "Learn the current classification rule from these labeled examples.",
+            "Infer the active rule from these labeled examples.",
+            "Use these labeled items to determine the live classification rule.",
+        )
+    guidance = variants[surface_variant % len(variants)]
     return "\n\n".join(
         [
             render_turn_header(episode_id, 1),
@@ -517,23 +560,45 @@ def render_shift_turn(
     split_name: str,
     suite_task_id: str,
     examples: list[dict[str, object]],
+    *,
+    surface_variant: int,
 ) -> str:
+    contexts = contexts_for_split(split_name)
     if suite_task_id == "explicit_rule_update":
-        guidance = "The active rule has changed. Update your rule from these labeled examples."
+        variants = (
+            "The active rule has changed. Update your rule from these labeled examples.",
+            "The rule is different now. Revise it using these labeled examples.",
+            "A rule shift has occurred. Infer the new rule from these labeled examples.",
+        )
     elif suite_task_id == "latent_rule_update":
-        guidance = "Continue the task using these labeled examples."
+        variants = (
+            "Continue the task using these labeled examples.",
+            "Proceed with the task and use these labeled examples to stay calibrated.",
+            "Continue from the latest evidence using these labeled examples.",
+        )
     elif suite_task_id == "context_binding":
-        guidance = f"Now learn the active rule for context={CONTEXTS[1]} from these labeled examples."
+        variants = (
+            f"Now learn the active rule for context={contexts[1]} from these labeled examples.",
+            f"Switch attention to context={contexts[1]} and infer its rule from these labeled examples.",
+            f"These labeled examples define the active rule for context={contexts[1]}.",
+        )
     elif suite_task_id == "trial_cued_switch":
-        cues = PUBLIC_CUES if split_name == "public" else PRIVATE_CUES
-        guidance = (
+        cues = cues_for_split(split_name)
+        variants = (
             "From now on, each item includes a cue. "
             f"cue={cues[0]} keeps the original rule. "
             f"cue={cues[1]} uses the alternate rule. "
-            "Infer the alternate rule from these labeled examples."
+            "Infer the alternate rule from these labeled examples.",
+            "A cue now selects which rule applies. "
+            f"cue={cues[0]} means keep the original rule, and cue={cues[1]} means use the alternate rule. "
+            "Infer that alternate rule from these labeled examples.",
+            "Items now carry a cue. "
+            f"When cue={cues[0]}, stay with the initial rule; when cue={cues[1]}, apply the alternate rule. "
+            "Use these labeled examples to infer the alternate rule.",
         )
     else:
         raise ValueError(f"Unsupported suite_task_id {suite_task_id}")
+    guidance = variants[surface_variant % len(variants)]
     return "\n\n".join(
         [
             render_turn_header(episode_id, 2),
@@ -543,13 +608,32 @@ def render_shift_turn(
     )
 
 
-def render_decision_turn(episode_id: str, suite_task_id: str, probes: list[dict[str, object]]) -> str:
+def render_decision_turn(
+    episode_id: str,
+    suite_task_id: str,
+    probes: list[dict[str, object]],
+    *,
+    surface_variant: int,
+) -> str:
     if suite_task_id == "context_binding":
-        guidance = "Classify each probe with the active rule for that probe's context."
+        variants = (
+            "Classify each probe with the active rule for that probe's context.",
+            "For each probe, use the rule that matches its context.",
+            "Choose each label by applying the rule bound to that probe's context.",
+        )
     elif suite_task_id == "trial_cued_switch":
-        guidance = "Classify each probe with the rule selected by that probe's cue."
+        variants = (
+            "Classify each probe with the rule selected by that probe's cue.",
+            "Use each probe's cue to choose the correct rule before labeling it.",
+            "For each probe, apply the rule indicated by its cue.",
+        )
     else:
-        guidance = "Classify each probe with the currently active rule."
+        variants = (
+            "Classify each probe with the currently active rule.",
+            "Apply the active rule to each probe.",
+            "Label each probe using the rule that is active now.",
+        )
+    guidance = variants[surface_variant % len(variants)]
     return "\n\n".join(
         [
             render_turn_header(episode_id, 3),
@@ -565,8 +649,8 @@ def pick_balanced_examples(
     rule: RuleSpec,
     count: int,
     *,
-    exclude: set[tuple[int, int]] | None = None,
-) -> list[tuple[int, int]]:
+    exclude: set[Point] | None = None,
+) -> list[Point]:
     excluded = set() if exclude is None else exclude
     candidates = [point for point in DOMAIN if point not in excluded]
     return pick_points(
@@ -578,7 +662,7 @@ def pick_balanced_examples(
 
 
 def build_rule_examples(
-    points: list[tuple[int, int]],
+    points: list[Point],
     rule: RuleSpec,
     *,
     start_index: int,
@@ -637,12 +721,76 @@ def build_transition_episode(
     raise RuntimeError(f"Unable to build transition episode for family {family.family_id}")
 
 
-def build_context_binding_episode(
+def build_latent_transition_episode(
     family: TransitionFamily,
     rng: random.Random,
 ) -> tuple[list[dict[str, object]], list[dict[str, object]], list[dict[str, object]]]:
     initial_rule = RULE_BY_ID[family.initial_rule_id]
     shift_rule = RULE_BY_ID[family.shift_rule_id]
+    for _ in range(4000):
+        initial_points = pick_balanced_examples(rng, initial_rule, LEARN_EXAMPLE_COUNT)
+        used = set(initial_points)
+        disagreement_points = [
+            point for point in DOMAIN if initial_rule.label(point) != shift_rule.label(point) and point not in used
+        ]
+        agreement_points = [
+            point for point in DOMAIN if initial_rule.label(point) == shift_rule.label(point) and point not in used
+        ]
+        if len(disagreement_points) < FINAL_PROBE_COUNT + 2 or len(agreement_points) < 2:
+            continue
+        try:
+            latent_conflicts = pick_points(
+                rng,
+                disagreement_points,
+                2,
+                lambda sample: has_label_balance([rule_label(shift_rule, point) for point in sample], 1, 0),
+            )
+        except RuntimeError:
+            continue
+        used.update(latent_conflicts)
+        try:
+            latent_agreements = pick_points(
+                rng,
+                [point for point in agreement_points if point not in used],
+                2,
+                lambda sample: has_label_balance(
+                    [rule_label(shift_rule, point) for point in latent_conflicts + sample],
+                    1,
+                    1,
+                ),
+            )
+        except RuntimeError:
+            continue
+        used.update(latent_agreements)
+        remaining_disagreement = [point for point in disagreement_points if point not in used]
+        if len(remaining_disagreement) < FINAL_PROBE_COUNT:
+            continue
+        probe_points = pick_points(rng, remaining_disagreement, FINAL_PROBE_COUNT, lambda sample: True)
+        shift_points = latent_conflicts + latent_agreements
+        rng.shuffle(shift_points)
+        learn_examples = build_rule_examples(initial_points, initial_rule, start_index=1)
+        shift_examples = build_rule_examples(shift_points, shift_rule, start_index=1)
+        probes = [
+            serialize_case(
+                index,
+                point,
+                rule_label(shift_rule, point),
+                active_rule_id=shift_rule.rule_id,
+            )
+            for index, point in enumerate(probe_points, start=1)
+        ]
+        return learn_examples, shift_examples, probes
+    raise RuntimeError(f"Unable to build latent transition episode for family {family.family_id}")
+
+
+def build_context_binding_episode(
+    split_name: str,
+    family: TransitionFamily,
+    rng: random.Random,
+) -> tuple[list[dict[str, object]], list[dict[str, object]], list[dict[str, object]]]:
+    initial_rule = RULE_BY_ID[family.initial_rule_id]
+    shift_rule = RULE_BY_ID[family.shift_rule_id]
+    contexts = contexts_for_split(split_name)
     for _ in range(4000):
         initial_points = pick_balanced_examples(rng, initial_rule, LEARN_EXAMPLE_COUNT)
         used = set(initial_points)
@@ -662,13 +810,13 @@ def build_context_binding_episode(
         if len(remaining) < 2:
             continue
         beta_points = pick_points(rng, remaining, 2, lambda sample: True)
-        probe_specs = [(CONTEXTS[0], point) for point in alpha_points] + [(CONTEXTS[1], point) for point in beta_points]
+        probe_specs = [(contexts[0], point) for point in alpha_points] + [(contexts[1], point) for point in beta_points]
         rng.shuffle(probe_specs)
-        learn_examples = build_rule_examples(initial_points, initial_rule, start_index=1, context=CONTEXTS[0])
-        shift_examples = build_rule_examples(shift_points, shift_rule, start_index=1, context=CONTEXTS[1])
+        learn_examples = build_rule_examples(initial_points, initial_rule, start_index=1, context=contexts[0])
+        shift_examples = build_rule_examples(shift_points, shift_rule, start_index=1, context=contexts[1])
         probes = []
         for index, (context, point) in enumerate(probe_specs, start=1):
-            active_rule = initial_rule if context == CONTEXTS[0] else shift_rule
+            active_rule = initial_rule if context == contexts[0] else shift_rule
             probes.append(
                 serialize_case(
                     index,
@@ -689,7 +837,7 @@ def build_trial_cued_switch_episode(
 ) -> tuple[list[dict[str, object]], list[dict[str, object]], list[dict[str, object]]]:
     initial_rule = RULE_BY_ID[family.initial_rule_id]
     shift_rule = RULE_BY_ID[family.shift_rule_id]
-    keep_cue, switch_cue = PUBLIC_CUES if split_name == "public" else PRIVATE_CUES
+    keep_cue, switch_cue = cues_for_split(split_name)
     for _ in range(4000):
         initial_points = pick_balanced_examples(rng, initial_rule, LEARN_EXAMPLE_COUNT)
         used = set(initial_points)
@@ -760,14 +908,18 @@ def build_trial_cued_switch_episode(
     raise RuntimeError(f"Unable to build trial-cued-switch episode for family {family.family_id}")
 
 
-def _labels_for_points(rule: RuleSpec, points: Iterable[tuple[int, int]]) -> list[str]:
+def _labels_for_points(rule: RuleSpec, points: Iterable[Point]) -> list[str]:
     return [rule_label(rule, point) for point in points]
+
+
+def point_from_item(item: dict[str, object]) -> Point:
+    return (int(item["r1"]), int(item["r2"]), str(item["shape"]), str(item["tone"]))
 
 
 def _consistent_rules(examples: list[dict[str, object]]) -> list[RuleSpec]:
     matches: list[RuleSpec] = []
     for rule in ALL_RULES:
-        if all(rule_label(rule, (int(item["r1"]), int(item["r2"]))) == str(item["label"]) for item in examples):
+        if all(rule_label(rule, point_from_item(item)) == str(item["label"]) for item in examples):
             matches.append(rule)
     return matches
 
@@ -788,6 +940,36 @@ def score_labels(predictions: Iterable[str], targets: Iterable[str]) -> float:
     return sum(pred == target for pred, target in zip(pred_tuple, target_tuple)) / len(target_tuple)
 
 
+def count_rule_conflicts(rule: RuleSpec, items: list[dict[str, object]]) -> int:
+    return sum(rule_label(rule, point_from_item(item)) != str(item["label"]) for item in items)
+
+
+def case_distance(source: dict[str, object], target: dict[str, object]) -> int:
+    distance = abs(int(source["r1"]) - int(target["r1"])) + abs(int(source["r2"]) - int(target["r2"]))
+    distance += 2 * (str(source["shape"]) != str(target["shape"]))
+    distance += 2 * (str(source["tone"]) != str(target["tone"]))
+    distance += 4 * (str(source.get("context", "")) != str(target.get("context", "")))
+    distance += 4 * (str(source.get("cue", "")) != str(target.get("cue", "")))
+    return distance
+
+
+def nearest_neighbor_predictions(
+    examples: list[dict[str, object]],
+    probes: list[dict[str, object]],
+) -> tuple[str, ...]:
+    predictions: list[str] = []
+    for probe in probes:
+        ranked = sorted(
+            examples,
+            key=lambda item: (
+                case_distance(item, probe),
+                -int(item["index"]),
+            ),
+        )
+        predictions.append(str(ranked[0]["label"]))
+    return tuple(predictions)
+
+
 def symbolic_diagnostics(
     suite_task_id: str,
     learn_examples: list[dict[str, object]],
@@ -799,10 +981,11 @@ def symbolic_diagnostics(
     split_name: str,
 ) -> dict[str, object]:
     targets = tuple(str(item["label"]) for item in probes)
-    previous_predictions = tuple(rule_label(initial_rule, (int(item["r1"]), int(item["r2"]))) for item in probes)
+    previous_predictions = tuple(rule_label(initial_rule, point_from_item(item)) for item in probes)
     majority_counts = Counter(str(item["label"]) for item in learn_examples + shift_examples)
     majority_label = TYPE_TRUE if majority_counts[TYPE_TRUE] >= majority_counts[TYPE_FALSE] else TYPE_FALSE
     majority_predictions = (majority_label,) * FINAL_PROBE_COUNT
+    nearest_predictions = nearest_neighbor_predictions(learn_examples + shift_examples, probes)
 
     hypotheses: list[tuple[str, ...]] = []
     learning_hypothesis_size = 0
@@ -813,12 +996,13 @@ def symbolic_diagnostics(
         shift_candidates = _consistent_rules(shift_examples)
         learning_hypothesis_size = len(shift_candidates)
         hypotheses = [
-            tuple(rule_label(shift_candidate, (int(item["r1"]), int(item["r2"]))) for item in probes)
+            tuple(rule_label(shift_candidate, point_from_item(item)) for item in probes)
             for initial_candidate in initial_candidates
             for shift_candidate in shift_candidates
             if initial_candidate.rule_id != shift_candidate.rule_id
         ]
     elif suite_task_id == "context_binding":
+        contexts = contexts_for_split(split_name)
         alpha_candidates = _consistent_rules(learn_examples)
         beta_candidates = _consistent_rules(shift_examples)
         learning_hypothesis_size = len(alpha_candidates) * len(beta_candidates)
@@ -827,19 +1011,19 @@ def symbolic_diagnostics(
             for beta_rule in beta_candidates:
                 predictions = []
                 for item in probes:
-                    active_rule = alpha_rule if item.get("context") == CONTEXTS[0] else beta_rule
-                    predictions.append(rule_label(active_rule, (int(item["r1"]), int(item["r2"]))))
+                    active_rule = alpha_rule if item.get("context") == contexts[0] else beta_rule
+                    predictions.append(rule_label(active_rule, point_from_item(item)))
                 hypotheses.append(tuple(predictions))
-        one_rule_initial = tuple(rule_label(initial_rule, (int(item["r1"]), int(item["r2"]))) for item in probes)
-        one_rule_shift = tuple(rule_label(shift_rule, (int(item["r1"]), int(item["r2"]))) for item in probes)
+        one_rule_initial = tuple(rule_label(initial_rule, point_from_item(item)) for item in probes)
+        one_rule_shift = tuple(rule_label(shift_rule, point_from_item(item)) for item in probes)
         cue_agnostic_accuracy = max(score_labels(one_rule_initial, targets), score_labels(one_rule_shift, targets))
     elif suite_task_id == "trial_cued_switch":
-        keep_cue, switch_cue = PUBLIC_CUES if split_name == "public" else PRIVATE_CUES
+        keep_cue, switch_cue = cues_for_split(split_name)
         initial_candidates = _consistent_rules(learn_examples)
         shift_candidates = []
         for rule in ALL_RULES:
             if all(
-                rule_label(initial_rule if item.get("cue") == keep_cue else rule, (int(item["r1"]), int(item["r2"])))
+                rule_label(initial_rule if item.get("cue") == keep_cue else rule, point_from_item(item))
                 == str(item["label"])
                 for item in shift_examples
             ):
@@ -851,10 +1035,10 @@ def symbolic_diagnostics(
                 predictions = []
                 for item in probes:
                     active_rule = initial_candidate if item.get("cue") == keep_cue else shift_candidate
-                    predictions.append(rule_label(active_rule, (int(item["r1"]), int(item["r2"]))))
+                    predictions.append(rule_label(active_rule, point_from_item(item)))
                 hypotheses.append(tuple(predictions))
-        one_rule_initial = tuple(rule_label(initial_rule, (int(item["r1"]), int(item["r2"]))) for item in probes)
-        one_rule_shift = tuple(rule_label(shift_rule, (int(item["r1"]), int(item["r2"]))) for item in probes)
+        one_rule_initial = tuple(rule_label(initial_rule, point_from_item(item)) for item in probes)
+        one_rule_shift = tuple(rule_label(shift_rule, point_from_item(item)) for item in probes)
         cue_agnostic_accuracy = max(score_labels(one_rule_initial, targets), score_labels(one_rule_shift, targets))
     else:
         raise ValueError(f"Unsupported suite_task_id {suite_task_id}")
@@ -865,16 +1049,30 @@ def symbolic_diagnostics(
     symbolic_majority_predictions = _majority_vote(hypotheses)
     symbolic_majority_accuracy = score_labels(symbolic_majority_predictions, targets)
     unanimous_predictions = len(set(hypotheses)) == 1
+    previous_rule_accuracy = score_labels(previous_predictions, targets)
+    majority_label_accuracy = score_labels(majority_predictions, targets)
+    nearest_neighbor_accuracy = score_labels(nearest_predictions, targets)
+    adversarial_baseline_accuracy = max(
+        previous_rule_accuracy,
+        majority_label_accuracy,
+        nearest_neighbor_accuracy,
+        symbolic_majority_accuracy,
+        cue_agnostic_accuracy or 0.0,
+    )
 
     return {
-        "previous_rule_accuracy": score_labels(previous_predictions, targets),
-        "majority_label_accuracy": score_labels(majority_predictions, targets),
+        "previous_rule_accuracy": previous_rule_accuracy,
+        "majority_label_accuracy": majority_label_accuracy,
+        "nearest_neighbor_accuracy": nearest_neighbor_accuracy,
         "cue_agnostic_accuracy": cue_agnostic_accuracy,
         "symbolic_hypothesis_count": len(hypotheses),
         "learning_hypothesis_size": learning_hypothesis_size,
         "symbolic_majority_accuracy": symbolic_majority_accuracy,
         "symbolic_unanimous_predictions": unanimous_predictions,
-        "difficulty_bin": "hard" if symbolic_majority_accuracy <= 0.5 else "medium",
+        "shift_evidence_conflict_count": count_rule_conflicts(initial_rule, shift_examples),
+        "shift_evidence_agreement_count": len(shift_examples) - count_rule_conflicts(initial_rule, shift_examples),
+        "adversarial_baseline_accuracy": adversarial_baseline_accuracy,
+        "difficulty_bin": "hard" if adversarial_baseline_accuracy <= 0.5 else "medium",
     }
 
 
@@ -884,11 +1082,17 @@ def validate_episode_constraints(answer: dict[str, object]) -> None:
     previous_rule_accuracy = float(diagnostics["previous_rule_accuracy"])
     cue_agnostic_accuracy = diagnostics["cue_agnostic_accuracy"]
     symbolic_accuracy = float(diagnostics["symbolic_majority_accuracy"])
+    adversarial_accuracy = float(diagnostics["adversarial_baseline_accuracy"])
+    shift_conflicts = int(diagnostics["shift_evidence_conflict_count"])
 
     if suite_task_id in {"explicit_rule_update", "latent_rule_update"} and previous_rule_accuracy > 0.25:
         raise ValueError(
             f"episode {answer['episode_id']} violates previous-rule ceiling: {previous_rule_accuracy:.2f}"
         )
+    if suite_task_id == "explicit_rule_update" and shift_conflicts < 3:
+        raise ValueError(f"episode {answer['episode_id']} lacks strong explicit shift evidence: {shift_conflicts}")
+    if suite_task_id == "latent_rule_update" and shift_conflicts not in {1, 2}:
+        raise ValueError(f"episode {answer['episode_id']} lacks calibrated latent shift evidence: {shift_conflicts}")
     if suite_task_id in {"context_binding", "trial_cued_switch"}:
         if cue_agnostic_accuracy is None or cue_agnostic_accuracy > 0.5:
             raise ValueError(
@@ -897,6 +1101,10 @@ def validate_episode_constraints(answer: dict[str, object]) -> None:
     if symbolic_accuracy > 0.75:
         raise ValueError(
             f"episode {answer['episode_id']} violates symbolic-majority ceiling: {symbolic_accuracy:.2f}"
+        )
+    if adversarial_accuracy > 0.85:
+        raise ValueError(
+            f"episode {answer['episode_id']} violates adversarial-baseline ceiling: {adversarial_accuracy:.2f}"
         )
 
 
@@ -909,13 +1117,15 @@ def episode_record(
     shift_examples: list[dict[str, object]],
     final_probes: list[dict[str, object]],
     diagnostics: dict[str, object],
+    *,
+    surface_variant: int,
 ) -> tuple[dict[str, object], dict[str, object]]:
     initial_rule = RULE_BY_ID[family.initial_rule_id]
     shift_rule = RULE_BY_ID[family.shift_rule_id]
     turns = [
-        render_learn_turn(episode_id, suite_task_id, learn_examples),
-        render_shift_turn(episode_id, split_name, suite_task_id, shift_examples),
-        render_decision_turn(episode_id, suite_task_id, final_probes),
+        render_learn_turn(split_name, episode_id, suite_task_id, learn_examples, surface_variant=surface_variant),
+        render_shift_turn(episode_id, split_name, suite_task_id, shift_examples, surface_variant=surface_variant),
+        render_decision_turn(episode_id, suite_task_id, final_probes, surface_variant=surface_variant),
     ]
     analysis = {
         "faculty_id": FACULTY_ID,
@@ -924,8 +1134,13 @@ def episode_record(
         "difficulty_bin": str(diagnostics["difficulty_bin"]),
     }
     cue_template_id = "none"
+    context_template_id = "none"
     if suite_task_id == "trial_cued_switch":
         cue_template_id = "cue_template::public::celestial" if split_name == "public" else "cue_template::private::metals"
+    if suite_task_id == "context_binding":
+        context_template_id = (
+            "context_template::public::alpha_beta" if split_name == "public" else "context_template::private::mesa_fjord"
+        )
     answer = {
         "episode_id": episode_id,
         **analysis,
@@ -937,6 +1152,8 @@ def episode_record(
         "initial_rule_template_id": initial_rule.template_id,
         "shift_rule_template_id": shift_rule.template_id,
         "cue_template_id": cue_template_id,
+        "context_template_id": context_template_id,
+        "surface_template_id": f"surface_template::{surface_variant}",
         "learn_turn_examples": learn_examples,
         "shift_turn_examples": shift_examples,
         "final_probes": final_probes,
@@ -966,13 +1183,16 @@ def build_episode(
     initial_rule = RULE_BY_ID[family.initial_rule_id]
     shift_rule = RULE_BY_ID[family.shift_rule_id]
     target_bin = "hard" if variant % 2 == 0 else "medium"
+    surface_variant = (base_seed + variant) % 3
 
     for attempt in range(6000):
         rng = random.Random(base_seed + attempt)
-        if suite_task_id in {"explicit_rule_update", "latent_rule_update"}:
+        if suite_task_id == "explicit_rule_update":
             learn_examples, shift_examples, final_probes = build_transition_episode(family, rng)
+        elif suite_task_id == "latent_rule_update":
+            learn_examples, shift_examples, final_probes = build_latent_transition_episode(family, rng)
         elif suite_task_id == "context_binding":
-            learn_examples, shift_examples, final_probes = build_context_binding_episode(family, rng)
+            learn_examples, shift_examples, final_probes = build_context_binding_episode(split_name, family, rng)
         elif suite_task_id == "trial_cued_switch":
             learn_examples, shift_examples, final_probes = build_trial_cued_switch_episode(split_name, family, rng)
         else:
@@ -998,6 +1218,7 @@ def build_episode(
             shift_examples,
             final_probes,
             diagnostics,
+            surface_variant=surface_variant,
         )
         try:
             validate_episode_constraints(answer)
@@ -1059,28 +1280,54 @@ def validate_split_isolation(public_answers: list[dict[str, object]], private_an
     if overlap:
         raise ValueError(f"public/private cue-template fingerprints overlap: {overlap}")
 
+    public_contexts = {str(answer["context_template_id"]) for answer in public_answers}
+    private_contexts = {str(answer["context_template_id"]) for answer in private_answers}
+    context_overlap = sorted((public_contexts & private_contexts) - {"none"})
+    if context_overlap:
+        raise ValueError(f"public/private context-template fingerprints overlap: {context_overlap}")
+
 
 def validate_split_quality(answers: list[dict[str, object]], split_name: str) -> None:
     by_task: dict[str, list[dict[str, object]]] = defaultdict(list)
-    numerator = 0.0
+    symbolic_numerator = 0.0
+    adversarial_numerator = 0.0
     denominator = 0
     for answer in answers:
         diagnostics = answer["generator_diagnostics"]
-        acc = float(diagnostics["symbolic_majority_accuracy"])
-        numerator += acc * FINAL_PROBE_COUNT
+        symbolic_acc = float(diagnostics["symbolic_majority_accuracy"])
+        adversarial_acc = float(diagnostics["adversarial_baseline_accuracy"])
+        symbolic_numerator += symbolic_acc * FINAL_PROBE_COUNT
+        adversarial_numerator += adversarial_acc * FINAL_PROBE_COUNT
         denominator += FINAL_PROBE_COUNT
         by_task[str(answer["suite_task_id"])].append(answer)
 
-    overall = numerator / denominator
-    if overall > 0.65:
-        raise ValueError(f"{split_name} split symbolic-majority micro accuracy is too high: {overall:.3f}")
+    symbolic_overall = symbolic_numerator / denominator
+    if symbolic_overall > 0.58:
+        raise ValueError(
+            f"{split_name} split symbolic-majority micro accuracy is too high: {symbolic_overall:.3f}"
+        )
+    adversarial_overall = adversarial_numerator / denominator
+    if adversarial_overall > 0.65:
+        raise ValueError(
+            f"{split_name} split adversarial-baseline micro accuracy is too high: {adversarial_overall:.3f}"
+        )
 
     for suite_task_id in SUITE_TASKS:
         episodes = by_task[suite_task_id]
-        task_acc = sum(float(answer["generator_diagnostics"]["symbolic_majority_accuracy"]) for answer in episodes) / len(episodes)
-        if task_acc > 0.70:
+        symbolic_task_acc = (
+            sum(float(answer["generator_diagnostics"]["symbolic_majority_accuracy"]) for answer in episodes) / len(episodes)
+        )
+        if symbolic_task_acc > 0.60:
             raise ValueError(
-                f"{split_name} split symbolic-majority task accuracy is too high for {suite_task_id}: {task_acc:.3f}"
+                f"{split_name} split symbolic-majority task accuracy is too high for {suite_task_id}: {symbolic_task_acc:.3f}"
+            )
+        adversarial_task_acc = (
+            sum(float(answer["generator_diagnostics"]["adversarial_baseline_accuracy"]) for answer in episodes)
+            / len(episodes)
+        )
+        if adversarial_task_acc > 0.65:
+            raise ValueError(
+                f"{split_name} split adversarial-baseline task accuracy is too high for {suite_task_id}: {adversarial_task_acc:.3f}"
             )
 
         ambiguous = sum(int(answer["generator_diagnostics"]["learning_hypothesis_size"]) > 1 for answer in episodes)
