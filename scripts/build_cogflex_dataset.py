@@ -41,6 +41,8 @@ TRANSITION_FAMILY_COUNT = 15
 PUBLIC_VARIANTS_PER_FAMILY = 8
 PUBLIC_EPISODES_PER_TASK = 30
 PRIVATE_EPISODES_PER_TASK = 120
+MAX_SELECTED_TRANSITIONS_PER_FAMILY_ROLE = 3
+MAX_SELECTED_TRANSITIONS_PER_FAMILY_PAIR = 1
 
 VALUES = (-4, -3, -2, -1, 1, 2, 3, 4)
 SHAPES = ("circle", "triangle", "square")
@@ -227,6 +229,8 @@ PUBLIC_FAMILY_IDS: Final[tuple[str, ...]] = (
     "sign",
     "parity",
     "relational",
+    "magnitude",
+    "numeric_binding",
     "cross_feature_binding",
     "feature_gate",
 )
@@ -388,6 +392,62 @@ def _public_rules() -> list[RuleSpec]:
             lambda point: point[1] >= point[0] + 2,
         ),
         make_rule(
+            "magnitude_abs_r1_ge_3",
+            "magnitude",
+            "magnitude::abs_r1_ge_3",
+            "type_a iff |r1| is at least 3",
+            lambda point: abs(point[0]) >= 3,
+        ),
+        make_rule(
+            "magnitude_abs_r2_ge_3",
+            "magnitude",
+            "magnitude::abs_r2_ge_3",
+            "type_a iff |r2| is at least 3",
+            lambda point: abs(point[1]) >= 3,
+        ),
+        make_rule(
+            "magnitude_abs_r1_gt_abs_r2",
+            "magnitude",
+            "magnitude::abs_r1_gt_abs_r2",
+            "type_a iff |r1| is greater than |r2|",
+            lambda point: abs(point[0]) > abs(point[1]),
+        ),
+        make_rule(
+            "magnitude_abs_sum_ge_5",
+            "magnitude",
+            "magnitude::abs_sum_ge_5",
+            "type_a iff |r1| + |r2| is at least 5",
+            lambda point: abs(point[0]) + abs(point[1]) >= 5,
+        ),
+        make_rule(
+            "numeric_binding_r1_positive_matches_r2_even",
+            "numeric_binding",
+            "numeric_binding::r1_positive_matches_r2_even",
+            "type_a iff r1>0 matches whether r2 is even",
+            lambda point: (point[0] > 0) == (point[1] % 2 == 0),
+        ),
+        make_rule(
+            "numeric_binding_r2_positive_matches_r1_even",
+            "numeric_binding",
+            "numeric_binding::r2_positive_matches_r1_even",
+            "type_a iff r2>0 matches whether r1 is even",
+            lambda point: (point[1] > 0) == (point[0] % 2 == 0),
+        ),
+        make_rule(
+            "numeric_binding_abs_r1_ge_3_xor_r2_positive",
+            "numeric_binding",
+            "numeric_binding::abs_r1_ge_3_xor_r2_positive",
+            "type_a iff exactly one of |r1|>=3 and r2>0 is true",
+            lambda point: (abs(point[0]) >= 3) ^ (point[1] > 0),
+        ),
+        make_rule(
+            "numeric_binding_abs_r2_ge_3_xor_r1_positive",
+            "numeric_binding",
+            "numeric_binding::abs_r2_ge_3_xor_r1_positive",
+            "type_a iff exactly one of |r2|>=3 and r1>0 is true",
+            lambda point: (abs(point[1]) >= 3) ^ (point[0] > 0),
+        ),
+        make_rule(
             "cross_tone_matches_r1_sign",
             "cross_feature_binding",
             "cross_feature_binding::tone_matches_r1_sign",
@@ -480,6 +540,11 @@ def has_label_balance(labels: Iterable[str], *, min_true: int, min_false: int) -
     return counts[TYPE_TRUE] >= min_true and counts[TYPE_FALSE] >= min_false
 
 
+def has_exact_label_balance(labels: Iterable[str], *, true_count: int, false_count: int) -> bool:
+    counts = Counter(labels)
+    return counts[TYPE_TRUE] == true_count and counts[TYPE_FALSE] == false_count
+
+
 def point_from_item(item: dict[str, object]) -> Point:
     return (int(item["r1"]), int(item["r2"]), str(item["shape"]), str(item["tone"]))
 
@@ -564,10 +629,12 @@ def pick_balanced_examples(
         rng,
         candidates,
         count,
-        lambda sample: has_label_balance(
+        lambda sample: has_exact_label_balance((rule_label(rule, point) for point in sample), true_count=3, false_count=3)
+        if count == 6
+        else has_label_balance(
             (rule_label(rule, point) for point in sample),
-            min_true=2 if count >= 6 else 1,
-            min_false=2 if count >= 6 else 1,
+            min_true=1,
+            min_false=1,
         ),
     )
 
@@ -578,6 +645,60 @@ def _consistent_rules(examples: list[dict[str, object]]) -> list[RuleSpec]:
         if all(rule_label(rule, point_from_item(item)) == str(item["label"]) for item in examples):
             matches.append(rule)
     return matches
+
+
+def infer_context_terms(
+    learn_examples: list[dict[str, object]],
+    shift_examples: list[dict[str, object]],
+    probes: list[dict[str, object]],
+) -> tuple[str, str]:
+    values: list[str] = []
+    for item in learn_examples + shift_examples + probes:
+        context = item.get("context")
+        if context is None:
+            continue
+        normalized = str(context)
+        if normalized not in values:
+            values.append(normalized)
+    if not values:
+        return ("", "")
+    if len(values) == 1:
+        return (values[0], values[0])
+    primary = str(learn_examples[0].get("context", values[0]))
+    secondary = next((value for value in values if value != primary), values[1])
+    return primary, secondary
+
+
+def infer_cue_terms(
+    learn_examples: list[dict[str, object]],
+    shift_examples: list[dict[str, object]],
+    probes: list[dict[str, object]],
+) -> tuple[str, str]:
+    values: list[str] = []
+    for item in shift_examples + probes:
+        cue = item.get("cue")
+        if cue is None:
+            continue
+        normalized = str(cue)
+        if normalized not in values:
+            values.append(normalized)
+    if not values:
+        return ("", "")
+    if len(values) == 1:
+        return (values[0], values[0])
+    initial_candidates = _consistent_rules(learn_examples)
+    cue_to_examples: dict[str, list[dict[str, object]]] = {}
+    for item in shift_examples:
+        cue_to_examples.setdefault(str(item["cue"]), []).append(item)
+    for cue in values:
+        examples = cue_to_examples.get(cue, [])
+        if examples and any(
+            all(rule_label(rule, point_from_item(item)) == str(item["label"]) for item in examples)
+            for rule in initial_candidates
+        ):
+            switch = next((value for value in values if value != cue), values[1])
+            return cue, switch
+    return values[0], values[1]
 
 
 def _majority_vote(predictions: list[tuple[str, ...]]) -> tuple[str, ...]:
@@ -775,6 +896,17 @@ def parse_case_line(line: str) -> dict[str, object] | None:
     return item
 
 
+def learn_only_max_probe_accuracy(
+    learn_examples: list[dict[str, object]],
+    probes: list[dict[str, object]],
+    targets: tuple[str, ...],
+) -> float:
+    return max(
+        score_labels((rule_label(rule, point_from_item(item)) for item in probes), targets)
+        for rule in _consistent_rules(learn_examples)
+    )
+
+
 def _parse_examples(turn: str) -> list[dict[str, object]]:
     items: list[dict[str, object]] = []
     for line in turn.splitlines():
@@ -812,7 +944,7 @@ def nearest_neighbor_predictions(
     return tuple(predictions)
 
 
-def dsl_search_predictions(
+def dsl_hypothesis_predictions(
     suite_task_id: str,
     learn_examples: list[dict[str, object]],
     shift_examples: list[dict[str, object]],
@@ -820,7 +952,7 @@ def dsl_search_predictions(
     *,
     context_terms: tuple[str, str],
     cue_terms: tuple[str, str],
-) -> tuple[tuple[str, ...], int]:
+) -> list[tuple[str, ...]]:
     hypotheses: list[tuple[str, ...]] = []
     if suite_task_id in {"explicit_rule_update", "latent_rule_update"}:
         initial_candidates = _consistent_rules(learn_examples)
@@ -862,6 +994,26 @@ def dsl_search_predictions(
 
     if not hypotheses:
         raise RuntimeError(f"no DSL hypotheses for suite task {suite_task_id}")
+    return hypotheses
+
+
+def dsl_search_predictions(
+    suite_task_id: str,
+    learn_examples: list[dict[str, object]],
+    shift_examples: list[dict[str, object]],
+    probes: list[dict[str, object]],
+    *,
+    context_terms: tuple[str, str],
+    cue_terms: tuple[str, str],
+) -> tuple[tuple[str, ...], int]:
+    hypotheses = dsl_hypothesis_predictions(
+        suite_task_id,
+        learn_examples,
+        shift_examples,
+        probes,
+        context_terms=context_terms,
+        cue_terms=cue_terms,
+    )
     return _majority_vote(hypotheses), len(hypotheses)
 
 
@@ -882,6 +1034,7 @@ def symbolic_diagnostics(
     majority_label = TYPE_TRUE if majority_counts[TYPE_TRUE] >= majority_counts[TYPE_FALSE] else TYPE_FALSE
     majority_predictions = (majority_label,) * FINAL_PROBE_COUNT
     nearest_predictions = nearest_neighbor_predictions(learn_examples + shift_examples, probes)
+    learn_only_accuracy = learn_only_max_probe_accuracy(learn_examples, probes, targets)
 
     cue_agnostic_accuracy: float | None = None
     if suite_task_id == "context_binding":
@@ -893,7 +1046,7 @@ def symbolic_diagnostics(
         shift_predictions = tuple(rule_label(shift_rule, point_from_item(item)) for item in probes)
         cue_agnostic_accuracy = max(score_labels(initial_predictions, targets), score_labels(shift_predictions, targets))
 
-    dsl_predictions, dsl_hypothesis_count = dsl_search_predictions(
+    dsl_hypotheses = dsl_hypothesis_predictions(
         suite_task_id,
         learn_examples,
         shift_examples,
@@ -901,14 +1054,22 @@ def symbolic_diagnostics(
         context_terms=context_terms,
         cue_terms=cue_terms,
     )
+    dsl_predictions = _majority_vote(dsl_hypotheses)
+    dsl_hypothesis_count = len(dsl_hypotheses)
+    turn2_required_probe_count = sum(
+        previous_prediction != target for previous_prediction, target in zip(previous_predictions, targets)
+    )
 
     return {
         "previous_rule_accuracy": score_labels(previous_predictions, targets),
+        "learn_only_max_probe_accuracy": learn_only_accuracy,
         "majority_label_accuracy": score_labels(majority_predictions, targets),
         "nearest_neighbor_accuracy": score_labels(nearest_predictions, targets),
         "cue_agnostic_accuracy": cue_agnostic_accuracy,
         "dsl_search_accuracy": score_labels(dsl_predictions, targets),
         "dsl_hypothesis_count": dsl_hypothesis_count,
+        "post_shift_prediction_set_size": len(set(dsl_hypotheses)),
+        "turn2_required_probe_count": turn2_required_probe_count,
     }
 
 
@@ -941,16 +1102,40 @@ def public_retrieval_scores(answers: list[dict[str, object]]) -> dict[str, float
 
 def attack_limits_for_task(suite_task_id: str) -> dict[str, float]:
     limits = {
+        "learn_only_max_probe_accuracy": 0.625,
         "majority_label_accuracy": 0.625,
         "nearest_neighbor_accuracy": 0.625,
         "dsl_search_accuracy": 0.625,
         "public_retrieval_accuracy": 1.0,
     }
     if suite_task_id in {"explicit_rule_update", "latent_rule_update"}:
+        limits["learn_only_max_probe_accuracy"] = 0.50
         limits["previous_rule_accuracy"] = 0.25
     if suite_task_id in {"context_binding", "trial_cued_switch"}:
         limits["cue_agnostic_accuracy"] = 0.50
     return limits
+
+
+def validate_label_shortcut_constraints(answer: dict[str, object]) -> None:
+    episode_id = str(answer["episode_id"])
+    if not has_exact_label_balance(
+        (str(item["label"]) for item in answer["learn_turn_examples"]),
+        true_count=3,
+        false_count=3,
+    ):
+        raise ValueError(f"episode {episode_id} learn examples must stay label-balanced")
+    if not has_exact_label_balance(
+        (str(item["label"]) for item in answer["shift_turn_examples"]),
+        true_count=3,
+        false_count=3,
+    ):
+        raise ValueError(f"episode {episode_id} shift examples must stay label-balanced")
+    if not has_exact_label_balance(
+        (str(label) for label in answer["final_probe_targets"]),
+        true_count=4,
+        false_count=4,
+    ):
+        raise ValueError(f"episode {episode_id} final probes must stay label-balanced")
 
 
 def count_rule_conflicts(rule: RuleSpec, items: list[dict[str, object]]) -> int:
@@ -960,6 +1145,7 @@ def count_rule_conflicts(rule: RuleSpec, items: list[dict[str, object]]) -> int:
 def validate_episode_constraints(answer: dict[str, object]) -> None:
     suite_task_id = str(answer["suite_task_id"])
     diagnostics = answer["generator_diagnostics"]
+    validate_label_shortcut_constraints(answer)
     limits = attack_limits_for_task(suite_task_id)
     for metric, ceiling in limits.items():
         value = diagnostics.get(metric)
@@ -973,15 +1159,26 @@ def validate_episode_constraints(answer: dict[str, object]) -> None:
         raise ValueError(f"episode {answer['episode_id']} lacks strong explicit shift evidence: {shift_conflicts}")
     if suite_task_id == "latent_rule_update" and shift_conflicts != 2:
         raise ValueError(f"episode {answer['episode_id']} has invalid latent conflict count: {shift_conflicts}")
-    if suite_task_id in {"context_binding", "trial_cued_switch"}:
-        if int(diagnostics["diagnostic_probe_count"]) < 6:
-            raise ValueError(
-                f"episode {answer['episode_id']} lacks enough diagnostic probes: {diagnostics['diagnostic_probe_count']}"
-            )
+    prediction_set_ceiling = 4 if suite_task_id in {"explicit_rule_update", "latent_rule_update"} else 8
+    if int(diagnostics["post_shift_prediction_set_size"]) > prediction_set_ceiling:
+        raise ValueError(
+            f"episode {answer['episode_id']} leaves turn-3 predictions too ambiguous after turn 2"
+        )
+    required_probe_count = 8 if suite_task_id in {"explicit_rule_update", "latent_rule_update"} else 4
+    if int(diagnostics["turn2_required_probe_count"]) != required_probe_count:
+        raise ValueError(
+            f"episode {answer['episode_id']} has invalid turn2_required_probe_count: "
+            f"{diagnostics['turn2_required_probe_count']}"
+        )
+    if suite_task_id in {"context_binding", "trial_cued_switch"} and int(diagnostics["diagnostic_probe_count"]) != 8:
+        raise ValueError(
+            f"episode {answer['episode_id']} lacks enough diagnostic probes: {diagnostics['diagnostic_probe_count']}"
+        )
 
 
 def candidate_attack_signal(diagnostics: dict[str, object], suite_task_id: str) -> float:
     finite_metrics = [
+        float(diagnostics["learn_only_max_probe_accuracy"]),
         float(diagnostics["majority_label_accuracy"]),
         float(diagnostics["nearest_neighbor_accuracy"]),
         float(diagnostics["dsl_search_accuracy"]),
@@ -1093,7 +1290,11 @@ def build_transition_episode(
             SHIFT_EXAMPLE_COUNT,
             lambda sample: (
                 sum(point in disagreement_points for point in sample) >= 4
-                and has_label_balance((rule_label(shift_rule, point) for point in sample), min_true=2, min_false=2)
+                and has_exact_label_balance(
+                    (rule_label(shift_rule, point) for point in sample),
+                    true_count=3,
+                    false_count=3,
+                )
             ),
         )
         used.update(shift_points)
@@ -1104,7 +1305,11 @@ def build_transition_episode(
             rng,
             remaining_disagreement,
             FINAL_PROBE_COUNT,
-            lambda sample: has_label_balance((rule_label(shift_rule, point) for point in sample), min_true=3, min_false=3),
+            lambda sample: has_exact_label_balance(
+                (rule_label(shift_rule, point) for point in sample),
+                true_count=4,
+                false_count=4,
+            ),
         )
         learn_examples = build_examples(learn_points, initial_rule, start_index=1)
         shift_examples = build_examples(shift_points, shift_rule, start_index=1)
@@ -1140,7 +1345,11 @@ def build_latent_transition_episode(
             rng,
             disagreement_points,
             2,
-            lambda sample: has_label_balance((rule_label(shift_rule, point) for point in sample), min_true=1, min_false=1),
+            lambda sample: has_exact_label_balance(
+                (rule_label(shift_rule, point) for point in sample),
+                true_count=1,
+                false_count=1,
+            ),
         )
         used.update(conflict_points)
         agreement_points = [point for point in agreement_points if point not in used]
@@ -1148,10 +1357,10 @@ def build_latent_transition_episode(
             rng,
             agreement_points,
             4,
-            lambda sample: has_label_balance(
+            lambda sample: has_exact_label_balance(
                 (rule_label(shift_rule, point) for point in conflict_points + sample),
-                min_true=2,
-                min_false=2,
+                true_count=3,
+                false_count=3,
             ),
         )
         used.update(agreement_sample)
@@ -1162,7 +1371,11 @@ def build_latent_transition_episode(
             rng,
             remaining_disagreement,
             FINAL_PROBE_COUNT,
-            lambda sample: has_label_balance((rule_label(shift_rule, point) for point in sample), min_true=3, min_false=3),
+            lambda sample: has_exact_label_balance(
+                (rule_label(shift_rule, point) for point in sample),
+                true_count=4,
+                false_count=4,
+            ),
         )
         shift_points = list(conflict_points + agreement_sample)
         rng.shuffle(shift_points)
@@ -1196,12 +1409,30 @@ def build_context_binding_episode(
         ]
         if len(disagreement_points) < FINAL_PROBE_COUNT:
             continue
-        alpha_probe_points = pick_points(rng, disagreement_points, 4, lambda sample: True)
+        alpha_probe_points = pick_points(
+            rng,
+            disagreement_points,
+            4,
+            lambda sample: has_exact_label_balance(
+                (rule_label(initial_rule, point) for point in sample),
+                true_count=2,
+                false_count=2,
+            ),
+        )
         used.update(alpha_probe_points)
         remaining = [point for point in disagreement_points if point not in used]
         if len(remaining) < 4:
             continue
-        beta_probe_points = pick_points(rng, remaining, 4, lambda sample: True)
+        beta_probe_points = pick_points(
+            rng,
+            remaining,
+            4,
+            lambda sample: has_exact_label_balance(
+                (rule_label(shift_rule, point) for point in sample),
+                true_count=2,
+                false_count=2,
+            ),
+        )
         probe_specs = (
             [(context_terms[0], point, initial_rule) for point in alpha_probe_points]
             + [(context_terms[1], point, shift_rule) for point in beta_probe_points]
@@ -1211,8 +1442,6 @@ def build_context_binding_episode(
             serialize_case(index, point, rule_label(rule, point), context=context, active_rule_id=rule.rule_id)
             for index, (context, point, rule) in enumerate(probe_specs, start=1)
         ]
-        if not has_label_balance((str(item["label"]) for item in probes), min_true=3, min_false=3):
-            continue
         learn_examples = build_examples(alpha_points, initial_rule, start_index=1, context=context_terms[0])
         shift_examples = build_examples(beta_points, shift_rule, start_index=1, context=context_terms[1])
         return learn_examples, shift_examples, probes, {
@@ -1255,19 +1484,42 @@ def build_trial_cued_switch_episode(
             3,
             lambda sample: (
                 sum(point in disagreement_points for point in sample) >= 2
-                and has_label_balance((rule_label(shift_rule, point) for point in sample), min_true=1, min_false=1)
+                and has_exact_label_balance(
+                    [rule_label(initial_rule, point) for point in keep_points]
+                    + [rule_label(shift_rule, point) for point in sample],
+                    true_count=3,
+                    false_count=3,
+                )
             ),
         )
         used.update(switch_points)
         remaining_disagreement = [point for point in disagreement_points if point not in used]
         if len(remaining_disagreement) < FINAL_PROBE_COUNT:
             continue
-        keep_probe_points = pick_points(rng, remaining_disagreement, 4, lambda sample: True)
+        keep_probe_points = pick_points(
+            rng,
+            remaining_disagreement,
+            4,
+            lambda sample: has_exact_label_balance(
+                (rule_label(initial_rule, point) for point in sample),
+                true_count=2,
+                false_count=2,
+            ),
+        )
         used.update(keep_probe_points)
         remaining_disagreement = [point for point in remaining_disagreement if point not in used]
         if len(remaining_disagreement) < 4:
             continue
-        switch_probe_points = pick_points(rng, remaining_disagreement, 4, lambda sample: True)
+        switch_probe_points = pick_points(
+            rng,
+            remaining_disagreement,
+            4,
+            lambda sample: has_exact_label_balance(
+                (rule_label(shift_rule, point) for point in sample),
+                true_count=2,
+                false_count=2,
+            ),
+        )
         probe_specs = (
             [(keep_cue, point, initial_rule) for point in keep_probe_points]
             + [(switch_cue, point, shift_rule) for point in switch_probe_points]
@@ -1277,8 +1529,6 @@ def build_trial_cued_switch_episode(
             serialize_case(index, point, rule_label(rule, point), cue=cue, active_rule_id=rule.rule_id)
             for index, (cue, point, rule) in enumerate(probe_specs, start=1)
         ]
-        if not has_label_balance((str(item["label"]) for item in probes), min_true=3, min_false=3):
-            continue
         shift_examples = build_examples(keep_points, initial_rule, start_index=1, cue=keep_cue) + build_examples(
             switch_points,
             shift_rule,
@@ -1490,11 +1740,21 @@ def build_family_task_candidates(
 
 def build_candidate_pool() -> tuple[tuple[TransitionFamily, ...], dict[str, dict[str, list[EpisodeCandidate]]]]:
     buckets = ordered_family_buckets()
-    ordered_keys = sorted(buckets)
+    ordered_keys = sorted(
+        buckets,
+        key=lambda key: (
+            key[0],
+            key[1],
+            DISAGREEMENT_BINS.index(key[2]),
+        ),
+    )
     selected: list[TransitionFamily] = []
     selected_pool: dict[str, dict[str, list[EpisodeCandidate]]] = {suite_task_id: {} for suite_task_id in SUITE_TASKS}
     initial_usage: Counter[str] = Counter()
     shift_usage: Counter[str] = Counter()
+    initial_family_usage: Counter[str] = Counter()
+    shift_family_usage: Counter[str] = Counter()
+    family_pair_usage: Counter[tuple[str, str]] = Counter()
     family_cache: dict[str, dict[str, list[EpisodeCandidate]]] = {}
     provisional_counter = 1
 
@@ -1517,12 +1777,22 @@ def build_candidate_pool() -> tuple[tuple[TransitionFamily, ...], dict[str, dict
             return False
         if shift_usage[family.shift_rule_id] >= 2:
             return False
+        if initial_family_usage[family.initial_family_id] >= MAX_SELECTED_TRANSITIONS_PER_FAMILY_ROLE:
+            return False
+        if shift_family_usage[family.shift_family_id] >= MAX_SELECTED_TRANSITIONS_PER_FAMILY_ROLE:
+            return False
+        family_pair = (family.initial_family_id, family.shift_family_id)
+        if family_pair_usage[family_pair] >= MAX_SELECTED_TRANSITIONS_PER_FAMILY_PAIR:
+            return False
         task_pool = ensure_family_pool(family)
         if any(len(task_pool[suite_task_id]) < 2 for suite_task_id in SUITE_TASKS):
             return False
         selected.append(family)
         initial_usage[family.initial_rule_id] += 1
         shift_usage[family.shift_rule_id] += 1
+        initial_family_usage[family.initial_family_id] += 1
+        shift_family_usage[family.shift_family_id] += 1
+        family_pair_usage[family_pair] += 1
         for suite_task_id in SUITE_TASKS:
             selected_pool[suite_task_id][family.family_id] = task_pool[suite_task_id]
         return True
@@ -1665,6 +1935,7 @@ def summarize_attacks(answers: list[dict[str, object]]) -> dict[str, object]:
 
     metrics = (
         "previous_rule_accuracy",
+        "learn_only_max_probe_accuracy",
         "majority_label_accuracy",
         "nearest_neighbor_accuracy",
         "cue_agnostic_accuracy",
@@ -1693,23 +1964,55 @@ def summarize_attacks(answers: list[dict[str, object]]) -> dict[str, object]:
 
 def public_quality_report(rows: list[dict[str, object]], answers: list[dict[str, object]]) -> dict[str, object]:
     family_counts = Counter(str(answer["transition_family_id"]) for answer in answers)
+    family_pair_counts = Counter(
+        f"{answer['initial_rule_family_id']}->{answer['shift_rule_family_id']}" for answer in answers
+    )
+    initial_family_selection_counts = Counter(str(answer["initial_rule_family_id"]) for answer in answers)
+    shift_family_selection_counts = Counter(str(answer["shift_rule_family_id"]) for answer in answers)
     disagreement_bin_counts = Counter(str(answer["generator_diagnostics"]["transition_disagreement_bin"]) for answer in answers)
     cue_lexicons = sorted({str(answer["cue_lexicon_id"]) for answer in answers})
     context_lexicons = sorted({str(answer["context_lexicon_id"]) for answer in answers})
+    rule_family_counts = Counter(rule.family_id for rule in PUBLIC_RULES)
+    turn2_required_counts = Counter(int(answer["generator_diagnostics"]["turn2_required_probe_count"]) for answer in answers)
+    post_shift_prediction_set_sizes = Counter(
+        int(answer["generator_diagnostics"]["post_shift_prediction_set_size"]) for answer in answers
+    )
+    learn_only_values = [
+        float(answer["generator_diagnostics"]["learn_only_max_probe_accuracy"])
+        for answer in answers
+    ]
     return {
         "version": PUBLIC_BUNDLE_VERSION,
         "task_name": TASK_NAME,
         "split": "public",
         "row_count": len(rows),
         "episodes_per_task": PUBLIC_EPISODES_PER_TASK,
+        "rule_inventory_count": len(PUBLIC_RULES),
+        "rule_family_count": len(rule_family_counts),
+        "rule_family_rule_counts": dict(sorted(rule_family_counts.items())),
         "transition_family_count": len(family_counts),
         "transition_family_usage": dict(sorted(family_counts.items())),
+        "selected_initial_family_count": len(initial_family_selection_counts),
+        "selected_initial_family_usage": dict(sorted(initial_family_selection_counts.items())),
+        "selected_shift_family_count": len(shift_family_selection_counts),
+        "selected_shift_family_usage": dict(sorted(shift_family_selection_counts.items())),
+        "transition_pair_pattern_count": len(family_pair_counts),
+        "transition_pair_usage": dict(sorted(family_pair_counts.items())),
         "disagreement_bin_counts": dict(sorted(disagreement_bin_counts.items())),
         "difficulty_bin_counts": dict(
             sorted(Counter(str(row["analysis"]["difficulty_bin"]) for row in rows).items())
         ),
         "cue_lexicon_ids": cue_lexicons,
         "context_lexicon_ids": context_lexicons,
+        "switching_diagnostics": {
+            "learn_only_max_probe_accuracy": round(sum(learn_only_values) / len(learn_only_values), 4),
+            "turn2_required_probe_count_distribution": {
+                str(key): value for key, value in sorted(turn2_required_counts.items())
+            },
+            "post_shift_prediction_set_size_distribution": {
+                str(key): value for key, value in sorted(post_shift_prediction_set_sizes.items())
+            },
+        },
         "attack_suite": summarize_attacks(answers),
     }
 

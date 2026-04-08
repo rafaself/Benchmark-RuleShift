@@ -4,27 +4,75 @@
   "split": "public",
   "row_count": 120,
   "episodes_per_task": 30,
+  "rule_inventory_count": 28,
+  "rule_family_count": 8,
+  "rule_family_rule_counts": {
+    "axis_threshold": 4,
+    "cross_feature_binding": 4,
+    "feature_gate": 3,
+    "magnitude": 4,
+    "numeric_binding": 4,
+    "parity": 3,
+    "relational": 3,
+    "sign": 3
+  },
   "transition_family_count": 15,
   "transition_family_usage": {
     "public::pair::axis_r1_ge_-1__to__cross_shape_square_or_sum_ge_2": 8,
-    "public::pair::axis_r1_ge_-1__to__parity_r1_even": 8,
-    "public::pair::axis_r1_le_+1__to__cross_shape_square_or_sum_ge_2": 8,
-    "public::pair::axis_r1_le_+1__to__gate_shape_circle_then_sum_positive_else_diff_positive": 8,
-    "public::pair::axis_r2_ge_-1__to__rel_r1_ge_r2_plus_2": 8,
-    "public::pair::axis_r2_ge_-1__to__rel_r2_ge_r1_plus_2": 8,
+    "public::pair::axis_r2_ge_-1__to__magnitude_abs_r1_gt_abs_r2": 8,
     "public::pair::axis_r2_le_+1__to__gate_shape_circle_then_sum_positive_else_diff_positive": 8,
-    "public::pair::axis_r2_le_+1__to__sign_r1_positive": 8,
-    "public::pair::cross_shape_circle_xor_tone_warm__to__parity_r1_even": 8,
-    "public::pair::cross_shape_circle_xor_tone_warm__to__rel_r1_ge_r2_plus_2": 8,
+    "public::pair::cross_shape_circle_xor_tone_warm__to__magnitude_abs_r1_ge_3": 8,
     "public::pair::cross_shape_square_or_sum_ge_2__to__axis_r1_ge_-1": 8,
-    "public::pair::cross_shape_square_or_sum_ge_2__to__axis_r1_le_+1": 8,
-    "public::pair::cross_tone_matches_r1_sign__to__gate_tone_warm_then_r1_ge_1_else_r2_ge_1": 8,
-    "public::pair::cross_tone_matches_r1_sign__to__sign_r1_positive": 8,
-    "public::pair::cross_tone_matches_r2_sign__to__gate_tone_warm_then_r1_ge_1_else_r2_ge_1": 8
+    "public::pair::cross_shape_square_or_sum_ge_2__to__gate_shape_triangle_then_r1_even_else_r2_positive": 8,
+    "public::pair::gate_shape_circle_then_sum_positive_else_diff_positive__to__axis_r2_le_+1": 8,
+    "public::pair::gate_shape_triangle_then_r1_even_else_r2_positive__to__cross_shape_square_or_sum_ge_2": 8,
+    "public::pair::gate_shape_triangle_then_r1_even_else_r2_positive__to__magnitude_abs_r1_gt_abs_r2": 8,
+    "public::pair::magnitude_abs_r1_ge_3__to__cross_shape_circle_xor_tone_warm": 8,
+    "public::pair::magnitude_abs_r1_gt_abs_r2__to__axis_r2_ge_-1": 8,
+    "public::pair::magnitude_abs_r1_gt_abs_r2__to__gate_shape_triangle_then_r1_even_else_r2_positive": 8,
+    "public::pair::numeric_binding_abs_r1_ge_3_xor_r2_positive__to__parity_r1_even": 8,
+    "public::pair::numeric_binding_abs_r1_ge_3_xor_r2_positive__to__sign_r1_positive": 8,
+    "public::pair::numeric_binding_r1_positive_matches_r2_even__to__rel_r2_ge_r1_plus_2": 8
+  },
+  "selected_initial_family_count": 5,
+  "selected_initial_family_usage": {
+    "axis_threshold": 24,
+    "cross_feature_binding": 24,
+    "feature_gate": 24,
+    "magnitude": 24,
+    "numeric_binding": 24
+  },
+  "selected_shift_family_count": 7,
+  "selected_shift_family_usage": {
+    "axis_threshold": 24,
+    "cross_feature_binding": 24,
+    "feature_gate": 24,
+    "magnitude": 24,
+    "parity": 8,
+    "relational": 8,
+    "sign": 8
+  },
+  "transition_pair_pattern_count": 15,
+  "transition_pair_usage": {
+    "axis_threshold->cross_feature_binding": 8,
+    "axis_threshold->feature_gate": 8,
+    "axis_threshold->magnitude": 8,
+    "cross_feature_binding->axis_threshold": 8,
+    "cross_feature_binding->feature_gate": 8,
+    "cross_feature_binding->magnitude": 8,
+    "feature_gate->axis_threshold": 8,
+    "feature_gate->cross_feature_binding": 8,
+    "feature_gate->magnitude": 8,
+    "magnitude->axis_threshold": 8,
+    "magnitude->cross_feature_binding": 8,
+    "magnitude->feature_gate": 8,
+    "numeric_binding->parity": 8,
+    "numeric_binding->relational": 8,
+    "numeric_binding->sign": 8
   },
   "disagreement_bin_counts": {
-    "high": 80,
-    "low": 40
+    "high": 32,
+    "low": 88
   },
   "difficulty_bin_counts": {
     "hard": 60,
@@ -42,6 +90,22 @@
     "public_context_lexicon::2",
     "public_context_lexicon::3"
   ],
+  "switching_diagnostics": {
+    "learn_only_max_probe_accuracy": 0.3156,
+    "turn2_required_probe_count_distribution": {
+      "4": 60,
+      "8": 60
+    },
+    "post_shift_prediction_set_size_distribution": {
+      "2": 44,
+      "3": 23,
+      "4": 23,
+      "5": 4,
+      "6": 16,
+      "7": 3,
+      "8": 7
+    }
+  },
   "attack_suite": {
     "previous_rule_accuracy": {
       "micro_accuracy": 0.25,
@@ -52,22 +116,31 @@
         "trial_cued_switch": 0.5
       }
     },
-    "majority_label_accuracy": {
-      "micro_accuracy": 0.4656,
+    "learn_only_max_probe_accuracy": {
+      "micro_accuracy": 0.3156,
       "per_task_accuracy": {
-        "explicit_rule_update": 0.4583,
-        "latent_rule_update": 0.45,
-        "context_binding": 0.4833,
-        "trial_cued_switch": 0.4708
+        "explicit_rule_update": 0.1208,
+        "latent_rule_update": 0.125,
+        "context_binding": 0.5042,
+        "trial_cued_switch": 0.5125
+      }
+    },
+    "majority_label_accuracy": {
+      "micro_accuracy": 0.5,
+      "per_task_accuracy": {
+        "explicit_rule_update": 0.5,
+        "latent_rule_update": 0.5,
+        "context_binding": 0.5,
+        "trial_cued_switch": 0.5
       }
     },
     "nearest_neighbor_accuracy": {
-      "micro_accuracy": 0.4125,
+      "micro_accuracy": 0.4281,
       "per_task_accuracy": {
-        "explicit_rule_update": 0.4,
-        "latent_rule_update": 0.3083,
-        "context_binding": 0.475,
-        "trial_cued_switch": 0.4667
+        "explicit_rule_update": 0.4167,
+        "latent_rule_update": 0.375,
+        "context_binding": 0.4458,
+        "trial_cued_switch": 0.475
       }
     },
     "cue_agnostic_accuracy": {
@@ -80,21 +153,21 @@
       }
     },
     "dsl_search_accuracy": {
-      "micro_accuracy": 0.5302,
+      "micro_accuracy": 0.526,
       "per_task_accuracy": {
-        "explicit_rule_update": 0.5083,
-        "latent_rule_update": 0.5042,
-        "context_binding": 0.5333,
-        "trial_cued_switch": 0.575
+        "explicit_rule_update": 0.5125,
+        "latent_rule_update": 0.4875,
+        "context_binding": 0.525,
+        "trial_cued_switch": 0.5792
       }
     },
     "public_retrieval_accuracy": {
-      "micro_accuracy": 0.5156,
+      "micro_accuracy": 0.4823,
       "per_task_accuracy": {
-        "explicit_rule_update": 0.5333,
-        "latent_rule_update": 0.5375,
-        "context_binding": 0.4875,
-        "trial_cued_switch": 0.5042
+        "explicit_rule_update": 0.4708,
+        "latent_rule_update": 0.5125,
+        "context_binding": 0.4917,
+        "trial_cued_switch": 0.4542
       }
     }
   }
