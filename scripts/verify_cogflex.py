@@ -83,10 +83,22 @@ PRIVATE_AUDIT_CHECKS: Final[tuple[str, ...]] = (
 
 
 def _utc_timestamp() -> str:
+    """Return the current UTC timestamp in normalized ISO 8601 form.
+
+    Returns:
+        The current UTC timestamp with second precision.
+
+    """
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
 def _resolve_git_commit() -> str | None:
+    """Resolve the current repository commit SHA when available.
+
+    Returns:
+        The current Git commit SHA, or `None` when it cannot be resolved.
+
+    """
     try:
         result = subprocess.run(
             ["git", "rev-parse", "HEAD"],
@@ -111,6 +123,19 @@ def write_audit_report(
     checks_executed: tuple[str, ...],
     summary: dict[str, object],
 ) -> None:
+    """Write a verification audit report to disk.
+
+    Args:
+        report_path: Destination path for the audit report.
+        split: Dataset split covered by the report.
+        artifact_digests: Digests for the verified artifacts.
+        checks_executed: Verification checks included in the run.
+        summary: High-level verification summary payload.
+
+    Returns:
+        None.
+
+    """
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text(
         json.dumps(
@@ -136,6 +161,16 @@ def write_audit_report(
 
 
 def normalize_labels(values: object, label_vocab: list[str]) -> tuple[str, ...] | None:
+    """Normalize and validate a sequence of labels against a vocabulary.
+
+    Args:
+        values: Candidate label sequence.
+        label_vocab: Allowed label vocabulary.
+
+    Returns:
+        The normalized labels, or `None` when validation fails.
+
+    """
     if not isinstance(values, (list, tuple)):
         return None
     normalized = tuple(str(value).strip() for value in values)
@@ -145,6 +180,19 @@ def normalize_labels(values: object, label_vocab: list[str]) -> tuple[str, ...] 
 
 
 def _normalize_generator_metadata(episode: dict[str, object], *, episode_id: str) -> dict[str, str]:
+    """Validate and normalize private generator metadata.
+
+    Args:
+        episode: Private answer-key episode payload.
+        episode_id: Episode identifier used for error messages.
+
+    Returns:
+        Normalized generator metadata fields.
+
+    Raises:
+        RuntimeError: If the generator metadata is missing or malformed.
+
+    """
     generator = episode.get("generator")
     if not isinstance(generator, dict):
         raise RuntimeError(f"private answer key episode {episode_id} must include generator metadata")
@@ -164,17 +212,53 @@ def _normalize_generator_metadata(episode: dict[str, object], *, episode_id: str
 
 
 def _rounded_accuracy(correct: int, total: int) -> float:
+    """Compute rounded accuracy with safe zero handling.
+
+    Args:
+        correct: Number of correct predictions.
+        total: Number of evaluated predictions.
+
+    Returns:
+        Accuracy rounded to six decimal places.
+
+    """
     if total <= 0:
         return 0.0
     return round(correct / total, 6)
 
 
 def _verify_metric_value(value: object, *, context: str) -> None:
+    """Validate that a metric value is numeric.
+
+    Args:
+        value: Metric value to validate.
+        context: Error-message context describing the metric.
+
+    Returns:
+        None.
+
+    Raises:
+        RuntimeError: If the value is not numeric.
+
+    """
     if not isinstance(value, (int, float)):
         raise RuntimeError(f"{context} must be numeric")
 
 
 def _verify_model_metric_payload(model: object, *, context: str) -> None:
+    """Validate a model metrics summary payload.
+
+    Args:
+        model: Model summary payload to validate.
+        context: Error-message context describing the payload location.
+
+    Returns:
+        None.
+
+    Raises:
+        RuntimeError: If the payload shape or values are invalid.
+
+    """
     if not isinstance(model, dict):
         raise RuntimeError(f"{context} entries must be objects")
     expected_keys = {"macro_accuracy", "micro_accuracy", "name", "per_task_accuracy"}
@@ -198,6 +282,19 @@ def _episode_ids_by_dimension(
     private_rows: list[dict[str, object]],
     dimension: str,
 ) -> dict[str, list[str]]:
+    """Group private episode IDs by an analysis dimension.
+
+    Args:
+        private_rows: Private rows to group.
+        dimension: Analysis key used to group episodes.
+
+    Returns:
+        Episode IDs keyed by the selected dimension value.
+
+    Raises:
+        RuntimeError: If the requested dimension is unsupported.
+
+    """
     grouped: dict[str, list[str]] = {}
     for row in private_rows:
         if dimension in row["analysis"]:
@@ -215,6 +312,18 @@ def _metrics_for_episode_subset(
     episode_targets: dict[str, tuple[str, ...]],
     predictions_by_model: list[dict[str, object]],
 ) -> dict[str, object]:
+    """Compute calibration metrics for a subset of private episodes.
+
+    Args:
+        episode_ids: Episode IDs to score.
+        private_rows: Private rows keyed by episode ID.
+        episode_targets: Gold labels keyed by episode ID.
+        predictions_by_model: Normalized predictions for each calibration model.
+
+    Returns:
+        A metrics summary containing one entry per model.
+
+    """
     rows_by_id = {str(row["episode_id"]): row for row in private_rows}
     total_probe_count = sum(len(episode_targets[episode_id]) for episode_id in episode_ids)
     models_summary: list[dict[str, object]] = []
@@ -258,6 +367,18 @@ def build_private_quality_report(
     *,
     public_rows: list[dict[str, object]] | None = None,
 ) -> dict[str, object]:
+    """Build the aggregate quality report for a private bundle.
+
+    Args:
+        private_rows: Private split rows to summarize.
+        answer_key: Private answer-key payload.
+        predictions: Private calibration predictions payload.
+        public_rows: Optional public rows used for isolation checks.
+
+    Returns:
+        The private quality report payload.
+
+    """
     _summary, episode_targets, private_generator_metadata = verify_private_answer_key(answer_key, private_rows)
     predictions_by_model = verify_private_calibration_predictions(predictions, private_rows, episode_targets)
     verify_private_empirical_difficulty(private_rows, answer_key, predictions_by_model, episode_targets)
@@ -301,6 +422,18 @@ def build_private_quality_report(
 
 
 def _response_spec(row: dict[str, object]) -> dict[str, object]:
+    """Extract the response specification from a row.
+
+    Args:
+        row: Row payload containing inference metadata.
+
+    Returns:
+        The response specification payload.
+
+    Raises:
+        RuntimeError: If the inference payload or response spec is missing.
+
+    """
     inference = row.get("inference")
     if not isinstance(inference, dict):
         raise RuntimeError(f"row {row.get('episode_id')} is missing inference")
@@ -311,6 +444,16 @@ def _response_spec(row: dict[str, object]) -> dict[str, object]:
 
 
 def _normalize_nominal_maps(turns: list[list[dict[str, object]]], label_vocab: list[str]) -> tuple[dict[str, dict[str, str]], dict[str, str]]:
+    """Build canonical remapping tables for nominal fields and labels.
+
+    Args:
+        turns: Parsed turn payloads.
+        label_vocab: Ordered label vocabulary.
+
+    Returns:
+        Field-value remapping tables and a label remapping table.
+
+    """
     field_maps: dict[str, dict[str, str]] = {}
     label_map = {label: f"label_{index}" for index, label in enumerate(label_vocab)}
     for items in turns:
@@ -326,6 +469,17 @@ def _normalize_nominal_maps(turns: list[list[dict[str, object]]], label_vocab: l
 
 
 def _canonical_item(item: dict[str, object], *, field_maps: dict[str, dict[str, str]], label_map: dict[str, str]) -> tuple[object, ...]:
+    """Convert a parsed item into a canonical comparison tuple.
+
+    Args:
+        item: Parsed item payload.
+        field_maps: Canonical mappings for nominal fields.
+        label_map: Canonical mapping for labels.
+
+    Returns:
+        The canonicalized item tuple.
+
+    """
     pieces: list[object] = [int(item["r1"]), int(item["r2"]), label_map[str(item["label"])]]
     for key in sorted(key for key in item if key not in {"index", "label", "r1", "r2", "rule_id"}):
         value = item[key]
@@ -337,6 +491,16 @@ def _canonical_item(item: dict[str, object], *, field_maps: dict[str, dict[str, 
 
 
 def _turn_payloads(row: dict[str, object], *, with_targets: bool) -> list[list[dict[str, object]]]:
+    """Parse all row turns into structured payloads.
+
+    Args:
+        row: Row payload containing rendered turn text.
+        with_targets: Whether to inject final probe targets into decision items.
+
+    Returns:
+        Parsed turn payloads in turn order.
+
+    """
     turns = row["inference"]["turns"]
     specs = row["inference"]["turn_specs"]
     label_vocab = [str(label) for label in row["inference"]["response_spec"]["label_vocab"]]
@@ -358,6 +522,18 @@ def _turn_payloads(row: dict[str, object], *, with_targets: bool) -> list[list[d
 
 
 def semantic_signature(row: dict[str, object]) -> tuple[object, ...]:
+    """Build a semantic comparison signature for a scored row.
+
+    Args:
+        row: Scored row payload to normalize.
+
+    Returns:
+        A semantic signature used for overlap detection.
+
+    Raises:
+        RuntimeError: If the scoring payload is invalid.
+
+    """
     spec = _response_spec(row)
     label_vocab = [str(label) for label in spec["label_vocab"]]
     targets = normalize_labels(row["scoring"]["final_probe_targets"], label_vocab)
@@ -372,6 +548,15 @@ def semantic_signature(row: dict[str, object]) -> tuple[object, ...]:
 
 
 def structural_signature(row: dict[str, object]) -> tuple[object, ...]:
+    """Build a structure-focused comparison signature for a row.
+
+    Args:
+        row: Row payload to normalize.
+
+    Returns:
+        A structure-oriented signature used for overlap detection.
+
+    """
     label_vocab = [str(label) for label in row["inference"]["response_spec"]["label_vocab"]]
     payloads = _turn_payloads(row, with_targets="scoring" in row)
     field_maps, label_map = _normalize_nominal_maps(payloads, label_vocab)
@@ -387,6 +572,15 @@ def structural_signature(row: dict[str, object]) -> tuple[object, ...]:
 
 
 def structural_case_counter(row: dict[str, object]) -> Counter[tuple[object, ...]]:
+    """Count canonicalized cases across every turn in a row.
+
+    Args:
+        row: Row payload to analyze.
+
+    Returns:
+        A counter keyed by canonicalized turn-item signatures.
+
+    """
     label_vocab = [str(label) for label in row["inference"]["response_spec"]["label_vocab"]]
     payloads = _turn_payloads(row, with_targets="scoring" in row)
     field_maps, label_map = _normalize_nominal_maps(payloads, label_vocab)
@@ -399,6 +593,16 @@ def structural_case_counter(row: dict[str, object]) -> Counter[tuple[object, ...
 
 
 def structural_overlap_score(left: dict[str, object], right: dict[str, object]) -> float:
+    """Compute normalized structural overlap between two rows.
+
+    Args:
+        left: First row payload.
+        right: Second row payload.
+
+    Returns:
+        The normalized overlap score between the two rows.
+
+    """
     left_counter = structural_case_counter(left)
     right_counter = structural_case_counter(right)
     total = max(sum(left_counter.values()), sum(right_counter.values()))
@@ -408,6 +612,19 @@ def structural_overlap_score(left: dict[str, object], right: dict[str, object]) 
 
 
 def verify_split_isolation(public_rows: list[dict[str, object]], private_rows: list[dict[str, object]]) -> dict[str, object]:
+    """Verify that private rows do not overlap with the public split.
+
+    Args:
+        public_rows: Public rows used as the reference split.
+        private_rows: Private rows to check for overlap.
+
+    Returns:
+        A summary showing zero detected overlaps.
+
+    Raises:
+        RuntimeError: If exact, structural, or near-duplicate overlap is found.
+
+    """
     public_semantic = {semantic_signature(row): str(row["episode_id"]) for row in public_rows}
     public_structural = {structural_signature(row): str(row["episode_id"]) for row in public_rows}
     public_by_task: dict[str, list[dict[str, object]]] = {}
@@ -457,6 +674,20 @@ def verify_generator_isolation(
     *,
     public_reference: dict[str, tuple[str, ...]] | None = None,
 ) -> dict[str, object]:
+    """Verify that private generator metadata does not overlap with public data.
+
+    Args:
+        private_generator_metadata: Private generator metadata keyed by episode
+            ID.
+        public_reference: Optional public generator reference to compare against.
+
+    Returns:
+        A summary of the private generator metadata and non-overlap assertions.
+
+    Raises:
+        RuntimeError: If family, template, or operator metadata overlaps.
+
+    """
     if public_reference is None:
         public_reference = public_generator_reference()
     family_ids = sorted({metadata["family_id"] for metadata in private_generator_metadata.values()})
@@ -492,6 +723,19 @@ def verify_generator_isolation(
 
 
 def _validate_response_spec(episode_id: str, spec: dict[str, object]) -> tuple[int, list[str]]:
+    """Validate a row response specification.
+
+    Args:
+        episode_id: Episode identifier used for error messages.
+        spec: Response specification payload.
+
+    Returns:
+        The probe count and normalized label vocabulary.
+
+    Raises:
+        RuntimeError: If the response specification is malformed.
+
+    """
     if spec.get("format") != "ordered_labels":
         raise RuntimeError(f"row {episode_id} has unsupported response format")
     probe_count = spec.get("probe_count")
@@ -506,6 +750,15 @@ def _validate_response_spec(episode_id: str, spec: dict[str, object]) -> tuple[i
 
 
 def _summary_from_rows(rows: list[dict[str, object]]) -> dict[str, object]:
+    """Build aggregate summary statistics from a set of rows.
+
+    Args:
+        rows: Rows to summarize.
+
+    Returns:
+        Aggregate count and stimulus-space statistics for the rows.
+
+    """
     structure_counts = Counter(str(row["analysis"]["structure_family_id"]) for row in rows)
     turn_counts = Counter(len(row["inference"]["turns"]) for row in rows)
     probe_counts = Counter(int(row["inference"]["response_spec"]["probe_count"]) for row in rows)
@@ -547,6 +800,19 @@ def _summary_from_rows(rows: list[dict[str, object]]) -> dict[str, object]:
 
 
 def verify_schema(rows: list[dict[str, object]], split: str) -> dict[str, object]:
+    """Validate the shared row schema for a dataset split.
+
+    Args:
+        rows: Rows to validate.
+        split: Split name, such as `public` or `private`.
+
+    Returns:
+        A summary of validated row counts across key dimensions.
+
+    Raises:
+        RuntimeError: If any row violates the expected schema.
+
+    """
     if not isinstance(rows, list) or not rows:
         raise RuntimeError(f"{split} rows must be a non-empty JSON list")
     task_counts: Counter[str] = Counter()
@@ -636,6 +902,15 @@ def verify_schema(rows: list[dict[str, object]], split: str) -> dict[str, object
 
 
 def response_instruction_from_spec(spec: dict[str, object]) -> str:
+    """Render the decision-turn instruction string from a response spec.
+
+    Args:
+        spec: Response specification payload.
+
+    Returns:
+        The rendered response instruction.
+
+    """
     vocab = ", ".join(str(label) for label in spec["label_vocab"])
     return (
         f"Return exactly {spec['probe_count']} outputs in order, one per probe. "
@@ -644,6 +919,18 @@ def response_instruction_from_spec(spec: dict[str, object]) -> str:
 
 
 def load_rows(path: Path) -> list[dict[str, object]]:
+    """Load a rows artifact from disk.
+
+    Args:
+        path: JSON file containing row payloads.
+
+    Returns:
+        The parsed list of rows.
+
+    Raises:
+        RuntimeError: If the file does not contain a JSON list.
+
+    """
     payload = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(payload, list):
         raise RuntimeError(f"expected a JSON list at {path}")
@@ -651,6 +938,15 @@ def load_rows(path: Path) -> list[dict[str, object]]:
 
 
 def public_quality_report_payload() -> dict[str, object]:
+    """Load the tracked public quality report from disk.
+
+    Returns:
+        The parsed public quality report payload.
+
+    Raises:
+        RuntimeError: If the file does not contain a JSON object.
+
+    """
     payload = json.loads(PUBLIC_QUALITY_REPORT_PATH.read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
         raise RuntimeError("public quality report must be a JSON object")
@@ -658,6 +954,18 @@ def public_quality_report_payload() -> dict[str, object]:
 
 
 def verify_public_difficulty_calibration(rows: list[dict[str, object]]) -> dict[str, object]:
+    """Verify that public rows match the tracked difficulty calibration file.
+
+    Args:
+        rows: Public rows to validate.
+
+    Returns:
+        A summary of the validated difficulty calibration artifact.
+
+    Raises:
+        RuntimeError: If coverage or assigned bins do not match.
+
+    """
     _payload, entries_by_episode = load_public_difficulty_calibration()
     rows_by_id = {str(row["episode_id"]): row for row in rows}
     missing_episode_ids = sorted(set(entries_by_episode) - set(rows_by_id))
@@ -686,6 +994,21 @@ def verify_private_empirical_difficulty(
     predictions_by_model: list[dict[str, object]],
     episode_targets: dict[str, tuple[str, ...]],
 ) -> dict[str, dict[str, object]]:
+    """Verify empirical difficulty assignments for the private split.
+
+    Args:
+        private_rows: Private rows to validate.
+        answer_key: Private answer-key payload.
+        predictions_by_model: Normalized calibration predictions.
+        episode_targets: Gold labels keyed by episode ID.
+
+    Returns:
+        Empirical difficulty entries keyed by episode ID.
+
+    Raises:
+        RuntimeError: If coverage or difficulty bins do not match.
+
+    """
     entries_by_episode = empirical_difficulty_entries_from_predictions(episode_targets, predictions_by_model)
     rows_by_id = {str(row["episode_id"]): row for row in private_rows}
     answer_key_by_id = {str(episode["episode_id"]): episode for episode in answer_key["episodes"]}
@@ -713,6 +1036,19 @@ def verify_private_empirical_difficulty(
 
 
 def verify_public_report(payload: dict[str, object], rows: list[dict[str, object]]) -> dict[str, object]:
+    """Verify the tracked public quality report against regenerated data.
+
+    Args:
+        payload: Public quality report payload to validate.
+        rows: Public rows used as the reference source.
+
+    Returns:
+        A compact summary of validated report fields.
+
+    Raises:
+        RuntimeError: If report metadata or aggregates do not match.
+
+    """
     if payload.get("version") != PUBLIC_BUNDLE_VERSION:
         raise RuntimeError("public quality report has an unsupported version")
     if payload.get("task_name") != TASK_NAME:
@@ -747,6 +1083,18 @@ def verify_public_report(payload: dict[str, object], rows: list[dict[str, object
 
 
 def verify_public_split(*, emit_audit_report: Path | None = None) -> None:
+    """Verify the tracked public split and optionally emit an audit report.
+
+    Args:
+        emit_audit_report: Optional output path for an audit report.
+
+    Returns:
+        None.
+
+    Raises:
+        RuntimeError: If any public artifact fails verification.
+
+    """
     rows = load_rows(PUBLIC_ROWS_PATH)
     schema_summary = verify_schema(rows, "public")
     calibration_summary = verify_public_difficulty_calibration(rows)
@@ -785,6 +1133,15 @@ def verify_public_split(*, emit_audit_report: Path | None = None) -> None:
 
 
 def private_bundle_paths(bundle_dir: Path) -> dict[str, Path]:
+    """Build the expected file paths for a private bundle directory.
+
+    Args:
+        bundle_dir: Directory containing private bundle artifacts.
+
+    Returns:
+        A mapping from logical artifact names to file paths.
+
+    """
     return {
         "rows": bundle_dir / PRIVATE_ROWS_FILENAME,
         "answer_key": bundle_dir / PRIVATE_ANSWER_KEY_FILENAME,
@@ -795,6 +1152,18 @@ def private_bundle_paths(bundle_dir: Path) -> dict[str, Path]:
 
 
 def resolve_private_bundle_dir(explicit_path: str | None) -> Path:
+    """Resolve the private bundle directory from CLI input or environment.
+
+    Args:
+        explicit_path: Optional CLI-provided bundle directory.
+
+    Returns:
+        The resolved private bundle directory path.
+
+    Raises:
+        RuntimeError: If no usable bundle directory is configured.
+
+    """
     if explicit_path:
         bundle_dir = Path(explicit_path).expanduser().resolve()
     else:
@@ -808,6 +1177,18 @@ def resolve_private_bundle_dir(explicit_path: str | None) -> Path:
 
 
 def load_private_answer_key(path: Path) -> dict[str, object]:
+    """Load and validate the top-level private answer-key payload.
+
+    Args:
+        path: Path to the private answer-key JSON file.
+
+    Returns:
+        The parsed private answer-key payload.
+
+    Raises:
+        RuntimeError: If the payload metadata is malformed.
+
+    """
     payload = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
         raise RuntimeError("private answer key payload must be a JSON object")
@@ -822,6 +1203,18 @@ def load_private_answer_key(path: Path) -> dict[str, object]:
 
 
 def load_private_calibration_predictions(path: Path) -> dict[str, object]:
+    """Load and validate the top-level private predictions payload.
+
+    Args:
+        path: Path to the private predictions JSON file.
+
+    Returns:
+        The parsed predictions payload.
+
+    Raises:
+        RuntimeError: If the payload metadata is malformed.
+
+    """
     payload = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
         raise RuntimeError("private calibration predictions payload must be a JSON object")
@@ -839,6 +1232,20 @@ def verify_private_answer_key(
     payload: dict[str, object],
     private_rows: list[dict[str, object]],
 ) -> tuple[dict[str, object], dict[str, tuple[str, ...]], dict[str, dict[str, str]]]:
+    """Verify the private answer key against the private rows.
+
+    Args:
+        payload: Private answer-key payload to validate.
+        private_rows: Private rows used as the reference source.
+
+    Returns:
+        A summary, normalized episode targets, and normalized generator
+        metadata.
+
+    Raises:
+        RuntimeError: If the answer key is inconsistent or incomplete.
+
+    """
     rows_by_id = {str(row["episode_id"]): row for row in private_rows}
     episode_targets: dict[str, tuple[str, ...]] = {}
     episode_generators: dict[str, dict[str, str]] = {}
@@ -878,6 +1285,20 @@ def verify_private_calibration_predictions(
     private_rows: list[dict[str, object]],
     episode_targets: dict[str, tuple[str, ...]],
 ) -> list[dict[str, object]]:
+    """Verify and normalize private calibration predictions.
+
+    Args:
+        payload: Predictions payload to validate.
+        private_rows: Private rows used as the reference source.
+        episode_targets: Gold labels keyed by episode ID.
+
+    Returns:
+        Normalized predictions keyed by episode ID for each model.
+
+    Raises:
+        RuntimeError: If the predictions payload is malformed or incomplete.
+
+    """
     rows_by_id = {str(row["episode_id"]): row for row in private_rows}
     models = payload.get("models")
     if not isinstance(models, list) or len(models) != PRIVATE_PANEL_MODEL_COUNT:
@@ -935,6 +1356,16 @@ def verify_private_calibration_predictions(
 
 
 def attach_private_scoring(private_rows: list[dict[str, object]], answer_key: dict[str, object]) -> list[dict[str, object]]:
+    """Attach scoring targets to private rows using the answer key.
+
+    Args:
+        private_rows: Private rows without scoring payloads.
+        answer_key: Private answer-key payload.
+
+    Returns:
+        Copies of the private rows with scoring attached.
+
+    """
     _summary, episode_targets, _episode_generators = verify_private_answer_key(answer_key, private_rows)
     attached: list[dict[str, object]] = []
     for row in private_rows:
@@ -951,6 +1382,19 @@ def attach_private_scoring(private_rows: list[dict[str, object]], answer_key: di
 
 
 def verify_manifest(path: Path, bundle_paths: dict[str, Path]) -> dict[str, object]:
+    """Verify manifest metadata and artifact digests for a private bundle.
+
+    Args:
+        path: Path to the private release manifest.
+        bundle_paths: Expected private bundle artifact paths.
+
+    Returns:
+        The parsed manifest payload.
+
+    Raises:
+        RuntimeError: If metadata or digests are invalid.
+
+    """
     payload = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
         raise RuntimeError("private release manifest must be a JSON object")
@@ -975,6 +1419,18 @@ def verify_manifest(path: Path, bundle_paths: dict[str, Path]) -> dict[str, obje
 
 
 def verify_quality_report(path: Path) -> dict[str, object]:
+    """Verify the schema of a private quality report payload.
+
+    Args:
+        path: Path to the private quality report JSON file.
+
+    Returns:
+        The parsed quality report payload.
+
+    Raises:
+        RuntimeError: If the report schema or metadata is invalid.
+
+    """
     payload = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
         raise RuntimeError("private quality report must be a JSON object")
@@ -1091,6 +1547,19 @@ def verify_quality_report(path: Path) -> dict[str, object]:
 
 
 def verify_private_bundle(bundle_dir: Path, *, emit_audit_report: Path | None = None) -> None:
+    """Verify all artifacts inside a private bundle directory.
+
+    Args:
+        bundle_dir: Directory containing the private bundle artifacts.
+        emit_audit_report: Optional output path for an audit report.
+
+    Returns:
+        None.
+
+    Raises:
+        RuntimeError: If any private bundle artifact fails verification.
+
+    """
     bundle_paths = private_bundle_paths(bundle_dir)
     missing = [name for name, path in bundle_paths.items() if not path.exists()]
     if missing:
@@ -1167,6 +1636,12 @@ def verify_private_bundle(bundle_dir: Path, *, emit_audit_report: Path | None = 
 
 
 def main() -> None:
+    """Run the verification CLI for the requested split.
+
+    Returns:
+        None.
+
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("--split", choices=("public", "private"), required=True)
     parser.add_argument("--private-bundle-dir")

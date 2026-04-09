@@ -144,6 +144,18 @@ class EpisodeStructure:
 
 
 def empirical_difficulty_entries_from_scores(scores_by_episode: dict[str, float]) -> dict[str, dict[str, object]]:
+    """Build ranked empirical difficulty entries from per-episode scores.
+
+    Args:
+        scores_by_episode: Mean panel accuracy keyed by episode ID.
+
+    Returns:
+        A mapping from episode ID to ranked difficulty metadata.
+
+    Raises:
+        RuntimeError: If no episode scores are provided.
+
+    """
     if not scores_by_episode:
         raise RuntimeError("empirical difficulty calibration requires at least one episode")
     ranked = sorted(scores_by_episode.items(), key=lambda item: (item[1], item[0]))
@@ -162,6 +174,19 @@ def empirical_difficulty_scores_from_predictions(
     episode_targets: dict[str, tuple[str, ...]],
     predictions_by_model: list[dict[str, object]],
 ) -> dict[str, float]:
+    """Compute mean per-episode accuracy from model predictions.
+
+    Args:
+        episode_targets: Gold labels keyed by episode ID.
+        predictions_by_model: Normalized calibration predictions for each model.
+
+    Returns:
+        Mean panel accuracy keyed by episode ID.
+
+    Raises:
+        RuntimeError: If no model predictions are provided.
+
+    """
     if not predictions_by_model:
         raise RuntimeError("empirical difficulty calibration requires at least one model")
     scores_by_episode: dict[str, float] = {}
@@ -179,6 +204,16 @@ def empirical_difficulty_entries_from_predictions(
     episode_targets: dict[str, tuple[str, ...]],
     predictions_by_model: list[dict[str, object]],
 ) -> dict[str, dict[str, object]]:
+    """Build empirical difficulty entries from prediction payloads.
+
+    Args:
+        episode_targets: Gold labels keyed by episode ID.
+        predictions_by_model: Normalized calibration predictions for each model.
+
+    Returns:
+        Ranked empirical difficulty metadata keyed by episode ID.
+
+    """
     return empirical_difficulty_entries_from_scores(
         empirical_difficulty_scores_from_predictions(episode_targets, predictions_by_model)
     )
@@ -187,6 +222,15 @@ def empirical_difficulty_entries_from_predictions(
 def public_difficulty_calibration_payload_from_entries(
     entries_by_episode: dict[str, dict[str, object]],
 ) -> dict[str, object]:
+    """Serialize public empirical difficulty entries into the tracked payload.
+
+    Args:
+        entries_by_episode: Difficulty metadata keyed by episode ID.
+
+    Returns:
+        The public difficulty calibration payload ready for JSON serialization.
+
+    """
     return {
         "version": PUBLIC_DIFFICULTY_CALIBRATION_VERSION,
         "policy": "median_split",
@@ -206,6 +250,18 @@ def public_difficulty_calibration_payload_from_entries(
 def load_public_difficulty_calibration(
     path: Path = PUBLIC_DIFFICULTY_CALIBRATION_PATH,
 ) -> tuple[dict[str, object], dict[str, dict[str, object]]]:
+    """Load and validate the tracked public difficulty calibration file.
+
+    Args:
+        path: Location of the calibration JSON artifact.
+
+    Returns:
+        The raw payload and a normalized mapping keyed by episode ID.
+
+    Raises:
+        RuntimeError: If the payload schema or metadata is invalid.
+
+    """
     payload = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
         raise RuntimeError("public difficulty calibration must be a JSON object")
@@ -258,6 +314,20 @@ def apply_empirical_difficulty_to_payloads(
     answers: list[dict[str, object]],
     entries_by_episode: dict[str, dict[str, object]],
 ) -> None:
+    """Apply calibrated difficulty bins to row and answer payloads.
+
+    Args:
+        rows: Public rows to annotate.
+        answers: Matching answer payloads to annotate.
+        entries_by_episode: Difficulty entries keyed by episode ID.
+
+    Returns:
+        None.
+
+    Raises:
+        RuntimeError: If the calibration coverage does not match the payloads.
+
+    """
     row_episode_ids = {str(row["episode_id"]) for row in rows}
     answer_episode_ids = {str(answer["episode_id"]) for answer in answers}
     calibration_episode_ids = set(entries_by_episode)
@@ -281,16 +351,44 @@ def apply_empirical_difficulty_to_payloads(
 
 
 def derive_seed(*parts: object) -> int:
+    """Derive a deterministic integer seed from arbitrary parts.
+
+    Args:
+        *parts: Values that should contribute to the derived seed.
+
+    Returns:
+        A deterministic unsigned integer seed.
+
+    """
     payload = "::".join(str(part) for part in parts).encode("utf-8")
     digest = hashlib.sha256(payload).digest()
     return int.from_bytes(digest[:8], byteorder="big", signed=False)
 
 
 def compute_sha256(path: Path) -> str:
+    """Compute the SHA-256 digest for a file.
+
+    Args:
+        path: File whose contents should be hashed.
+
+    Returns:
+        The hexadecimal SHA-256 digest.
+
+    """
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def dataset_metadata(dataset_id: str, title: str) -> dict[str, object]:
+    """Build Kaggle dataset metadata for a release artifact.
+
+    Args:
+        dataset_id: Dataset identifier to publish.
+        title: Human-readable dataset title.
+
+    Returns:
+        A dataset metadata payload.
+
+    """
     return {
         "id": dataset_id,
         "title": title,
@@ -299,10 +397,28 @@ def dataset_metadata(dataset_id: str, title: str) -> dict[str, object]:
 
 
 def fmt_signed(value: int) -> str:
+    """Render an integer with an explicit sign prefix.
+
+    Args:
+        value: Integer value to render.
+
+    Returns:
+        The signed decimal representation.
+
+    """
     return f"{value:+d}"
 
 
 def normalized_turn_text(turn: str) -> str:
+    """Normalize episode-specific headers in rendered turn text.
+
+    Args:
+        turn: Rendered turn text.
+
+    Returns:
+        The turn text with episode numbers normalized for comparison.
+
+    """
     return RETRIEVAL_HEADER_RE.sub("Episode XXXX", turn)
 
 
@@ -313,6 +429,18 @@ def build_domain(
     *,
     extras: dict[str, tuple[str, ...]] | None = None,
 ) -> list[Stimulus]:
+    """Enumerate the full stimulus domain for a task family.
+
+    Args:
+        values: Numeric values used for both `r1` and `r2`.
+        shapes: Shape vocabulary.
+        tones: Tone vocabulary.
+        extras: Optional additional categorical dimensions.
+
+    Returns:
+        The cartesian product of all requested stimulus attributes.
+
+    """
     domain: list[Stimulus] = []
     extras = extras or {}
     extra_keys = list(extras)
@@ -351,6 +479,19 @@ def make_two_label_rule(
     description: str,
     predicate: Callable[[Stimulus], bool],
 ) -> RuleSpec:
+    """Build a binary rule specification from a predicate.
+
+    Args:
+        rule_id: Stable rule identifier.
+        family_id: Rule family identifier.
+        labels: Ordered binary label vocabulary.
+        description: Human-readable rule description.
+        predicate: Predicate selecting the first label.
+
+    Returns:
+        A binary rule specification.
+
+    """
     return RuleSpec(
         rule_id=rule_id,
         family_id=family_id,
@@ -367,6 +508,19 @@ def make_three_label_rule(
     description: str,
     resolver: Callable[[Stimulus], str],
 ) -> RuleSpec:
+    """Build a ternary rule specification from a resolver.
+
+    Args:
+        rule_id: Stable rule identifier.
+        family_id: Rule family identifier.
+        labels: Ordered ternary label vocabulary.
+        description: Human-readable rule description.
+        resolver: Resolver that assigns a label to each stimulus.
+
+    Returns:
+        A ternary rule specification.
+
+    """
     return RuleSpec(
         rule_id=rule_id,
         family_id=family_id,
@@ -475,6 +629,19 @@ TASK_RULE_PAIRS: Final[dict[str, tuple[tuple[str, str], ...]]] = {
 
 
 def public_generator_metadata(suite_task_id: str, *, variant: int) -> dict[str, str]:
+    """Build generator metadata for a public episode variant.
+
+    Args:
+        suite_task_id: Public suite task identifier.
+        variant: Variant index within the suite task.
+
+    Returns:
+        Generator family, template, and operator metadata.
+
+    Raises:
+        ValueError: If the suite task is unsupported.
+
+    """
     if suite_task_id not in TASK_RULE_PAIRS:
         raise ValueError(f"unsupported suite_task_id {suite_task_id!r}")
     pair_index = variant % len(TASK_RULE_PAIRS[suite_task_id])
@@ -487,6 +654,12 @@ def public_generator_metadata(suite_task_id: str, *, variant: int) -> dict[str, 
 
 
 def public_generator_reference() -> dict[str, tuple[str, ...]]:
+    """Collect the set of generator metadata used by the public split.
+
+    Returns:
+        Distinct family IDs, template IDs, and operator classes used publicly.
+
+    """
     family_ids: set[str] = set()
     template_ids: set[str] = set()
     operator_classes: set[str] = set()
@@ -504,6 +677,15 @@ def public_generator_reference() -> dict[str, tuple[str, ...]]:
 
 
 def stimulus_signature(stimulus: Stimulus) -> tuple[object, ...]:
+    """Create a stable comparable signature for a stimulus.
+
+    Args:
+        stimulus: Stimulus payload to normalize.
+
+    Returns:
+        A tuple representation sorted by key.
+
+    """
     return tuple((key, stimulus[key]) for key in sorted(stimulus))
 
 
@@ -516,6 +698,20 @@ def serialize_case(
     cue: str | None = None,
     rule_id: str | None = None,
 ) -> dict[str, object]:
+    """Serialize one labeled stimulus into a turn item payload.
+
+    Args:
+        index: Display index within the turn.
+        stimulus: Stimulus attributes to serialize.
+        label: Assigned label for the stimulus.
+        context: Optional context tag.
+        cue: Optional cue tag.
+        rule_id: Optional originating rule identifier.
+
+    Returns:
+        The serialized item payload.
+
+    """
     item = {"index": index, **stimulus, "label": label}
     if context is not None:
         item["context"] = context
@@ -527,6 +723,16 @@ def serialize_case(
 
 
 def response_spec(label_vocab: tuple[str, ...], probe_count: int) -> dict[str, object]:
+    """Build the response specification for a decision turn.
+
+    Args:
+        label_vocab: Allowed output labels.
+        probe_count: Number of probes in the decision turn.
+
+    Returns:
+        A normalized response specification payload.
+
+    """
     return {
         "format": "ordered_labels",
         "probe_count": probe_count,
@@ -535,10 +741,29 @@ def response_spec(label_vocab: tuple[str, ...], probe_count: int) -> dict[str, o
 
 
 def turn_spec(kind: str, item_count: int) -> dict[str, object]:
+    """Build metadata describing a rendered turn.
+
+    Args:
+        kind: Turn kind, such as `evidence` or `decision`.
+        item_count: Number of serialized items in the turn.
+
+    Returns:
+        A turn specification payload.
+
+    """
     return {"kind": kind, "item_count": item_count}
 
 
 def response_instruction(spec: dict[str, object]) -> str:
+    """Render the response instruction text from a response spec.
+
+    Args:
+        spec: Response specification payload.
+
+    Returns:
+        The instruction string appended to decision turns.
+
+    """
     vocab = ", ".join(str(label) for label in spec["label_vocab"])
     return (
         f"Return exactly {spec['probe_count']} outputs in order, one per probe. "
@@ -547,6 +772,16 @@ def response_instruction(spec: dict[str, object]) -> str:
 
 
 def render_case_text(item: dict[str, object], *, attribute_variant: int) -> str:
+    """Render one serialized item into the textual case format.
+
+    Args:
+        item: Serialized case payload.
+        attribute_variant: Rotation offset for attribute ordering.
+
+    Returns:
+        The textual representation shown in a turn.
+
+    """
     chunk_map = {
         "point": f"r1={fmt_signed(int(item['r1']))}, r2={fmt_signed(int(item['r2']))}",
         "shape": f"shape={item['shape']}",
@@ -561,6 +796,17 @@ def render_case_text(item: dict[str, object], *, attribute_variant: int) -> str:
 
 
 def render_items(items: list[dict[str, object]], *, hide_labels: bool, attribute_variant: int) -> str:
+    """Render multiple serialized items into newline-delimited text.
+
+    Args:
+        items: Serialized case payloads to render.
+        hide_labels: Whether to replace labels with question marks.
+        attribute_variant: Rotation offset for attribute ordering.
+
+    Returns:
+        The rendered block of line-oriented items.
+
+    """
     lines = []
     for offset, item in enumerate(items):
         label = "?" if hide_labels else str(item["label"])
@@ -581,6 +827,22 @@ def render_turn(
     attribute_variant: int,
     spec: dict[str, object] | None = None,
 ) -> str:
+    """Render a full turn including header, prompt, items, and instructions.
+
+    Args:
+        episode_id: Episode identifier used in the header.
+        turn_index: One-based position of the turn.
+        turn_count: Total number of turns in the episode.
+        kind: Turn kind, such as `evidence` or `decision`.
+        prompt: Instructional prompt for the turn.
+        items: Serialized case payloads shown in the turn.
+        attribute_variant: Rotation offset for attribute ordering.
+        spec: Optional response specification for decision turns.
+
+    Returns:
+        The rendered turn text.
+
+    """
     sections = [
         f"{TURN_HEADER_PREFIX}{episode_id}. Turn {turn_index} of {turn_count}.",
         prompt,
@@ -596,6 +858,18 @@ def render_turn(
 
 
 def parse_case_line(line: str) -> dict[str, object] | None:
+    """Parse one rendered case line back into its structured payload.
+
+    Args:
+        line: Rendered line from an evidence or decision turn.
+
+    Returns:
+        The parsed item payload, or `None` when the line is not a case line.
+
+    Raises:
+        ValueError: If the line omits the required numeric point fields.
+
+    """
     match = LINE_RE.match(line.strip())
     if match is None:
         return None
@@ -616,6 +890,16 @@ def parse_case_line(line: str) -> dict[str, object] | None:
 
 
 def parse_turn_items(turn: str, *, kind: str) -> list[dict[str, object]]:
+    """Parse all serialized items from a rendered turn.
+
+    Args:
+        turn: Rendered turn text.
+        kind: Turn kind used to validate visible labels.
+
+    Returns:
+        The parsed item payloads in display order.
+
+    """
     items: list[dict[str, object]] = []
     for line in turn.splitlines():
         parsed = parse_case_line(line)
@@ -630,6 +914,17 @@ def parse_turn_items(turn: str, *, kind: str) -> list[dict[str, object]]:
 
 
 def label_distribution(label_vocab: tuple[str, ...], count: int, *, rotation: int = 0) -> dict[str, int]:
+    """Distribute a sample count as evenly as possible across labels.
+
+    Args:
+        label_vocab: Ordered label vocabulary.
+        count: Total number of examples to assign.
+        rotation: Offset used when assigning remainder examples.
+
+    Returns:
+        The requested count per label.
+
+    """
     ordered = list(label_vocab)
     if ordered:
         shift = rotation % len(ordered)
@@ -653,6 +948,25 @@ def sample_for_rule(
     mismatch_rule: RuleSpec | None = None,
     min_mismatch: int = 0,
 ) -> list[Stimulus]:
+    """Sample stimuli that satisfy a rule with optional mismatch pressure.
+
+    Args:
+        rng: Random generator used for deterministic sampling.
+        domain: Available stimulus domain.
+        rule: Rule used to label the sampled stimuli.
+        count: Number of stimuli to sample.
+        exclude: Signatures that must not be reused.
+        rotation: Offset used when balancing labels.
+        mismatch_rule: Optional reference rule used to enforce disagreement.
+        min_mismatch: Minimum number of disagreements to induce.
+
+    Returns:
+        The sampled stimuli.
+
+    Raises:
+        RuntimeError: If there are not enough candidate stimuli for a label.
+
+    """
     excluded = exclude or set()
     distribution = label_distribution(rule.label_vocab, count, rotation=rotation)
     buckets: dict[str, list[Stimulus]] = {label: [] for label in rule.label_vocab}
@@ -710,6 +1024,19 @@ def enumerate_items(
     cue: str | None = None,
     start_index: int = 1,
 ) -> list[dict[str, object]]:
+    """Convert sampled stimuli into serialized turn items.
+
+    Args:
+        stimuli: Stimuli to serialize.
+        rule: Rule used to assign labels.
+        context: Optional context tag to attach to each item.
+        cue: Optional cue tag to attach to each item.
+        start_index: First display index to use.
+
+    Returns:
+        The serialized items.
+
+    """
     return [
         serialize_case(index, stimulus, rule.label(stimulus), context=context, cue=cue, rule_id=rule.rule_id)
         for index, stimulus in enumerate(stimuli, start=start_index)
@@ -726,6 +1053,21 @@ def sample_mixed_route_examples(
     exclude: set[tuple[object, ...]] | None = None,
     disagreement_rule: tuple[RuleSpec, RuleSpec] | None = None,
 ) -> list[dict[str, object]]:
+    """Sample and interleave items from multiple routing assignments.
+
+    Args:
+        rng: Random generator used for deterministic sampling.
+        domain: Available stimulus domain.
+        assignments: Route value, rule, and route role assignments to sample.
+        count: Total number of items to generate.
+        route_key: Field name that stores the route value on each item.
+        exclude: Signatures that must not be reused.
+        disagreement_rule: Optional rule pair used to enforce contrasting items.
+
+    Returns:
+        The mixed serialized items in randomized order.
+
+    """
     excluded = exclude or set()
     per_route = max(1, count // len(assignments))
     remainder = count - (per_route * len(assignments))
@@ -763,6 +1105,20 @@ def build_episode_payload(
     turn_prompts: list[str],
     turn_items: list[list[dict[str, object]]],
 ) -> tuple[dict[str, object], dict[str, object]]:
+    """Assemble the row and answer payloads for one episode.
+
+    Args:
+        episode_id: Stable identifier to assign.
+        suite_task_id: Suite task represented by the episode.
+        structure: Episode structure controlling turn layout.
+        label_vocab: Allowed output labels for the decision turn.
+        turn_prompts: Prompt text for each turn.
+        turn_items: Serialized items for each turn.
+
+    Returns:
+        The public row payload and the answer payload.
+
+    """
     specs = [turn_spec("evidence", len(items)) for items in turn_items[:-1]] + [turn_spec("decision", len(turn_items[-1]))]
     spec = response_spec(label_vocab, len(turn_items[-1]))
     turns = [
@@ -803,6 +1159,17 @@ def build_episode_payload(
 
 
 def build_explicit_episode(episode_id: str, *, structure: EpisodeStructure, variant: int) -> tuple[dict[str, object], dict[str, object]]:
+    """Build a public explicit-rule-update episode.
+
+    Args:
+        episode_id: Stable identifier to assign.
+        structure: Structure controlling evidence and probe counts.
+        variant: Deterministic variant index for rule selection and sampling.
+
+    Returns:
+        The generated row payload and matching answer payload.
+
+    """
     seed = derive_seed("public", "explicit_rule_update", structure.structure_family_id, variant)
     rng = random.Random(seed)
     initial_rule = PUBLIC_RULES[TASK_RULE_PAIRS["explicit_rule_update"][variant % 2][0]]
@@ -855,6 +1222,17 @@ def build_explicit_episode(episode_id: str, *, structure: EpisodeStructure, vari
 
 
 def build_latent_episode(episode_id: str, *, structure: EpisodeStructure, variant: int) -> tuple[dict[str, object], dict[str, object]]:
+    """Build a public latent-rule-update episode.
+
+    Args:
+        episode_id: Stable identifier to assign.
+        structure: Structure controlling evidence and probe counts.
+        variant: Deterministic variant index for rule selection and sampling.
+
+    Returns:
+        The generated row payload and matching answer payload.
+
+    """
     seed = derive_seed("public", "latent_rule_update", structure.structure_family_id, variant)
     rng = random.Random(seed)
     initial_rule = PUBLIC_RULES[TASK_RULE_PAIRS["latent_rule_update"][variant % 2][0]]
@@ -903,6 +1281,17 @@ def build_latent_episode(episode_id: str, *, structure: EpisodeStructure, varian
 
 
 def build_context_episode(episode_id: str, *, structure: EpisodeStructure, variant: int) -> tuple[dict[str, object], dict[str, object]]:
+    """Build a public context-binding episode.
+
+    Args:
+        episode_id: Stable identifier to assign.
+        structure: Structure controlling evidence and probe counts.
+        variant: Deterministic variant index for context and rule selection.
+
+    Returns:
+        The generated row payload and matching answer payload.
+
+    """
     seed = derive_seed("public", "context_binding", structure.structure_family_id, variant)
     rng = random.Random(seed)
     context_terms = PUBLIC_CONTEXT_TERMS[variant % len(PUBLIC_CONTEXT_TERMS)]
@@ -966,6 +1355,17 @@ def build_context_episode(episode_id: str, *, structure: EpisodeStructure, varia
 
 
 def build_cued_episode(episode_id: str, *, structure: EpisodeStructure, variant: int) -> tuple[dict[str, object], dict[str, object]]:
+    """Build a public trial-cued-switch episode.
+
+    Args:
+        episode_id: Stable identifier to assign.
+        structure: Structure controlling evidence and probe counts.
+        variant: Deterministic variant index for cue and rule selection.
+
+    Returns:
+        The generated row payload and matching answer payload.
+
+    """
     seed = derive_seed("public", "trial_cued_switch", structure.structure_family_id, variant)
     rng = random.Random(seed)
     cue_terms = PUBLIC_CUE_TERMS[variant % len(PUBLIC_CUE_TERMS)]
@@ -1040,6 +1440,12 @@ BUILDERS: Final[dict[str, Callable[[str], tuple[dict[str, object], dict[str, obj
 
 
 def build_public_artifacts() -> tuple[list[dict[str, object]], list[dict[str, object]], dict[str, object]]:
+    """Build the full tracked public split and its derived report.
+
+    Returns:
+        The public rows, public answers, and public quality report.
+
+    """
     rows: list[dict[str, object]] = []
     answers: list[dict[str, object]] = []
     episode_number = 1
@@ -1067,6 +1473,15 @@ def build_public_artifacts() -> tuple[list[dict[str, object]], list[dict[str, ob
 
 
 def build_public_quality_report(rows: list[dict[str, object]]) -> dict[str, object]:
+    """Build the aggregate quality report for the public split.
+
+    Args:
+        rows: Public split rows to summarize.
+
+    Returns:
+        The public quality report payload.
+
+    """
     task_counts = Counter(str(row["analysis"]["suite_task_id"]) for row in rows)
     difficulty_counts = Counter(str(row["analysis"]["difficulty_bin"]) for row in rows)
     structure_counts = Counter(str(row["analysis"]["structure_family_id"]) for row in rows)
@@ -1115,10 +1530,26 @@ def build_public_quality_report(rows: list[dict[str, object]]) -> dict[str, obje
 
 
 def write_json(path: Path, payload: object) -> None:
+    """Write a JSON payload with stable formatting.
+
+    Args:
+        path: Destination file path.
+        payload: JSON-serializable payload to write.
+
+    Returns:
+        None.
+
+    """
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
 def main() -> None:
+    """Regenerate the tracked public dataset artifacts.
+
+    Returns:
+        None.
+
+    """
     rows, _answers, report = build_public_artifacts()
     write_json(PUBLIC_ROWS_PATH, rows)
     write_json(PUBLIC_QUALITY_REPORT_PATH, report)

@@ -48,6 +48,15 @@ from scripts.verify_cogflex import (
 def _load_bundle_payloads(
     bundle_paths: dict[str, Path],
 ) -> tuple[list[dict[str, object]], dict[str, object], dict[str, object], dict[str, object], dict[str, object]]:
+    """Load the private bundle JSON artifacts used by verification tests.
+
+    Args:
+        bundle_paths: Mapping from logical bundle names to artifact paths.
+
+    Returns:
+        The parsed rows, answer key, predictions, manifest, and quality report.
+
+    """
     return (
         json.loads(bundle_paths["rows"].read_text(encoding="utf-8")),
         json.loads(bundle_paths["answer_key"].read_text(encoding="utf-8")),
@@ -65,6 +74,20 @@ def _write_bundle_payloads(
     manifest: dict[str, object],
     quality: dict[str, object],
 ) -> None:
+    """Rewrite bundle fixtures and refresh manifest hashes for tests.
+
+    Args:
+        bundle_paths: Mapping from logical bundle names to artifact paths.
+        rows: Replacement private rows payload.
+        answer_key: Replacement private answer key payload.
+        predictions: Replacement calibration predictions payload.
+        manifest: Replacement release manifest payload.
+        quality: Replacement private quality report payload.
+
+    Returns:
+        None.
+
+    """
     bundle_paths["rows"].write_text(json.dumps(rows, indent=2) + "\n", encoding="utf-8")
     bundle_paths["answer_key"].write_text(json.dumps(answer_key, indent=2) + "\n", encoding="utf-8")
     bundle_paths["predictions"].write_text(json.dumps(predictions, indent=2) + "\n", encoding="utf-8")

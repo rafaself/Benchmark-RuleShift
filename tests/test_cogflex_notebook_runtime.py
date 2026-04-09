@@ -27,6 +27,12 @@ class _BenchStub:
 
 
 def _load_code_cells() -> dict[str, str]:
+    """Load notebook code cells keyed by notebook cell ID.
+
+    Returns:
+        A mapping from notebook cell IDs to the concatenated code in each cell.
+
+    """
     notebook = _load_notebook()
     return {
         cell["id"]: "".join(cell["source"])
@@ -36,10 +42,22 @@ def _load_code_cells() -> dict[str, str]:
 
 
 def _load_notebook() -> dict[str, object]:
+    """Load the CogFlex notebook JSON payload from disk.
+
+    Returns:
+        The parsed notebook document.
+
+    """
     return json.loads(NOTEBOOK_PATH.read_text(encoding="utf-8"))
 
 
 def load_bootstrap_namespace() -> dict[str, object]:
+    """Execute the notebook bootstrap cell inside a controlled test namespace.
+
+    Returns:
+        The namespace populated by the bootstrap cell execution.
+
+    """
     code_cells = _load_code_cells()
     fake_kbench = types.ModuleType("kaggle_benchmarks")
     fake_kbench.task = _BenchStub.task
@@ -67,6 +85,12 @@ def load_bootstrap_namespace() -> dict[str, object]:
 
 
 def load_notebook_namespace() -> dict[str, object]:
+    """Execute the notebook runtime support cells for test reuse.
+
+    Returns:
+        The namespace populated with the notebook runtime helpers.
+
+    """
     code_cells = _load_code_cells()
     fake_kbench = types.ModuleType("kaggle_benchmarks")
     fake_kbench.task = _BenchStub.task

@@ -108,10 +108,25 @@ PRIVATE_GENERATOR_FAMILY_BY_STRUCTURE = {
 
 
 def public_fixture() -> tuple[list[dict[str, object]], list[dict[str, object]], dict[str, object]]:
+    """Return the tracked public artifacts used as a private-bundle fixture.
+
+    Returns:
+        The generated public rows, answers, and quality report.
+
+    """
     return build_public_artifacts()
 
 
 def private_row_summary(rows: list[dict[str, object]]) -> dict[str, object]:
+    """Summarize the private rows for reporting and verification.
+
+    Args:
+        rows: Private dataset rows to inspect.
+
+    Returns:
+        Aggregate counts and stimulus-space statistics for the provided rows.
+
+    """
     difficulty_counts = Counter(str(row["analysis"]["difficulty_bin"]) for row in rows)
     structure_counts = Counter(str(row["analysis"]["structure_family_id"]) for row in rows)
     turn_counts = Counter(len(row["inference"]["turns"]) for row in rows)
@@ -158,6 +173,18 @@ def _build_private_episode(
     structure_family_id: str,
     variant: int,
 ) -> tuple[dict[str, object], dict[str, object]]:
+    """Build one private episode row and its matching answer payload.
+
+    Args:
+        episode_id: Stable episode identifier to assign.
+        suite_task_id: Suite task represented by the episode.
+        structure_family_id: Private structure family used to generate it.
+        variant: Deterministic variant index used to seed sampling.
+
+    Returns:
+        The public-style row payload and the full answer payload.
+
+    """
     seed = variant * 97 + len(episode_id) * 11
     rng = random.Random(seed)
     structure = PRIVATE_STRUCTURES[structure_family_id]
@@ -293,6 +320,17 @@ def _build_private_episode(
 
 
 def _private_generator_metadata(structure_family_id: str, suite_task_id: str) -> dict[str, str]:
+    """Build generator metadata for a private episode.
+
+    Args:
+        structure_family_id: Structure family used to generate the episode.
+        suite_task_id: Suite task associated with the episode.
+
+    Returns:
+        Generator metadata describing the private family, template, and operator
+        class.
+
+    """
     return {
         "family_id": PRIVATE_GENERATOR_FAMILY_BY_STRUCTURE[structure_family_id],
         "template_id": f"private::{structure_family_id}::{suite_task_id}",
@@ -301,6 +339,17 @@ def _private_generator_metadata(structure_family_id: str, suite_task_id: str) ->
 
 
 def _rotate_label(target: str, label_vocab: list[str], step: int) -> str:
+    """Rotate a label forward within a vocabulary.
+
+    Args:
+        target: Label to rotate.
+        label_vocab: Ordered label vocabulary.
+        step: Number of positions to rotate forward.
+
+    Returns:
+        The rotated label.
+
+    """
     label_index = label_vocab.index(target)
     return label_vocab[(label_index + step) % len(label_vocab)]
 
@@ -311,6 +360,17 @@ def _predicted_labels_for_model(
     episode_index: int,
     answer: dict[str, object],
 ) -> list[str]:
+    """Synthesize deterministic calibration predictions for one model.
+
+    Args:
+        model_name: Name of the synthetic panel model.
+        episode_index: Zero-based position of the episode in the bundle.
+        answer: Answer payload containing the target labels.
+
+    Returns:
+        The predicted labels emitted by the synthetic model.
+
+    """
     label_vocab = [str(label) for label in answer["inference"]["response_spec"]["label_vocab"]]
     targets = [str(label) for label in answer["final_probe_targets"]]
     predictions: list[str] = []
@@ -329,6 +389,15 @@ def _predicted_labels_for_model(
 
 
 def _build_private_predictions_payload(answers: list[dict[str, object]]) -> dict[str, object]:
+    """Build the private calibration predictions payload.
+
+    Args:
+        answers: Answer-key episodes used as prediction targets.
+
+    Returns:
+        A predictions payload containing synthetic outputs for each panel model.
+
+    """
     return {
         "version": PRIVATE_CALIBRATION_PREDICTIONS_VERSION,
         "split": "private",
@@ -353,6 +422,15 @@ def _build_private_predictions_payload(answers: list[dict[str, object]]) -> dict
 
 
 def write_private_bundle(bundle_dir: Path) -> dict[str, Path]:
+    """Write the complete private bundle and all derived artifacts.
+
+    Args:
+        bundle_dir: Output directory for the private bundle artifacts.
+
+    Returns:
+        A mapping from artifact names to the written file paths.
+
+    """
     bundle_dir.mkdir(parents=True, exist_ok=True)
     rows: list[dict[str, object]] = []
     answers: list[dict[str, object]] = []

@@ -11,7 +11,18 @@ from scripts.build_cogflex_dataset import PRIVATE_DATASET_ID, dataset_metadata  
 from scripts.private_cogflex_bundle import write_private_bundle  # noqa: E402
 
 PRIVATE_DATASET_DIR = ROOT / "kaggle/dataset/private"
+
+
 def build_private_bundle(output_dir: Path = PRIVATE_DATASET_DIR) -> dict[str, Path]:
+    """Build the private CogFlex dataset bundle on disk.
+
+    Args:
+        output_dir: Directory where the private bundle files should be written.
+
+    Returns:
+        A mapping from bundle artifact names to the paths written on disk.
+
+    """
     output_dir.mkdir(parents=True, exist_ok=True)
     bundle_paths = write_private_bundle(output_dir)
     metadata_path = output_dir / "dataset-metadata.json"
@@ -26,6 +37,12 @@ def build_private_bundle(output_dir: Path = PRIVATE_DATASET_DIR) -> dict[str, Pa
 
 
 def main() -> None:
+    """Build the default private dataset bundle.
+
+    Returns:
+        None.
+
+    """
     build_private_bundle()
 
 
