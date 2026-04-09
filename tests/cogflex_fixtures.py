@@ -28,6 +28,7 @@ from scripts.build_cogflex_dataset import (
     enumerate_items,
     make_three_label_rule,
     make_two_label_rule,
+    sample_mixed_route_examples,
     sample_for_rule,
 )
 from scripts.verify_cogflex import build_private_quality_report
@@ -92,6 +93,7 @@ PRIVATE_STRUCTURES = {
     "competitive_rule_switch": EpisodeStructure("competitive_rule_switch", (3, 3, 3), 6),
     "latent_rebinding": EpisodeStructure("latent_rebinding", (4, 2, 3), 5),
     "variable_evidence_budget": EpisodeStructure("variable_evidence_budget", (2, 5), 7),
+    "interleaved_context_rebinding": EpisodeStructure("interleaved_context_rebinding", (2, 2, 2, 2), 6),
 }
 PRIVATE_PANEL_MODEL_NAMES = ("panel-model-a", "panel-model-b", "panel-model-c")
 
@@ -101,6 +103,7 @@ PRIVATE_GENERATOR_FAMILY_BY_STRUCTURE = {
     "competitive_rule_switch": "private::competition_family",
     "latent_rebinding": "private::rebinding_family",
     "variable_evidence_budget": "private::budget_family",
+    "interleaved_context_rebinding": "private::interleaved_rebinding_family",
 }
 
 
@@ -170,6 +173,56 @@ def _build_private_episode(
     used: set[tuple[object, ...]] = set()
     turn_items: list[list[dict[str, object]]] = []
     prompts: list[str] = []
+
+    if structure_family_id == "interleaved_context_rebinding":
+        context_terms = ("mesa", "fjord")
+        prompts = [
+            "Use the context tag to track which routing rule generated each labeled example.",
+            "Keep both context-specific routing hypotheses active as more interleaved evidence arrives.",
+            "Reconcile the alternating contexts without dropping either routing rule.",
+            "Use the interleaved contexts to maintain the current routing map.",
+            "Classify each probe using its context to select the implied routing behavior.",
+        ]
+        for evidence_index, count in enumerate(structure.evidence_counts):
+            mixed = sample_mixed_route_examples(
+                rng,
+                PRIVATE_DOMAIN,
+                [
+                    (context_terms[0], initial_rule, "primary"),
+                    (context_terms[1], shift_rule, "secondary"),
+                ],
+                count,
+                route_key="context",
+                exclude=used,
+            )
+            used.update(
+                tuple((key, item[key]) for key in sorted(item) if key not in {"context", "index", "label", "rule_id"})
+                for item in mixed
+            )
+            turn_items.append(mixed)
+        probes = sample_mixed_route_examples(
+            rng,
+            PRIVATE_DOMAIN,
+            [
+                (context_terms[0], initial_rule, "primary"),
+                (context_terms[1], shift_rule, "secondary"),
+            ],
+            structure.probe_count,
+            route_key="context",
+            exclude=used,
+        )
+        turn_items.append(probes)
+        row, answer = build_episode_payload(
+            episode_id,
+            suite_task_id=suite_task_id,
+            structure=structure,
+            label_vocab=label_vocab,
+            turn_prompts=prompts,
+            turn_items=turn_items,
+        )
+        row["analysis"]["structure_family_id"] = structure_family_id
+        answer["analysis"]["structure_family_id"] = structure_family_id
+        return row, answer
 
     for evidence_index, count in enumerate(structure.evidence_counts):
         prompts.append(

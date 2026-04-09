@@ -12,6 +12,7 @@ from scripts.build_cogflex_dataset import (
     PUBLIC_DIFFICULTY_CALIBRATION_PATH,
     PUBLIC_QUALITY_REPORT_PATH,
     PUBLIC_ROWS_PATH,
+    REQUIRED_PRIVATE_STRUCTURE_FAMILY_IDS,
     SUITE_TASKS,
     TASK_NAME,
     build_public_artifacts,
@@ -150,6 +151,13 @@ class CogflexDatasetGenerationTests(unittest.TestCase):
             )
             for key in ("rows", "answer_key", "predictions", "quality", "manifest", "metadata"):
                 self.assertTrue(bundle_paths[key].exists(), key)
+            rows = json.loads(bundle_paths["rows"].read_text(encoding="utf-8"))
+            self.assertEqual(len(rows), len(REQUIRED_PRIVATE_STRUCTURE_FAMILY_IDS) * len(SUITE_TASKS))
+            structure_counts = Counter(row["analysis"]["structure_family_id"] for row in rows)
+            self.assertEqual(
+                structure_counts,
+                Counter({structure_family_id: len(SUITE_TASKS) for structure_family_id in REQUIRED_PRIVATE_STRUCTURE_FAMILY_IDS}),
+            )
 
     def test_makefile_and_kernel_metadata_point_to_cogflex_assets(self) -> None:
         makefile = MAKEFILE_PATH.read_text(encoding="utf-8")

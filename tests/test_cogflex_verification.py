@@ -12,6 +12,7 @@ from scripts.build_cogflex_dataset import (
     PRIVATE_CALIBRATION_PREDICTIONS_FILENAME,
     PRIVATE_QUALITY_REPORT_VERSION,
     PRIVATE_RELEASE_MANIFEST_FILENAME,
+    REQUIRED_PRIVATE_STRUCTURE_FAMILY_IDS,
     compute_sha256,
     empirical_difficulty_entries_from_predictions,
     public_generator_reference,
@@ -94,6 +95,15 @@ class CogflexVerificationTests(unittest.TestCase):
             bundle_dir = Path(tmpdir) / "bundle"
             write_private_bundle(bundle_dir)
             verify_private_bundle(bundle_dir)
+
+    def test_private_bundle_quality_report_covers_all_required_structure_families(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            bundle_paths = write_private_bundle(Path(tmpdir) / "bundle")
+            quality = json.loads(bundle_paths["quality"].read_text(encoding="utf-8"))
+        self.assertEqual(
+            quality["structure_family_counts"],
+            {structure_family_id: 4 for structure_family_id in sorted(REQUIRED_PRIVATE_STRUCTURE_FAMILY_IDS)},
+        )
 
     def test_verify_public_difficulty_calibration_rejects_mismatch(self) -> None:
         public_rows, _answers, _report = public_fixture()
@@ -341,7 +351,7 @@ class CogflexVerificationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             bundle_paths = write_private_bundle(Path(tmpdir) / "bundle")
             rows, answer_key, predictions, manifest, quality = _load_bundle_payloads(bundle_paths)
-            target_family = next(iter(quality["structure_family_counts"]))
+            target_family = "interleaved_context_rebinding"
             rows = [row for row in rows if row["analysis"]["structure_family_id"] != target_family]
             answer_key["episodes"] = [
                 episode for episode in answer_key["episodes"] if episode["structure_family_id"] != target_family

@@ -116,6 +116,7 @@ Validation covers:
   - `competitive_rule_switch`
   - `latent_rebinding`
   - `variable_evidence_budget`
+  - `interleaved_context_rebinding`
 - private quality report coverage:
   - `structure_family_counts`
   - `turn_count_distribution`

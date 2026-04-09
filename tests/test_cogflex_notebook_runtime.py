@@ -167,7 +167,7 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
             bundle_dir = Path(tmpdir) / "bundle"
             bundle_paths = write_private_bundle(bundle_dir)
             loaded_rows = self.namespace["_load_rows"](bundle_paths["rows"])
-        self.assertEqual(len(loaded_rows), 20)
+        self.assertEqual(len(loaded_rows), 24)
         self.assertNotIn("scoring", loaded_rows[0])
         self.namespace["EVAL_SPLIT"] = "public"
 

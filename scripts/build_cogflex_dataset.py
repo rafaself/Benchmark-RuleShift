@@ -79,6 +79,7 @@ REQUIRED_PRIVATE_STRUCTURE_FAMILY_IDS: Final[tuple[str, ...]] = (
     "competitive_rule_switch",
     "latent_rebinding",
     "variable_evidence_budget",
+    "interleaved_context_rebinding",
 )
 
 PRIVATE_GENERATOR_OPERATOR_CLASS_BY_STRUCTURE: Final[dict[str, str]] = {
@@ -87,6 +88,7 @@ PRIVATE_GENERATOR_OPERATOR_CLASS_BY_STRUCTURE: Final[dict[str, str]] = {
     "competitive_rule_switch": "competitive_rule_switch",
     "latent_rebinding": "latent_rebinding",
     "variable_evidence_budget": "variable_evidence_budget",
+    "interleaved_context_rebinding": "interleaved_context_rebinding",
 }
 
 SUPPORTED_OPERATOR_CLASSES: Final[tuple[str, ...]] = tuple(
