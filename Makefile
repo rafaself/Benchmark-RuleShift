@@ -1,19 +1,27 @@
+PYTHON ?= python3
+JUPYTER ?= jupyter
+
 .PHONY: notelab test build-private verify-public verify-private deploy-dataset deploy-private-dataset deploy-notebook deploy-all
 
 notelab:
-	.venv/bin/jupyter lab --no-browser kaggle/notebook/cogflex_notebook_task.ipynb
+	$(JUPYTER) lab --no-browser kaggle/notebook/cogflex_notebook_task.ipynb
 
 test:
-	.venv/bin/python -m unittest discover -s tests -q
+	$(PYTHON) -m unittest discover -s tests -q
 
 build-private:
-	.venv/bin/python -m scripts.build_private_cogflex_dataset
+	$(PYTHON) -m scripts.build_private_cogflex_dataset
 
 verify-public:
-	.venv/bin/python -m scripts.verify_cogflex --split public
+	$(PYTHON) -m scripts.verify_cogflex --split public
 
 verify-private:
-	.venv/bin/python -m scripts.verify_cogflex --split private
+	@if [ -z "$(COGFLEX_PRIVATE_BUNDLE_DIR)" ]; then \
+		echo "COGFLEX_PRIVATE_BUNDLE_DIR is required for verify-private" >&2; \
+		echo "Example: COGFLEX_PRIVATE_BUNDLE_DIR=/abs/path/to/private-bundle make verify-private" >&2; \
+		exit 1; \
+	fi
+	$(PYTHON) -m scripts.verify_cogflex --split private
 
 deploy-dataset:
 	./scripts/deploy_dataset.sh

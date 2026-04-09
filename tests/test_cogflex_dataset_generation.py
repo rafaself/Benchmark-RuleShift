@@ -161,8 +161,12 @@ class CogflexDatasetGenerationTests(unittest.TestCase):
 
     def test_makefile_and_kernel_metadata_point_to_cogflex_assets(self) -> None:
         makefile = MAKEFILE_PATH.read_text(encoding="utf-8")
-        self.assertIn(".venv/bin/python -m scripts.verify_cogflex --split public", makefile)
-        self.assertIn(".venv/bin/python -m scripts.verify_cogflex --split private", makefile)
+        self.assertIn("PYTHON ?= python3", makefile)
+        self.assertIn("JUPYTER ?= jupyter", makefile)
+        self.assertIn("$(JUPYTER) lab --no-browser kaggle/notebook/cogflex_notebook_task.ipynb", makefile)
+        self.assertIn("$(PYTHON) -m scripts.verify_cogflex --split public", makefile)
+        self.assertIn("$(PYTHON) -m scripts.verify_cogflex --split private", makefile)
+        self.assertIn("COGFLEX_PRIVATE_BUNDLE_DIR is required for verify-private", makefile)
         self.assertIn("cogflex_notebook_task.ipynb", makefile)
         metadata = json.loads(KERNEL_METADATA_PATH.read_text(encoding="utf-8"))
         self.assertEqual(metadata["id"], NOTEBOOK_ID)
