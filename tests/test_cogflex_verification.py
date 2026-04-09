@@ -8,10 +8,16 @@ from pathlib import Path
 
 from cogflex_fixtures import _private_row_summary, public_fixture, write_private_bundle
 from scripts.build_cogflex_dataset import (
+    PRIVATE_ANSWER_KEY_FILENAME,
     PRIVATE_BUNDLE_VERSION,
     PRIVATE_CALIBRATION_PREDICTIONS_FILENAME,
+    PRIVATE_QUALITY_REPORT_FILENAME,
     PRIVATE_QUALITY_REPORT_VERSION,
     PRIVATE_RELEASE_MANIFEST_FILENAME,
+    PRIVATE_ROWS_FILENAME,
+    PUBLIC_DIFFICULTY_CALIBRATION_PATH,
+    PUBLIC_QUALITY_REPORT_PATH,
+    PUBLIC_ROWS_PATH,
     REQUIRED_PRIVATE_STRUCTURE_FAMILY_IDS,
     compute_sha256,
     empirical_difficulty_entries_from_predictions,
@@ -77,6 +83,35 @@ class CogflexVerificationTests(unittest.TestCase):
         self.assertIn("turn_count_distribution", payload)
         self.assertIn("probe_count_distribution", payload)
 
+    def test_verify_public_split_emits_audit_report(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir, contextlib.redirect_stdout(io.StringIO()) as stdout:
+            audit_path = Path(tmpdir) / "public-audit.json"
+            verify_public_split(emit_audit_report=audit_path)
+            audit_payload = json.loads(audit_path.read_text(encoding="utf-8"))
+        payload = json.loads(stdout.getvalue())
+        self.assertEqual(payload["split"], "public")
+        self.assertEqual(audit_payload["split"], "public")
+        self.assertEqual(audit_payload["verification_result"], "passed")
+        self.assertEqual(audit_payload["summary"], {"row_count": 120})
+        self.assertEqual(
+            audit_payload["artifact_digests"],
+            {
+                PUBLIC_ROWS_PATH.name: compute_sha256(PUBLIC_ROWS_PATH),
+                PUBLIC_QUALITY_REPORT_PATH.name: compute_sha256(PUBLIC_QUALITY_REPORT_PATH),
+                PUBLIC_DIFFICULTY_CALIBRATION_PATH.name: compute_sha256(PUBLIC_DIFFICULTY_CALIBRATION_PATH),
+            },
+        )
+        self.assertEqual(
+            audit_payload["checks_executed"],
+            [
+                "schema",
+                "difficulty_calibration",
+                "public_rows_reproducibility",
+                "public_quality_report_reproducibility",
+                "public_quality_report_consistency",
+            ],
+        )
+
     def test_attach_private_scoring_accepts_inference_only_rows(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             bundle_paths = write_private_bundle(Path(tmpdir) / "bundle")
@@ -95,6 +130,47 @@ class CogflexVerificationTests(unittest.TestCase):
             bundle_dir = Path(tmpdir) / "bundle"
             write_private_bundle(bundle_dir)
             verify_private_bundle(bundle_dir)
+
+    def test_verify_private_bundle_emits_safe_audit_report(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir, contextlib.redirect_stdout(io.StringIO()):
+            bundle_dir = Path(tmpdir) / "bundle"
+            audit_path = Path(tmpdir) / "private-audit.json"
+            bundle_paths = write_private_bundle(bundle_dir)
+            verify_private_bundle(bundle_dir, emit_audit_report=audit_path)
+            audit_payload = json.loads(audit_path.read_text(encoding="utf-8"))
+            manifest = json.loads(bundle_paths["manifest"].read_text(encoding="utf-8"))
+        self.assertEqual(audit_payload["split"], "private")
+        self.assertEqual(audit_payload["verification_result"], "passed")
+        self.assertEqual(audit_payload["summary"], {"row_count": 24})
+        self.assertEqual(
+            audit_payload["artifact_digests"],
+            {
+                PRIVATE_ROWS_FILENAME: manifest["sha256"][PRIVATE_ROWS_FILENAME],
+                PRIVATE_ANSWER_KEY_FILENAME: manifest["sha256"][PRIVATE_ANSWER_KEY_FILENAME],
+                PRIVATE_CALIBRATION_PREDICTIONS_FILENAME: manifest["sha256"][PRIVATE_CALIBRATION_PREDICTIONS_FILENAME],
+                PRIVATE_QUALITY_REPORT_FILENAME: manifest["sha256"][PRIVATE_QUALITY_REPORT_FILENAME],
+            },
+        )
+        self.assertEqual(
+            audit_payload["checks_executed"],
+            [
+                "schema",
+                "answer_key_consistency",
+                "calibration_predictions",
+                "empirical_difficulty",
+                "release_manifest_digests",
+                "private_quality_report_schema",
+                "private_quality_report_reproducibility",
+                "public_private_split_isolation",
+                "generator_non_overlap",
+                "required_structure_family_coverage",
+            ],
+        )
+        audit_text = json.dumps(audit_payload, sort_keys=True)
+        self.assertNotIn("answer_key_label_counts", audit_text)
+        self.assertNotIn("generator_isolation_summary", audit_text)
+        self.assertNotIn("template_ids", audit_text)
+        self.assertNotIn("family_ids", audit_text)
 
     def test_private_bundle_quality_report_covers_all_required_structure_families(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

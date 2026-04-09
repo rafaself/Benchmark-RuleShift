@@ -215,6 +215,18 @@ Verify an external private bundle:
 COGFLEX_PRIVATE_BUNDLE_DIR=/abs/path/to/private-bundle make verify-private
 ```
 
+Emit a compact audit report for a clean verification run:
+
+Use a clean git worktree if you want the recorded `git_commit` to match the verified tree state exactly. The audit artifact is success-only and intentionally excludes hidden private benchmark contents.
+
+```bash
+python3 -m scripts.verify_cogflex --split public --emit-audit-report /tmp/cogflex-public-audit.json
+```
+
+```bash
+COGFLEX_PRIVATE_BUNDLE_DIR=/abs/path/to/private-bundle python3 -m scripts.verify_cogflex --split private --emit-audit-report /tmp/cogflex-private-audit.json
+```
+
 Deploy the local private bundle from `kaggle/dataset/private`:
 
 ```bash

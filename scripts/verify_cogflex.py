@@ -5,7 +5,9 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import subprocess
 from collections import Counter
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Final
 
@@ -50,12 +52,87 @@ from scripts.build_cogflex_dataset import (  # noqa: E402
 EXPECTED_PUBLIC_ROW_COUNT: Final[int] = len(SUITE_TASKS) * PUBLIC_EPISODES_PER_TASK
 PRIVATE_NEAR_DUPLICATE_OVERLAP_THRESHOLD: Final[float] = 0.9
 PRIVATE_PANEL_MODEL_COUNT: Final[int] = 3
+AUDIT_REPORT_VERSION: Final[int] = 1
+AUDIT_VERIFIER_VERSION: Final[str] = "audit-v1"
+REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[1]
 ATTACK_SUITE_DIMENSIONS: Final[tuple[str, ...]] = (
     "difficulty_bin",
     "shift_mode",
     "structure_family_id",
     "suite_task_id",
 )
+PUBLIC_AUDIT_CHECKS: Final[tuple[str, ...]] = (
+    "schema",
+    "difficulty_calibration",
+    "public_rows_reproducibility",
+    "public_quality_report_reproducibility",
+    "public_quality_report_consistency",
+)
+PRIVATE_AUDIT_CHECKS: Final[tuple[str, ...]] = (
+    "schema",
+    "answer_key_consistency",
+    "calibration_predictions",
+    "empirical_difficulty",
+    "release_manifest_digests",
+    "private_quality_report_schema",
+    "private_quality_report_reproducibility",
+    "public_private_split_isolation",
+    "generator_non_overlap",
+    "required_structure_family_coverage",
+)
+
+
+def _utc_timestamp() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def _resolve_git_commit() -> str | None:
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except OSError:
+        return None
+    commit = result.stdout.strip()
+    if result.returncode != 0 or len(commit) != 40:
+        return None
+    return commit
+
+
+def write_audit_report(
+    report_path: Path,
+    *,
+    split: str,
+    artifact_digests: dict[str, str],
+    checks_executed: tuple[str, ...],
+    summary: dict[str, object],
+) -> None:
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_text(
+        json.dumps(
+            {
+                "audit_report_version": AUDIT_REPORT_VERSION,
+                "verifier": {
+                    "script": "scripts.verify_cogflex",
+                    "version": AUDIT_VERIFIER_VERSION,
+                },
+                "git_commit": _resolve_git_commit(),
+                "split": split,
+                "timestamp_utc": _utc_timestamp(),
+                "verification_result": "passed",
+                "artifact_digests": dict(sorted(artifact_digests.items())),
+                "checks_executed": list(checks_executed),
+                "summary": summary,
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
 
 
 def normalize_labels(values: object, label_vocab: list[str]) -> tuple[str, ...] | None:
@@ -667,7 +744,7 @@ def verify_public_report(payload: dict[str, object], rows: list[dict[str, object
     }
 
 
-def verify_public_split() -> None:
+def verify_public_split(*, emit_audit_report: Path | None = None) -> None:
     rows = load_rows(PUBLIC_ROWS_PATH)
     schema_summary = verify_schema(rows, "public")
     calibration_summary = verify_public_difficulty_calibration(rows)
@@ -678,6 +755,18 @@ def verify_public_split() -> None:
     if tracked_report != report:
         raise RuntimeError("public quality report is not reproducible from the generator")
     report_summary = verify_public_report(tracked_report, rows)
+    if emit_audit_report is not None:
+        write_audit_report(
+            emit_audit_report,
+            split="public",
+            artifact_digests={
+                PUBLIC_ROWS_PATH.name: compute_sha256(PUBLIC_ROWS_PATH),
+                PUBLIC_QUALITY_REPORT_PATH.name: compute_sha256(PUBLIC_QUALITY_REPORT_PATH),
+                PUBLIC_DIFFICULTY_CALIBRATION_PATH.name: compute_sha256(PUBLIC_DIFFICULTY_CALIBRATION_PATH),
+            },
+            checks_executed=PUBLIC_AUDIT_CHECKS,
+            summary={"row_count": len(rows)},
+        )
     print(
         json.dumps(
             {
@@ -999,7 +1088,7 @@ def verify_quality_report(path: Path) -> dict[str, object]:
     return payload
 
 
-def verify_private_bundle(bundle_dir: Path) -> None:
+def verify_private_bundle(bundle_dir: Path, *, emit_audit_report: Path | None = None) -> None:
     bundle_paths = private_bundle_paths(bundle_dir)
     missing = [name for name, path in bundle_paths.items() if not path.exists()]
     if missing:
@@ -1011,7 +1100,7 @@ def verify_private_bundle(bundle_dir: Path) -> None:
     predictions = load_private_calibration_predictions(bundle_paths["predictions"])
     prediction_models = verify_private_calibration_predictions(predictions, private_rows, _episode_targets)
     verify_private_empirical_difficulty(private_rows, answer_key, prediction_models, _episode_targets)
-    verify_manifest(bundle_paths["manifest"], bundle_paths)
+    manifest = verify_manifest(bundle_paths["manifest"], bundle_paths)
     quality_report = verify_quality_report(bundle_paths["quality"])
     public_rows = load_rows(PUBLIC_ROWS_PATH)
     expected_quality_report = build_private_quality_report(
@@ -1043,6 +1132,22 @@ def verify_private_bundle(bundle_dir: Path) -> None:
     ]
     if missing_families:
         raise RuntimeError(f"private quality report is missing required structure families: {missing_families}")
+    if emit_audit_report is not None:
+        manifest_digests = manifest.get("sha256")
+        if not isinstance(manifest_digests, dict):
+            raise RuntimeError("private release manifest must expose sha256 digests")
+        write_audit_report(
+            emit_audit_report,
+            split="private",
+            artifact_digests={
+                PRIVATE_ROWS_FILENAME: str(manifest_digests[PRIVATE_ROWS_FILENAME]),
+                PRIVATE_ANSWER_KEY_FILENAME: str(manifest_digests[PRIVATE_ANSWER_KEY_FILENAME]),
+                PRIVATE_CALIBRATION_PREDICTIONS_FILENAME: str(manifest_digests[PRIVATE_CALIBRATION_PREDICTIONS_FILENAME]),
+                PRIVATE_QUALITY_REPORT_FILENAME: str(manifest_digests[PRIVATE_QUALITY_REPORT_FILENAME]),
+            },
+            checks_executed=PRIVATE_AUDIT_CHECKS,
+            summary={"row_count": len(private_rows)},
+        )
     print(
         json.dumps(
             {
@@ -1063,11 +1168,16 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--split", choices=("public", "private"), required=True)
     parser.add_argument("--private-bundle-dir")
+    parser.add_argument("--emit-audit-report")
     args = parser.parse_args()
+    audit_report_path = Path(args.emit_audit_report).expanduser() if args.emit_audit_report else None
     if args.split == "public":
-        verify_public_split()
+        verify_public_split(emit_audit_report=audit_report_path)
         return
-    verify_private_bundle(resolve_private_bundle_dir(args.private_bundle_dir))
+    verify_private_bundle(
+        resolve_private_bundle_dir(args.private_bundle_dir),
+        emit_audit_report=audit_report_path,
+    )
 
 
 if __name__ == "__main__":
