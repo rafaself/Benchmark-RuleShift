@@ -27,12 +27,16 @@ class _BenchStub:
 
 
 def _load_code_cells() -> dict[str, str]:
-    notebook = json.loads(NOTEBOOK_PATH.read_text(encoding="utf-8"))
+    notebook = _load_notebook()
     return {
         cell["id"]: "".join(cell["source"])
         for cell in notebook["cells"]
         if cell["cell_type"] == "code"
     }
+
+
+def _load_notebook() -> dict[str, object]:
+    return json.loads(NOTEBOOK_PATH.read_text(encoding="utf-8"))
 
 
 def load_bootstrap_namespace() -> dict[str, object]:
@@ -153,6 +157,43 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
         code_cells = _load_code_cells()
         self.assertIn("cell-choose", code_cells)
         self.assertIn("%choose cogflex_suite_flexible", code_cells["cell-choose"])
+
+    def test_notebook_starts_with_a_markdown_overview_cell(self) -> None:
+        notebook = _load_notebook()
+        self.assertEqual(notebook["cells"][0]["cell_type"], "markdown")
+
+    def test_every_code_cell_has_an_immediately_preceding_markdown_cell(self) -> None:
+        notebook = _load_notebook()
+        for index, cell in enumerate(notebook["cells"]):
+            if cell["cell_type"] != "code":
+                continue
+            self.assertGreater(index, 0, msg=f"code cell {cell['id']} should not be first")
+            self.assertEqual(
+                notebook["cells"][index - 1]["cell_type"],
+                "markdown",
+                msg=f"code cell {cell['id']} should have a markdown cell immediately before it",
+            )
+
+    def test_notebook_preserves_expected_code_cell_ids_in_refactored_flow(self) -> None:
+        notebook = _load_notebook()
+        code_cell_ids = [cell["id"] for cell in notebook["cells"] if cell["cell_type"] == "code"]
+        self.assertEqual(
+            code_cell_ids,
+            [
+                "cell-bootstrap",
+                "cell-runtime-types",
+                "cell-runtime-normalize",
+                "cell-runtime-load",
+                "cell-runtime-score",
+                "cell-task",
+                "cell-choose",
+            ],
+        )
+
+    def test_choose_cell_remains_the_last_code_cell(self) -> None:
+        notebook = _load_notebook()
+        code_cell_ids = [cell["id"] for cell in notebook["cells"] if cell["cell_type"] == "code"]
+        self.assertEqual(code_cell_ids[-1], "cell-choose")
 
     def test_notebook_task_description_uses_cognitive_flexibility_framing(self) -> None:
         code_cells = _load_code_cells()
