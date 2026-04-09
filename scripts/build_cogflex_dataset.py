@@ -1120,7 +1120,7 @@ def main() -> None:
     rows, _answers, report = build_public_artifacts()
     write_json(PUBLIC_ROWS_PATH, rows)
     write_json(PUBLIC_QUALITY_REPORT_PATH, report)
-    write_json(PUBLIC_METADATA_PATH, dataset_metadata(PUBLIC_DATASET_ID, "CogFlex Flexible Suite Runtime"))
+    write_json(PUBLIC_METADATA_PATH, dataset_metadata(PUBLIC_DATASET_ID, "CogFlex Cognitive Flexibility Runtime"))
 
 
 if __name__ == "__main__":

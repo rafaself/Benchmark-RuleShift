@@ -1,6 +1,6 @@
 # CogFlex Suite Benchmark
 
-Kaggle-oriented benchmark project for a flexible executive-functions suite:
+Kaggle-oriented benchmark project for cognitive flexibility within executive functions:
 
 - faculty: `executive_functions/cognitive_flexibility`
 - benchmark form: multi-turn suite evaluation

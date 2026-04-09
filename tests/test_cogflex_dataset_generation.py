@@ -133,10 +133,10 @@ class CogflexDatasetGenerationTests(unittest.TestCase):
 
     def test_public_dataset_metadata_payload_matches_expected_id(self) -> None:
         self.assertEqual(
-            dataset_metadata(PUBLIC_DATASET_ID, "CogFlex Flexible Suite Runtime"),
+            dataset_metadata(PUBLIC_DATASET_ID, "CogFlex Cognitive Flexibility Runtime"),
             {
                 "id": "raptorengineer/cogflex-suite-runtime",
-                "title": "CogFlex Flexible Suite Runtime",
+                "title": "CogFlex Cognitive Flexibility Runtime",
                 "licenses": [{"name": "CC0-1.0"}],
             },
         )
@@ -162,6 +162,7 @@ class CogflexDatasetGenerationTests(unittest.TestCase):
 
     def test_readme_references_flexible_contract(self) -> None:
         readme = README_PATH.read_text(encoding="utf-8")
+        self.assertIn("cognitive flexibility within executive functions", readme)
         self.assertIn(TASK_NAME, readme)
         self.assertIn("turn_specs", readme)
         self.assertIn("response_spec", readme)

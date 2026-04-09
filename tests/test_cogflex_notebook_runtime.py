@@ -154,6 +154,13 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
         self.assertIn("cell-choose", code_cells)
         self.assertIn("%choose cogflex_suite_flexible", code_cells["cell-choose"])
 
+    def test_notebook_task_description_uses_cognitive_flexibility_framing(self) -> None:
+        code_cells = _load_code_cells()
+        self.assertIn(
+            'description="Cognitive flexibility benchmark within executive functions with variable turn structures and label vocabularies."',
+            code_cells["cell-task"],
+        )
+
     def test_load_rows_accepts_private_inference_only_split(self) -> None:
         self.namespace["EVAL_SPLIT"] = "private"
         with tempfile.TemporaryDirectory() as tmpdir, contextlib.redirect_stdout(io.StringIO()):
