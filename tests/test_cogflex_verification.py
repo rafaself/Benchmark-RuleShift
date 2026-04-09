@@ -372,6 +372,84 @@ class CogflexVerificationTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "attack_suite mismatch"):
                 verify_private_bundle(Path(tmpdir) / "bundle")
 
+    def test_build_private_quality_report_uses_present_tasks_for_attack_suite_macro(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            bundle_paths = write_private_bundle(Path(tmpdir) / "bundle")
+            rows = json.loads(bundle_paths["rows"].read_text(encoding="utf-8"))
+            answer_key = json.loads(bundle_paths["answer_key"].read_text(encoding="utf-8"))
+            predictions = json.loads(bundle_paths["predictions"].read_text(encoding="utf-8"))
+
+            quality = build_private_quality_report(rows, answer_key, predictions, public_rows=public_fixture()[0])
+
+            suite_task_summary = quality["attack_suite"]["suite_task_id"]["explicit_rule_update"]["models"][0]
+            self.assertAlmostEqual(suite_task_summary["micro_accuracy"], 0.8)
+            self.assertAlmostEqual(suite_task_summary["macro_accuracy"], 0.8)
+            self.assertEqual(
+                suite_task_summary["per_task_accuracy"],
+                {
+                    "explicit_rule_update": 0.8,
+                    "latent_rule_update": 0.0,
+                    "context_binding": 0.0,
+                    "trial_cued_switch": 0.0,
+                },
+            )
+
+            shift_mode_summary = quality["attack_suite"]["shift_mode"]["explicit_instruction"]["models"][0]
+            self.assertAlmostEqual(shift_mode_summary["micro_accuracy"], 0.8)
+            self.assertAlmostEqual(shift_mode_summary["macro_accuracy"], 0.8)
+            self.assertEqual(shift_mode_summary["per_task_accuracy"], suite_task_summary["per_task_accuracy"])
+
+    def test_build_private_quality_report_attack_suite_macro_ignores_absent_tasks_in_multi_task_slice(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            bundle_paths = write_private_bundle(Path(tmpdir) / "bundle")
+            rows, answer_key, predictions, _manifest, _quality = _load_bundle_payloads(bundle_paths)
+            keep_tasks = {"explicit_rule_update", "latent_rule_update"}
+            rows = [row for row in rows if row["analysis"]["suite_task_id"] in keep_tasks]
+            remaining_episode_ids = {row["episode_id"] for row in rows}
+            answer_key["episodes"] = [
+                episode for episode in answer_key["episodes"] if episode["episode_id"] in remaining_episode_ids
+            ]
+            for model in predictions["models"]:
+                model["episodes"] = [
+                    episode
+                    for episode in model["episodes"]
+                    if episode["episode_id"] in remaining_episode_ids
+                ]
+            normalized_models = [
+                {
+                    "name": str(model["name"]),
+                    "episodes": {
+                        str(episode["episode_id"]): tuple(str(label) for label in episode["predicted_labels"])
+                        for episode in model["episodes"]
+                    },
+                }
+                for model in predictions["models"]
+            ]
+            episode_targets = {
+                str(episode["episode_id"]): tuple(str(label) for label in episode["final_probe_targets"])
+                for episode in answer_key["episodes"]
+            }
+            difficulty_entries = empirical_difficulty_entries_from_predictions(episode_targets, normalized_models)
+            for row in rows:
+                row["analysis"]["difficulty_bin"] = str(difficulty_entries[str(row["episode_id"])]["difficulty_bin"])
+            for episode in answer_key["episodes"]:
+                episode["difficulty_bin"] = str(difficulty_entries[str(episode["episode_id"])]["difficulty_bin"])
+
+            quality = build_private_quality_report(rows, answer_key, predictions, public_rows=public_fixture()[0])
+
+            hard_summary = quality["attack_suite"]["difficulty_bin"]["hard"]["models"][0]
+            self.assertAlmostEqual(hard_summary["micro_accuracy"], 0.764706)
+            self.assertEqual(
+                hard_summary["per_task_accuracy"],
+                {
+                    "explicit_rule_update": 0.785714,
+                    "latent_rule_update": 0.666667,
+                    "context_binding": 0.0,
+                    "trial_cued_switch": 0.0,
+                },
+            )
+            self.assertAlmostEqual(hard_summary["macro_accuracy"], 0.72619)
+
     def test_verify_private_bundle_rejects_semantic_isolation_mismatch(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             bundle_paths = write_private_bundle(Path(tmpdir) / "bundle")

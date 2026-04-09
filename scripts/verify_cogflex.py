@@ -235,14 +235,16 @@ def _metrics_for_episode_subset(
             suite_task_id: _rounded_accuracy(per_task_correct[suite_task_id], per_task_total[suite_task_id])
             for suite_task_id in SUITE_TASKS
         }
+        represented_task_accuracies = [
+            per_task_accuracy[suite_task_id] for suite_task_id in SUITE_TASKS if per_task_total[suite_task_id] > 0
+        ]
         models_summary.append(
             {
                 "name": model["name"],
                 "micro_accuracy": _rounded_accuracy(model_total_correct, total_probe_count),
-                "macro_accuracy": round(
-                    sum(per_task_accuracy[suite_task_id] for suite_task_id in SUITE_TASKS) / len(SUITE_TASKS),
-                    6,
-                ),
+                "macro_accuracy": round(sum(represented_task_accuracies) / len(represented_task_accuracies), 6)
+                if represented_task_accuracies
+                else 0.0,
                 "per_task_accuracy": per_task_accuracy,
             }
         )

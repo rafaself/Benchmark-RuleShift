@@ -35,7 +35,7 @@ PRIVATE_BUNDLE_ENV_VAR = "COGFLEX_PRIVATE_BUNDLE_DIR"
 PUBLIC_BUNDLE_VERSION = "cogflex_public_v2"
 PUBLIC_DIFFICULTY_CALIBRATION_VERSION = "cogflex_public_difficulty_v1"
 PRIVATE_BUNDLE_VERSION = "cogflex_private_bundle_v4"
-PRIVATE_QUALITY_REPORT_VERSION = "cogflex_private_quality_v4"
+PRIVATE_QUALITY_REPORT_VERSION = "cogflex_private_quality_v5"
 PRIVATE_ANSWER_KEY_VERSION = "cogflex_private_answer_key_v4"
 PRIVATE_CALIBRATION_PREDICTIONS_VERSION = "cogflex_private_predictions_v3"
 
