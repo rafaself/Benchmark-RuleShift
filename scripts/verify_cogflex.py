@@ -33,10 +33,12 @@ from scripts.build_cogflex_dataset import (  # noqa: E402
     PUBLIC_EPISODES_PER_TASK,
     PUBLIC_QUALITY_REPORT_PATH,
     PUBLIC_ROWS_PATH,
+    PUBLIC_RULES,
     REQUIRED_PRIVATE_STRUCTURE_FAMILY_IDS,
     SUPPORTED_OPERATOR_CLASSES,
     SHIFT_MODES,
     SUITE_TASKS,
+    identifiability_report_for_row,
     public_generator_reference,
     empirical_difficulty_entries_from_predictions,
     load_public_difficulty_calibration,
@@ -67,6 +69,7 @@ PUBLIC_AUDIT_CHECKS: Final[tuple[str, ...]] = (
     "public_rows_reproducibility",
     "public_quality_report_reproducibility",
     "public_quality_report_consistency",
+    "identifiability",
 )
 PRIVATE_AUDIT_CHECKS: Final[tuple[str, ...]] = (
     "schema",
@@ -79,7 +82,66 @@ PRIVATE_AUDIT_CHECKS: Final[tuple[str, ...]] = (
     "public_private_split_isolation",
     "generator_non_overlap",
     "required_structure_family_coverage",
+    "identifiability",
 )
+
+
+def _private_rule_catalogue() -> dict[str, object]:
+    """Resolve the private rule catalogue used for identifiability checks.
+
+    Returns:
+        The PRIVATE_RULES catalogue exposed by ``private_cogflex_bundle``.
+
+    """
+    from scripts.private_cogflex_bundle import PRIVATE_RULES  # noqa: PLC0415
+
+    return PRIVATE_RULES
+
+
+def verify_identifiability(
+    rows: list[dict[str, object]],
+    *,
+    split: str,
+) -> dict[str, object]:
+    """Verify that every row in the split is formally identifiable.
+
+    An episode is rejected when more than one consistent hypothesis survives
+    the observed evidence and those survivors imply different final probe
+    targets. The hypothesis search is scoped to the split's rule catalogue.
+
+    Args:
+        rows: Rows to inspect.
+        split: Dataset split identifier (``"public"`` or ``"private"``).
+
+    Returns:
+        A summary of the identifiability check.
+
+    Raises:
+        RuntimeError: If any row is ambiguous.
+
+    """
+    if split == "public":
+        catalogue = PUBLIC_RULES
+    elif split == "private":
+        catalogue = _private_rule_catalogue()
+    else:
+        raise RuntimeError(f"unsupported split for identifiability check: {split!r}")
+    ambiguous: list[dict[str, object]] = []
+    for row in rows:
+        report = identifiability_report_for_row(row, split=split, rule_catalogue=catalogue)
+        if not report["is_identifiable"]:
+            ambiguous.append(
+                {
+                    "episode_id": str(row["episode_id"]),
+                    **report,
+                }
+            )
+    if ambiguous:
+        raise RuntimeError(f"{split} identifiability check failed for episodes: {ambiguous}")
+    return {
+        "identifiability_episode_count": len(rows),
+        "ambiguous_episode_count": 0,
+    }
 
 
 def _utc_timestamp() -> str:
@@ -1103,6 +1165,7 @@ def verify_public_split(*, emit_audit_report: Path | None = None) -> None:
     rows = load_rows(PUBLIC_ROWS_PATH)
     schema_summary = verify_schema(rows, "public")
     calibration_summary = verify_public_difficulty_calibration(rows)
+    identifiability_summary = verify_identifiability(rows, split="public")
     expected_rows, _answers, report = build_public_artifacts()
     if rows != expected_rows:
         raise RuntimeError("public split rows are not reproducible from the generator")
@@ -1131,6 +1194,7 @@ def verify_public_split(*, emit_audit_report: Path | None = None) -> None:
                 **schema_summary,
                 **calibration_summary,
                 **report_summary,
+                **identifiability_summary,
             },
             indent=2,
         )
@@ -1582,6 +1646,7 @@ def verify_private_bundle(bundle_dir: Path, *, emit_audit_report: Path | None = 
         raise RuntimeError(f"private bundle missing required files: {missing}")
     private_rows = load_rows(bundle_paths["rows"])
     schema_summary = verify_schema(private_rows, "private")
+    identifiability_summary = verify_identifiability(private_rows, split="private")
     answer_key = load_private_answer_key(bundle_paths["answer_key"])
     answer_summary, _episode_targets, _episode_generators, _episode_annotations = verify_private_answer_key(answer_key, private_rows)
     predictions = load_private_calibration_predictions(bundle_paths["predictions"])
@@ -1642,6 +1707,7 @@ def verify_private_bundle(bundle_dir: Path, *, emit_audit_report: Path | None = 
                 "bundle_dir": str(bundle_dir),
                 **schema_summary,
                 **answer_summary,
+                **identifiability_summary,
                 "prediction_model_names": [model["name"] for model in prediction_models],
                 "semantic_isolation_summary": expected_quality_report["semantic_isolation_summary"],
                 "generator_isolation_summary": expected_quality_report["generator_isolation_summary"],

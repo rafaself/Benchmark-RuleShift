@@ -6,6 +6,7 @@ from collections import Counter
 from pathlib import Path
 
 from scripts.build_cogflex_dataset import (
+    IDENTIFIABILITY_RETRY_BUDGET,
     PRIVATE_ANSWER_KEY_FILENAME,
     PRIVATE_ANSWER_KEY_VERSION,
     PRIVATE_BUNDLE_VERSION,
@@ -25,8 +26,10 @@ from scripts.build_cogflex_dataset import (
     build_public_artifacts,
     compute_probe_annotations,
     compute_sha256,
+    derive_seed,
     empirical_difficulty_entries_from_predictions,
     enumerate_items,
+    identifiability_report_for_row,
     make_three_label_rule,
     make_two_label_rule,
     sample_for_rule,
@@ -173,6 +176,8 @@ def _build_private_episode(
     suite_task_id: str,
     structure_family_id: str,
     variant: int,
+    *,
+    attempt: int = 0,
 ) -> tuple[dict[str, object], dict[str, object]]:
     """Build one private episode row and its matching answer payload.
 
@@ -186,7 +191,10 @@ def _build_private_episode(
         The public-style row payload and the full answer payload.
 
     """
-    seed = variant * 97 + len(episode_id) * 11
+    if attempt:
+        seed = derive_seed("private", structure_family_id, suite_task_id, variant, "retry", attempt)
+    else:
+        seed = variant * 97 + len(episode_id) * 11
     rng = random.Random(seed)
     structure = PRIVATE_STRUCTURES[structure_family_id]
     if structure_family_id in {"delayed_reversal", "competitive_rule_switch", "variable_evidence_budget"}:
@@ -265,7 +273,10 @@ def _build_private_episode(
             ][evidence_index % 3]
         )
         current_rule = initial_rule
-        if structure_family_id in {"delayed_reversal", "competitive_rule_switch"} and evidence_index == len(structure.evidence_counts) - 1:
+        if (
+            structure_family_id in {"delayed_reversal", "competitive_rule_switch", "variable_evidence_budget"}
+            and evidence_index == len(structure.evidence_counts) - 1
+        ):
             current_rule = shift_rule
         if structure_family_id == "latent_rebinding" and evidence_index >= 1:
             current_rule = shift_rule
@@ -431,6 +442,49 @@ def _build_private_predictions_payload(answers: list[dict[str, object]]) -> dict
     }
 
 
+def build_identifiable_private_episode(
+    episode_id: str,
+    suite_task_id: str,
+    structure_family_id: str,
+    variant: int,
+    *,
+    retry_budget: int = IDENTIFIABILITY_RETRY_BUDGET,
+) -> tuple[dict[str, object], dict[str, object], dict[str, object]]:
+    """Build an identifiable private episode, retrying until the check passes.
+
+    Args:
+        episode_id: Stable identifier for the episode.
+        suite_task_id: Suite task associated with the episode.
+        structure_family_id: Private structure family to instantiate.
+        variant: Deterministic variant index.
+        retry_budget: Maximum number of attempts before raising.
+
+    Returns:
+        The row payload, answer payload, and identifiability report for the
+        accepted attempt.
+
+    Raises:
+        RuntimeError: If no identifiable episode can be produced within the
+            retry budget.
+
+    """
+    for attempt in range(retry_budget):
+        row, answer = _build_private_episode(
+            episode_id,
+            suite_task_id,
+            structure_family_id,
+            variant,
+            attempt=attempt,
+        )
+        report = identifiability_report_for_row(row, split="private", rule_catalogue=PRIVATE_RULES)
+        if report["is_identifiable"]:
+            return row, answer, report
+    raise RuntimeError(
+        f"unable to build identifiable private episode {episode_id} for {structure_family_id} "
+        f"within {retry_budget} attempts"
+    )
+
+
 def write_private_bundle(bundle_dir: Path) -> dict[str, Path]:
     """Write the complete private bundle and all derived artifacts.
 
@@ -448,7 +502,7 @@ def write_private_bundle(bundle_dir: Path) -> dict[str, Path]:
     for family_index, structure_family_id in enumerate(REQUIRED_PRIVATE_STRUCTURE_FAMILY_IDS):
         for task_index, suite_task_id in enumerate(SUITE_TASKS):
             episode_id = f"p{episode_number:04d}"
-            row, answer = _build_private_episode(
+            row, answer, _report = build_identifiable_private_episode(
                 episode_id,
                 suite_task_id,
                 structure_family_id,

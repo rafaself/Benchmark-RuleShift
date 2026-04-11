@@ -100,6 +100,28 @@ SUPPORTED_OPERATOR_CLASSES: Final[tuple[str, ...]] = tuple(
     )
 )
 
+IDENTIFIABILITY_KIND_SINGLE_LAST: Final[str] = "single_rule_last_turn"
+IDENTIFIABILITY_KIND_SINGLE_ALL: Final[str] = "single_rule_all_turns"
+IDENTIFIABILITY_KIND_ROUTED_ALL: Final[str] = "routed_all_turns"
+
+PUBLIC_IDENTIFIABILITY_SPEC_BY_TASK: Final[dict[str, tuple[str, str | None]]] = {
+    "explicit_rule_update": (IDENTIFIABILITY_KIND_SINGLE_LAST, None),
+    "latent_rule_update": (IDENTIFIABILITY_KIND_SINGLE_LAST, None),
+    "context_binding": (IDENTIFIABILITY_KIND_ROUTED_ALL, "context"),
+    "trial_cued_switch": (IDENTIFIABILITY_KIND_ROUTED_ALL, "cue"),
+}
+
+PRIVATE_IDENTIFIABILITY_SPEC_BY_STRUCTURE: Final[dict[str, tuple[str, str | None]]] = {
+    "delayed_reversal": (IDENTIFIABILITY_KIND_SINGLE_LAST, None),
+    "irrelevant_feature_interference": (IDENTIFIABILITY_KIND_SINGLE_ALL, None),
+    "competitive_rule_switch": (IDENTIFIABILITY_KIND_SINGLE_LAST, None),
+    "latent_rebinding": (IDENTIFIABILITY_KIND_SINGLE_LAST, None),
+    "variable_evidence_budget": (IDENTIFIABILITY_KIND_SINGLE_LAST, None),
+    "interleaved_context_rebinding": (IDENTIFIABILITY_KIND_ROUTED_ALL, "context"),
+}
+
+IDENTIFIABILITY_RETRY_BUDGET: Final[int] = 32
+
 PUBLIC_CONTEXT_TERMS: Final[tuple[tuple[str, str], ...]] = (
     ("alpha", "beta"),
     ("north", "south"),
@@ -1188,7 +1210,252 @@ def build_episode_payload(
     return row, answer
 
 
-def build_explicit_episode(episode_id: str, *, structure: EpisodeStructure, variant: int) -> tuple[dict[str, object], dict[str, object]]:
+_IDENTIFIABILITY_METADATA_KEYS: Final[frozenset[str]] = frozenset({"index", "label", "rule_id", "context", "cue"})
+
+
+def _stimulus_from_parsed_item(item: dict[str, object]) -> Stimulus:
+    """Strip metadata keys from a parsed turn item to recover a stimulus.
+
+    Args:
+        item: Parsed turn item payload.
+
+    Returns:
+        A stimulus dictionary suitable for RuleSpec evaluation.
+
+    """
+    return {key: value for key, value in item.items() if key not in _IDENTIFIABILITY_METADATA_KEYS}
+
+
+def _row_turn_payloads(row: dict[str, object]) -> tuple[list[list[dict[str, object]]], list[dict[str, object]]]:
+    """Split a row into evidence turn items and decision turn items.
+
+    Args:
+        row: Row payload whose inference turns should be parsed.
+
+    Returns:
+        A tuple of (evidence turn items per turn, decision turn items).
+
+    Raises:
+        RuntimeError: If the row is missing an evidence or decision turn.
+
+    """
+    turns = row["inference"]["turns"]
+    specs = row["inference"]["turn_specs"]
+    evidence_items: list[list[dict[str, object]]] = []
+    decision_items: list[dict[str, object]] | None = None
+    for turn, spec in zip(turns, specs, strict=True):
+        kind = str(spec["kind"])
+        items = parse_turn_items(turn, kind=kind)
+        if kind == "evidence":
+            evidence_items.append(items)
+        elif kind == "decision":
+            decision_items = items
+    if not evidence_items or decision_items is None:
+        raise RuntimeError(f"row {row.get('episode_id')} is missing evidence or decision turns for identifiability")
+    return evidence_items, decision_items
+
+
+def _candidate_rules_for_vocab(
+    rule_catalogue: dict[str, RuleSpec],
+    label_vocab: tuple[str, ...],
+) -> list[RuleSpec]:
+    """Select catalogue rules whose label vocabulary matches the episode.
+
+    Args:
+        rule_catalogue: Rule catalogue to enumerate.
+        label_vocab: Label vocabulary exposed by the episode.
+
+    Returns:
+        Rules with a matching label vocabulary.
+
+    """
+    return [rule for rule in rule_catalogue.values() if tuple(rule.label_vocab) == label_vocab]
+
+
+def compute_identifiability(
+    row: dict[str, object],
+    *,
+    rule_catalogue: dict[str, RuleSpec],
+    kind: str,
+    route_field: str | None = None,
+) -> dict[str, object]:
+    """Compute identifiability metrics for a single episode row.
+
+    An episode is identifiable iff every hypothesis that is consistent with
+    the observed evidence implies the same final probe target tuple. The
+    hypothesis space is scoped to the supplied rule catalogue, filtered by
+    the episode's label vocabulary, and enumerated either as a single rule
+    (for ``single_rule_*`` kinds) or as a route-to-rule assignment (for
+    ``routed_all_turns``).
+
+    Args:
+        row: Row payload to inspect.
+        rule_catalogue: Candidate rule catalogue scoped to the episode split.
+        kind: Identifiability kind governing which evidence items anchor the
+            hypothesis.
+        route_field: Field name used to split routed episodes into
+            independent sub-hypotheses.
+
+    Returns:
+        A dictionary with ``consistent_hypothesis_count``,
+        ``distinct_probe_target_count``, and ``is_identifiable`` keys.
+
+    Raises:
+        ValueError: If an unsupported identifiability kind is requested.
+        RuntimeError: If a routed kind is requested without a route field or
+            no route values are present on the episode items.
+
+    """
+    label_vocab = tuple(str(label) for label in row["inference"]["response_spec"]["label_vocab"])
+    evidence_turn_items, decision_items = _row_turn_payloads(row)
+    candidates = _candidate_rules_for_vocab(rule_catalogue, label_vocab)
+
+    if kind in (IDENTIFIABILITY_KIND_SINGLE_LAST, IDENTIFIABILITY_KIND_SINGLE_ALL):
+        if kind == IDENTIFIABILITY_KIND_SINGLE_LAST:
+            anchoring_items = list(evidence_turn_items[-1])
+        else:
+            anchoring_items = [item for turn_items in evidence_turn_items for item in turn_items]
+        distinct_probe_targets: set[tuple[str, ...]] = set()
+        consistent_count = 0
+        for candidate in candidates:
+            if not all(
+                candidate.label(_stimulus_from_parsed_item(item)) == str(item["label"])
+                for item in anchoring_items
+            ):
+                continue
+            consistent_count += 1
+            predicted = tuple(
+                candidate.label(_stimulus_from_parsed_item(item)) for item in decision_items
+            )
+            distinct_probe_targets.add(predicted)
+        return {
+            "consistent_hypothesis_count": consistent_count,
+            "distinct_probe_target_count": len(distinct_probe_targets),
+            "is_identifiable": consistent_count >= 1 and len(distinct_probe_targets) == 1,
+        }
+
+    if kind != IDENTIFIABILITY_KIND_ROUTED_ALL:
+        raise ValueError(f"unsupported identifiability kind {kind!r}")
+    if route_field is None:
+        raise RuntimeError("routed identifiability requires a route_field")
+
+    route_values = sorted(
+        {
+            str(item[route_field])
+            for turn_items in evidence_turn_items
+            for item in turn_items
+            if route_field in item
+        }
+        | {
+            str(item[route_field])
+            for item in decision_items
+            if route_field in item
+        }
+    )
+    if not route_values:
+        raise RuntimeError(f"routed identifiability found no {route_field!r} values")
+
+    per_route_candidates: dict[str, list[RuleSpec]] = {}
+    for route_value in route_values:
+        items_for_route = [
+            item
+            for turn_items in evidence_turn_items
+            for item in turn_items
+            if route_field in item and str(item[route_field]) == route_value
+        ]
+        per_route_candidates[route_value] = [
+            candidate
+            for candidate in candidates
+            if all(
+                candidate.label(_stimulus_from_parsed_item(item)) == str(item["label"])
+                for item in items_for_route
+            )
+        ]
+
+    consistent_count = 0
+    distinct_probe_targets_routed: set[tuple[str, ...]] = set()
+
+    def _visit(index: int, assignment: dict[str, RuleSpec]) -> None:
+        nonlocal consistent_count
+        if index == len(route_values):
+            consistent_count += 1
+            predicted = tuple(
+                assignment[str(item[route_field])].label(_stimulus_from_parsed_item(item))
+                for item in decision_items
+            )
+            distinct_probe_targets_routed.add(predicted)
+            return
+        route_value = route_values[index]
+        for candidate in per_route_candidates[route_value]:
+            assignment[route_value] = candidate
+            _visit(index + 1, assignment)
+        assignment.pop(route_value, None)
+
+    _visit(0, {})
+    return {
+        "consistent_hypothesis_count": consistent_count,
+        "distinct_probe_target_count": len(distinct_probe_targets_routed),
+        "is_identifiable": consistent_count >= 1 and len(distinct_probe_targets_routed) == 1,
+    }
+
+
+def _identifiability_spec_for_row(row: dict[str, object], *, split: str) -> tuple[str, str | None]:
+    """Resolve the identifiability kind and optional route field for a row.
+
+    Args:
+        row: Row payload whose analysis drives the identifiability spec.
+        split: Dataset split name controlling which spec table is used.
+
+    Returns:
+        The identifiability kind and optional route field for the row.
+
+    Raises:
+        ValueError: If the split is unsupported or the row lacks a registered
+            identifiability spec.
+
+    """
+    if split == "public":
+        suite_task_id = str(row["analysis"]["suite_task_id"])
+        if suite_task_id not in PUBLIC_IDENTIFIABILITY_SPEC_BY_TASK:
+            raise ValueError(f"no public identifiability spec for suite_task_id {suite_task_id!r}")
+        return PUBLIC_IDENTIFIABILITY_SPEC_BY_TASK[suite_task_id]
+    if split == "private":
+        structure_family_id = str(row["analysis"]["structure_family_id"])
+        if structure_family_id not in PRIVATE_IDENTIFIABILITY_SPEC_BY_STRUCTURE:
+            raise ValueError(
+                f"no private identifiability spec for structure_family_id {structure_family_id!r}"
+            )
+        return PRIVATE_IDENTIFIABILITY_SPEC_BY_STRUCTURE[structure_family_id]
+    raise ValueError(f"unsupported split {split!r}")
+
+
+def identifiability_report_for_row(
+    row: dict[str, object],
+    *,
+    split: str,
+    rule_catalogue: dict[str, RuleSpec],
+) -> dict[str, object]:
+    """Compute the identifiability report for a row using its split spec.
+
+    Args:
+        row: Row payload to inspect.
+        split: Dataset split identifier used to resolve the spec.
+        rule_catalogue: Candidate rule catalogue for the split.
+
+    Returns:
+        The identifiability report dictionary.
+
+    """
+    kind, route_field = _identifiability_spec_for_row(row, split=split)
+    return compute_identifiability(
+        row,
+        rule_catalogue=rule_catalogue,
+        kind=kind,
+        route_field=route_field,
+    )
+
+
+def build_explicit_episode(episode_id: str, *, structure: EpisodeStructure, variant: int, attempt: int = 0) -> tuple[dict[str, object], dict[str, object]]:
     """Build a public explicit-rule-update episode.
 
     Args:
@@ -1200,7 +1467,10 @@ def build_explicit_episode(episode_id: str, *, structure: EpisodeStructure, vari
         The generated row payload and matching answer payload.
 
     """
-    seed = derive_seed("public", "explicit_rule_update", structure.structure_family_id, variant)
+    seed_parts: tuple[object, ...] = ("public", "explicit_rule_update", structure.structure_family_id, variant)
+    if attempt:
+        seed_parts = (*seed_parts, "retry", attempt)
+    seed = derive_seed(*seed_parts)
     rng = random.Random(seed)
     initial_rule = PUBLIC_RULES[TASK_RULE_PAIRS["explicit_rule_update"][variant % 2][0]]
     shift_rule = PUBLIC_RULES[TASK_RULE_PAIRS["explicit_rule_update"][variant % 2][1]]
@@ -1253,7 +1523,7 @@ def build_explicit_episode(episode_id: str, *, structure: EpisodeStructure, vari
     )
 
 
-def build_latent_episode(episode_id: str, *, structure: EpisodeStructure, variant: int) -> tuple[dict[str, object], dict[str, object]]:
+def build_latent_episode(episode_id: str, *, structure: EpisodeStructure, variant: int, attempt: int = 0) -> tuple[dict[str, object], dict[str, object]]:
     """Build a public latent-rule-update episode.
 
     Args:
@@ -1265,7 +1535,10 @@ def build_latent_episode(episode_id: str, *, structure: EpisodeStructure, varian
         The generated row payload and matching answer payload.
 
     """
-    seed = derive_seed("public", "latent_rule_update", structure.structure_family_id, variant)
+    seed_parts: tuple[object, ...] = ("public", "latent_rule_update", structure.structure_family_id, variant)
+    if attempt:
+        seed_parts = (*seed_parts, "retry", attempt)
+    seed = derive_seed(*seed_parts)
     rng = random.Random(seed)
     initial_rule = PUBLIC_RULES[TASK_RULE_PAIRS["latent_rule_update"][variant % 2][0]]
     shift_rule = PUBLIC_RULES[TASK_RULE_PAIRS["latent_rule_update"][variant % 2][1]]
@@ -1314,7 +1587,7 @@ def build_latent_episode(episode_id: str, *, structure: EpisodeStructure, varian
     )
 
 
-def build_context_episode(episode_id: str, *, structure: EpisodeStructure, variant: int) -> tuple[dict[str, object], dict[str, object]]:
+def build_context_episode(episode_id: str, *, structure: EpisodeStructure, variant: int, attempt: int = 0) -> tuple[dict[str, object], dict[str, object]]:
     """Build a public context-binding episode.
 
     Args:
@@ -1326,7 +1599,10 @@ def build_context_episode(episode_id: str, *, structure: EpisodeStructure, varia
         The generated row payload and matching answer payload.
 
     """
-    seed = derive_seed("public", "context_binding", structure.structure_family_id, variant)
+    seed_parts: tuple[object, ...] = ("public", "context_binding", structure.structure_family_id, variant)
+    if attempt:
+        seed_parts = (*seed_parts, "retry", attempt)
+    seed = derive_seed(*seed_parts)
     rng = random.Random(seed)
     context_terms = PUBLIC_CONTEXT_TERMS[variant % len(PUBLIC_CONTEXT_TERMS)]
     primary_rule = PUBLIC_RULES[TASK_RULE_PAIRS["context_binding"][variant % 2][0]]
@@ -1394,7 +1670,7 @@ def build_context_episode(episode_id: str, *, structure: EpisodeStructure, varia
     )
 
 
-def build_cued_episode(episode_id: str, *, structure: EpisodeStructure, variant: int) -> tuple[dict[str, object], dict[str, object]]:
+def build_cued_episode(episode_id: str, *, structure: EpisodeStructure, variant: int, attempt: int = 0) -> tuple[dict[str, object], dict[str, object]]:
     """Build a public trial-cued-switch episode.
 
     Args:
@@ -1406,7 +1682,10 @@ def build_cued_episode(episode_id: str, *, structure: EpisodeStructure, variant:
         The generated row payload and matching answer payload.
 
     """
-    seed = derive_seed("public", "trial_cued_switch", structure.structure_family_id, variant)
+    seed_parts: tuple[object, ...] = ("public", "trial_cued_switch", structure.structure_family_id, variant)
+    if attempt:
+        seed_parts = (*seed_parts, "retry", attempt)
+    seed = derive_seed(*seed_parts)
     rng = random.Random(seed)
     cue_terms = PUBLIC_CUE_TERMS[variant % len(PUBLIC_CUE_TERMS)]
     keep_rule = PUBLIC_RULES[TASK_RULE_PAIRS["trial_cued_switch"][variant % 2][0]]
@@ -1485,6 +1764,60 @@ def build_cued_episode(episode_id: str, *, structure: EpisodeStructure, variant:
 BUILDERS: Final[dict[str, Callable[[str], tuple[dict[str, object], dict[str, object]]]]] = {}
 
 
+_PUBLIC_EPISODE_BUILDERS: Final[
+    dict[
+        str,
+        Callable[..., tuple[dict[str, object], dict[str, object]]],
+    ]
+] = {
+    "explicit_rule_update": build_explicit_episode,
+    "latent_rule_update": build_latent_episode,
+    "context_binding": build_context_episode,
+    "trial_cued_switch": build_cued_episode,
+}
+
+
+def build_identifiable_public_episode(
+    suite_task_id: str,
+    episode_id: str,
+    *,
+    structure: EpisodeStructure,
+    variant: int,
+    retry_budget: int = IDENTIFIABILITY_RETRY_BUDGET,
+) -> tuple[dict[str, object], dict[str, object], dict[str, object]]:
+    """Build an identifiable public episode, retrying until the check passes.
+
+    Args:
+        suite_task_id: Suite task selector used to pick the concrete builder.
+        episode_id: Stable identifier for the episode.
+        structure: Structure governing evidence layout.
+        variant: Deterministic variant index.
+        retry_budget: Maximum number of attempts before raising.
+
+    Returns:
+        The row payload, answer payload, and identifiability report for the
+        accepted attempt.
+
+    Raises:
+        ValueError: If the suite task has no registered builder.
+        RuntimeError: If no identifiable episode can be produced within the
+            retry budget.
+
+    """
+    builder = _PUBLIC_EPISODE_BUILDERS.get(suite_task_id)
+    if builder is None:
+        raise ValueError(f"unsupported suite task {suite_task_id}")
+    for attempt in range(retry_budget):
+        row, answer = builder(episode_id, structure=structure, variant=variant, attempt=attempt)
+        report = identifiability_report_for_row(row, split="public", rule_catalogue=PUBLIC_RULES)
+        if report["is_identifiable"]:
+            return row, answer, report
+    raise RuntimeError(
+        f"unable to build identifiable public episode {episode_id} for {suite_task_id} "
+        f"within {retry_budget} attempts"
+    )
+
+
 def build_public_artifacts() -> tuple[list[dict[str, object]], list[dict[str, object]], dict[str, object]]:
     """Build the full tracked public split and its derived report.
 
@@ -1499,16 +1832,12 @@ def build_public_artifacts() -> tuple[list[dict[str, object]], list[dict[str, ob
         for variant in range(PUBLIC_EPISODES_PER_TASK):
             structure = PUBLIC_STRUCTURES[PUBLIC_STRUCTURE_FAMILY_IDS[variant % len(PUBLIC_STRUCTURE_FAMILY_IDS)]]
             episode_id = f"{episode_number:04d}"
-            if suite_task_id == "explicit_rule_update":
-                row, answer = build_explicit_episode(episode_id, structure=structure, variant=variant)
-            elif suite_task_id == "latent_rule_update":
-                row, answer = build_latent_episode(episode_id, structure=structure, variant=variant)
-            elif suite_task_id == "context_binding":
-                row, answer = build_context_episode(episode_id, structure=structure, variant=variant)
-            elif suite_task_id == "trial_cued_switch":
-                row, answer = build_cued_episode(episode_id, structure=structure, variant=variant)
-            else:
-                raise ValueError(f"unsupported suite task {suite_task_id}")
+            row, answer, _report = build_identifiable_public_episode(
+                suite_task_id,
+                episode_id,
+                structure=structure,
+                variant=variant,
+            )
             rows.append(row)
             answers.append(answer)
             episode_number += 1

@@ -120,9 +120,9 @@
     "episode_id": "0003",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0003. Turn 1 of 3.\n\nInfer the current rule from these labeled examples.\n\nExamples:\n1. shape=triangle | tone=neutral | r1=-5, r2=+5 -> reject\n2. tone=cool | r1=+0, r2=-3 | shape=square -> accept\n3. r1=-3, r2=+0 | shape=hex | tone=neutral -> reject\n4. shape=circle | tone=cool | r1=+1, r2=+2 -> accept",
-        "CogFlex suite task. Episode 0003. Turn 2 of 3.\n\nThe task rule has changed. Learn the replacement behavior from these examples.\n\nExamples:\n1. tone=warm | r1=+4, r2=-4 | shape=hex -> accept\n2. r1=+0, r2=+3 | shape=triangle | tone=cool -> reject\n3. shape=triangle | tone=warm | r1=-5, r2=+1 -> accept\n4. tone=warm | r1=+0, r2=-1 | shape=circle -> reject",
-        "CogFlex suite task. Episode 0003. Turn 3 of 3.\n\nApply the active rule to every probe.\n\nProbes:\n1. r1=-2, r2=+1 | shape=hex | tone=cool -> ?\n2. shape=square | tone=neutral | r1=-1, r2=+4 -> ?\n3. tone=warm | r1=-5, r2=-3 | shape=triangle -> ?\n4. r1=-3, r2=-1 | shape=hex | tone=neutral -> ?\n5. shape=circle | tone=neutral | r1=-1, r2=+5 -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0003. Turn 1 of 3.\n\nInfer the current rule from these labeled examples.\n\nExamples:\n1. shape=triangle | tone=cool | r1=+2, r2=-3 -> accept\n2. tone=cool | r1=-5, r2=+4 | shape=circle -> reject\n3. r1=-2, r2=-2 | shape=square | tone=warm -> reject\n4. shape=square | tone=neutral | r1=+0, r2=+3 -> accept",
+        "CogFlex suite task. Episode 0003. Turn 2 of 3.\n\nThe task rule has changed. Learn the replacement behavior from these examples.\n\nExamples:\n1. tone=neutral | r1=+1, r2=+1 | shape=triangle -> reject\n2. r1=-1, r2=+2 | shape=hex | tone=cool -> reject\n3. shape=triangle | tone=warm | r1=-5, r2=+5 -> accept\n4. tone=cool | r1=-2, r2=-5 | shape=hex -> accept",
+        "CogFlex suite task. Episode 0003. Turn 3 of 3.\n\nApply the active rule to every probe.\n\nProbes:\n1. r1=+1, r2=-2 | shape=square | tone=neutral -> ?\n2. shape=triangle | tone=cool | r1=-2, r2=+3 -> ?\n3. tone=warm | r1=+3, r2=+3 | shape=circle -> ?\n4. r1=-5, r2=-2 | shape=hex | tone=warm -> ?\n5. shape=square | tone=cool | r1=-3, r2=+1 -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -159,15 +159,15 @@
         "reject",
         "reject",
         "accept",
-        "reject",
-        "accept"
+        "accept",
+        "reject"
       ],
       "probe_annotations": [
+        "incongruent",
         "congruent",
         "congruent",
         "incongruent",
-        "congruent",
-        "incongruent"
+        "congruent"
       ]
     }
   },
@@ -526,10 +526,10 @@
     "episode_id": "0010",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0010. Turn 1 of 4.\n\nInfer the current rule from these labeled examples.\n\nExamples:\n1. shape=hex | tone=warm | r1=+3, r2=-2 -> accept\n2. tone=cool | r1=-1, r2=-3 | shape=square -> reject\n3. r1=+0, r2=-4 | shape=triangle | tone=warm -> reject",
-        "CogFlex suite task. Episode 0010. Turn 2 of 4.\n\nContinue collecting evidence before the upcoming update.\n\nExamples:\n1. tone=cool | r1=+5, r2=+3 | shape=square -> reject\n2. r1=-3, r2=+0 | shape=hex | tone=cool -> accept",
-        "CogFlex suite task. Episode 0010. Turn 3 of 4.\n\nThe task rule has changed. Learn the replacement behavior from these examples.\n\nExamples:\n1. r1=-2, r2=+1 | shape=circle | tone=warm -> reject\n2. shape=hex | tone=cool | r1=+1, r2=-4 -> reject\n3. tone=neutral | r1=+4, r2=-2 | shape=hex -> accept",
-        "CogFlex suite task. Episode 0010. Turn 4 of 4.\n\nApply the active rule to every probe.\n\nProbes:\n1. shape=hex | tone=neutral | r1=+4, r2=+3 -> ?\n2. tone=neutral | r1=+3, r2=+3 | shape=hex -> ?\n3. r1=-5, r2=+3 | shape=square | tone=neutral -> ?\n4. shape=circle | tone=neutral | r1=+4, r2=-1 -> ?\n5. tone=warm | r1=-2, r2=-3 | shape=circle -> ?\n6. r1=-4, r2=+0 | shape=hex | tone=cool -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0010. Turn 1 of 4.\n\nInfer the current rule from these labeled examples.\n\nExamples:\n1. shape=square | tone=neutral | r1=-2, r2=-5 -> reject\n2. tone=neutral | r1=+0, r2=+4 | shape=square -> reject\n3. r1=+3, r2=+0 | shape=circle | tone=warm -> accept",
+        "CogFlex suite task. Episode 0010. Turn 2 of 4.\n\nContinue collecting evidence before the upcoming update.\n\nExamples:\n1. tone=warm | r1=-2, r2=+0 | shape=square -> reject\n2. r1=-2, r2=-5 | shape=circle | tone=neutral -> accept",
+        "CogFlex suite task. Episode 0010. Turn 3 of 4.\n\nThe task rule has changed. Learn the replacement behavior from these examples.\n\nExamples:\n1. r1=-1, r2=+0 | shape=hex | tone=neutral -> reject\n2. shape=circle | tone=warm | r1=-2, r2=-5 -> reject\n3. tone=neutral | r1=-1, r2=+5 | shape=triangle -> accept",
+        "CogFlex suite task. Episode 0010. Turn 4 of 4.\n\nApply the active rule to every probe.\n\nProbes:\n1. shape=hex | tone=neutral | r1=-4, r2=-5 -> ?\n2. tone=warm | r1=-5, r2=-1 | shape=hex -> ?\n3. r1=+3, r2=+0 | shape=hex | tone=neutral -> ?\n4. shape=triangle | tone=warm | r1=+1, r2=-1 -> ?\n5. tone=warm | r1=+3, r2=+5 | shape=triangle -> ?\n6. r1=-2, r2=-5 | shape=circle | tone=cool -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -569,10 +569,10 @@
       "final_probe_targets": [
         "reject",
         "accept",
+        "reject",
         "accept",
-        "reject",
-        "reject",
-        "accept"
+        "accept",
+        "reject"
       ],
       "probe_annotations": [
         "incongruent",
@@ -580,7 +580,7 @@
         "incongruent",
         "incongruent",
         "incongruent",
-        "congruent"
+        "incongruent"
       ]
     }
   },
@@ -643,10 +643,10 @@
     "episode_id": "0012",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0012. Turn 1 of 4.\n\nInfer the current rule from these labeled examples.\n\nExamples:\n1. shape=hex | tone=cool | r1=-2, r2=+5 -> accept\n2. tone=neutral | r1=+3, r2=+2 | shape=square -> reject\n3. r1=-2, r2=+5 | shape=triangle | tone=neutral -> reject",
-        "CogFlex suite task. Episode 0012. Turn 2 of 4.\n\nContinue collecting evidence before the upcoming update.\n\nExamples:\n1. tone=warm | r1=-4, r2=-4 | shape=square -> reject\n2. r1=+4, r2=-1 | shape=circle | tone=neutral -> accept",
-        "CogFlex suite task. Episode 0012. Turn 3 of 4.\n\nThe task rule has changed. Learn the replacement behavior from these examples.\n\nExamples:\n1. r1=-3, r2=-3 | shape=triangle | tone=neutral -> accept\n2. shape=triangle | tone=neutral | r1=+2, r2=+1 -> reject\n3. tone=warm | r1=-1, r2=+0 | shape=hex -> reject",
-        "CogFlex suite task. Episode 0012. Turn 4 of 4.\n\nApply the active rule to every probe.\n\nProbes:\n1. shape=circle | tone=cool | r1=+1, r2=-1 -> ?\n2. tone=cool | r1=-3, r2=-3 | shape=square -> ?\n3. r1=-5, r2=-4 | shape=triangle | tone=neutral -> ?\n4. shape=triangle | tone=neutral | r1=+4, r2=-2 -> ?\n5. tone=cool | r1=+2, r2=+1 | shape=hex -> ?\n6. r1=-4, r2=+5 | shape=square | tone=neutral -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0012. Turn 1 of 4.\n\nInfer the current rule from these labeled examples.\n\nExamples:\n1. shape=square | tone=neutral | r1=+5, r2=+5 -> reject\n2. tone=warm | r1=+5, r2=+2 | shape=hex -> accept\n3. r1=-5, r2=+5 | shape=square | tone=neutral -> reject",
+        "CogFlex suite task. Episode 0012. Turn 2 of 4.\n\nContinue collecting evidence before the upcoming update.\n\nExamples:\n1. tone=warm | r1=-1, r2=-5 | shape=circle -> accept\n2. r1=+0, r2=+1 | shape=square | tone=warm -> reject",
+        "CogFlex suite task. Episode 0012. Turn 3 of 4.\n\nThe task rule has changed. Learn the replacement behavior from these examples.\n\nExamples:\n1. r1=+4, r2=-5 | shape=triangle | tone=warm -> reject\n2. shape=hex | tone=warm | r1=+0, r2=-5 -> reject\n3. tone=warm | r1=+4, r2=+2 | shape=square -> accept",
+        "CogFlex suite task. Episode 0012. Turn 4 of 4.\n\nApply the active rule to every probe.\n\nProbes:\n1. shape=triangle | tone=cool | r1=-4, r2=+3 -> ?\n2. tone=neutral | r1=+5, r2=+5 | shape=circle -> ?\n3. r1=-5, r2=-5 | shape=square | tone=warm -> ?\n4. shape=square | tone=cool | r1=-2, r2=+5 -> ?\n5. tone=warm | r1=+2, r2=+2 | shape=square -> ?\n6. r1=+1, r2=-2 | shape=hex | tone=neutral -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -684,20 +684,20 @@
     },
     "scoring": {
       "final_probe_targets": [
+        "reject",
         "accept",
         "accept",
         "reject",
         "accept",
-        "reject",
         "reject"
       ],
       "probe_annotations": [
         "congruent",
+        "congruent",
         "incongruent",
         "congruent",
         "incongruent",
-        "incongruent",
-        "congruent"
+        "incongruent"
       ]
     }
   },
@@ -760,10 +760,10 @@
     "episode_id": "0014",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0014. Turn 1 of 4.\n\nInfer the current rule from these labeled examples.\n\nExamples:\n1. shape=square | tone=warm | r1=+2, r2=+0 -> reject\n2. tone=warm | r1=+5, r2=+5 | shape=hex -> accept\n3. r1=-1, r2=+5 | shape=square | tone=warm -> reject",
-        "CogFlex suite task. Episode 0014. Turn 2 of 4.\n\nContinue collecting evidence before the upcoming update.\n\nExamples:\n1. tone=cool | r1=-5, r2=-1 | shape=square -> reject\n2. r1=+1, r2=-2 | shape=hex | tone=cool -> accept",
-        "CogFlex suite task. Episode 0014. Turn 3 of 4.\n\nThe task rule has changed. Learn the replacement behavior from these examples.\n\nExamples:\n1. r1=+1, r2=-2 | shape=circle | tone=neutral -> reject\n2. shape=triangle | tone=warm | r1=-5, r2=-3 -> accept\n3. tone=neutral | r1=+3, r2=+2 | shape=triangle -> reject",
-        "CogFlex suite task. Episode 0014. Turn 4 of 4.\n\nApply the active rule to every probe.\n\nProbes:\n1. shape=triangle | tone=cool | r1=-1, r2=-5 -> ?\n2. tone=neutral | r1=-4, r2=-2 | shape=square -> ?\n3. r1=+2, r2=-2 | shape=circle | tone=warm -> ?\n4. shape=triangle | tone=neutral | r1=+4, r2=-1 -> ?\n5. tone=warm | r1=-1, r2=-5 | shape=square -> ?\n6. r1=+2, r2=-3 | shape=square | tone=cool -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0014. Turn 1 of 4.\n\nInfer the current rule from these labeled examples.\n\nExamples:\n1. shape=square | tone=warm | r1=-3, r2=+1 -> reject\n2. tone=neutral | r1=+4, r2=+2 | shape=triangle -> reject\n3. r1=+1, r2=+4 | shape=hex | tone=warm -> accept",
+        "CogFlex suite task. Episode 0014. Turn 2 of 4.\n\nContinue collecting evidence before the upcoming update.\n\nExamples:\n1. tone=neutral | r1=+0, r2=-3 | shape=square -> reject\n2. r1=-1, r2=-3 | shape=circle | tone=cool -> accept",
+        "CogFlex suite task. Episode 0014. Turn 3 of 4.\n\nThe task rule has changed. Learn the replacement behavior from these examples.\n\nExamples:\n1. r1=+0, r2=+1 | shape=triangle | tone=neutral -> reject\n2. shape=triangle | tone=cool | r1=+3, r2=-2 -> reject\n3. tone=cool | r1=+3, r2=+1 | shape=square -> accept",
+        "CogFlex suite task. Episode 0014. Turn 4 of 4.\n\nApply the active rule to every probe.\n\nProbes:\n1. shape=circle | tone=cool | r1=+2, r2=+3 -> ?\n2. tone=neutral | r1=+4, r2=+4 | shape=triangle -> ?\n3. r1=+4, r2=-4 | shape=triangle | tone=neutral -> ?\n4. shape=hex | tone=warm | r1=-2, r2=-4 -> ?\n5. tone=cool | r1=+0, r2=+1 | shape=triangle -> ?\n6. r1=+4, r2=+2 | shape=hex | tone=warm -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -801,19 +801,19 @@
     },
     "scoring": {
       "final_probe_targets": [
+        "reject",
         "accept",
         "accept",
         "accept",
         "reject",
-        "accept",
-        "reject"
+        "accept"
       ],
       "probe_annotations": [
         "incongruent",
         "incongruent",
-        "congruent",
-        "congruent",
         "incongruent",
+        "congruent",
+        "congruent",
         "congruent"
       ]
     }
@@ -822,9 +822,9 @@
     "episode_id": "0015",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0015. Turn 1 of 3.\n\nInfer the current rule from these labeled examples.\n\nExamples:\n1. shape=circle | tone=cool | r1=+2, r2=+2 -> accept\n2. tone=neutral | r1=-1, r2=+0 | shape=square -> reject\n3. r1=-2, r2=-5 | shape=hex | tone=neutral -> reject\n4. shape=circle | tone=warm | r1=+2, r2=+2 -> accept",
-        "CogFlex suite task. Episode 0015. Turn 2 of 3.\n\nThe task rule has changed. Learn the replacement behavior from these examples.\n\nExamples:\n1. tone=warm | r1=-5, r2=-5 | shape=circle -> accept\n2. r1=+5, r2=+5 | shape=circle | tone=warm -> accept\n3. shape=circle | tone=warm | r1=+0, r2=-5 -> reject\n4. tone=cool | r1=-1, r2=+0 | shape=hex -> reject",
-        "CogFlex suite task. Episode 0015. Turn 3 of 3.\n\nApply the active rule to every probe.\n\nProbes:\n1. r1=-4, r2=+3 | shape=square | tone=cool -> ?\n2. shape=triangle | tone=neutral | r1=-2, r2=+1 -> ?\n3. tone=cool | r1=-2, r2=-2 | shape=triangle -> ?\n4. r1=-1, r2=+1 | shape=square | tone=cool -> ?\n5. shape=circle | tone=neutral | r1=-4, r2=+5 -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0015. Turn 1 of 3.\n\nInfer the current rule from these labeled examples.\n\nExamples:\n1. shape=circle | tone=neutral | r1=-2, r2=+5 -> reject\n2. tone=cool | r1=+0, r2=+4 | shape=circle -> accept\n3. r1=-5, r2=-3 | shape=triangle | tone=cool -> reject\n4. shape=circle | tone=warm | r1=+1, r2=-3 -> accept",
+        "CogFlex suite task. Episode 0015. Turn 2 of 3.\n\nThe task rule has changed. Learn the replacement behavior from these examples.\n\nExamples:\n1. tone=neutral | r1=+0, r2=+2 | shape=triangle -> reject\n2. r1=+5, r2=+4 | shape=hex | tone=neutral -> accept\n3. shape=hex | tone=cool | r1=+4, r2=+1 -> reject\n4. tone=neutral | r1=+5, r2=+3 | shape=circle -> accept",
+        "CogFlex suite task. Episode 0015. Turn 3 of 3.\n\nApply the active rule to every probe.\n\nProbes:\n1. r1=+2, r2=+0 | shape=circle | tone=warm -> ?\n2. shape=circle | tone=neutral | r1=-5, r2=-1 -> ?\n3. tone=neutral | r1=-2, r2=-3 | shape=square -> ?\n4. r1=-2, r2=+3 | shape=hex | tone=cool -> ?\n5. shape=square | tone=warm | r1=-2, r2=-3 -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -858,18 +858,18 @@
     },
     "scoring": {
       "final_probe_targets": [
+        "reject",
         "accept",
         "reject",
         "reject",
-        "reject",
-        "accept"
+        "reject"
       ],
       "probe_annotations": [
         "incongruent",
+        "incongruent",
         "congruent",
         "congruent",
-        "congruent",
-        "incongruent"
+        "congruent"
       ]
     }
   },
@@ -994,10 +994,10 @@
     "episode_id": "0018",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0018. Turn 1 of 4.\n\nInfer the current rule from these labeled examples.\n\nExamples:\n1. shape=square | tone=cool | r1=-2, r2=+4 -> reject\n2. tone=warm | r1=-5, r2=-3 | shape=triangle -> reject\n3. r1=-1, r2=+1 | shape=circle | tone=neutral -> accept",
-        "CogFlex suite task. Episode 0018. Turn 2 of 4.\n\nContinue collecting evidence before the upcoming update.\n\nExamples:\n1. tone=neutral | r1=-3, r2=-4 | shape=square -> reject\n2. r1=-3, r2=-2 | shape=hex | tone=cool -> accept",
-        "CogFlex suite task. Episode 0018. Turn 3 of 4.\n\nThe task rule has changed. Learn the replacement behavior from these examples.\n\nExamples:\n1. r1=+3, r2=-1 | shape=hex | tone=warm -> accept\n2. shape=circle | tone=cool | r1=-3, r2=+0 -> reject\n3. tone=cool | r1=-2, r2=-1 | shape=hex -> reject",
-        "CogFlex suite task. Episode 0018. Turn 4 of 4.\n\nApply the active rule to every probe.\n\nProbes:\n1. shape=triangle | tone=cool | r1=-4, r2=+3 -> ?\n2. tone=warm | r1=+3, r2=-1 | shape=circle -> ?\n3. r1=+5, r2=-2 | shape=circle | tone=warm -> ?\n4. shape=triangle | tone=neutral | r1=+0, r2=+0 -> ?\n5. tone=neutral | r1=-2, r2=+2 | shape=square -> ?\n6. r1=+5, r2=+2 | shape=hex | tone=warm -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0018. Turn 1 of 4.\n\nInfer the current rule from these labeled examples.\n\nExamples:\n1. shape=square | tone=neutral | r1=+4, r2=+1 -> reject\n2. tone=neutral | r1=+2, r2=-5 | shape=triangle -> reject\n3. r1=+5, r2=-4 | shape=hex | tone=cool -> accept",
+        "CogFlex suite task. Episode 0018. Turn 2 of 4.\n\nContinue collecting evidence before the upcoming update.\n\nExamples:\n1. tone=neutral | r1=+4, r2=-1 | shape=square -> reject\n2. r1=+0, r2=+4 | shape=circle | tone=warm -> accept",
+        "CogFlex suite task. Episode 0018. Turn 3 of 4.\n\nThe task rule has changed. Learn the replacement behavior from these examples.\n\nExamples:\n1. r1=-4, r2=+2 | shape=triangle | tone=neutral -> accept\n2. shape=hex | tone=neutral | r1=-5, r2=+4 -> reject\n3. tone=cool | r1=-4, r2=-1 | shape=square -> reject",
+        "CogFlex suite task. Episode 0018. Turn 4 of 4.\n\nApply the active rule to every probe.\n\nProbes:\n1. shape=triangle | tone=warm | r1=+1, r2=+5 -> ?\n2. tone=warm | r1=-1, r2=-1 | shape=triangle -> ?\n3. r1=-5, r2=-1 | shape=hex | tone=cool -> ?\n4. shape=hex | tone=cool | r1=+5, r2=-2 -> ?\n5. tone=cool | r1=+0, r2=+5 | shape=triangle -> ?\n6. r1=+0, r2=-3 | shape=square | tone=warm -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -1035,20 +1035,20 @@
     },
     "scoring": {
       "final_probe_targets": [
-        "reject",
+        "accept",
+        "accept",
         "accept",
         "reject",
-        "accept",
-        "accept",
+        "reject",
         "reject"
       ],
       "probe_annotations": [
+        "incongruent",
+        "incongruent",
         "congruent",
+        "incongruent",
         "congruent",
-        "incongruent",
-        "incongruent",
-        "incongruent",
-        "incongruent"
+        "congruent"
       ]
     }
   },
@@ -1056,9 +1056,9 @@
     "episode_id": "0019",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0019. Turn 1 of 3.\n\nInfer the current rule from these labeled examples.\n\nExamples:\n1. shape=triangle | tone=cool | r1=+3, r2=+2 -> accept\n2. tone=cool | r1=-3, r2=-3 | shape=circle -> reject\n3. r1=-2, r2=+3 | shape=triangle | tone=neutral -> reject\n4. shape=circle | tone=neutral | r1=+0, r2=+0 -> accept",
-        "CogFlex suite task. Episode 0019. Turn 2 of 3.\n\nThe task rule has changed. Learn the replacement behavior from these examples.\n\nExamples:\n1. tone=cool | r1=+2, r2=+4 | shape=square -> accept\n2. r1=+2, r2=-3 | shape=hex | tone=warm -> reject\n3. shape=circle | tone=cool | r1=-4, r2=-4 -> accept\n4. tone=cool | r1=-4, r2=+1 | shape=hex -> reject",
-        "CogFlex suite task. Episode 0019. Turn 3 of 3.\n\nApply the active rule to every probe.\n\nProbes:\n1. r1=-5, r2=-3 | shape=circle | tone=neutral -> ?\n2. shape=circle | tone=warm | r1=-3, r2=-1 -> ?\n3. tone=neutral | r1=-5, r2=+0 | shape=triangle -> ?\n4. r1=-5, r2=-3 | shape=circle | tone=warm -> ?\n5. shape=triangle | tone=cool | r1=+1, r2=+0 -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0019. Turn 1 of 3.\n\nInfer the current rule from these labeled examples.\n\nExamples:\n1. shape=triangle | tone=cool | r1=-2, r2=-4 -> reject\n2. tone=warm | r1=-3, r2=-4 | shape=hex -> reject\n3. r1=+1, r2=+3 | shape=hex | tone=neutral -> accept\n4. shape=hex | tone=neutral | r1=+5, r2=-2 -> accept",
+        "CogFlex suite task. Episode 0019. Turn 2 of 3.\n\nThe task rule has changed. Learn the replacement behavior from these examples.\n\nExamples:\n1. tone=cool | r1=-3, r2=-4 | shape=circle -> accept\n2. r1=+4, r2=-5 | shape=circle | tone=cool -> accept\n3. shape=hex | tone=neutral | r1=+2, r2=-3 -> reject\n4. tone=neutral | r1=+1, r2=-3 | shape=circle -> reject",
+        "CogFlex suite task. Episode 0019. Turn 3 of 3.\n\nApply the active rule to every probe.\n\nProbes:\n1. r1=+5, r2=+0 | shape=circle | tone=cool -> ?\n2. shape=square | tone=cool | r1=+3, r2=+0 -> ?\n3. tone=cool | r1=-1, r2=-5 | shape=square -> ?\n4. r1=-1, r2=-2 | shape=square | tone=neutral -> ?\n5. shape=triangle | tone=warm | r1=-5, r2=-1 -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -1092,17 +1092,17 @@
     },
     "scoring": {
       "final_probe_targets": [
-        "accept",
         "reject",
         "reject",
         "accept",
-        "reject"
+        "reject",
+        "accept"
       ],
       "probe_annotations": [
         "incongruent",
-        "congruent",
-        "congruent",
         "incongruent",
+        "incongruent",
+        "congruent",
         "incongruent"
       ]
     }
@@ -1173,9 +1173,9 @@
     "episode_id": "0021",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0021. Turn 1 of 3.\n\nInfer the current rule from these labeled examples.\n\nExamples:\n1. shape=triangle | tone=warm | r1=+4, r2=+1 -> accept\n2. tone=neutral | r1=-2, r2=-2 | shape=hex -> reject\n3. r1=-5, r2=-3 | shape=hex | tone=warm -> reject\n4. shape=square | tone=warm | r1=+2, r2=-1 -> accept",
-        "CogFlex suite task. Episode 0021. Turn 2 of 3.\n\nThe task rule has changed. Learn the replacement behavior from these examples.\n\nExamples:\n1. tone=warm | r1=+3, r2=-3 | shape=triangle -> accept\n2. r1=+0, r2=-1 | shape=circle | tone=warm -> reject\n3. shape=triangle | tone=cool | r1=-5, r2=-5 -> accept\n4. tone=cool | r1=+0, r2=-5 | shape=circle -> reject",
-        "CogFlex suite task. Episode 0021. Turn 3 of 3.\n\nApply the active rule to every probe.\n\nProbes:\n1. r1=-2, r2=+0 | shape=hex | tone=neutral -> ?\n2. shape=hex | tone=cool | r1=+3, r2=-1 -> ?\n3. tone=cool | r1=+0, r2=-1 | shape=triangle -> ?\n4. r1=+3, r2=-4 | shape=circle | tone=cool -> ?\n5. shape=hex | tone=neutral | r1=-2, r2=-5 -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0021. Turn 1 of 3.\n\nInfer the current rule from these labeled examples.\n\nExamples:\n1. shape=hex | tone=warm | r1=-5, r2=-3 -> reject\n2. tone=warm | r1=+3, r2=+5 | shape=square -> accept\n3. r1=+5, r2=-2 | shape=hex | tone=warm -> accept\n4. shape=circle | tone=cool | r1=-3, r2=-4 -> reject",
+        "CogFlex suite task. Episode 0021. Turn 2 of 3.\n\nThe task rule has changed. Learn the replacement behavior from these examples.\n\nExamples:\n1. tone=warm | r1=+2, r2=+0 | shape=square -> reject\n2. r1=+1, r2=-3 | shape=square | tone=warm -> reject\n3. shape=triangle | tone=warm | r1=+1, r2=+5 -> accept\n4. tone=warm | r1=-4, r2=+0 | shape=circle -> reject",
+        "CogFlex suite task. Episode 0021. Turn 3 of 3.\n\nApply the active rule to every probe.\n\nProbes:\n1. r1=+1, r2=+4 | shape=circle | tone=neutral -> ?\n2. shape=hex | tone=neutral | r1=-3, r2=+4 -> ?\n3. tone=warm | r1=+0, r2=+3 | shape=hex -> ?\n4. r1=-4, r2=-5 | shape=circle | tone=warm -> ?\n5. shape=hex | tone=neutral | r1=+2, r2=+3 -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -1210,16 +1210,16 @@
     "scoring": {
       "final_probe_targets": [
         "reject",
-        "reject",
+        "accept",
         "reject",
         "accept",
-        "accept"
+        "reject"
       ],
       "probe_annotations": [
-        "congruent",
         "incongruent",
         "incongruent",
-        "congruent",
+        "incongruent",
+        "incongruent",
         "incongruent"
       ]
     }
@@ -1228,10 +1228,10 @@
     "episode_id": "0022",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0022. Turn 1 of 4.\n\nInfer the current rule from these labeled examples.\n\nExamples:\n1. shape=triangle | tone=warm | r1=+1, r2=+2 -> reject\n2. tone=cool | r1=+2, r2=+1 | shape=circle -> accept\n3. r1=-2, r2=-3 | shape=square | tone=cool -> reject",
-        "CogFlex suite task. Episode 0022. Turn 2 of 4.\n\nContinue collecting evidence before the upcoming update.\n\nExamples:\n1. tone=cool | r1=+1, r2=-2 | shape=triangle -> reject\n2. r1=+5, r2=+0 | shape=hex | tone=cool -> accept",
-        "CogFlex suite task. Episode 0022. Turn 3 of 4.\n\nThe task rule has changed. Learn the replacement behavior from these examples.\n\nExamples:\n1. r1=-1, r2=-2 | shape=circle | tone=cool -> reject\n2. shape=triangle | tone=warm | r1=-1, r2=+0 -> reject\n3. tone=neutral | r1=+3, r2=-5 | shape=hex -> accept",
-        "CogFlex suite task. Episode 0022. Turn 4 of 4.\n\nApply the active rule to every probe.\n\nProbes:\n1. shape=hex | tone=warm | r1=+3, r2=+2 -> ?\n2. tone=neutral | r1=+2, r2=-2 | shape=triangle -> ?\n3. r1=-3, r2=-1 | shape=triangle | tone=neutral -> ?\n4. shape=square | tone=warm | r1=-3, r2=-2 -> ?\n5. tone=cool | r1=-3, r2=+4 | shape=circle -> ?\n6. r1=-4, r2=+0 | shape=triangle | tone=neutral -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0022. Turn 1 of 4.\n\nInfer the current rule from these labeled examples.\n\nExamples:\n1. shape=triangle | tone=cool | r1=+2, r2=+5 -> reject\n2. tone=cool | r1=-4, r2=+1 | shape=circle -> accept\n3. r1=-2, r2=-3 | shape=triangle | tone=neutral -> reject",
+        "CogFlex suite task. Episode 0022. Turn 2 of 4.\n\nContinue collecting evidence before the upcoming update.\n\nExamples:\n1. tone=warm | r1=+0, r2=+5 | shape=hex -> accept\n2. r1=+1, r2=+3 | shape=triangle | tone=cool -> reject",
+        "CogFlex suite task. Episode 0022. Turn 3 of 4.\n\nThe task rule has changed. Learn the replacement behavior from these examples.\n\nExamples:\n1. r1=+0, r2=-1 | shape=circle | tone=neutral -> reject\n2. shape=square | tone=neutral | r1=+3, r2=+2 -> reject\n3. tone=cool | r1=+1, r2=-3 | shape=hex -> accept",
+        "CogFlex suite task. Episode 0022. Turn 4 of 4.\n\nApply the active rule to every probe.\n\nProbes:\n1. shape=square | tone=neutral | r1=+4, r2=-2 -> ?\n2. tone=warm | r1=+5, r2=-1 | shape=triangle -> ?\n3. r1=+0, r2=-5 | shape=triangle | tone=neutral -> ?\n4. shape=square | tone=warm | r1=+2, r2=-5 -> ?\n5. tone=neutral | r1=-4, r2=+2 | shape=triangle -> ?\n6. r1=+0, r2=+1 | shape=square | tone=neutral -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -1269,20 +1269,20 @@
     },
     "scoring": {
       "final_probe_targets": [
-        "reject",
         "accept",
         "accept",
         "reject",
         "reject",
-        "accept"
+        "accept",
+        "reject"
       ],
       "probe_annotations": [
         "incongruent",
         "incongruent",
-        "incongruent",
+        "congruent",
         "congruent",
         "incongruent",
-        "incongruent"
+        "congruent"
       ]
     }
   },
@@ -1290,9 +1290,9 @@
     "episode_id": "0023",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0023. Turn 1 of 3.\n\nInfer the current rule from these labeled examples.\n\nExamples:\n1. shape=hex | tone=warm | r1=-2, r2=+1 -> reject\n2. tone=cool | r1=+4, r2=-5 | shape=circle -> accept\n3. r1=+2, r2=+5 | shape=hex | tone=warm -> accept\n4. shape=hex | tone=warm | r1=-4, r2=-4 -> reject",
-        "CogFlex suite task. Episode 0023. Turn 2 of 3.\n\nThe task rule has changed. Learn the replacement behavior from these examples.\n\nExamples:\n1. tone=cool | r1=+2, r2=-1 | shape=triangle -> reject\n2. r1=-1, r2=-5 | shape=square | tone=cool -> accept\n3. shape=triangle | tone=cool | r1=-2, r2=-3 -> reject\n4. tone=cool | r1=+3, r2=-5 | shape=triangle -> accept",
-        "CogFlex suite task. Episode 0023. Turn 3 of 3.\n\nApply the active rule to every probe.\n\nProbes:\n1. r1=+2, r2=+1 | shape=triangle | tone=warm -> ?\n2. shape=circle | tone=cool | r1=+0, r2=-4 -> ?\n3. tone=warm | r1=+2, r2=+5 | shape=triangle -> ?\n4. r1=+2, r2=+0 | shape=hex | tone=warm -> ?\n5. shape=triangle | tone=neutral | r1=-3, r2=-4 -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0023. Turn 1 of 3.\n\nInfer the current rule from these labeled examples.\n\nExamples:\n1. shape=hex | tone=warm | r1=+5, r2=-4 -> accept\n2. tone=cool | r1=-3, r2=+4 | shape=triangle -> reject\n3. r1=+0, r2=-3 | shape=hex | tone=neutral -> accept\n4. shape=square | tone=neutral | r1=-5, r2=+0 -> reject",
+        "CogFlex suite task. Episode 0023. Turn 2 of 3.\n\nThe task rule has changed. Learn the replacement behavior from these examples.\n\nExamples:\n1. tone=cool | r1=+5, r2=-3 | shape=hex -> accept\n2. r1=+3, r2=+3 | shape=triangle | tone=neutral -> accept\n3. shape=hex | tone=neutral | r1=+0, r2=+0 -> reject\n4. tone=cool | r1=+3, r2=+1 | shape=circle -> reject",
+        "CogFlex suite task. Episode 0023. Turn 3 of 3.\n\nApply the active rule to every probe.\n\nProbes:\n1. r1=-1, r2=+1 | shape=hex | tone=warm -> ?\n2. shape=circle | tone=warm | r1=+0, r2=-1 -> ?\n3. tone=neutral | r1=-1, r2=+1 | shape=circle -> ?\n4. r1=+3, r2=-4 | shape=hex | tone=neutral -> ?\n5. shape=circle | tone=cool | r1=-5, r2=-4 -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -1328,15 +1328,15 @@
       "final_probe_targets": [
         "reject",
         "reject",
-        "accept",
         "reject",
+        "accept",
         "accept"
       ],
       "probe_annotations": [
-        "incongruent",
-        "incongruent",
         "congruent",
         "incongruent",
+        "congruent",
+        "congruent",
         "incongruent"
       ]
     }
@@ -1345,10 +1345,10 @@
     "episode_id": "0024",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0024. Turn 1 of 4.\n\nInfer the current rule from these labeled examples.\n\nExamples:\n1. shape=circle | tone=warm | r1=+4, r2=+1 -> accept\n2. tone=cool | r1=-4, r2=+4 | shape=triangle -> reject\n3. r1=-4, r2=+3 | shape=triangle | tone=neutral -> reject",
-        "CogFlex suite task. Episode 0024. Turn 2 of 4.\n\nContinue collecting evidence before the upcoming update.\n\nExamples:\n1. tone=cool | r1=-4, r2=-1 | shape=hex -> accept\n2. r1=-3, r2=+1 | shape=triangle | tone=warm -> reject",
-        "CogFlex suite task. Episode 0024. Turn 3 of 4.\n\nThe task rule has changed. Learn the replacement behavior from these examples.\n\nExamples:\n1. r1=+4, r2=-4 | shape=hex | tone=cool -> accept\n2. shape=circle | tone=warm | r1=-4, r2=+3 -> reject\n3. tone=neutral | r1=-4, r2=+5 | shape=triangle -> reject",
-        "CogFlex suite task. Episode 0024. Turn 4 of 4.\n\nApply the active rule to every probe.\n\nProbes:\n1. shape=circle | tone=cool | r1=-2, r2=+0 -> ?\n2. tone=neutral | r1=+4, r2=+1 | shape=triangle -> ?\n3. r1=-3, r2=-3 | shape=square | tone=cool -> ?\n4. shape=circle | tone=neutral | r1=-4, r2=+4 -> ?\n5. tone=cool | r1=+0, r2=-1 | shape=circle -> ?\n6. r1=-4, r2=+3 | shape=hex | tone=warm -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0024. Turn 1 of 4.\n\nInfer the current rule from these labeled examples.\n\nExamples:\n1. shape=circle | tone=neutral | r1=-2, r2=+1 -> accept\n2. tone=neutral | r1=+0, r2=-5 | shape=triangle -> reject\n3. r1=+4, r2=+4 | shape=triangle | tone=warm -> reject",
+        "CogFlex suite task. Episode 0024. Turn 2 of 4.\n\nContinue collecting evidence before the upcoming update.\n\nExamples:\n1. tone=warm | r1=+5, r2=+0 | shape=circle -> accept\n2. r1=+4, r2=-5 | shape=square | tone=cool -> reject",
+        "CogFlex suite task. Episode 0024. Turn 3 of 4.\n\nThe task rule has changed. Learn the replacement behavior from these examples.\n\nExamples:\n1. r1=-5, r2=-4 | shape=circle | tone=warm -> reject\n2. shape=square | tone=warm | r1=+2, r2=+2 -> accept\n3. tone=warm | r1=+0, r2=+1 | shape=triangle -> reject",
+        "CogFlex suite task. Episode 0024. Turn 4 of 4.\n\nApply the active rule to every probe.\n\nProbes:\n1. shape=hex | tone=cool | r1=+0, r2=+3 -> ?\n2. tone=warm | r1=+3, r2=-1 | shape=square -> ?\n3. r1=-5, r2=+3 | shape=circle | tone=neutral -> ?\n4. shape=triangle | tone=cool | r1=+5, r2=+4 -> ?\n5. tone=warm | r1=-5, r2=-4 | shape=triangle -> ?\n6. r1=+5, r2=+3 | shape=square | tone=neutral -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -1386,19 +1386,19 @@
     },
     "scoring": {
       "final_probe_targets": [
-        "accept",
         "reject",
         "accept",
         "accept",
         "reject",
-        "reject"
+        "reject",
+        "accept"
       ],
       "probe_annotations": [
-        "congruent",
-        "congruent",
+        "incongruent",
         "incongruent",
         "congruent",
-        "incongruent",
+        "congruent",
+        "congruent",
         "incongruent"
       ]
     }
@@ -2515,10 +2515,10 @@
     "episode_id": "0044",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0044. Turn 1 of 4.\n\nInfer the live routing rule from these examples.\n\nExamples:\n1. shape=square | tone=warm | r1=-4, r2=-1 -> reject\n2. tone=warm | r1=-3, r2=+3 | shape=hex -> reject\n3. r1=+5, r2=+0 | shape=square | tone=warm -> accept",
-        "CogFlex suite task. Episode 0044. Turn 2 of 4.\n\nContinue using the most recent labeled evidence.\n\nExamples:\n1. tone=cool | r1=+5, r2=+3 | shape=square -> accept\n2. r1=-4, r2=+3 | shape=circle | tone=neutral -> reject",
-        "CogFlex suite task. Episode 0044. Turn 3 of 4.\n\nContinue using the most recent labeled evidence.\n\nExamples:\n1. r1=+0, r2=+0 | shape=hex | tone=warm -> accept\n2. shape=square | tone=cool | r1=-3, r2=+4 -> reject\n3. tone=warm | r1=+0, r2=-5 | shape=square -> reject",
-        "CogFlex suite task. Episode 0044. Turn 4 of 4.\n\nClassify each probe using the latest behavior implied by the sequence.\n\nProbes:\n1. shape=hex | tone=warm | r1=+1, r2=+3 -> ?\n2. tone=neutral | r1=+4, r2=+2 | shape=square -> ?\n3. r1=+0, r2=-4 | shape=square | tone=warm -> ?\n4. shape=circle | tone=warm | r1=-4, r2=+3 -> ?\n5. tone=neutral | r1=-1, r2=-5 | shape=triangle -> ?\n6. r1=-4, r2=+4 | shape=circle | tone=warm -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0044. Turn 1 of 4.\n\nInfer the live routing rule from these examples.\n\nExamples:\n1. shape=square | tone=warm | r1=+1, r2=+3 -> accept\n2. tone=neutral | r1=-4, r2=-3 | shape=triangle -> reject\n3. r1=-4, r2=-4 | shape=square | tone=cool -> reject",
+        "CogFlex suite task. Episode 0044. Turn 2 of 4.\n\nContinue using the most recent labeled evidence.\n\nExamples:\n1. tone=cool | r1=-2, r2=+3 | shape=hex -> reject\n2. r1=+1, r2=-3 | shape=circle | tone=cool -> accept",
+        "CogFlex suite task. Episode 0044. Turn 3 of 4.\n\nContinue using the most recent labeled evidence.\n\nExamples:\n1. r1=-5, r2=+1 | shape=square | tone=cool -> reject\n2. shape=circle | tone=warm | r1=+1, r2=+2 -> accept\n3. tone=cool | r1=+3, r2=+3 | shape=triangle -> reject",
+        "CogFlex suite task. Episode 0044. Turn 4 of 4.\n\nClassify each probe using the latest behavior implied by the sequence.\n\nProbes:\n1. shape=square | tone=cool | r1=+1, r2=-4 -> ?\n2. tone=neutral | r1=+3, r2=-2 | shape=hex -> ?\n3. r1=-2, r2=+5 | shape=triangle | tone=warm -> ?\n4. shape=triangle | tone=neutral | r1=+3, r2=-4 -> ?\n5. tone=warm | r1=+5, r2=+2 | shape=hex -> ?\n6. r1=+1, r2=-1 | shape=triangle | tone=cool -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -2556,17 +2556,17 @@
     },
     "scoring": {
       "final_probe_targets": [
-        "accept",
-        "reject",
         "reject",
         "accept",
         "reject",
-        "accept"
+        "reject",
+        "accept",
+        "reject"
       ],
       "probe_annotations": [
+        "incongruent",
         "congruent",
-        "incongruent",
-        "incongruent",
+        "congruent",
         "incongruent",
         "congruent",
         "incongruent"
@@ -3334,10 +3334,10 @@
     "episode_id": "0058",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0058. Turn 1 of 4.\n\nInfer the live routing rule from these examples.\n\nExamples:\n1. shape=triangle | tone=cool | r1=-2, r2=-4 -> reject\n2. tone=warm | r1=+5, r2=+5 | shape=circle -> accept\n3. r1=-5, r2=+3 | shape=hex | tone=warm -> reject",
-        "CogFlex suite task. Episode 0058. Turn 2 of 4.\n\nContinue using the most recent labeled evidence.\n\nExamples:\n1. tone=neutral | r1=-3, r2=-4 | shape=triangle -> reject\n2. r1=+5, r2=-3 | shape=square | tone=warm -> accept",
-        "CogFlex suite task. Episode 0058. Turn 3 of 4.\n\nContinue using the most recent labeled evidence.\n\nExamples:\n1. r1=-5, r2=+2 | shape=hex | tone=cool -> accept\n2. shape=triangle | tone=cool | r1=-1, r2=-4 -> reject\n3. tone=warm | r1=-1, r2=-3 | shape=triangle -> reject",
-        "CogFlex suite task. Episode 0058. Turn 4 of 4.\n\nClassify each probe using the latest behavior implied by the sequence.\n\nProbes:\n1. shape=hex | tone=cool | r1=+5, r2=-4 -> ?\n2. tone=neutral | r1=-2, r2=+5 | shape=hex -> ?\n3. r1=+4, r2=+3 | shape=triangle | tone=warm -> ?\n4. shape=triangle | tone=neutral | r1=-5, r2=+2 -> ?\n5. tone=cool | r1=+4, r2=-5 | shape=circle -> ?\n6. r1=+1, r2=-1 | shape=square | tone=cool -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0058. Turn 1 of 4.\n\nInfer the live routing rule from these examples.\n\nExamples:\n1. shape=square | tone=cool | r1=+5, r2=-3 -> accept\n2. tone=neutral | r1=-2, r2=+0 | shape=square -> reject\n3. r1=-1, r2=-4 | shape=triangle | tone=cool -> reject",
+        "CogFlex suite task. Episode 0058. Turn 2 of 4.\n\nContinue using the most recent labeled evidence.\n\nExamples:\n1. tone=cool | r1=+0, r2=+3 | shape=triangle -> accept\n2. r1=-2, r2=-1 | shape=circle | tone=neutral -> reject",
+        "CogFlex suite task. Episode 0058. Turn 3 of 4.\n\nContinue using the most recent labeled evidence.\n\nExamples:\n1. r1=+4, r2=+4 | shape=triangle | tone=cool -> reject\n2. shape=circle | tone=neutral | r1=+5, r2=-2 -> accept\n3. tone=warm | r1=+2, r2=+2 | shape=triangle -> reject",
+        "CogFlex suite task. Episode 0058. Turn 4 of 4.\n\nClassify each probe using the latest behavior implied by the sequence.\n\nProbes:\n1. shape=triangle | tone=cool | r1=-5, r2=+5 -> ?\n2. tone=neutral | r1=+4, r2=+0 | shape=hex -> ?\n3. r1=-5, r2=-4 | shape=circle | tone=warm -> ?\n4. shape=triangle | tone=cool | r1=-3, r2=+2 -> ?\n5. tone=cool | r1=-1, r2=-5 | shape=circle -> ?\n6. r1=+1, r2=+5 | shape=triangle | tone=cool -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -3375,19 +3375,19 @@
     },
     "scoring": {
       "final_probe_targets": [
-        "accept",
-        "accept",
         "reject",
+        "accept",
+        "accept",
         "reject",
         "accept",
         "reject"
       ],
       "probe_annotations": [
         "congruent",
-        "incongruent",
+        "congruent",
         "incongruent",
         "congruent",
-        "congruent",
+        "incongruent",
         "incongruent"
       ]
     }
@@ -4041,10 +4041,10 @@
     "episode_id": "0070",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0070. Turn 1 of 4.\n\nLearn the rule bound to context=alpha.\n\nExamples:\n1. shape=triangle | tone=neutral | context=alpha | r1=+1, r2=+4 -> reject\n2. tone=cool | context=alpha | r1=-2, r2=-2 | shape=hex -> accept\n3. context=alpha | r1=-4, r2=+1 | shape=triangle | tone=neutral -> reject",
-        "CogFlex suite task. Episode 0070. Turn 2 of 4.\n\nNow learn the rule bound to context=beta.\n\nExamples:\n1. tone=cool | context=beta | r1=+0, r2=-4 | shape=circle -> reject\n2. context=beta | r1=+4, r2=-2 | shape=circle | tone=neutral -> accept",
-        "CogFlex suite task. Episode 0070. Turn 3 of 4.\n\nUse the context tag to keep the active rule aligned.\n\nExamples:\n1. context=beta | r1=+0, r2=+3 | shape=hex | tone=cool -> reject\n2. r1=+3, r2=+3 | shape=circle | tone=cool | context=alpha -> accept\n3. shape=triangle | tone=cool | context=alpha | r1=-1, r2=-4 -> reject",
-        "CogFlex suite task. Episode 0070. Turn 4 of 4.\n\nFor each probe, use its context to select the right rule before labeling it.\n\nProbes:\n1. r1=-5, r2=+0 | shape=hex | tone=neutral | context=alpha -> ?\n2. shape=hex | tone=neutral | context=beta | r1=-1, r2=+3 -> ?\n3. tone=cool | context=alpha | r1=+1, r2=+2 | shape=circle -> ?\n4. context=beta | r1=+4, r2=+0 | shape=triangle | tone=neutral -> ?\n5. r1=+1, r2=+4 | shape=square | tone=warm | context=alpha -> ?\n6. shape=triangle | tone=neutral | context=beta | r1=+5, r2=-4 -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0070. Turn 1 of 4.\n\nLearn the rule bound to context=alpha.\n\nExamples:\n1. shape=triangle | tone=cool | context=alpha | r1=+2, r2=-4 -> reject\n2. tone=warm | context=alpha | r1=-2, r2=+1 | shape=hex -> accept\n3. context=alpha | r1=+2, r2=+4 | shape=square | tone=warm -> reject",
+        "CogFlex suite task. Episode 0070. Turn 2 of 4.\n\nNow learn the rule bound to context=beta.\n\nExamples:\n1. tone=neutral | context=beta | r1=+4, r2=+0 | shape=triangle -> reject\n2. context=beta | r1=+5, r2=-3 | shape=triangle | tone=warm -> accept",
+        "CogFlex suite task. Episode 0070. Turn 3 of 4.\n\nUse the context tag to keep the active rule aligned.\n\nExamples:\n1. context=alpha | r1=-3, r2=-4 | shape=hex | tone=warm -> accept\n2. r1=+3, r2=-1 | shape=circle | tone=cool | context=beta -> reject\n3. shape=triangle | tone=cool | context=alpha | r1=+2, r2=+0 -> reject",
+        "CogFlex suite task. Episode 0070. Turn 4 of 4.\n\nFor each probe, use its context to select the right rule before labeling it.\n\nProbes:\n1. r1=-3, r2=-1 | shape=hex | tone=neutral | context=beta -> ?\n2. shape=hex | tone=neutral | context=alpha | r1=+1, r2=+4 -> ?\n3. tone=cool | context=alpha | r1=+3, r2=-1 | shape=hex -> ?\n4. context=alpha | r1=+5, r2=-1 | shape=triangle | tone=warm -> ?\n5. r1=+3, r2=+3 | shape=hex | tone=warm | context=beta -> ?\n6. shape=square | tone=warm | context=beta | r1=+1, r2=-2 -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -4082,20 +4082,20 @@
     },
     "scoring": {
       "final_probe_targets": [
+        "reject",
+        "accept",
         "accept",
         "reject",
         "accept",
-        "reject",
-        "reject",
-        "accept"
+        "reject"
       ],
       "probe_annotations": [
         "incongruent",
         "incongruent",
         "incongruent",
+        "incongruent",
         "congruent",
-        "congruent",
-        "incongruent"
+        "congruent"
       ]
     }
   },
@@ -4277,10 +4277,10 @@
     "episode_id": "0074",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0074. Turn 1 of 4.\n\nLearn the rule bound to context=north.\n\nExamples:\n1. shape=triangle | tone=neutral | context=north | r1=+2, r2=+4 -> reject\n2. tone=neutral | context=north | r1=+5, r2=+0 | shape=hex -> accept\n3. context=north | r1=-3, r2=-4 | shape=square | tone=neutral -> reject",
-        "CogFlex suite task. Episode 0074. Turn 2 of 4.\n\nNow learn the rule bound to context=south.\n\nExamples:\n1. tone=neutral | context=south | r1=-1, r2=+4 | shape=square -> reject\n2. context=south | r1=-3, r2=+5 | shape=square | tone=neutral -> accept",
-        "CogFlex suite task. Episode 0074. Turn 3 of 4.\n\nUse the context tag to keep the active rule aligned.\n\nExamples:\n1. context=north | r1=+3, r2=+1 | shape=square | tone=neutral -> reject\n2. r1=-2, r2=+1 | shape=circle | tone=cool | context=north -> accept\n3. shape=square | tone=neutral | context=south | r1=-3, r2=+0 -> reject",
-        "CogFlex suite task. Episode 0074. Turn 4 of 4.\n\nFor each probe, use its context to select the right rule before labeling it.\n\nProbes:\n1. r1=+2, r2=+2 | shape=square | tone=cool | context=south -> ?\n2. shape=hex | tone=warm | context=north | r1=+2, r2=+2 -> ?\n3. tone=warm | context=north | r1=-3, r2=+1 | shape=square -> ?\n4. context=south | r1=-2, r2=-2 | shape=triangle | tone=warm -> ?\n5. r1=+1, r2=-5 | shape=square | tone=warm | context=south -> ?\n6. shape=circle | tone=warm | context=north | r1=+1, r2=+2 -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0074. Turn 1 of 4.\n\nLearn the rule bound to context=north.\n\nExamples:\n1. shape=triangle | tone=neutral | context=north | r1=+4, r2=-1 -> reject\n2. tone=warm | context=north | r1=+2, r2=+1 | shape=triangle -> reject\n3. context=north | r1=-3, r2=+2 | shape=circle | tone=cool -> accept",
+        "CogFlex suite task. Episode 0074. Turn 2 of 4.\n\nNow learn the rule bound to context=south.\n\nExamples:\n1. tone=cool | context=south | r1=+1, r2=+4 | shape=hex -> reject\n2. context=south | r1=+1, r2=-5 | shape=circle | tone=neutral -> accept",
+        "CogFlex suite task. Episode 0074. Turn 3 of 4.\n\nUse the context tag to keep the active rule aligned.\n\nExamples:\n1. context=south | r1=-1, r2=+1 | shape=hex | tone=neutral -> reject\n2. r1=+2, r2=+2 | shape=circle | tone=warm | context=north -> accept\n3. shape=triangle | tone=neutral | context=north | r1=+3, r2=+5 -> reject",
+        "CogFlex suite task. Episode 0074. Turn 4 of 4.\n\nFor each probe, use its context to select the right rule before labeling it.\n\nProbes:\n1. r1=+5, r2=+2 | shape=hex | tone=cool | context=north -> ?\n2. shape=triangle | tone=neutral | context=north | r1=+5, r2=+0 -> ?\n3. tone=cool | context=south | r1=-1, r2=-2 | shape=triangle -> ?\n4. context=south | r1=-1, r2=+5 | shape=hex | tone=neutral -> ?\n5. r1=-3, r2=+0 | shape=circle | tone=cool | context=south -> ?\n6. shape=circle | tone=warm | context=north | r1=+0, r2=+0 -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -4318,16 +4318,16 @@
     },
     "scoring": {
       "final_probe_targets": [
-        "reject",
         "accept",
         "reject",
         "reject",
         "accept",
+        "reject",
         "accept"
       ],
       "probe_annotations": [
         "congruent",
-        "incongruent",
+        "congruent",
         "congruent",
         "congruent",
         "incongruent",
@@ -4513,10 +4513,10 @@
     "episode_id": "0078",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0078. Turn 1 of 4.\n\nLearn the rule bound to context=cedar.\n\nExamples:\n1. shape=triangle | tone=neutral | context=cedar | r1=-5, r2=+0 -> reject\n2. tone=cool | context=cedar | r1=+3, r2=-4 | shape=square -> reject\n3. context=cedar | r1=-3, r2=+3 | shape=hex | tone=neutral -> accept",
-        "CogFlex suite task. Episode 0078. Turn 2 of 4.\n\nNow learn the rule bound to context=harbor.\n\nExamples:\n1. tone=warm | context=harbor | r1=-2, r2=-4 | shape=square -> accept\n2. context=harbor | r1=+3, r2=+2 | shape=triangle | tone=warm -> reject",
-        "CogFlex suite task. Episode 0078. Turn 3 of 4.\n\nUse the context tag to keep the active rule aligned.\n\nExamples:\n1. context=cedar | r1=+1, r2=+2 | shape=triangle | tone=warm -> reject\n2. r1=+0, r2=+1 | shape=triangle | tone=cool | context=harbor -> reject\n3. shape=circle | tone=neutral | context=cedar | r1=+5, r2=-4 -> accept",
-        "CogFlex suite task. Episode 0078. Turn 4 of 4.\n\nFor each probe, use its context to select the right rule before labeling it.\n\nProbes:\n1. r1=+4, r2=-5 | shape=circle | tone=neutral | context=harbor -> ?\n2. shape=hex | tone=cool | context=cedar | r1=-4, r2=-1 -> ?\n3. tone=cool | context=cedar | r1=-2, r2=-2 | shape=triangle -> ?\n4. context=harbor | r1=+2, r2=-3 | shape=square | tone=neutral -> ?\n5. r1=+0, r2=+5 | shape=hex | tone=cool | context=harbor -> ?\n6. shape=hex | tone=cool | context=cedar | r1=-4, r2=-3 -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0078. Turn 1 of 4.\n\nLearn the rule bound to context=cedar.\n\nExamples:\n1. shape=circle | tone=cool | context=cedar | r1=-5, r2=-1 -> accept\n2. tone=neutral | context=cedar | r1=-3, r2=-4 | shape=triangle -> reject\n3. context=cedar | r1=-1, r2=-2 | shape=square | tone=cool -> reject",
+        "CogFlex suite task. Episode 0078. Turn 2 of 4.\n\nNow learn the rule bound to context=harbor.\n\nExamples:\n1. tone=warm | context=harbor | r1=-1, r2=+1 | shape=hex -> reject\n2. context=harbor | r1=-5, r2=-2 | shape=hex | tone=warm -> accept",
+        "CogFlex suite task. Episode 0078. Turn 3 of 4.\n\nUse the context tag to keep the active rule aligned.\n\nExamples:\n1. context=harbor | r1=-4, r2=-1 | shape=triangle | tone=cool -> reject\n2. r1=+0, r2=-2 | shape=square | tone=cool | context=cedar -> reject\n3. shape=circle | tone=warm | context=cedar | r1=+4, r2=+0 -> accept",
+        "CogFlex suite task. Episode 0078. Turn 4 of 4.\n\nFor each probe, use its context to select the right rule before labeling it.\n\nProbes:\n1. r1=+4, r2=-1 | shape=triangle | tone=warm | context=harbor -> ?\n2. shape=circle | tone=cool | context=cedar | r1=+2, r2=-4 -> ?\n3. tone=warm | context=harbor | r1=+0, r2=-3 | shape=hex -> ?\n4. context=cedar | r1=-5, r2=-1 | shape=hex | tone=neutral -> ?\n5. r1=+4, r2=+3 | shape=square | tone=warm | context=cedar -> ?\n6. shape=square | tone=cool | context=harbor | r1=+3, r2=+3 -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -4554,20 +4554,20 @@
     },
     "scoring": {
       "final_probe_targets": [
-        "accept",
+        "reject",
         "accept",
         "reject",
-        "reject",
+        "accept",
         "reject",
         "accept"
       ],
       "probe_annotations": [
         "congruent",
-        "incongruent",
-        "congruent",
         "congruent",
         "incongruent",
-        "congruent"
+        "congruent",
+        "incongruent",
+        "incongruent"
       ]
     }
   },
@@ -5103,10 +5103,10 @@
     "episode_id": "0088",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0088. Turn 1 of 4.\n\nLearn the rule bound to context=alpha.\n\nExamples:\n1. shape=circle | tone=cool | context=alpha | r1=+4, r2=+1 -> accept\n2. tone=cool | context=alpha | r1=-4, r2=+2 | shape=square -> reject\n3. context=alpha | r1=-2, r2=-2 | shape=triangle | tone=neutral -> reject",
-        "CogFlex suite task. Episode 0088. Turn 2 of 4.\n\nNow learn the rule bound to context=beta.\n\nExamples:\n1. tone=neutral | context=beta | r1=-3, r2=+2 | shape=square -> reject\n2. context=beta | r1=-4, r2=-3 | shape=circle | tone=cool -> accept",
-        "CogFlex suite task. Episode 0088. Turn 3 of 4.\n\nUse the context tag to keep the active rule aligned.\n\nExamples:\n1. context=beta | r1=+3, r2=+0 | shape=triangle | tone=cool -> reject\n2. r1=+3, r2=-3 | shape=triangle | tone=neutral | context=alpha -> reject\n3. shape=circle | tone=cool | context=alpha | r1=-5, r2=-5 -> accept",
-        "CogFlex suite task. Episode 0088. Turn 4 of 4.\n\nFor each probe, use its context to select the right rule before labeling it.\n\nProbes:\n1. r1=-1, r2=+5 | shape=square | tone=neutral | context=alpha -> ?\n2. shape=hex | tone=neutral | context=beta | r1=+0, r2=+5 -> ?\n3. tone=cool | context=beta | r1=-4, r2=-4 | shape=circle -> ?\n4. context=alpha | r1=-4, r2=-5 | shape=hex | tone=neutral -> ?\n5. r1=+3, r2=+0 | shape=hex | tone=cool | context=beta -> ?\n6. shape=circle | tone=neutral | context=alpha | r1=+0, r2=-5 -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0088. Turn 1 of 4.\n\nLearn the rule bound to context=alpha.\n\nExamples:\n1. shape=hex | tone=warm | context=alpha | r1=-1, r2=-4 -> accept\n2. tone=neutral | context=alpha | r1=+4, r2=-4 | shape=square -> reject\n3. context=alpha | r1=-2, r2=+5 | shape=square | tone=neutral -> reject",
+        "CogFlex suite task. Episode 0088. Turn 2 of 4.\n\nNow learn the rule bound to context=beta.\n\nExamples:\n1. tone=warm | context=beta | r1=-5, r2=-2 | shape=square -> accept\n2. context=beta | r1=+3, r2=+1 | shape=circle | tone=cool -> reject",
+        "CogFlex suite task. Episode 0088. Turn 3 of 4.\n\nUse the context tag to keep the active rule aligned.\n\nExamples:\n1. context=beta | r1=+1, r2=-2 | shape=circle | tone=neutral -> reject\n2. r1=+2, r2=-5 | shape=hex | tone=neutral | context=alpha -> accept\n3. shape=square | tone=warm | context=alpha | r1=-1, r2=-5 -> reject",
+        "CogFlex suite task. Episode 0088. Turn 4 of 4.\n\nFor each probe, use its context to select the right rule before labeling it.\n\nProbes:\n1. r1=+3, r2=-2 | shape=circle | tone=cool | context=alpha -> ?\n2. shape=circle | tone=neutral | context=alpha | r1=+0, r2=+5 -> ?\n3. tone=neutral | context=beta | r1=-2, r2=+4 | shape=circle -> ?\n4. context=alpha | r1=+1, r2=+1 | shape=triangle | tone=warm -> ?\n5. r1=+1, r2=-3 | shape=circle | tone=neutral | context=beta -> ?\n6. shape=square | tone=neutral | context=beta | r1=+2, r2=+3 -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -5144,12 +5144,12 @@
     },
     "scoring": {
       "final_probe_targets": [
-        "reject",
-        "reject",
         "accept",
         "accept",
+        "accept",
         "reject",
-        "accept"
+        "reject",
+        "reject"
       ],
       "probe_annotations": [
         "incongruent",
@@ -5157,7 +5157,7 @@
         "congruent",
         "congruent",
         "incongruent",
-        "incongruent"
+        "congruent"
       ]
     }
   },
@@ -5221,10 +5221,10 @@
     "episode_id": "0090",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0090. Turn 1 of 4.\n\nLearn the rule bound to context=cedar.\n\nExamples:\n1. shape=circle | tone=neutral | context=cedar | r1=+2, r2=+3 -> accept\n2. tone=warm | context=cedar | r1=+1, r2=+0 | shape=square -> reject\n3. context=cedar | r1=-3, r2=+5 | shape=square | tone=cool -> reject",
-        "CogFlex suite task. Episode 0090. Turn 2 of 4.\n\nNow learn the rule bound to context=harbor.\n\nExamples:\n1. tone=warm | context=harbor | r1=+2, r2=+0 | shape=triangle -> reject\n2. context=harbor | r1=-3, r2=-4 | shape=circle | tone=neutral -> accept",
-        "CogFlex suite task. Episode 0090. Turn 3 of 4.\n\nUse the context tag to keep the active rule aligned.\n\nExamples:\n1. context=cedar | r1=-2, r2=-2 | shape=square | tone=cool -> reject\n2. r1=+2, r2=-1 | shape=triangle | tone=cool | context=harbor -> reject\n3. shape=hex | tone=cool | context=cedar | r1=-2, r2=+3 -> accept",
-        "CogFlex suite task. Episode 0090. Turn 4 of 4.\n\nFor each probe, use its context to select the right rule before labeling it.\n\nProbes:\n1. r1=+5, r2=+2 | shape=triangle | tone=neutral | context=cedar -> ?\n2. shape=triangle | tone=cool | context=harbor | r1=-1, r2=-3 -> ?\n3. tone=neutral | context=cedar | r1=-4, r2=-3 | shape=hex -> ?\n4. context=cedar | r1=-3, r2=-1 | shape=hex | tone=warm -> ?\n5. r1=+3, r2=-1 | shape=circle | tone=cool | context=harbor -> ?\n6. shape=hex | tone=cool | context=harbor | r1=-4, r2=-4 -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0090. Turn 1 of 4.\n\nLearn the rule bound to context=cedar.\n\nExamples:\n1. shape=triangle | tone=warm | context=cedar | r1=+5, r2=-4 -> reject\n2. tone=neutral | context=cedar | r1=-3, r2=+2 | shape=hex -> accept\n3. context=cedar | r1=+3, r2=+1 | shape=square | tone=cool -> reject",
+        "CogFlex suite task. Episode 0090. Turn 2 of 4.\n\nNow learn the rule bound to context=harbor.\n\nExamples:\n1. tone=neutral | context=harbor | r1=-1, r2=-3 | shape=hex -> reject\n2. context=harbor | r1=+4, r2=-3 | shape=circle | tone=neutral -> accept",
+        "CogFlex suite task. Episode 0090. Turn 3 of 4.\n\nUse the context tag to keep the active rule aligned.\n\nExamples:\n1. context=harbor | r1=+1, r2=-4 | shape=circle | tone=neutral -> reject\n2. r1=-4, r2=-3 | shape=square | tone=warm | context=cedar -> reject\n3. shape=circle | tone=warm | context=cedar | r1=+1, r2=-5 -> accept",
+        "CogFlex suite task. Episode 0090. Turn 4 of 4.\n\nFor each probe, use its context to select the right rule before labeling it.\n\nProbes:\n1. r1=+1, r2=-4 | shape=circle | tone=warm | context=cedar -> ?\n2. shape=triangle | tone=cool | context=harbor | r1=-5, r2=+0 -> ?\n3. tone=cool | context=cedar | r1=-5, r2=+5 | shape=circle -> ?\n4. context=harbor | r1=-3, r2=+3 | shape=triangle | tone=warm -> ?\n5. r1=-3, r2=+5 | shape=triangle | tone=cool | context=cedar -> ?\n6. shape=hex | tone=warm | context=harbor | r1=-1, r2=-2 -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -5262,12 +5262,12 @@
     },
     "scoring": {
       "final_probe_targets": [
-        "reject",
+        "accept",
         "reject",
         "accept",
         "accept",
         "reject",
-        "accept"
+        "reject"
       ],
       "probe_annotations": [
         "incongruent",
@@ -5275,7 +5275,7 @@
         "congruent",
         "incongruent",
         "incongruent",
-        "congruent"
+        "incongruent"
       ]
     }
   },
@@ -5283,9 +5283,9 @@
     "episode_id": "0091",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0091. Turn 1 of 3.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=triangle | tone=warm | r1=-3, r2=-2 -> reject\n2. tone=neutral | r1=-4, r2=+5 | shape=triangle -> reject\n3. r1=+2, r2=-3 | shape=circle | tone=neutral -> accept\n4. shape=circle | tone=warm | r1=-2, r2=+1 -> accept",
-        "CogFlex suite task. Episode 0091. Turn 2 of 3.\n\nEach item now has a cue. cue=keep keeps the base rule and cue=switch selects the alternate rule.\n\nExamples:\n1. tone=warm | cue=switch | r1=-3, r2=+3 | shape=triangle -> accept\n2. cue=keep | r1=+0, r2=+5 | shape=circle | tone=neutral -> accept\n3. r1=+1, r2=-5 | shape=circle | tone=warm | cue=switch -> accept\n4. shape=square | tone=warm | cue=keep | r1=+5, r2=+3 -> reject",
-        "CogFlex suite task. Episode 0091. Turn 3 of 3.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. cue=switch | r1=-4, r2=+4 | shape=square | tone=neutral -> ?\n2. r1=+1, r2=+4 | shape=square | tone=cool | cue=keep -> ?\n3. shape=hex | tone=warm | cue=keep | r1=-5, r2=-5 -> ?\n4. tone=warm | cue=switch | r1=+3, r2=-4 | shape=square -> ?\n5. cue=keep | r1=-1, r2=-1 | shape=circle | tone=cool -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0091. Turn 1 of 3.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=hex | tone=warm | r1=-3, r2=-1 -> accept\n2. tone=warm | r1=-1, r2=-2 | shape=circle -> accept\n3. r1=+4, r2=-3 | shape=square | tone=cool -> reject\n4. shape=square | tone=neutral | r1=-5, r2=-4 -> reject",
+        "CogFlex suite task. Episode 0091. Turn 2 of 3.\n\nEach item now has a cue. cue=keep keeps the base rule and cue=switch selects the alternate rule.\n\nExamples:\n1. tone=warm | cue=switch | r1=-3, r2=+3 | shape=square -> accept\n2. cue=keep | r1=-1, r2=-3 | shape=hex | tone=cool -> accept\n3. r1=-4, r2=-5 | shape=triangle | tone=neutral | cue=switch -> reject\n4. shape=square | tone=cool | cue=keep | r1=-1, r2=+3 -> reject",
+        "CogFlex suite task. Episode 0091. Turn 3 of 3.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. cue=switch | r1=+5, r2=-5 | shape=square | tone=warm -> ?\n2. r1=+0, r2=+3 | shape=circle | tone=neutral | cue=switch -> ?\n3. shape=circle | tone=cool | cue=keep | r1=+2, r2=-2 -> ?\n4. tone=neutral | cue=keep | r1=+5, r2=+5 | shape=hex -> ?\n5. cue=keep | r1=+4, r2=-3 | shape=triangle | tone=cool -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -5322,12 +5322,12 @@
         "accept",
         "reject",
         "accept",
-        "reject",
-        "accept"
+        "accept",
+        "reject"
       ],
       "probe_annotations": [
         "incongruent",
-        "congruent",
+        "incongruent",
         "congruent",
         "congruent",
         "congruent"
@@ -5400,9 +5400,9 @@
     "episode_id": "0093",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0093. Turn 1 of 3.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=hex | tone=warm | r1=-5, r2=-1 -> accept\n2. tone=warm | r1=+5, r2=-5 | shape=triangle -> reject\n3. r1=-4, r2=+0 | shape=triangle | tone=warm -> reject\n4. shape=hex | tone=warm | r1=+2, r2=-3 -> accept",
-        "CogFlex suite task. Episode 0093. Turn 2 of 3.\n\nEach item now has a cue. cue=torch keeps the base rule and cue=glint selects the alternate rule.\n\nExamples:\n1. tone=warm | cue=torch | r1=+5, r2=-2 | shape=hex -> accept\n2. cue=glint | r1=-2, r2=+1 | shape=circle | tone=warm -> reject\n3. r1=+3, r2=-3 | shape=triangle | tone=warm | cue=torch -> reject\n4. shape=triangle | tone=warm | cue=glint | r1=+0, r2=-2 -> accept",
-        "CogFlex suite task. Episode 0093. Turn 3 of 3.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. cue=glint | r1=+3, r2=+0 | shape=triangle | tone=warm -> ?\n2. r1=-3, r2=+0 | shape=hex | tone=neutral | cue=torch -> ?\n3. shape=hex | tone=neutral | cue=torch | r1=+1, r2=-2 -> ?\n4. tone=neutral | cue=glint | r1=-4, r2=+0 | shape=square -> ?\n5. cue=torch | r1=+5, r2=-2 | shape=square | tone=neutral -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0093. Turn 1 of 3.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=circle | tone=neutral | r1=+4, r2=+3 -> accept\n2. tone=neutral | r1=+2, r2=+1 | shape=triangle -> reject\n3. r1=+3, r2=-4 | shape=square | tone=warm -> reject\n4. shape=hex | tone=warm | r1=+2, r2=-1 -> accept",
+        "CogFlex suite task. Episode 0093. Turn 2 of 3.\n\nEach item now has a cue. cue=torch keeps the base rule and cue=glint selects the alternate rule.\n\nExamples:\n1. tone=warm | cue=torch | r1=+0, r2=+2 | shape=hex -> accept\n2. cue=glint | r1=+5, r2=+4 | shape=circle | tone=neutral -> reject\n3. r1=-2, r2=+4 | shape=triangle | tone=cool | cue=glint -> accept\n4. shape=square | tone=neutral | cue=torch | r1=+1, r2=-5 -> reject",
+        "CogFlex suite task. Episode 0093. Turn 3 of 3.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. cue=torch | r1=-1, r2=-2 | shape=triangle | tone=warm -> ?\n2. r1=-4, r2=+5 | shape=hex | tone=cool | cue=torch -> ?\n3. shape=hex | tone=cool | cue=torch | r1=+5, r2=-1 -> ?\n4. tone=cool | cue=glint | r1=+0, r2=-1 | shape=hex -> ?\n5. cue=glint | r1=+4, r2=-4 | shape=circle | tone=neutral -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -5439,13 +5439,13 @@
         "reject",
         "accept",
         "accept",
-        "accept",
-        "reject"
+        "reject",
+        "accept"
       ],
       "probe_annotations": [
         "congruent",
         "incongruent",
-        "incongruent",
+        "congruent",
         "incongruent",
         "congruent"
       ]
@@ -5634,9 +5634,9 @@
     "episode_id": "0097",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0097. Turn 1 of 3.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=square | tone=warm | r1=-3, r2=+3 -> reject\n2. tone=neutral | r1=-1, r2=-2 | shape=circle -> accept\n3. r1=+2, r2=-1 | shape=square | tone=warm -> reject\n4. shape=circle | tone=warm | r1=+3, r2=-1 -> accept",
-        "CogFlex suite task. Episode 0097. Turn 2 of 3.\n\nEach item now has a cue. cue=keep keeps the base rule and cue=switch selects the alternate rule.\n\nExamples:\n1. tone=warm | cue=switch | r1=-3, r2=-2 | shape=hex -> reject\n2. cue=keep | r1=+5, r2=-2 | shape=hex | tone=cool -> accept\n3. r1=-1, r2=+0 | shape=square | tone=neutral | cue=keep -> reject\n4. shape=circle | tone=warm | cue=switch | r1=-3, r2=-3 -> accept",
-        "CogFlex suite task. Episode 0097. Turn 3 of 3.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. cue=keep | r1=+1, r2=+0 | shape=hex | tone=warm -> ?\n2. r1=-4, r2=+4 | shape=triangle | tone=cool | cue=keep -> ?\n3. shape=hex | tone=cool | cue=keep | r1=+1, r2=-2 -> ?\n4. tone=cool | cue=switch | r1=-5, r2=+1 | shape=square -> ?\n5. cue=switch | r1=-2, r2=-3 | shape=circle | tone=neutral -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0097. Turn 1 of 3.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=triangle | tone=neutral | r1=-3, r2=+4 -> reject\n2. tone=cool | r1=+1, r2=+4 | shape=circle -> accept\n3. r1=+5, r2=+3 | shape=triangle | tone=cool -> reject\n4. shape=hex | tone=warm | r1=+0, r2=-3 -> accept",
+        "CogFlex suite task. Episode 0097. Turn 2 of 3.\n\nEach item now has a cue. cue=keep keeps the base rule and cue=switch selects the alternate rule.\n\nExamples:\n1. tone=neutral | cue=switch | r1=+3, r2=+5 | shape=circle -> accept\n2. cue=switch | r1=+0, r2=-3 | shape=circle | tone=neutral -> reject\n3. r1=-2, r2=+0 | shape=triangle | tone=cool | cue=keep -> reject\n4. shape=circle | tone=cool | cue=keep | r1=-3, r2=+1 -> accept",
+        "CogFlex suite task. Episode 0097. Turn 3 of 3.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. cue=keep | r1=+2, r2=+2 | shape=circle | tone=neutral -> ?\n2. r1=+0, r2=+5 | shape=triangle | tone=warm | cue=keep -> ?\n3. shape=triangle | tone=warm | cue=switch | r1=-5, r2=-3 -> ?\n4. tone=warm | cue=keep | r1=+3, r2=+3 | shape=circle -> ?\n5. cue=switch | r1=-2, r2=-1 | shape=circle | tone=warm -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -5677,10 +5677,10 @@
         "reject"
       ],
       "probe_annotations": [
+        "congruent",
+        "congruent",
         "incongruent",
-        "incongruent",
-        "incongruent",
-        "incongruent",
+        "congruent",
         "incongruent"
       ]
     }
@@ -5751,9 +5751,9 @@
     "episode_id": "0099",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0099. Turn 1 of 3.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=triangle | tone=cool | r1=+5, r2=-5 -> reject\n2. tone=warm | r1=+5, r2=-1 | shape=hex -> accept\n3. r1=+4, r2=-3 | shape=circle | tone=warm -> accept\n4. shape=triangle | tone=neutral | r1=+1, r2=-4 -> reject",
-        "CogFlex suite task. Episode 0099. Turn 2 of 3.\n\nEach item now has a cue. cue=torch keeps the base rule and cue=glint selects the alternate rule.\n\nExamples:\n1. tone=neutral | cue=glint | r1=+5, r2=+3 | shape=hex -> accept\n2. cue=torch | r1=-3, r2=-3 | shape=square | tone=neutral -> reject\n3. r1=+3, r2=-4 | shape=circle | tone=neutral | cue=torch -> accept\n4. shape=circle | tone=cool | cue=glint | r1=-1, r2=-4 -> reject",
-        "CogFlex suite task. Episode 0099. Turn 3 of 3.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. cue=torch | r1=-2, r2=+4 | shape=square | tone=neutral -> ?\n2. r1=-3, r2=-5 | shape=circle | tone=neutral | cue=torch -> ?\n3. shape=circle | tone=cool | cue=glint | r1=-2, r2=-3 -> ?\n4. tone=neutral | cue=glint | r1=+0, r2=-2 | shape=square -> ?\n5. cue=torch | r1=-4, r2=-5 | shape=hex | tone=cool -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0099. Turn 1 of 3.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=triangle | tone=cool | r1=+5, r2=-3 -> reject\n2. tone=cool | r1=+1, r2=+4 | shape=hex -> accept\n3. r1=+0, r2=-4 | shape=triangle | tone=warm -> reject\n4. shape=hex | tone=neutral | r1=+3, r2=-2 -> accept",
+        "CogFlex suite task. Episode 0099. Turn 2 of 3.\n\nEach item now has a cue. cue=torch keeps the base rule and cue=glint selects the alternate rule.\n\nExamples:\n1. tone=cool | cue=torch | r1=+1, r2=+3 | shape=square -> reject\n2. cue=glint | r1=+0, r2=+5 | shape=hex | tone=warm -> reject\n3. r1=+5, r2=-5 | shape=hex | tone=neutral | cue=glint -> accept\n4. shape=circle | tone=cool | cue=torch | r1=+4, r2=+1 -> accept",
+        "CogFlex suite task. Episode 0099. Turn 3 of 3.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. cue=glint | r1=-4, r2=+2 | shape=circle | tone=warm -> ?\n2. r1=+0, r2=-1 | shape=triangle | tone=warm | cue=torch -> ?\n3. shape=circle | tone=neutral | cue=torch | r1=-2, r2=-3 -> ?\n4. tone=cool | cue=glint | r1=+5, r2=+3 | shape=triangle -> ?\n5. cue=torch | r1=-2, r2=+3 | shape=hex | tone=neutral -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -5787,14 +5787,14 @@
     },
     "scoring": {
       "final_probe_targets": [
-        "reject",
         "accept",
         "reject",
+        "accept",
         "accept",
         "accept"
       ],
       "probe_annotations": [
-        "incongruent",
+        "congruent",
         "congruent",
         "incongruent",
         "incongruent",
@@ -5868,9 +5868,9 @@
     "episode_id": "0101",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0101. Turn 1 of 3.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=circle | tone=neutral | r1=+1, r2=-3 -> accept\n2. tone=warm | r1=+0, r2=-1 | shape=square -> reject\n3. r1=-5, r2=+4 | shape=hex | tone=cool -> accept\n4. shape=square | tone=neutral | r1=+0, r2=+4 -> reject",
-        "CogFlex suite task. Episode 0101. Turn 2 of 3.\n\nEach item now has a cue. cue=stone keeps the base rule and cue=ripple selects the alternate rule.\n\nExamples:\n1. tone=warm | cue=stone | r1=-1, r2=-2 | shape=square -> reject\n2. cue=ripple | r1=+2, r2=+0 | shape=hex | tone=warm -> accept\n3. r1=+2, r2=-2 | shape=hex | tone=cool | cue=stone -> accept\n4. shape=circle | tone=cool | cue=ripple | r1=+4, r2=+1 -> reject",
-        "CogFlex suite task. Episode 0101. Turn 3 of 3.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. cue=stone | r1=+1, r2=+4 | shape=circle | tone=warm -> ?\n2. r1=+2, r2=-4 | shape=triangle | tone=cool | cue=stone -> ?\n3. shape=triangle | tone=neutral | cue=ripple | r1=+3, r2=-1 -> ?\n4. tone=warm | cue=stone | r1=-5, r2=-4 | shape=hex -> ?\n5. cue=ripple | r1=-3, r2=-4 | shape=hex | tone=neutral -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0101. Turn 1 of 3.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=square | tone=warm | r1=+0, r2=-1 -> reject\n2. tone=cool | r1=-5, r2=-1 | shape=square -> reject\n3. r1=+1, r2=+0 | shape=hex | tone=neutral -> accept\n4. shape=hex | tone=cool | r1=+0, r2=+3 -> accept",
+        "CogFlex suite task. Episode 0101. Turn 2 of 3.\n\nEach item now has a cue. cue=stone keeps the base rule and cue=ripple selects the alternate rule.\n\nExamples:\n1. tone=neutral | cue=ripple | r1=+3, r2=+1 | shape=hex -> accept\n2. cue=stone | r1=+1, r2=-1 | shape=circle | tone=cool -> accept\n3. r1=+4, r2=-4 | shape=triangle | tone=neutral | cue=stone -> reject\n4. shape=square | tone=warm | cue=ripple | r1=-1, r2=-1 -> accept",
+        "CogFlex suite task. Episode 0101. Turn 3 of 3.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. cue=stone | r1=-2, r2=-4 | shape=hex | tone=neutral -> ?\n2. r1=+4, r2=-2 | shape=circle | tone=neutral | cue=stone -> ?\n3. shape=triangle | tone=warm | cue=ripple | r1=-2, r2=+3 -> ?\n4. tone=cool | cue=stone | r1=-5, r2=+5 | shape=triangle -> ?\n5. cue=ripple | r1=-3, r2=+1 | shape=square | tone=cool -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -5905,15 +5905,15 @@
     "scoring": {
       "final_probe_targets": [
         "accept",
+        "accept",
         "reject",
-        "accept",
-        "accept",
-        "reject"
+        "reject",
+        "accept"
       ],
       "probe_annotations": [
-        "incongruent",
-        "incongruent",
-        "incongruent",
+        "congruent",
+        "congruent",
+        "congruent",
         "incongruent",
         "incongruent"
       ]
@@ -5923,10 +5923,10 @@
     "episode_id": "0102",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0102. Turn 1 of 4.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=square | tone=cool | r1=-3, r2=+1 -> south\n2. tone=warm | r1=+4, r2=-3 | shape=triangle -> north\n3. r1=-2, r2=+4 | shape=hex | tone=cool -> south",
-        "CogFlex suite task. Episode 0102. Turn 2 of 4.\n\nNow study examples from the alternate rule before cue routing begins.\n\nExamples:\n1. tone=cool | r1=-1, r2=-5 | shape=square -> south\n2. r1=+5, r2=+3 | shape=triangle | tone=warm -> north",
-        "CogFlex suite task. Episode 0102. Turn 3 of 4.\n\nEach item now has a cue. cue=torch keeps the base rule and cue=glint selects the alternate rule.\n\nExamples:\n1. cue=torch | r1=-1, r2=+0 | shape=circle | tone=cool -> south\n2. r1=-3, r2=-5 | shape=triangle | tone=neutral | cue=glint -> south\n3. shape=triangle | tone=neutral | cue=torch | r1=+5, r2=+5 -> north",
-        "CogFlex suite task. Episode 0102. Turn 4 of 4.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. r1=+0, r2=-1 | shape=hex | tone=cool | cue=glint -> ?\n2. shape=hex | tone=cool | cue=torch | r1=-5, r2=+4 -> ?\n3. tone=neutral | cue=torch | r1=+3, r2=+2 | shape=hex -> ?\n4. cue=torch | r1=+3, r2=-5 | shape=hex | tone=neutral -> ?\n5. r1=+5, r2=+5 | shape=circle | tone=neutral | cue=glint -> ?\n6. shape=triangle | tone=cool | cue=glint | r1=+1, r2=+0 -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: north, south."
+        "CogFlex suite task. Episode 0102. Turn 1 of 4.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=square | tone=cool | r1=-5, r2=-3 -> south\n2. tone=neutral | r1=+4, r2=+0 | shape=hex -> north\n3. r1=-4, r2=+4 | shape=triangle | tone=neutral -> south",
+        "CogFlex suite task. Episode 0102. Turn 2 of 4.\n\nNow study examples from the alternate rule before cue routing begins.\n\nExamples:\n1. tone=neutral | r1=+5, r2=-3 | shape=circle -> south\n2. r1=+3, r2=-5 | shape=circle | tone=warm -> north",
+        "CogFlex suite task. Episode 0102. Turn 3 of 4.\n\nEach item now has a cue. cue=torch keeps the base rule and cue=glint selects the alternate rule.\n\nExamples:\n1. cue=glint | r1=+0, r2=-1 | shape=circle | tone=cool -> south\n2. r1=+0, r2=+4 | shape=triangle | tone=neutral | cue=torch -> south\n3. shape=hex | tone=cool | cue=torch | r1=+5, r2=-3 -> north",
+        "CogFlex suite task. Episode 0102. Turn 4 of 4.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. r1=-5, r2=-5 | shape=triangle | tone=warm | cue=torch -> ?\n2. shape=triangle | tone=cool | cue=glint | r1=+2, r2=-4 -> ?\n3. tone=warm | cue=torch | r1=+0, r2=+0 | shape=triangle -> ?\n4. cue=torch | r1=-2, r2=+0 | shape=circle | tone=cool -> ?\n5. r1=-3, r2=+0 | shape=triangle | tone=warm | cue=glint -> ?\n6. shape=hex | tone=cool | cue=glint | r1=+4, r2=-5 -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: north, south."
       ],
       "turn_specs": [
         {
@@ -5964,19 +5964,19 @@
     },
     "scoring": {
       "final_probe_targets": [
-        "south",
+        "north",
         "south",
         "north",
-        "north",
+        "south",
         "north",
         "south"
       ],
       "probe_annotations": [
-        "incongruent",
-        "incongruent",
         "congruent",
         "incongruent",
         "congruent",
+        "congruent",
+        "incongruent",
         "incongruent"
       ]
     }
@@ -5985,9 +5985,9 @@
     "episode_id": "0103",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0103. Turn 1 of 3.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=square | tone=warm | r1=+0, r2=-5 -> reject\n2. tone=neutral | r1=+4, r2=-2 | shape=triangle -> reject\n3. r1=+5, r2=-2 | shape=circle | tone=warm -> accept\n4. shape=hex | tone=cool | r1=+0, r2=+5 -> accept",
-        "CogFlex suite task. Episode 0103. Turn 2 of 3.\n\nEach item now has a cue. cue=keep keeps the base rule and cue=switch selects the alternate rule.\n\nExamples:\n1. tone=warm | cue=switch | r1=+2, r2=-1 | shape=square -> reject\n2. cue=switch | r1=+2, r2=-3 | shape=circle | tone=cool -> reject\n3. r1=+0, r2=-5 | shape=triangle | tone=warm | cue=keep -> reject\n4. shape=hex | tone=warm | cue=keep | r1=+2, r2=+0 -> accept",
-        "CogFlex suite task. Episode 0103. Turn 3 of 3.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. cue=keep | r1=+5, r2=-2 | shape=hex | tone=neutral -> ?\n2. r1=+1, r2=+5 | shape=hex | tone=warm | cue=keep -> ?\n3. shape=triangle | tone=cool | cue=switch | r1=-5, r2=+3 -> ?\n4. tone=cool | cue=switch | r1=-1, r2=+0 | shape=hex -> ?\n5. cue=keep | r1=+3, r2=-3 | shape=square | tone=cool -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0103. Turn 1 of 3.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=hex | tone=cool | r1=-5, r2=+2 -> accept\n2. tone=warm | r1=-1, r2=+2 | shape=triangle -> reject\n3. r1=+4, r2=-4 | shape=triangle | tone=neutral -> reject\n4. shape=circle | tone=cool | r1=-5, r2=-5 -> accept",
+        "CogFlex suite task. Episode 0103. Turn 2 of 3.\n\nEach item now has a cue. cue=keep keeps the base rule and cue=switch selects the alternate rule.\n\nExamples:\n1. tone=neutral | cue=keep | r1=+3, r2=-2 | shape=circle -> accept\n2. cue=keep | r1=+1, r2=+5 | shape=triangle | tone=cool -> reject\n3. r1=+3, r2=+3 | shape=square | tone=warm | cue=switch -> accept\n4. shape=hex | tone=cool | cue=switch | r1=+1, r2=-2 -> reject",
+        "CogFlex suite task. Episode 0103. Turn 3 of 3.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. cue=switch | r1=+1, r2=+0 | shape=hex | tone=warm -> ?\n2. r1=-5, r2=+4 | shape=hex | tone=neutral | cue=keep -> ?\n3. shape=triangle | tone=warm | cue=switch | r1=-5, r2=-1 -> ?\n4. tone=warm | cue=keep | r1=-5, r2=-5 | shape=triangle -> ?\n5. cue=keep | r1=+4, r2=+0 | shape=circle | tone=neutral -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -6021,18 +6021,18 @@
     },
     "scoring": {
       "final_probe_targets": [
-        "accept",
+        "reject",
         "accept",
         "accept",
         "reject",
-        "reject"
+        "accept"
       ],
       "probe_annotations": [
         "incongruent",
-        "congruent",
         "incongruent",
         "incongruent",
-        "incongruent"
+        "incongruent",
+        "congruent"
       ]
     }
   },
@@ -6040,10 +6040,10 @@
     "episode_id": "0104",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0104. Turn 1 of 4.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=square | tone=cool | r1=+2, r2=+0 -> north\n2. tone=cool | r1=-2, r2=-1 | shape=circle -> south\n3. r1=+2, r2=+5 | shape=triangle | tone=warm -> south",
-        "CogFlex suite task. Episode 0104. Turn 2 of 4.\n\nNow study examples from the alternate rule before cue routing begins.\n\nExamples:\n1. tone=cool | r1=+4, r2=-5 | shape=hex -> south\n2. r1=+3, r2=+3 | shape=hex | tone=warm -> north",
-        "CogFlex suite task. Episode 0104. Turn 3 of 4.\n\nEach item now has a cue. cue=stone keeps the base rule and cue=ripple selects the alternate rule.\n\nExamples:\n1. cue=stone | r1=+0, r2=+0 | shape=square | tone=warm -> north\n2. r1=-1, r2=-5 | shape=triangle | tone=cool | cue=ripple -> south\n3. shape=triangle | tone=neutral | cue=stone | r1=-4, r2=-3 -> south",
-        "CogFlex suite task. Episode 0104. Turn 4 of 4.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. r1=-2, r2=+5 | shape=triangle | tone=neutral | cue=ripple -> ?\n2. shape=square | tone=cool | cue=stone | r1=+4, r2=+0 -> ?\n3. tone=neutral | cue=stone | r1=-5, r2=+0 | shape=triangle -> ?\n4. cue=stone | r1=+1, r2=-3 | shape=hex | tone=warm -> ?\n5. r1=+1, r2=-4 | shape=hex | tone=neutral | cue=ripple -> ?\n6. shape=hex | tone=cool | cue=ripple | r1=+5, r2=-5 -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: north, south."
+        "CogFlex suite task. Episode 0104. Turn 1 of 4.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=square | tone=neutral | r1=-2, r2=-3 -> north\n2. tone=cool | r1=-5, r2=-3 | shape=circle -> south\n3. r1=-1, r2=+4 | shape=circle | tone=neutral -> south",
+        "CogFlex suite task. Episode 0104. Turn 2 of 4.\n\nNow study examples from the alternate rule before cue routing begins.\n\nExamples:\n1. tone=neutral | r1=+5, r2=-4 | shape=hex -> south\n2. r1=-3, r2=+4 | shape=circle | tone=warm -> north",
+        "CogFlex suite task. Episode 0104. Turn 3 of 4.\n\nEach item now has a cue. cue=stone keeps the base rule and cue=ripple selects the alternate rule.\n\nExamples:\n1. cue=ripple | r1=-2, r2=-5 | shape=hex | tone=neutral -> south\n2. r1=+2, r2=-4 | shape=hex | tone=cool | cue=stone -> north\n3. shape=triangle | tone=neutral | cue=stone | r1=-1, r2=+2 -> south",
+        "CogFlex suite task. Episode 0104. Turn 4 of 4.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. r1=+4, r2=+0 | shape=square | tone=cool | cue=stone -> ?\n2. shape=circle | tone=neutral | cue=stone | r1=-4, r2=+0 -> ?\n3. tone=neutral | cue=ripple | r1=+4, r2=-5 | shape=hex -> ?\n4. cue=ripple | r1=+0, r2=+3 | shape=square | tone=cool -> ?\n5. r1=+4, r2=+0 | shape=triangle | tone=cool | cue=stone -> ?\n6. shape=circle | tone=cool | cue=ripple | r1=+4, r2=-2 -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: north, south."
       ],
       "turn_specs": [
         {
@@ -6082,17 +6082,17 @@
     "scoring": {
       "final_probe_targets": [
         "north",
-        "north",
+        "south",
         "south",
         "north",
-        "south",
+        "north",
         "south"
       ],
       "probe_annotations": [
         "incongruent",
+        "congruent",
         "incongruent",
-        "congruent",
-        "congruent",
+        "incongruent",
         "incongruent",
         "incongruent"
       ]
@@ -6102,9 +6102,9 @@
     "episode_id": "0105",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0105. Turn 1 of 3.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=circle | tone=cool | r1=+3, r2=-2 -> accept\n2. tone=cool | r1=-5, r2=-3 | shape=square -> reject\n3. r1=-3, r2=+1 | shape=square | tone=warm -> reject\n4. shape=circle | tone=cool | r1=+2, r2=+3 -> accept",
-        "CogFlex suite task. Episode 0105. Turn 2 of 3.\n\nEach item now has a cue. cue=torch keeps the base rule and cue=glint selects the alternate rule.\n\nExamples:\n1. tone=neutral | cue=glint | r1=+3, r2=-5 | shape=square -> accept\n2. cue=glint | r1=-3, r2=+2 | shape=square | tone=cool -> reject\n3. r1=+4, r2=-1 | shape=triangle | tone=cool | cue=torch -> reject\n4. shape=circle | tone=cool | cue=torch | r1=-5, r2=+3 -> accept",
-        "CogFlex suite task. Episode 0105. Turn 3 of 3.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. cue=torch | r1=-3, r2=+4 | shape=triangle | tone=cool -> ?\n2. r1=+3, r2=+0 | shape=circle | tone=neutral | cue=glint -> ?\n3. shape=hex | tone=neutral | cue=glint | r1=-5, r2=-5 -> ?\n4. tone=warm | cue=torch | r1=+5, r2=+2 | shape=hex -> ?\n5. cue=torch | r1=+4, r2=+0 | shape=circle | tone=cool -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0105. Turn 1 of 3.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=triangle | tone=warm | r1=+4, r2=+5 -> reject\n2. tone=neutral | r1=+4, r2=-1 | shape=circle -> accept\n3. r1=-2, r2=-3 | shape=circle | tone=neutral -> accept\n4. shape=square | tone=cool | r1=+5, r2=-1 -> reject",
+        "CogFlex suite task. Episode 0105. Turn 2 of 3.\n\nEach item now has a cue. cue=torch keeps the base rule and cue=glint selects the alternate rule.\n\nExamples:\n1. tone=warm | cue=torch | r1=+1, r2=+1 | shape=square -> reject\n2. cue=glint | r1=-1, r2=-5 | shape=triangle | tone=neutral -> accept\n3. r1=-1, r2=-3 | shape=circle | tone=neutral | cue=torch -> accept\n4. shape=circle | tone=warm | cue=glint | r1=-4, r2=-5 -> reject",
+        "CogFlex suite task. Episode 0105. Turn 3 of 3.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. cue=glint | r1=+2, r2=-3 | shape=square | tone=warm -> ?\n2. r1=+0, r2=+0 | shape=circle | tone=warm | cue=torch -> ?\n3. shape=hex | tone=cool | cue=torch | r1=-1, r2=-4 -> ?\n4. tone=warm | cue=glint | r1=+3, r2=+1 | shape=triangle -> ?\n5. cue=torch | r1=+2, r2=+0 | shape=square | tone=cool -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -6139,17 +6139,17 @@
     "scoring": {
       "final_probe_targets": [
         "reject",
-        "reject",
         "accept",
         "accept",
-        "accept"
+        "accept",
+        "reject"
       ],
       "probe_annotations": [
         "congruent",
-        "incongruent",
         "congruent",
         "incongruent",
-        "congruent"
+        "incongruent",
+        "incongruent"
       ]
     }
   },
@@ -6157,10 +6157,10 @@
     "episode_id": "0106",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0106. Turn 1 of 4.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=circle | tone=cool | r1=+4, r2=+5 -> south\n2. tone=neutral | r1=+2, r2=+1 | shape=hex -> north\n3. r1=-4, r2=-2 | shape=square | tone=warm -> south",
-        "CogFlex suite task. Episode 0106. Turn 2 of 4.\n\nNow study examples from the alternate rule before cue routing begins.\n\nExamples:\n1. tone=cool | r1=+5, r2=-5 | shape=square -> south\n2. r1=+2, r2=-2 | shape=circle | tone=warm -> north",
-        "CogFlex suite task. Episode 0106. Turn 3 of 4.\n\nEach item now has a cue. cue=keep keeps the base rule and cue=switch selects the alternate rule.\n\nExamples:\n1. cue=keep | r1=+0, r2=-1 | shape=square | tone=neutral -> north\n2. r1=+2, r2=+3 | shape=circle | tone=cool | cue=keep -> south\n3. shape=square | tone=neutral | cue=switch | r1=-4, r2=-3 -> south",
-        "CogFlex suite task. Episode 0106. Turn 4 of 4.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. r1=-3, r2=-2 | shape=triangle | tone=cool | cue=keep -> ?\n2. shape=square | tone=cool | cue=switch | r1=+2, r2=-1 -> ?\n3. tone=warm | cue=switch | r1=+3, r2=+3 | shape=circle -> ?\n4. cue=switch | r1=+2, r2=-2 | shape=triangle | tone=neutral -> ?\n5. r1=+3, r2=-4 | shape=circle | tone=warm | cue=keep -> ?\n6. shape=circle | tone=neutral | cue=keep | r1=+1, r2=-1 -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: north, south."
+        "CogFlex suite task. Episode 0106. Turn 1 of 4.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=triangle | tone=neutral | r1=-2, r2=+5 -> south\n2. tone=neutral | r1=+5, r2=-4 | shape=triangle -> north\n3. r1=+1, r2=+4 | shape=triangle | tone=neutral -> south",
+        "CogFlex suite task. Episode 0106. Turn 2 of 4.\n\nNow study examples from the alternate rule before cue routing begins.\n\nExamples:\n1. tone=warm | r1=-1, r2=+4 | shape=circle -> north\n2. r1=+3, r2=-5 | shape=square | tone=cool -> south",
+        "CogFlex suite task. Episode 0106. Turn 3 of 4.\n\nEach item now has a cue. cue=keep keeps the base rule and cue=switch selects the alternate rule.\n\nExamples:\n1. cue=keep | r1=+5, r2=+2 | shape=square | tone=cool -> north\n2. r1=+1, r2=-4 | shape=circle | tone=cool | cue=switch -> south\n3. shape=square | tone=neutral | cue=keep | r1=-4, r2=+4 -> south",
+        "CogFlex suite task. Episode 0106. Turn 4 of 4.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. r1=+2, r2=-3 | shape=hex | tone=neutral | cue=switch -> ?\n2. shape=square | tone=cool | cue=switch | r1=+0, r2=-1 -> ?\n3. tone=neutral | cue=keep | r1=+4, r2=-2 | shape=circle -> ?\n4. cue=keep | r1=+3, r2=+2 | shape=square | tone=neutral -> ?\n5. r1=-3, r2=+4 | shape=circle | tone=neutral | cue=keep -> ?\n6. shape=hex | tone=warm | cue=switch | r1=-1, r2=+5 -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: north, south."
       ],
       "turn_specs": [
         {
@@ -6201,16 +6201,16 @@
         "south",
         "south",
         "north",
-        "south",
         "north",
+        "south",
         "north"
       ],
       "probe_annotations": [
-        "congruent",
+        "incongruent",
+        "incongruent",
         "incongruent",
         "congruent",
         "incongruent",
-        "congruent",
         "incongruent"
       ]
     }
@@ -6219,9 +6219,9 @@
     "episode_id": "0107",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0107. Turn 1 of 3.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=circle | tone=cool | r1=+1, r2=-1 -> accept\n2. tone=warm | r1=+1, r2=+1 | shape=square -> reject\n3. r1=+0, r2=+3 | shape=hex | tone=neutral -> accept\n4. shape=square | tone=warm | r1=+3, r2=-4 -> reject",
-        "CogFlex suite task. Episode 0107. Turn 2 of 3.\n\nEach item now has a cue. cue=stone keeps the base rule and cue=ripple selects the alternate rule.\n\nExamples:\n1. tone=cool | cue=ripple | r1=-4, r2=+4 | shape=triangle -> accept\n2. cue=stone | r1=-3, r2=-2 | shape=square | tone=neutral -> reject\n3. r1=+5, r2=-3 | shape=hex | tone=warm | cue=ripple -> accept\n4. shape=circle | tone=neutral | cue=stone | r1=-5, r2=+0 -> accept",
-        "CogFlex suite task. Episode 0107. Turn 3 of 3.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. cue=ripple | r1=+4, r2=-3 | shape=triangle | tone=cool -> ?\n2. r1=-1, r2=+1 | shape=triangle | tone=warm | cue=stone -> ?\n3. shape=square | tone=warm | cue=ripple | r1=-2, r2=-4 -> ?\n4. tone=cool | cue=stone | r1=+5, r2=+2 | shape=circle -> ?\n5. cue=stone | r1=-2, r2=-2 | shape=hex | tone=warm -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0107. Turn 1 of 3.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=triangle | tone=neutral | r1=-4, r2=-3 -> reject\n2. tone=warm | r1=-1, r2=+3 | shape=triangle -> reject\n3. r1=-3, r2=+2 | shape=circle | tone=cool -> accept\n4. shape=circle | tone=warm | r1=-4, r2=-3 -> accept",
+        "CogFlex suite task. Episode 0107. Turn 2 of 3.\n\nEach item now has a cue. cue=stone keeps the base rule and cue=ripple selects the alternate rule.\n\nExamples:\n1. tone=warm | cue=ripple | r1=+3, r2=+3 | shape=circle -> accept\n2. cue=ripple | r1=+4, r2=-5 | shape=circle | tone=warm -> reject\n3. r1=+2, r2=-2 | shape=hex | tone=warm | cue=stone -> accept\n4. shape=triangle | tone=warm | cue=stone | r1=+1, r2=+3 -> reject",
+        "CogFlex suite task. Episode 0107. Turn 3 of 3.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. cue=stone | r1=-2, r2=+0 | shape=triangle | tone=warm -> ?\n2. r1=+1, r2=+1 | shape=hex | tone=cool | cue=ripple -> ?\n3. shape=square | tone=cool | cue=ripple | r1=-3, r2=+1 -> ?\n4. tone=neutral | cue=stone | r1=+4, r2=+5 | shape=circle -> ?\n5. cue=stone | r1=+2, r2=+5 | shape=circle | tone=warm -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -6256,17 +6256,17 @@
     "scoring": {
       "final_probe_targets": [
         "reject",
-        "reject",
+        "accept",
         "accept",
         "accept",
         "accept"
       ],
       "probe_annotations": [
+        "incongruent",
         "congruent",
         "incongruent",
         "incongruent",
-        "incongruent",
-        "congruent"
+        "incongruent"
       ]
     }
   },
@@ -6391,10 +6391,10 @@
     "episode_id": "0110",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0110. Turn 1 of 4.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=triangle | tone=neutral | r1=-2, r2=+3 -> south\n2. tone=neutral | r1=+2, r2=+5 | shape=hex -> south\n3. r1=+3, r2=-5 | shape=hex | tone=cool -> north",
-        "CogFlex suite task. Episode 0110. Turn 2 of 4.\n\nNow study examples from the alternate rule before cue routing begins.\n\nExamples:\n1. tone=cool | r1=+0, r2=+0 | shape=circle -> south\n2. r1=+1, r2=+3 | shape=hex | tone=neutral -> north",
-        "CogFlex suite task. Episode 0110. Turn 3 of 4.\n\nEach item now has a cue. cue=stone keeps the base rule and cue=ripple selects the alternate rule.\n\nExamples:\n1. cue=ripple | r1=-3, r2=+0 | shape=square | tone=cool -> south\n2. r1=-5, r2=+1 | shape=triangle | tone=cool | cue=stone -> south\n3. shape=triangle | tone=warm | cue=stone | r1=+3, r2=-5 -> north",
-        "CogFlex suite task. Episode 0110. Turn 4 of 4.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. r1=+1, r2=-3 | shape=square | tone=neutral | cue=ripple -> ?\n2. shape=circle | tone=neutral | cue=ripple | r1=+1, r2=-2 -> ?\n3. tone=warm | cue=stone | r1=+1, r2=+4 | shape=square -> ?\n4. cue=ripple | r1=-3, r2=+1 | shape=triangle | tone=warm -> ?\n5. r1=+1, r2=-4 | shape=square | tone=cool | cue=stone -> ?\n6. shape=hex | tone=neutral | cue=stone | r1=+3, r2=-5 -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: north, south."
+        "CogFlex suite task. Episode 0110. Turn 1 of 4.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=hex | tone=warm | r1=+1, r2=-3 -> north\n2. tone=warm | r1=-1, r2=+0 | shape=circle -> south\n3. r1=-4, r2=-1 | shape=triangle | tone=warm -> south",
+        "CogFlex suite task. Episode 0110. Turn 2 of 4.\n\nNow study examples from the alternate rule before cue routing begins.\n\nExamples:\n1. tone=neutral | r1=+2, r2=-2 | shape=square -> south\n2. r1=+4, r2=+2 | shape=hex | tone=warm -> north",
+        "CogFlex suite task. Episode 0110. Turn 3 of 4.\n\nEach item now has a cue. cue=stone keeps the base rule and cue=ripple selects the alternate rule.\n\nExamples:\n1. cue=stone | r1=+1, r2=-4 | shape=hex | tone=neutral -> north\n2. r1=+3, r2=-5 | shape=triangle | tone=neutral | cue=ripple -> south\n3. shape=circle | tone=neutral | cue=stone | r1=-3, r2=+2 -> south",
+        "CogFlex suite task. Episode 0110. Turn 4 of 4.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. r1=-5, r2=+3 | shape=hex | tone=cool | cue=stone -> ?\n2. shape=hex | tone=cool | cue=stone | r1=+0, r2=-1 -> ?\n3. tone=neutral | cue=ripple | r1=-4, r2=-5 | shape=circle -> ?\n4. cue=ripple | r1=+5, r2=-5 | shape=square | tone=cool -> ?\n5. r1=-1, r2=+5 | shape=hex | tone=warm | cue=ripple -> ?\n6. shape=square | tone=cool | cue=stone | r1=+0, r2=-4 -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: north, south."
       ],
       "turn_specs": [
         {
@@ -6433,9 +6433,9 @@
     "scoring": {
       "final_probe_targets": [
         "south",
-        "south",
-        "south",
         "north",
+        "south",
+        "south",
         "north",
         "north"
       ],
@@ -6508,10 +6508,10 @@
     "episode_id": "0112",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0112. Turn 1 of 4.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=circle | tone=cool | r1=-1, r2=+0 -> south\n2. tone=warm | r1=-5, r2=+3 | shape=hex -> south\n3. r1=+4, r2=-4 | shape=circle | tone=neutral -> north",
-        "CogFlex suite task. Episode 0112. Turn 2 of 4.\n\nNow study examples from the alternate rule before cue routing begins.\n\nExamples:\n1. tone=warm | r1=+5, r2=-4 | shape=circle -> north\n2. r1=+0, r2=+0 | shape=triangle | tone=cool -> south",
-        "CogFlex suite task. Episode 0112. Turn 3 of 4.\n\nEach item now has a cue. cue=keep keeps the base rule and cue=switch selects the alternate rule.\n\nExamples:\n1. cue=keep | r1=+1, r2=-1 | shape=circle | tone=neutral -> north\n2. r1=-3, r2=+0 | shape=triangle | tone=neutral | cue=switch -> south\n3. shape=triangle | tone=warm | cue=keep | r1=-1, r2=+5 -> south",
-        "CogFlex suite task. Episode 0112. Turn 4 of 4.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. r1=-1, r2=-2 | shape=hex | tone=neutral | cue=keep -> ?\n2. shape=hex | tone=cool | cue=switch | r1=+1, r2=+2 -> ?\n3. tone=neutral | cue=switch | r1=-4, r2=-2 | shape=square -> ?\n4. cue=keep | r1=-1, r2=-2 | shape=triangle | tone=warm -> ?\n5. r1=+3, r2=+4 | shape=circle | tone=neutral | cue=keep -> ?\n6. shape=square | tone=cool | cue=switch | r1=-2, r2=-5 -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: north, south."
+        "CogFlex suite task. Episode 0112. Turn 1 of 4.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=circle | tone=neutral | r1=-1, r2=-1 -> north\n2. tone=neutral | r1=-3, r2=-1 | shape=hex -> south\n3. r1=-4, r2=-2 | shape=square | tone=warm -> south",
+        "CogFlex suite task. Episode 0112. Turn 2 of 4.\n\nNow study examples from the alternate rule before cue routing begins.\n\nExamples:\n1. tone=warm | r1=-2, r2=+2 | shape=hex -> north\n2. r1=-3, r2=-4 | shape=square | tone=neutral -> south",
+        "CogFlex suite task. Episode 0112. Turn 3 of 4.\n\nEach item now has a cue. cue=keep keeps the base rule and cue=switch selects the alternate rule.\n\nExamples:\n1. cue=keep | r1=-3, r2=+5 | shape=triangle | tone=neutral -> south\n2. r1=+2, r2=+2 | shape=triangle | tone=warm | cue=keep -> north\n3. shape=square | tone=neutral | cue=switch | r1=+0, r2=-3 -> south",
+        "CogFlex suite task. Episode 0112. Turn 4 of 4.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. r1=-2, r2=+2 | shape=circle | tone=neutral | cue=switch -> ?\n2. shape=square | tone=cool | cue=keep | r1=-1, r2=+3 -> ?\n3. tone=neutral | cue=switch | r1=-2, r2=-3 | shape=hex -> ?\n4. cue=switch | r1=-3, r2=+0 | shape=square | tone=neutral -> ?\n5. r1=+5, r2=+1 | shape=hex | tone=warm | cue=keep -> ?\n6. shape=circle | tone=warm | cue=keep | r1=+5, r2=-1 -> ?\n\nReturn exactly 6 outputs in order, one per probe. Use only labels from: north, south."
       ],
       "turn_specs": [
         {
@@ -6550,19 +6550,19 @@
     "scoring": {
       "final_probe_targets": [
         "north",
-        "north",
+        "south",
+        "south",
         "south",
         "north",
-        "south",
-        "south"
+        "north"
       ],
       "probe_annotations": [
         "incongruent",
         "incongruent",
-        "congruent",
-        "congruent",
         "incongruent",
-        "incongruent"
+        "congruent",
+        "congruent",
+        "congruent"
       ]
     }
   },
@@ -6687,9 +6687,9 @@
     "episode_id": "0115",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0115. Turn 1 of 3.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=triangle | tone=neutral | r1=+3, r2=-1 -> reject\n2. tone=warm | r1=-1, r2=-4 | shape=circle -> accept\n3. r1=-2, r2=+3 | shape=triangle | tone=warm -> reject\n4. shape=circle | tone=neutral | r1=+4, r2=-1 -> accept",
-        "CogFlex suite task. Episode 0115. Turn 2 of 3.\n\nEach item now has a cue. cue=keep keeps the base rule and cue=switch selects the alternate rule.\n\nExamples:\n1. tone=cool | cue=keep | r1=-1, r2=+0 | shape=circle -> accept\n2. cue=keep | r1=+4, r2=-3 | shape=square | tone=cool -> reject\n3. r1=-5, r2=-1 | shape=square | tone=neutral | cue=switch -> accept\n4. shape=circle | tone=cool | cue=switch | r1=+2, r2=-1 -> reject",
-        "CogFlex suite task. Episode 0115. Turn 3 of 3.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. cue=keep | r1=-5, r2=-5 | shape=hex | tone=neutral -> ?\n2. r1=-5, r2=-1 | shape=square | tone=warm | cue=keep -> ?\n3. shape=hex | tone=cool | cue=keep | r1=-5, r2=+4 -> ?\n4. tone=warm | cue=switch | r1=-5, r2=+4 | shape=circle -> ?\n5. cue=switch | r1=-1, r2=+1 | shape=triangle | tone=cool -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0115. Turn 1 of 3.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=circle | tone=neutral | r1=-5, r2=+5 -> accept\n2. tone=cool | r1=+3, r2=-4 | shape=triangle -> reject\n3. r1=-4, r2=+0 | shape=square | tone=cool -> reject\n4. shape=hex | tone=neutral | r1=+1, r2=+4 -> accept",
+        "CogFlex suite task. Episode 0115. Turn 2 of 3.\n\nEach item now has a cue. cue=keep keeps the base rule and cue=switch selects the alternate rule.\n\nExamples:\n1. tone=cool | cue=keep | r1=-1, r2=+2 | shape=circle -> accept\n2. cue=keep | r1=-1, r2=-4 | shape=square | tone=neutral -> reject\n3. r1=+4, r2=+3 | shape=circle | tone=neutral | cue=switch -> reject\n4. shape=square | tone=cool | cue=switch | r1=-2, r2=+4 -> accept",
+        "CogFlex suite task. Episode 0115. Turn 3 of 3.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. cue=switch | r1=-1, r2=-5 | shape=square | tone=neutral -> ?\n2. r1=-5, r2=+0 | shape=circle | tone=cool | cue=switch -> ?\n3. shape=hex | tone=neutral | cue=keep | r1=+0, r2=-5 -> ?\n4. tone=cool | cue=keep | r1=+4, r2=+5 | shape=triangle -> ?\n5. cue=keep | r1=-4, r2=-5 | shape=hex | tone=neutral -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -6730,10 +6730,10 @@
         "accept"
       ],
       "probe_annotations": [
+        "incongruent",
+        "incongruent",
+        "incongruent",
         "congruent",
-        "incongruent",
-        "incongruent",
-        "incongruent",
         "incongruent"
       ]
     }
@@ -6804,9 +6804,9 @@
     "episode_id": "0117",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0117. Turn 1 of 3.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=triangle | tone=neutral | r1=+3, r2=+3 -> reject\n2. tone=neutral | r1=+4, r2=+4 | shape=circle -> accept\n3. r1=+1, r2=+0 | shape=triangle | tone=cool -> reject\n4. shape=hex | tone=warm | r1=-4, r2=-3 -> accept",
-        "CogFlex suite task. Episode 0117. Turn 2 of 3.\n\nEach item now has a cue. cue=torch keeps the base rule and cue=glint selects the alternate rule.\n\nExamples:\n1. tone=cool | cue=glint | r1=-1, r2=+5 | shape=square -> accept\n2. cue=torch | r1=+3, r2=-3 | shape=circle | tone=warm -> accept\n3. r1=-4, r2=-4 | shape=square | tone=warm | cue=torch -> reject\n4. shape=hex | tone=warm | cue=glint | r1=-5, r2=-4 -> reject",
-        "CogFlex suite task. Episode 0117. Turn 3 of 3.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. cue=glint | r1=-2, r2=+4 | shape=triangle | tone=cool -> ?\n2. r1=+3, r2=-1 | shape=square | tone=cool | cue=torch -> ?\n3. shape=circle | tone=warm | cue=torch | r1=-2, r2=+4 -> ?\n4. tone=warm | cue=torch | r1=+0, r2=-1 | shape=circle -> ?\n5. cue=glint | r1=+0, r2=+3 | shape=triangle | tone=warm -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0117. Turn 1 of 3.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=circle | tone=neutral | r1=+2, r2=-3 -> accept\n2. tone=neutral | r1=+4, r2=-2 | shape=hex -> accept\n3. r1=-1, r2=+1 | shape=triangle | tone=warm -> reject\n4. shape=triangle | tone=neutral | r1=+4, r2=-4 -> reject",
+        "CogFlex suite task. Episode 0117. Turn 2 of 3.\n\nEach item now has a cue. cue=torch keeps the base rule and cue=glint selects the alternate rule.\n\nExamples:\n1. tone=cool | cue=glint | r1=+5, r2=+4 | shape=hex -> reject\n2. cue=glint | r1=-4, r2=-2 | shape=hex | tone=neutral -> accept\n3. r1=+2, r2=-4 | shape=triangle | tone=cool | cue=torch -> reject\n4. shape=circle | tone=neutral | cue=torch | r1=+5, r2=-4 -> accept",
+        "CogFlex suite task. Episode 0117. Turn 3 of 3.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. cue=torch | r1=-5, r2=-5 | shape=square | tone=cool -> ?\n2. r1=+1, r2=-4 | shape=circle | tone=cool | cue=glint -> ?\n3. shape=circle | tone=neutral | cue=torch | r1=-2, r2=+4 -> ?\n4. tone=cool | cue=glint | r1=+4, r2=-2 | shape=triangle -> ?\n5. cue=torch | r1=+0, r2=+3 | shape=circle | tone=warm -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -6840,18 +6840,18 @@
     },
     "scoring": {
       "final_probe_targets": [
-        "accept",
+        "reject",
         "reject",
         "accept",
         "accept",
-        "reject"
+        "accept"
       ],
       "probe_annotations": [
         "incongruent",
         "incongruent",
         "congruent",
         "incongruent",
-        "congruent"
+        "incongruent"
       ]
     }
   },
@@ -6921,9 +6921,9 @@
     "episode_id": "0119",
     "inference": {
       "turns": [
-        "CogFlex suite task. Episode 0119. Turn 1 of 3.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=square | tone=cool | r1=+4, r2=-5 -> reject\n2. tone=warm | r1=-4, r2=-5 | shape=hex -> accept\n3. r1=+2, r2=+1 | shape=square | tone=warm -> reject\n4. shape=hex | tone=warm | r1=+4, r2=-1 -> accept",
-        "CogFlex suite task. Episode 0119. Turn 2 of 3.\n\nEach item now has a cue. cue=stone keeps the base rule and cue=ripple selects the alternate rule.\n\nExamples:\n1. tone=neutral | cue=ripple | r1=-1, r2=-3 | shape=circle -> accept\n2. cue=stone | r1=+0, r2=+5 | shape=square | tone=neutral -> reject\n3. r1=+0, r2=+0 | shape=circle | tone=warm | cue=stone -> accept\n4. shape=circle | tone=cool | cue=ripple | r1=-1, r2=-4 -> reject",
-        "CogFlex suite task. Episode 0119. Turn 3 of 3.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. cue=stone | r1=+4, r2=-3 | shape=circle | tone=cool -> ?\n2. r1=-5, r2=+2 | shape=circle | tone=cool | cue=stone -> ?\n3. shape=square | tone=cool | cue=ripple | r1=-1, r2=+3 -> ?\n4. tone=warm | cue=stone | r1=+0, r2=+0 | shape=square -> ?\n5. cue=ripple | r1=+0, r2=-3 | shape=square | tone=warm -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
+        "CogFlex suite task. Episode 0119. Turn 1 of 3.\n\nLearn the base rule before any cue is introduced.\n\nExamples:\n1. shape=triangle | tone=cool | r1=-3, r2=+5 -> reject\n2. tone=neutral | r1=-2, r2=+3 | shape=hex -> accept\n3. r1=+4, r2=-3 | shape=triangle | tone=warm -> reject\n4. shape=hex | tone=warm | r1=-3, r2=+2 -> accept",
+        "CogFlex suite task. Episode 0119. Turn 2 of 3.\n\nEach item now has a cue. cue=stone keeps the base rule and cue=ripple selects the alternate rule.\n\nExamples:\n1. tone=neutral | cue=stone | r1=+5, r2=+0 | shape=triangle -> reject\n2. cue=ripple | r1=-3, r2=-3 | shape=circle | tone=neutral -> accept\n3. r1=+5, r2=+0 | shape=circle | tone=neutral | cue=stone -> accept\n4. shape=hex | tone=cool | cue=ripple | r1=-3, r2=+4 -> reject",
+        "CogFlex suite task. Episode 0119. Turn 3 of 3.\n\nUse each probe cue to choose the active rule before labeling it.\n\nProbes:\n1. cue=stone | r1=+4, r2=-4 | shape=square | tone=neutral -> ?\n2. r1=+5, r2=-5 | shape=square | tone=neutral | cue=ripple -> ?\n3. shape=triangle | tone=neutral | cue=ripple | r1=-5, r2=-2 -> ?\n4. tone=neutral | cue=stone | r1=+4, r2=+2 | shape=circle -> ?\n5. cue=stone | r1=-3, r2=-2 | shape=circle | tone=neutral -> ?\n\nReturn exactly 5 outputs in order, one per probe. Use only labels from: accept, reject."
       ],
       "turn_specs": [
         {
@@ -6957,18 +6957,18 @@
     },
     "scoring": {
       "final_probe_targets": [
-        "accept",
-        "accept",
+        "reject",
         "accept",
         "reject",
-        "reject"
+        "accept",
+        "accept"
       ],
       "probe_annotations": [
         "incongruent",
         "incongruent",
-        "incongruent",
-        "incongruent",
-        "congruent"
+        "congruent",
+        "congruent",
+        "incongruent"
       ]
     }
   },
