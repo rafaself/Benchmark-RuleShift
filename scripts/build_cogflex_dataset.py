@@ -1096,6 +1096,29 @@ def sample_mixed_route_examples(
     return items
 
 
+def compute_probe_annotations(
+    probes: list[Stimulus],
+    active_rule: RuleSpec,
+    contrast_rule: RuleSpec,
+) -> list[str]:
+    """Tag each probe as incongruent or congruent across two rules.
+
+    Args:
+        probes: Probe stimuli to annotate.
+        active_rule: Rule used to label the probes.
+        contrast_rule: Rule representing the alternative hypothesis.
+
+    Returns:
+        A list of ``"incongruent"`` or ``"congruent"`` annotations parallel
+        to the probe list.
+
+    """
+    return [
+        "incongruent" if active_rule.label(stimulus) != contrast_rule.label(stimulus) else "congruent"
+        for stimulus in probes
+    ]
+
+
 def build_episode_payload(
     episode_id: str,
     *,
@@ -1104,6 +1127,7 @@ def build_episode_payload(
     label_vocab: tuple[str, ...],
     turn_prompts: list[str],
     turn_items: list[list[dict[str, object]]],
+    probe_annotations: list[str] | None = None,
 ) -> tuple[dict[str, object], dict[str, object]]:
     """Assemble the row and answer payloads for one episode.
 
@@ -1114,6 +1138,7 @@ def build_episode_payload(
         label_vocab: Allowed output labels for the decision turn.
         turn_prompts: Prompt text for each turn.
         turn_items: Serialized items for each turn.
+        probe_annotations: Optional per-probe congruency annotations.
 
     Returns:
         The public row payload and the answer payload.
@@ -1143,11 +1168,14 @@ def build_episode_payload(
     }
     inference = {"turns": turns, "turn_specs": specs, "response_spec": spec}
     targets = [str(item["label"]) for item in turn_items[-1]]
+    scoring: dict[str, object] = {"final_probe_targets": targets}
+    if probe_annotations is not None:
+        scoring["probe_annotations"] = probe_annotations
     row = {
         "episode_id": episode_id,
         "inference": inference,
         "analysis": analysis,
-        "scoring": {"final_probe_targets": targets},
+        "scoring": scoring,
     }
     answer = {
         "episode_id": episode_id,
@@ -1155,6 +1183,8 @@ def build_episode_payload(
         "inference": inference,
         "final_probe_targets": targets,
     }
+    if probe_annotations is not None:
+        answer["probe_annotations"] = probe_annotations
     return row, answer
 
 
@@ -1211,6 +1241,7 @@ def build_explicit_episode(episode_id: str, *, structure: EpisodeStructure, vari
     )
     turn_items.append(enumerate_items(probes, shift_rule))
     prompts.append("Apply the active rule to every probe.")
+    annotations = compute_probe_annotations(probes, shift_rule, initial_rule)
     return build_episode_payload(
         episode_id,
         suite_task_id="explicit_rule_update",
@@ -1218,6 +1249,7 @@ def build_explicit_episode(episode_id: str, *, structure: EpisodeStructure, vari
         label_vocab=shift_rule.label_vocab,
         turn_prompts=prompts,
         turn_items=turn_items,
+        probe_annotations=annotations,
     )
 
 
@@ -1270,6 +1302,7 @@ def build_latent_episode(episode_id: str, *, structure: EpisodeStructure, varian
     )
     turn_items.append(enumerate_items(probes, shift_rule))
     prompts.append("Classify each probe using the latest behavior implied by the sequence.")
+    annotations = compute_probe_annotations(probes, shift_rule, initial_rule)
     return build_episode_payload(
         episode_id,
         suite_task_id="latent_rule_update",
@@ -1277,6 +1310,7 @@ def build_latent_episode(episode_id: str, *, structure: EpisodeStructure, varian
         label_vocab=shift_rule.label_vocab,
         turn_prompts=prompts,
         turn_items=turn_items,
+        probe_annotations=annotations,
     )
 
 
@@ -1344,6 +1378,11 @@ def build_context_episode(episode_id: str, *, structure: EpisodeStructure, varia
         exclude=used,
     )
     turn_items.append(probes)
+    probe_stimuli = [
+        {key: item[key] for key in item if key not in {"index", "label", "context", "rule_id"}}
+        for item in probes
+    ]
+    annotations = compute_probe_annotations(probe_stimuli, primary_rule, secondary_rule)
     return build_episode_payload(
         episode_id,
         suite_task_id="context_binding",
@@ -1351,6 +1390,7 @@ def build_context_episode(episode_id: str, *, structure: EpisodeStructure, varia
         label_vocab=label_vocab,
         turn_prompts=prompts,
         turn_items=turn_items,
+        probe_annotations=annotations,
     )
 
 
@@ -1426,6 +1466,11 @@ def build_cued_episode(episode_id: str, *, structure: EpisodeStructure, variant:
         disagreement_rule=(keep_rule, switch_rule),
     )
     turn_items.append(probes)
+    probe_stimuli = [
+        {key: item[key] for key in item if key not in {"index", "label", "cue", "rule_id"}}
+        for item in probes
+    ]
+    annotations = compute_probe_annotations(probe_stimuli, keep_rule, switch_rule)
     return build_episode_payload(
         episode_id,
         suite_task_id="trial_cued_switch",
@@ -1433,6 +1478,7 @@ def build_cued_episode(episode_id: str, *, structure: EpisodeStructure, variant:
         label_vocab=label_vocab,
         turn_prompts=prompts,
         turn_items=turn_items,
+        probe_annotations=annotations,
     )
 
 

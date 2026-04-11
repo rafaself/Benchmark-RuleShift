@@ -59,6 +59,12 @@ class CogflexDatasetGenerationTests(unittest.TestCase):
             len(row["scoring"]["final_probe_targets"]),
             row["inference"]["response_spec"]["probe_count"],
         )
+        self.assertIn("probe_annotations", row["scoring"])
+        self.assertEqual(
+            len(row["scoring"]["probe_annotations"]),
+            row["inference"]["response_spec"]["probe_count"],
+        )
+        self.assertTrue(all(a in ("congruent", "incongruent") for a in row["scoring"]["probe_annotations"]))
 
     def test_public_split_has_expected_counts(self) -> None:
         self.assertEqual(len(self.generated_rows), 120)

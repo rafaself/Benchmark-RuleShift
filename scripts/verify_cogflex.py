@@ -379,7 +379,7 @@ def build_private_quality_report(
         The private quality report payload.
 
     """
-    _summary, episode_targets, private_generator_metadata = verify_private_answer_key(answer_key, private_rows)
+    _summary, episode_targets, private_generator_metadata, _episode_annotations = verify_private_answer_key(answer_key, private_rows)
     predictions_by_model = verify_private_calibration_predictions(predictions, private_rows, episode_targets)
     verify_private_empirical_difficulty(private_rows, answer_key, predictions_by_model, episode_targets)
     scored_private_rows = attach_private_scoring(private_rows, answer_key)
@@ -875,11 +875,16 @@ def verify_schema(rows: list[dict[str, object]], split: str) -> dict[str, object
 
         if split == "public":
             scoring = row.get("scoring")
-            if not isinstance(scoring, dict) or sorted(scoring.keys()) != ["final_probe_targets"]:
+            if not isinstance(scoring, dict) or sorted(scoring.keys()) != ["final_probe_targets", "probe_annotations"]:
                 raise RuntimeError(f"row {episode_id} has invalid scoring payload")
             targets = normalize_labels(scoring["final_probe_targets"], label_vocab)
             if targets is None or len(targets) != probe_count:
                 raise RuntimeError(f"row {episode_id} has invalid final_probe_targets")
+            annotations = scoring.get("probe_annotations")
+            if not isinstance(annotations, list) or len(annotations) != probe_count:
+                raise RuntimeError(f"row {episode_id} has invalid probe_annotations length")
+            if not all(a in ("congruent", "incongruent") for a in annotations):
+                raise RuntimeError(f"row {episode_id} has invalid probe_annotations values")
         elif "scoring" in row:
             raise RuntimeError(f"row {episode_id} leaks scoring fields in the private split")
 
@@ -1231,7 +1236,7 @@ def load_private_calibration_predictions(path: Path) -> dict[str, object]:
 def verify_private_answer_key(
     payload: dict[str, object],
     private_rows: list[dict[str, object]],
-) -> tuple[dict[str, object], dict[str, tuple[str, ...]], dict[str, dict[str, str]]]:
+) -> tuple[dict[str, object], dict[str, tuple[str, ...]], dict[str, dict[str, str]], dict[str, list[str]]]:
     """Verify the private answer key against the private rows.
 
     Args:
@@ -1239,8 +1244,8 @@ def verify_private_answer_key(
         private_rows: Private rows used as the reference source.
 
     Returns:
-        A summary, normalized episode targets, and normalized generator
-        metadata.
+        A summary, normalized episode targets, normalized generator
+        metadata, and per-episode probe annotations.
 
     Raises:
         RuntimeError: If the answer key is inconsistent or incomplete.
@@ -1249,6 +1254,7 @@ def verify_private_answer_key(
     rows_by_id = {str(row["episode_id"]): row for row in private_rows}
     episode_targets: dict[str, tuple[str, ...]] = {}
     episode_generators: dict[str, dict[str, str]] = {}
+    episode_annotations: dict[str, list[str]] = {}
     label_counts: Counter[str] = Counter()
     for episode in payload["episodes"]:
         if not isinstance(episode, dict):
@@ -1268,8 +1274,15 @@ def verify_private_answer_key(
         targets = normalize_labels(episode.get("final_probe_targets"), label_vocab)
         if targets is None or len(targets) != int(row["inference"]["response_spec"]["probe_count"]):
             raise RuntimeError(f"private answer key episode {episode_id} has invalid final_probe_targets")
+        annotations = episode.get("probe_annotations")
+        probe_count = int(row["inference"]["response_spec"]["probe_count"])
+        if not isinstance(annotations, list) or len(annotations) != probe_count:
+            raise RuntimeError(f"private answer key episode {episode_id} has invalid probe_annotations length")
+        if not all(a in ("congruent", "incongruent") for a in annotations):
+            raise RuntimeError(f"private answer key episode {episode_id} has invalid probe_annotations values")
         episode_generators[episode_id] = _normalize_generator_metadata(episode, episode_id=episode_id)
         episode_targets[episode_id] = targets
+        episode_annotations[episode_id] = annotations
         label_counts.update(targets)
     missing_ids = set(rows_by_id) - set(episode_targets)
     if missing_ids:
@@ -1277,7 +1290,7 @@ def verify_private_answer_key(
     return {
         "answer_key_episode_count": len(episode_targets),
         "answer_key_label_counts": dict(sorted(label_counts.items())),
-    }, episode_targets, episode_generators
+    }, episode_targets, episode_generators, episode_annotations
 
 
 def verify_private_calibration_predictions(
@@ -1366,7 +1379,7 @@ def attach_private_scoring(private_rows: list[dict[str, object]], answer_key: di
         Copies of the private rows with scoring attached.
 
     """
-    _summary, episode_targets, _episode_generators = verify_private_answer_key(answer_key, private_rows)
+    _summary, episode_targets, _episode_generators, episode_annotations = verify_private_answer_key(answer_key, private_rows)
     attached: list[dict[str, object]] = []
     for row in private_rows:
         episode_id = str(row["episode_id"])
@@ -1375,7 +1388,10 @@ def attach_private_scoring(private_rows: list[dict[str, object]], answer_key: di
                 "episode_id": row["episode_id"],
                 "analysis": dict(row["analysis"]),
                 "inference": dict(row["inference"]),
-                "scoring": {"final_probe_targets": list(episode_targets[episode_id])},
+                "scoring": {
+                    "final_probe_targets": list(episode_targets[episode_id]),
+                    "probe_annotations": episode_annotations[episode_id],
+                },
             }
         )
     return attached
@@ -1567,7 +1583,7 @@ def verify_private_bundle(bundle_dir: Path, *, emit_audit_report: Path | None = 
     private_rows = load_rows(bundle_paths["rows"])
     schema_summary = verify_schema(private_rows, "private")
     answer_key = load_private_answer_key(bundle_paths["answer_key"])
-    answer_summary, _episode_targets, _episode_generators = verify_private_answer_key(answer_key, private_rows)
+    answer_summary, _episode_targets, _episode_generators, _episode_annotations = verify_private_answer_key(answer_key, private_rows)
     predictions = load_private_calibration_predictions(bundle_paths["predictions"])
     prediction_models = verify_private_calibration_predictions(predictions, private_rows, _episode_targets)
     verify_private_empirical_difficulty(private_rows, answer_key, prediction_models, _episode_targets)

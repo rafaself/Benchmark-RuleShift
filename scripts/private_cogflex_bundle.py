@@ -23,6 +23,7 @@ from scripts.build_cogflex_dataset import (
     build_domain,
     build_episode_payload,
     build_public_artifacts,
+    compute_probe_annotations,
     compute_sha256,
     empirical_difficulty_entries_from_predictions,
     enumerate_items,
@@ -237,6 +238,11 @@ def _build_private_episode(
             exclude=used,
         )
         turn_items.append(probes)
+        probe_stimuli = [
+            {key: item[key] for key in item if key not in {"index", "label", "context", "rule_id"}}
+            for item in probes
+        ]
+        annotations = compute_probe_annotations(probe_stimuli, initial_rule, shift_rule)
         row, answer = build_episode_payload(
             episode_id,
             suite_task_id=suite_task_id,
@@ -244,6 +250,7 @@ def _build_private_episode(
             label_vocab=label_vocab,
             turn_prompts=prompts,
             turn_items=turn_items,
+            probe_annotations=annotations,
         )
         row["analysis"]["structure_family_id"] = structure_family_id
         answer["analysis"]["structure_family_id"] = structure_family_id
@@ -306,6 +313,8 @@ def _build_private_episode(
             item["context"] = "mesa" if index % 2 == 0 else "fjord"
     turn_items.append(probe_items)
 
+    contrast_rule = initial_rule if decision_rule is shift_rule else shift_rule
+    annotations = compute_probe_annotations(probes, decision_rule, contrast_rule)
     row, answer = build_episode_payload(
         episode_id,
         suite_task_id=suite_task_id,
@@ -313,6 +322,7 @@ def _build_private_episode(
         label_vocab=label_vocab,
         turn_prompts=prompts,
         turn_items=turn_items,
+        probe_annotations=annotations,
     )
     row["analysis"]["structure_family_id"] = structure_family_id
     answer["analysis"]["structure_family_id"] = structure_family_id
@@ -495,6 +505,7 @@ def write_private_bundle(bundle_dir: Path) -> dict[str, Path]:
             ),
             "inference": answer["inference"],
             "final_probe_targets": answer["final_probe_targets"],
+            "probe_annotations": answer["probe_annotations"],
         }
         for answer in answers
     ]

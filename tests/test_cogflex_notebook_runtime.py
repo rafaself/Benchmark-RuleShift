@@ -271,6 +271,11 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
             len(attached_rows[0]["scoring"]["final_probe_targets"]),
             attached_rows[0]["inference"]["response_spec"]["probe_count"],
         )
+        self.assertIn("probe_annotations", attached_rows[0]["scoring"])
+        self.assertEqual(
+            len(attached_rows[0]["scoring"]["probe_annotations"]),
+            attached_rows[0]["inference"]["response_spec"]["probe_count"],
+        )
         self.namespace["PRIVATE_ANSWER_KEY_PATH"] = None
         self.namespace["EVAL_SPLIT"] = "public"
 
@@ -313,6 +318,18 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
         result = self.namespace["score_episode"](("orbit", "anchor"), ("orbit", "orbit"))
         self.assertEqual(result["numerator"], 1)
         self.assertEqual(result["denominator"], 2)
+
+    def test_score_episode_computes_incongruent_and_congruent_counts(self) -> None:
+        result = self.namespace["score_episode"](
+            ("orbit", "anchor", "orbit"),
+            ("orbit", "orbit", "orbit"),
+            ("incongruent", "congruent", "incongruent"),
+        )
+        self.assertEqual(result["numerator"], 2)
+        self.assertEqual(result["incongruent_numerator"], 2)
+        self.assertEqual(result["incongruent_denominator"], 2)
+        self.assertEqual(result["congruent_numerator"], 0)
+        self.assertEqual(result["congruent_denominator"], 1)
 
     def test_run_flexible_task_scores_invalid_labels_as_zero_instead_of_raising(self) -> None:
         row = self.rows[0]
@@ -362,13 +379,17 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
         ]
         runs = FakeRuns(
             [
-                {"numerator": 5, "denominator": 5, "predictions": ["accept"] * 5},
-                {"numerator": 3, "denominator": 6, "predictions": ["north"] * 6},
-                {"numerator": 6, "denominator": 6, "predictions": ["amber"] * 6},
-                {"numerator": 0, "denominator": 5, "predictions": ["accept"] * 5},
+                {"numerator": 5, "denominator": 5, "predictions": ["accept"] * 5, "incongruent_numerator": 3, "incongruent_denominator": 3, "congruent_numerator": 2, "congruent_denominator": 2},
+                {"numerator": 3, "denominator": 6, "predictions": ["north"] * 6, "incongruent_numerator": 1, "incongruent_denominator": 4, "congruent_numerator": 2, "congruent_denominator": 2},
+                {"numerator": 6, "denominator": 6, "predictions": ["amber"] * 6, "incongruent_numerator": 4, "incongruent_denominator": 4, "congruent_numerator": 2, "congruent_denominator": 2},
+                {"numerator": 0, "denominator": 5, "predictions": ["accept"] * 5, "incongruent_numerator": 0, "incongruent_denominator": 3, "congruent_numerator": 0, "congruent_denominator": 2},
             ]
         )
         summary = namespace["summarize_suite_benchmark"](runs, rows)
         self.assertAlmostEqual(summary["micro_accuracy"], 14 / 22)
         self.assertAlmostEqual(summary["macro_accuracy"], (1.0 + 0.5 + 1.0 + 0.0) / 4)
         self.assertEqual(set(summary["structure_family_accuracy"]), {"three_step_bridge", "two_step_focus"})
+        self.assertAlmostEqual(summary["incongruent_accuracy"], 8 / 14)
+        self.assertAlmostEqual(summary["congruent_accuracy"], 6 / 8)
+        self.assertAlmostEqual(summary["switch_cost"], 6 / 8 - 8 / 14)
+        self.assertAlmostEqual(summary["score"], summary["incongruent_accuracy"])

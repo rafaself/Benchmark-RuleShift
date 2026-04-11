@@ -151,6 +151,11 @@ class CogflexVerificationTests(unittest.TestCase):
             len(attached[0]["scoring"]["final_probe_targets"]),
             attached[0]["inference"]["response_spec"]["probe_count"],
         )
+        self.assertIn("probe_annotations", attached[0]["scoring"])
+        self.assertEqual(
+            len(attached[0]["scoring"]["probe_annotations"]),
+            attached[0]["inference"]["response_spec"]["probe_count"],
+        )
 
     def test_verify_private_bundle_accepts_valid_external_bundle(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir, contextlib.redirect_stdout(io.StringIO()):
@@ -327,7 +332,7 @@ class CogflexVerificationTests(unittest.TestCase):
             bundle_paths = write_private_bundle(Path(tmpdir) / "bundle")
             private_rows = json.loads(bundle_paths["rows"].read_text(encoding="utf-8"))
             answer_key = load_private_answer_key(bundle_paths["answer_key"])
-            _summary, episode_targets, _episode_generators = verify_private_answer_key(answer_key, private_rows)
+            _summary, episode_targets, _episode_generators, _episode_annotations = verify_private_answer_key(answer_key, private_rows)
             predictions = load_private_calibration_predictions(bundle_paths["predictions"])
             predictions["models"][0]["episodes"] = predictions["models"][0]["episodes"][:-1]
             with self.assertRaisesRegex(RuntimeError, "missing episode_ids"):
@@ -338,7 +343,7 @@ class CogflexVerificationTests(unittest.TestCase):
             bundle_paths = write_private_bundle(Path(tmpdir) / "bundle")
             private_rows = json.loads(bundle_paths["rows"].read_text(encoding="utf-8"))
             answer_key = load_private_answer_key(bundle_paths["answer_key"])
-            _summary, episode_targets, _episode_generators = verify_private_answer_key(answer_key, private_rows)
+            _summary, episode_targets, _episode_generators, _episode_annotations = verify_private_answer_key(answer_key, private_rows)
             predictions = load_private_calibration_predictions(bundle_paths["predictions"])
             predictions["models"][0]["episodes"][0]["predicted_labels"][0] = "not_in_vocab"
             with self.assertRaisesRegex(RuntimeError, "invalid predicted_labels"):
