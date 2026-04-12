@@ -1,10 +1,12 @@
 # CogFlex Suite Benchmark
 
-Kaggle-oriented benchmark project for cognitive flexibility within executive functions:
+Kaggle-oriented benchmark for rule-switching within cognitive flexibility, a sub-domain of executive functions:
 
 - faculty: `executive_functions/cognitive_flexibility`
 - benchmark form: multi-turn suite evaluation
 - official task name: `cogflex_suite_flexible`
+
+This benchmark targets rule-switching specifically. It does not claim broad coverage of all cognitive flexibility constructs.
 
 This repository publishes the public CogFlex contract, the deterministic public split generator, the Kaggle notebook runtime, validators for externally managed private bundles, and a local synthetic private-bundle builder for testing and deployment workflows.
 
@@ -41,28 +43,68 @@ Each scored row exposes:
 
 - `inference.turns`: ordered textual turns with variable length
 - `inference.turn_specs`: one entry per turn with `{kind, item_count}`
-- `inference.response_spec`: `{format, probe_count, label_vocab}`
+- `inference.response_spec`: see below
 - `analysis.faculty_id`
 - `analysis.suite_task_id`
 - `analysis.shift_mode`
 - `analysis.difficulty_bin`
 - `analysis.structure_family_id`
 
-Public rows also include `scoring.final_probe_targets`. Private rows are inference-only and must be paired with an external answer key.
+Public rows also include a `scoring` block with `final_probe_targets`, `probe_annotations`, and optionally `probe_metadata`. Private rows are inference-only and must be paired with an external answer key.
+
+### `response_spec` shape
+
+`inference.response_spec` carries the full contract for the final model response:
+
+```json
+{
+  "schema_version": "cogflex.v2",
+  "format": "ordered_labels",
+  "probe_count": <int>,
+  "label_vocab": ["<label>", ...],
+  "suite_task_id": "<task>",
+  "output_schema": { ... }
+}
+```
+
+- `schema_version`: always `"cogflex.v2"` for the current generator
+- `format`: always `"ordered_labels"`
+- `probe_count`: number of probes in the decision turn
+- `label_vocab`: allowed output labels for this episode
+- `suite_task_id`: the suite task identifier for the episode
+- `output_schema`: a strict JSON Schema object used to drive structured output on the final prompt. The notebook runtime rebuilds this schema locally and passes it to the model.
+
+### `scoring` block (public split only)
+
+- `final_probe_targets`: gold label sequence aligned to the probe order
+- `probe_annotations`: per-probe congruency annotation (`"congruent"` or `"incongruent"`)
+- `probe_metadata` (optional): rich per-probe dict with `target_label`, `obsolete_rule_label`, `congruency`, `requires_switch`, and optional `route_metadata`
 
 `analysis.difficulty_bin` is an empirical model-calibration bin, not a claim about human difficulty and not a shortcut-resistance label. The public split consumes the tracked `public_difficulty_calibration.json` snapshot, and the private verifier recomputes the same bin from the fixed panel predictions shipped in the private bundle.
 
-The current public split exercises two structural families:
+## Public Split Structure
 
-- `two_step_focus`: 2 evidence turns followed by a decision turn
-- `three_step_bridge`: 3 evidence turns followed by a decision turn
+The current public split (120 rows, 30 per suite task) exercises eight structural families:
 
-The public rows intentionally vary:
+| Family | Turn layout | Probes |
+|---|---|---|
+| `two_step_focus` | 2 evidence + decision | 5 |
+| `three_step_bridge` | 3 evidence + decision | 6 |
+| `wide_then_narrow` | 2 evidence + decision | 4 |
+| `staggered_refresh` | 3 evidence + decision | 5 |
+| `four_step_ladder` | 4 evidence + decision | 7 |
+| `cue_dense_compact` | 2 evidence + decision | 5 |
+| `cue_dense_balanced` | 2 evidence + decision | 6 |
+| `cue_dense_wide` | 2 evidence + decision | 4 |
 
-- number of turns: `3` or `4`
-- decision probes: `5` or `6`
-- label vocabulary size: `2` or `3`
-- routing metadata: some tasks attach `context`, others attach `cue`
+The first five families appear across `explicit_rule_update`, `latent_rule_update`, and `context_binding`. The cue-dense families plus `two_step_focus` are used exclusively for `trial_cued_switch`.
+
+Public rows vary across:
+
+- total turn count: `3`, `4`, or `5`
+- decision probes: `4`, `5`, `6`, or `7`
+- label vocabulary size: `2`, `3`, or `4`
+- routing metadata: `context_binding` episodes attach a `context` field; `trial_cued_switch` episodes attach a `cue` field
 
 ### Public Difficulty Calibration
 
@@ -83,6 +125,45 @@ Episodes are ordered by `(panel_mean_accuracy asc, episode_id asc)`. The lower h
 - `trial_cued_switch`: labels depend on a cue that selects between competing rules
 
 Each public suite task appears in at least two structural formats so the runtime and verifier validate the flexible contract end to end.
+
+## Notebook Runtime
+
+The notebook (`kaggle/notebook/cogflex_notebook_task.ipynb`) drives the benchmark evaluation. Key behaviors:
+
+- **Schema-based final prompt**: the final decision turn is constructed with the `output_schema` from `response_spec`. The notebook rebuilds this schema locally via `build_strict_output_schema` and passes it as structured output to the model.
+- **Response normalization**: the benchmark expects `ordered_labels` format. The `_normalize_response_spec` function re-derives `output_schema` from `response_spec` fields at runtime and validates the response against it. Legacy comma-delimited text and `probe_1`-style mappings are supported as compatibility fallbacks.
+- **Episode scoring**: `score_episode(targets, predictions, probe_metadata)` returns per-episode numerator/denominator counts and diagnostic breakdowns: `incongruent_numerator/denominator`, `congruent_numerator/denominator`, `first_probe_numerator/denominator`, `obsolete_rule_error_numerator/denominator`.
+- **Suite summary**: `summarize_suite_benchmark` aggregates episode results into:
+  - `macro_accuracy`: aggregate label accuracy across all probes
+  - `incongruent_accuracy`: accuracy on switch-required probes
+  - `first_probe_accuracy`: accuracy on the first probe after each rule shift
+  - `obsolete_rule_error_rate`: rate of predictions matching the obsolete rule instead of the active one
+  - `score`: composite `(macro_accuracy + incongruent_accuracy + first_probe_accuracy + (1 − obsolete_rule_error_rate)) / 4`
+  - `switch_cost`, `congruent_accuracy`, `structure_family_accuracy`, `per_task_metrics`
+
+`score` is the single leaderboard-facing metric.
+
+## Public Split Verification
+
+`verify_public_split(...)` in `scripts/verify_cogflex.py` enforces:
+
+- full schema validation against the public episode contract
+- surface constraint enforcement (structural families, routing metadata)
+- reproducibility: tracked rows must exactly match what the deterministic generator produces from `build_public_artifacts()`
+- public difficulty calibration integrity
+- identifiability: each episode must be resolvable to a unique rule by a canonical rule catalogue
+
+Run it with:
+
+```bash
+make verify-public
+```
+
+or with an optional audit artifact:
+
+```bash
+python3 -m scripts.verify_cogflex --split public --emit-audit-report /tmp/cogflex-public-audit.json
+```
 
 ## Private Bundle Contract
 

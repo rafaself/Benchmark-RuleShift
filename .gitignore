@@ -8,3 +8,4 @@ __pycache__/
 .codex
 kaggle/dataset/audit_key.json
 kaggle/dataset/private/
+.release_ok
