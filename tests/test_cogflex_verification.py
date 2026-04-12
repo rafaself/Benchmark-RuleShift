@@ -28,6 +28,7 @@ from scripts.build_cogflex_dataset import (
     public_generator_reference,
 )
 from scripts.verify_cogflex import (
+    PUBLIC_AUDIT_CHECKS,
     attach_private_scoring,
     build_private_quality_report,
     load_private_calibration_predictions,
@@ -128,17 +129,7 @@ class CogflexVerificationTests(unittest.TestCase):
                 PUBLIC_DIFFICULTY_CALIBRATION_PATH.name: compute_sha256(PUBLIC_DIFFICULTY_CALIBRATION_PATH),
             },
         )
-        self.assertEqual(
-            audit_payload["checks_executed"],
-            [
-                "schema",
-                "difficulty_calibration",
-                "public_rows_reproducibility",
-                "public_quality_report_reproducibility",
-                "public_quality_report_consistency",
-                "identifiability",
-            ],
-        )
+        self.assertEqual(audit_payload["checks_executed"], list(PUBLIC_AUDIT_CHECKS))
 
     def test_attach_private_scoring_accepts_inference_only_rows(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -253,11 +244,9 @@ class CogflexVerificationTests(unittest.TestCase):
         private_row = json.loads(json.dumps(public_rows[2]))
         private_row["episode_id"] = "x9003"
         private_row["analysis"]["structure_family_id"] = "private_clone"
-        private_row["inference"]["turns"][0] = private_row["inference"]["turns"][0].replace(
-            "Infer the current rule from these labeled examples.",
-            "Infer the current rule from these labeled examples. Keep track of the cadence too.",
-            1,
-        )
+        turns_0_lines = private_row["inference"]["turns"][0].split("\n")
+        turns_0_lines[2] = turns_0_lines[2] + " Keep track of the cadence too."
+        private_row["inference"]["turns"][0] = "\n".join(turns_0_lines)
         self.assertGreaterEqual(structural_overlap_score(public_rows[2], private_row), 0.9)
         with self.assertRaisesRegex(RuntimeError, "near-duplicate overlap"):
             verify_split_isolation(public_rows, [private_row])
