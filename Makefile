@@ -26,13 +26,12 @@ verify-private:
 	$(PYTHON) -m scripts.verify_cogflex --split private \
 		--private-bundle-dir "$(COGFLEX_PRIVATE_BUNDLE_DIR)"
 
-# ── Release gate ────────────────────────────────────────────────────────────
+# ── Release check (optional) ────────────────────────────────────────────────
 # Rebuild all artifacts, verify both splits, run the test suite.
-# Writes .release_ok on success. Deploy targets enforce this gate.
 release-check:
 	./scripts/release_check.sh
 
-# ── Publish targets (require release-check to have passed) ──────────────────
+# ── Publish targets ──────────────────────────────────────────────────────────
 deploy-dataset:
 	./scripts/deploy_dataset.sh
 

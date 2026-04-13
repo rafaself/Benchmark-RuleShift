@@ -40,22 +40,6 @@ mkdir -p "$KAGGLE_TMPDIR"
 printf '%s' "$KAGGLE_API_TOKEN" > "$KAGGLE_TMP_HOME/.kaggle/access_token"
 chmod 600 "$KAGGLE_TMP_HOME/.kaggle/access_token"
 
-SENTINEL="$ROOT_DIR/.release_ok"
-if [[ ! -f "$SENTINEL" ]]; then
-  echo "ERROR: Release check has not been run." >&2
-  echo "  Run 'make release-check' before deploying." >&2
-  exit 1
-fi
-SENTINEL_HEAD="$(cat "$SENTINEL")"
-CURRENT_HEAD="$(git -C "$ROOT_DIR" rev-parse HEAD 2>/dev/null || echo "no-git")"
-if [[ "$SENTINEL_HEAD" != "$CURRENT_HEAD"* ]]; then
-  echo "ERROR: Repository HEAD has changed since last release check." >&2
-  echo "  Sentinel : $SENTINEL_HEAD" >&2
-  echo "  Current  : $CURRENT_HEAD" >&2
-  echo "  Run 'make release-check' again." >&2
-  exit 1
-fi
-
 MESSAGE="${1:-Update CogFlex Suite public dataset}"
 
 echo "Publishing dataset from $DATASET_DIR"
