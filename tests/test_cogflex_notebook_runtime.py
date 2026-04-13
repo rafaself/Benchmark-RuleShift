@@ -551,3 +551,64 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
         )
         self.assertIn("per_task_metrics", summary)
         self.assertAlmostEqual(summary["per_task_metrics"]["explicit_rule_update"]["first_probe_accuracy"], 1.0)
+        self.assertEqual(summary["scorable_episodes"], 4)
+        self.assertAlmostEqual(summary["protocol_valid_rate"], 1.0)
+
+    def test_score_episode_sets_scorable_true_for_correct(self) -> None:
+        result = self.namespace["score_episode"](("orbit",), ("orbit",))
+        self.assertTrue(result["scorable"])
+
+    def test_score_episode_sets_scorable_true_for_cognitive_mismatch(self) -> None:
+        result = self.namespace["score_episode"](("orbit",), ("anchor",))
+        self.assertTrue(result["scorable"])
+
+    def test_score_episode_sets_scorable_false_for_protocol_failures(self) -> None:
+        for status in ("prompt_failure", "schema_format_failure", "wrong_label_count", "invalid_label_vocab"):
+            result = self.namespace["score_episode"](None, ("orbit",), score_status=status)
+            self.assertFalse(result["scorable"], msg=f"expected scorable=False for {status}")
+
+    def test_all_protocol_failures_produce_zero_score_not_025(self) -> None:
+        """Regression: fully invalid runs must not receive 0.25 via the obsolete-rule term."""
+        code_cells = _load_code_cells()
+        namespace = dict(self.namespace)
+        exec(code_cells["cell-task"], namespace)
+        rows = [
+            {"analysis": {"suite_task_id": "explicit_rule_update", "structure_family_id": "two_step_focus", "difficulty_bin": "hard"}},
+            {"analysis": {"suite_task_id": "latent_rule_update", "structure_family_id": "three_step_bridge", "difficulty_bin": "hard"}},
+        ]
+        runs = FakeRuns(
+            [
+                {"numerator": 0, "denominator": 5, "predictions": [""] * 5, "scorable": False, "incongruent_numerator": 0, "incongruent_denominator": 3, "congruent_numerator": 0, "congruent_denominator": 2, "first_probe_numerator": 0, "first_probe_denominator": 1, "obsolete_rule_error_numerator": 0, "obsolete_rule_error_denominator": 5},
+                {"numerator": 0, "denominator": 6, "predictions": [""] * 6, "scorable": False, "incongruent_numerator": 0, "incongruent_denominator": 4, "congruent_numerator": 0, "congruent_denominator": 2, "first_probe_numerator": 0, "first_probe_denominator": 1, "obsolete_rule_error_numerator": 0, "obsolete_rule_error_denominator": 6},
+            ]
+        )
+        summary = namespace["summarize_suite_benchmark"](runs, rows)
+        self.assertAlmostEqual(summary["score"], 0.0)
+        self.assertEqual(summary["scorable_episodes"], 0)
+        self.assertAlmostEqual(summary["protocol_valid_rate"], 0.0)
+
+    def test_mixed_valid_invalid_episodes_get_partial_credit(self) -> None:
+        """Mixed batches: only valid episodes contribute to the obsolete-rule term."""
+        code_cells = _load_code_cells()
+        namespace = dict(self.namespace)
+        exec(code_cells["cell-task"], namespace)
+        rows = [
+            {"analysis": {"suite_task_id": "explicit_rule_update", "structure_family_id": "two_step_focus", "difficulty_bin": "hard"}},
+            {"analysis": {"suite_task_id": "latent_rule_update", "structure_family_id": "three_step_bridge", "difficulty_bin": "hard"}},
+        ]
+        runs = FakeRuns(
+            [
+                {"numerator": 5, "denominator": 5, "predictions": ["accept"] * 5, "scorable": True, "incongruent_numerator": 3, "incongruent_denominator": 3, "congruent_numerator": 2, "congruent_denominator": 2, "first_probe_numerator": 1, "first_probe_denominator": 1, "obsolete_rule_error_numerator": 0, "obsolete_rule_error_denominator": 5},
+                {"numerator": 0, "denominator": 6, "predictions": [""] * 6, "scorable": False, "incongruent_numerator": 0, "incongruent_denominator": 4, "congruent_numerator": 0, "congruent_denominator": 2, "first_probe_numerator": 0, "first_probe_denominator": 1, "obsolete_rule_error_numerator": 0, "obsolete_rule_error_denominator": 6},
+            ]
+        )
+        summary = namespace["summarize_suite_benchmark"](runs, rows)
+        self.assertEqual(summary["scorable_episodes"], 1)
+        self.assertAlmostEqual(summary["protocol_valid_rate"], 0.5)
+        expected_score = (
+            summary["macro_accuracy"]
+            + summary["incongruent_accuracy"]
+            + summary["first_probe_accuracy"]
+            + 0.5 * (1.0 - summary["obsolete_rule_error_rate"])
+        ) / 4.0
+        self.assertAlmostEqual(summary["score"], expected_score)
