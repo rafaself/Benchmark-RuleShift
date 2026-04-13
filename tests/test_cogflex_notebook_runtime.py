@@ -511,10 +511,7 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
         self.assertEqual(result["score_status"], "cognitive_mismatch")
         self.assertEqual(result["numerator"], len(targets) - 1)
 
-    def test_suite_summary_uses_macro_average_and_structure_breakdown(self) -> None:
-        code_cells = _load_code_cells()
-        namespace = dict(self.namespace)
-        exec(code_cells["cell-task"], namespace)
+    def _make_suite_summary_fixture(self, namespace):
         rows = [
             {"analysis": {"suite_task_id": "explicit_rule_update", "structure_family_id": "two_step_focus", "difficulty_bin": "hard"}},
             {"analysis": {"suite_task_id": "latent_rule_update", "structure_family_id": "three_step_bridge", "difficulty_bin": "hard"}},
@@ -529,16 +526,50 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
                 {"numerator": 0, "denominator": 5, "predictions": ["accept"] * 5, "incongruent_numerator": 0, "incongruent_denominator": 3, "congruent_numerator": 0, "congruent_denominator": 2, "first_probe_numerator": 0, "first_probe_denominator": 1, "obsolete_rule_error_numerator": 4, "obsolete_rule_error_denominator": 5},
             ]
         )
+        return runs, rows
+
+    def test_default_summary_contains_exactly_compact_keys(self) -> None:
+        code_cells = _load_code_cells()
+        namespace = dict(self.namespace)
+        exec(code_cells["cell-task"], namespace)
+        runs, rows = self._make_suite_summary_fixture(namespace)
         summary = namespace["summarize_suite_benchmark"](runs, rows)
+        expected_keys = {"score", "protocol_valid_rate", "scorable_episodes", "episodes", "macro_accuracy", "incongruent_accuracy", "first_probe_accuracy", "obsolete_rule_error_rate"}
+        self.assertEqual(set(summary.keys()), expected_keys)
+
+    def test_default_summary_excludes_debug_keys(self) -> None:
+        code_cells = _load_code_cells()
+        namespace = dict(self.namespace)
+        exec(code_cells["cell-task"], namespace)
+        runs, rows = self._make_suite_summary_fixture(namespace)
+        summary = namespace["summarize_suite_benchmark"](runs, rows)
+        forbidden_keys = {"score_formula", "micro_accuracy", "congruent_accuracy", "requires_switch_accuracy", "switch_cost", "numerator", "denominator", "incongruent_numerator", "incongruent_denominator", "congruent_numerator", "congruent_denominator", "first_probe_numerator", "first_probe_denominator", "obsolete_rule_error_numerator", "obsolete_rule_error_denominator", "requires_switch_numerator", "requires_switch_denominator", "per_task_accuracy", "per_task_metrics", "structure_family_accuracy", "difficulty_bin_accuracy"}
+        self.assertEqual(set(summary.keys()) & forbidden_keys, set())
+
+    def test_debug_summary_exposes_detailed_fields(self) -> None:
+        code_cells = _load_code_cells()
+        namespace = dict(self.namespace)
+        exec(code_cells["cell-task"], namespace)
+        runs, rows = self._make_suite_summary_fixture(namespace)
+        summary = namespace["summarize_suite_benchmark"](runs, rows, include_debug=True)
         self.assertAlmostEqual(summary["micro_accuracy"], 14 / 22)
-        self.assertAlmostEqual(summary["macro_accuracy"], (1.0 + 0.5 + 1.0 + 0.0) / 4)
         self.assertEqual(set(summary["structure_family_accuracy"]), {"three_step_bridge", "two_step_focus"})
-        self.assertAlmostEqual(summary["incongruent_accuracy"], 8 / 14)
-        self.assertAlmostEqual(summary["congruent_accuracy"], 6 / 8)
-        self.assertAlmostEqual(summary["first_probe_accuracy"], 2 / 4)
-        self.assertAlmostEqual(summary["obsolete_rule_error_rate"], 6 / 22)
         self.assertAlmostEqual(summary["congruent_accuracy"], 6 / 8)
         self.assertAlmostEqual(summary["switch_cost"], 6 / 8 - 8 / 14)
+        self.assertIn("per_task_metrics", summary)
+        self.assertAlmostEqual(summary["per_task_metrics"]["explicit_rule_update"]["first_probe_accuracy"], 1.0)
+        self.assertIn("score_formula", summary)
+
+    def test_suite_summary_uses_macro_average_and_structure_breakdown(self) -> None:
+        code_cells = _load_code_cells()
+        namespace = dict(self.namespace)
+        exec(code_cells["cell-task"], namespace)
+        runs, rows = self._make_suite_summary_fixture(namespace)
+        summary = namespace["summarize_suite_benchmark"](runs, rows)
+        self.assertAlmostEqual(summary["macro_accuracy"], (1.0 + 0.5 + 1.0 + 0.0) / 4)
+        self.assertAlmostEqual(summary["incongruent_accuracy"], 8 / 14)
+        self.assertAlmostEqual(summary["first_probe_accuracy"], 2 / 4)
+        self.assertAlmostEqual(summary["obsolete_rule_error_rate"], 6 / 22)
         self.assertAlmostEqual(
             summary["score"],
             (
@@ -549,8 +580,6 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
             )
             / 4.0,
         )
-        self.assertIn("per_task_metrics", summary)
-        self.assertAlmostEqual(summary["per_task_metrics"]["explicit_rule_update"]["first_probe_accuracy"], 1.0)
         self.assertEqual(summary["scorable_episodes"], 4)
         self.assertAlmostEqual(summary["protocol_valid_rate"], 1.0)
 

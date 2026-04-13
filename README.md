@@ -133,13 +133,14 @@ The notebook (`kaggle/notebook/cogflex_notebook_task.ipynb`) drives the benchmar
 - **Schema-based final prompt**: the final decision turn is constructed with the `output_schema` from `response_spec`. The notebook rebuilds this schema locally via `build_strict_output_schema` and passes it as structured output to the model.
 - **Response normalization**: the benchmark expects `ordered_labels` format. The `_normalize_response_spec` function re-derives `output_schema` from `response_spec` fields at runtime and validates the response against it. Legacy comma-delimited text and `probe_1`-style mappings are supported as compatibility fallbacks.
 - **Episode scoring**: `score_episode(targets, predictions, probe_metadata)` returns per-episode numerator/denominator counts and diagnostic breakdowns: `incongruent_numerator/denominator`, `congruent_numerator/denominator`, `first_probe_numerator/denominator`, `obsolete_rule_error_numerator/denominator`.
-- **Suite summary**: `summarize_suite_benchmark` aggregates episode results into:
+- **Suite summary**: `summarize_suite_benchmark(runs, rows, *, include_debug=False)` aggregates episode results. The default compact summary returns exactly these keys:
+  - `score`: composite `(macro_accuracy + incongruent_accuracy + first_probe_accuracy + (1 − obsolete_rule_error_rate)) / 4`
+  - `protocol_valid_rate`, `scorable_episodes`, `episodes`
   - `macro_accuracy`: aggregate label accuracy across all probes
   - `incongruent_accuracy`: accuracy on switch-required probes
   - `first_probe_accuracy`: accuracy on the first probe after each rule shift
   - `obsolete_rule_error_rate`: rate of predictions matching the obsolete rule instead of the active one
-  - `score`: composite `(macro_accuracy + incongruent_accuracy + first_probe_accuracy + (1 − obsolete_rule_error_rate)) / 4`
-  - `switch_cost`, `congruent_accuracy`, `structure_family_accuracy`, `per_task_metrics`
+  - Pass `include_debug=True` for the full diagnostic summary including `switch_cost`, `congruent_accuracy`, `micro_accuracy`, `structure_family_accuracy`, `per_task_metrics`, per-slice breakdowns, and raw numerator/denominator counts.
 
 `score` is the single leaderboard-facing metric.
 
