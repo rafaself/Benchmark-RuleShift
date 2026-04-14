@@ -170,6 +170,22 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
         cls.namespace = load_notebook_namespace()
         cls.rows, _answers, _report = public_fixture()
 
+    @staticmethod
+    def _private_probe_metadata_fixture(episode: dict[str, object]) -> list[dict[str, object]]:
+        return [
+            {
+                "probe_index": index,
+                "target_label": str(target),
+                "obsolete_rule_label": None,
+                "congruency": str(annotation),
+                "requires_switch": str(annotation) == "incongruent",
+            }
+            for index, (target, annotation) in enumerate(
+                zip(episode["final_probe_targets"], episode["probe_annotations"]),
+                start=1,
+            )
+        ]
+
     def test_load_rows_accepts_the_public_split(self) -> None:
         with contextlib.redirect_stdout(io.StringIO()):
             loaded_rows = self.namespace["_load_rows"](PUBLIC_ROWS_PATH)
@@ -291,6 +307,94 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "Private split requires an external answer key"):
             self.namespace["attach_selected_scoring"](private_rows)
         self.namespace["EVAL_SPLIT"] = "public"
+
+    def test_attach_private_scoring_rejects_duplicate_episode_ids_in_answer_key(self) -> None:
+        self.namespace["EVAL_SPLIT"] = "private"
+        try:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                bundle_dir = Path(tmpdir) / "bundle"
+                bundle_paths = write_private_bundle(bundle_dir)
+                private_rows = self.namespace["_load_rows"](bundle_paths["rows"])
+                answer_key = json.loads(bundle_paths["answer_key"].read_text(encoding="utf-8"))
+                answer_key["episodes"].append(json.loads(json.dumps(answer_key["episodes"][0])))
+                bundle_paths["answer_key"].write_text(json.dumps(answer_key, indent=2) + "\n", encoding="utf-8")
+                self.namespace["PRIVATE_ANSWER_KEY_PATH"] = bundle_paths["answer_key"]
+                with self.assertRaisesRegex(RuntimeError, "duplicates episode_id"):
+                    self.namespace["_attach_private_scoring"](private_rows)
+        finally:
+            self.namespace["PRIVATE_ANSWER_KEY_PATH"] = None
+            self.namespace["EVAL_SPLIT"] = "public"
+
+    def test_attach_private_scoring_rejects_missing_requires_switch(self) -> None:
+        self.namespace["EVAL_SPLIT"] = "private"
+        try:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                bundle_dir = Path(tmpdir) / "bundle"
+                bundle_paths = write_private_bundle(bundle_dir)
+                private_rows = self.namespace["_load_rows"](bundle_paths["rows"])
+                answer_key = json.loads(bundle_paths["answer_key"].read_text(encoding="utf-8"))
+                answer_key["episodes"][0]["probe_metadata"] = self._private_probe_metadata_fixture(answer_key["episodes"][0])
+                answer_key["episodes"][0]["probe_metadata"][0].pop("requires_switch")
+                bundle_paths["answer_key"].write_text(json.dumps(answer_key, indent=2) + "\n", encoding="utf-8")
+                self.namespace["PRIVATE_ANSWER_KEY_PATH"] = bundle_paths["answer_key"]
+                with self.assertRaisesRegex(ValueError, "probe_metadata\\.requires_switch is required"):
+                    self.namespace["_attach_private_scoring"](private_rows)
+        finally:
+            self.namespace["PRIVATE_ANSWER_KEY_PATH"] = None
+            self.namespace["EVAL_SPLIT"] = "public"
+
+    def test_attach_private_scoring_rejects_missing_obsolete_rule_label(self) -> None:
+        self.namespace["EVAL_SPLIT"] = "private"
+        try:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                bundle_dir = Path(tmpdir) / "bundle"
+                bundle_paths = write_private_bundle(bundle_dir)
+                private_rows = self.namespace["_load_rows"](bundle_paths["rows"])
+                answer_key = json.loads(bundle_paths["answer_key"].read_text(encoding="utf-8"))
+                answer_key["episodes"][0]["probe_metadata"] = self._private_probe_metadata_fixture(answer_key["episodes"][0])
+                answer_key["episodes"][0]["probe_metadata"][0].pop("obsolete_rule_label")
+                bundle_paths["answer_key"].write_text(json.dumps(answer_key, indent=2) + "\n", encoding="utf-8")
+                self.namespace["PRIVATE_ANSWER_KEY_PATH"] = bundle_paths["answer_key"]
+                with self.assertRaisesRegex(ValueError, "probe_metadata\\.obsolete_rule_label is required"):
+                    self.namespace["_attach_private_scoring"](private_rows)
+        finally:
+            self.namespace["PRIVATE_ANSWER_KEY_PATH"] = None
+            self.namespace["EVAL_SPLIT"] = "public"
+
+    def test_attach_private_scoring_rejects_probe_metadata_length_mismatch(self) -> None:
+        self.namespace["EVAL_SPLIT"] = "private"
+        try:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                bundle_dir = Path(tmpdir) / "bundle"
+                bundle_paths = write_private_bundle(bundle_dir)
+                private_rows = self.namespace["_load_rows"](bundle_paths["rows"])
+                answer_key = json.loads(bundle_paths["answer_key"].read_text(encoding="utf-8"))
+                answer_key["episodes"][0]["probe_metadata"] = self._private_probe_metadata_fixture(answer_key["episodes"][0])
+                answer_key["episodes"][0]["probe_metadata"] = answer_key["episodes"][0]["probe_metadata"][:-1]
+                bundle_paths["answer_key"].write_text(json.dumps(answer_key, indent=2) + "\n", encoding="utf-8")
+                self.namespace["PRIVATE_ANSWER_KEY_PATH"] = bundle_paths["answer_key"]
+                with self.assertRaisesRegex(ValueError, "probe_metadata must align with final_probe_targets"):
+                    self.namespace["_attach_private_scoring"](private_rows)
+        finally:
+            self.namespace["PRIVATE_ANSWER_KEY_PATH"] = None
+            self.namespace["EVAL_SPLIT"] = "public"
+
+    def test_attach_private_scoring_rejects_answer_key_episode_set_mismatch(self) -> None:
+        self.namespace["EVAL_SPLIT"] = "private"
+        try:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                bundle_dir = Path(tmpdir) / "bundle"
+                bundle_paths = write_private_bundle(bundle_dir)
+                private_rows = self.namespace["_load_rows"](bundle_paths["rows"])
+                answer_key = json.loads(bundle_paths["answer_key"].read_text(encoding="utf-8"))
+                answer_key["episodes"] = answer_key["episodes"][:-1]
+                bundle_paths["answer_key"].write_text(json.dumps(answer_key, indent=2) + "\n", encoding="utf-8")
+                self.namespace["PRIVATE_ANSWER_KEY_PATH"] = bundle_paths["answer_key"]
+                with self.assertRaisesRegex(RuntimeError, "private answer key episode set mismatch"):
+                    self.namespace["_attach_private_scoring"](private_rows)
+        finally:
+            self.namespace["PRIVATE_ANSWER_KEY_PATH"] = None
+            self.namespace["EVAL_SPLIT"] = "public"
 
     def test_validate_row_rejects_missing_decision_turn(self) -> None:
         row = json.loads(json.dumps(self.rows[0]))
