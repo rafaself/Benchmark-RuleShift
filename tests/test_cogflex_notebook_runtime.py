@@ -2,6 +2,7 @@ import contextlib
 import io
 import json
 import os
+import pydantic
 import sys
 import tempfile
 import types
@@ -318,18 +319,34 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
         final_prompt, final_schema = llm.calls[-1]
         self.assertEqual(final_prompt, row["inference"]["turns"][-1])
         self.assertIsNotNone(final_schema)
-        self.assertEqual(final_schema["type"], "object")
-        self.assertEqual(final_schema["required"], ["ordered_labels"])
-        ordered_labels = final_schema["properties"]["ordered_labels"]
-        self.assertEqual(ordered_labels["type"], "array")
-        self.assertEqual(
-            ordered_labels["minItems"],
-            row["inference"]["response_spec"]["probe_count"],
-        )
-        self.assertEqual(
-            ordered_labels["maxItems"],
-            row["inference"]["response_spec"]["probe_count"],
-        )
+        self.assertTrue(isinstance(final_schema, type))
+        self.assertTrue(issubclass(final_schema, self.namespace["pydantic"].BaseModel))
+        self.assertEqual(final_schema.model_config.get("extra"), "forbid")
+        valid_payload = {"ordered_labels": list(row["scoring"]["final_probe_targets"])}
+        validated = final_schema.model_validate(valid_payload)
+        self.assertEqual(validated.ordered_labels, valid_payload["ordered_labels"])
+        with self.assertRaises(self.namespace["pydantic"].ValidationError):
+            final_schema.model_validate({"ordered_labels": ["not_in_vocab"] * len(valid_payload["ordered_labels"])})
+        with self.assertRaises(self.namespace["pydantic"].ValidationError):
+            final_schema.model_validate({"ordered_labels": valid_payload["ordered_labels"][:-1]})
+        with self.assertRaises(self.namespace["pydantic"].ValidationError):
+            final_schema.model_validate({**valid_payload, "extra": "field"})
+
+    def test_normalize_response_spec_builds_runtime_prompt_schema_without_changing_output_schema(self) -> None:
+        row = self.rows[0]
+        normalized = self.namespace["_normalize_response_spec"](row["inference"]["response_spec"])
+        self.assertEqual(normalized["output_schema"]["type"], "object")
+        self.assertEqual(normalized["output_schema"]["required"], ["ordered_labels"])
+        prompt_schema = normalized["prompt_schema"]
+        self.assertTrue(issubclass(prompt_schema, self.namespace["pydantic"].BaseModel))
+        self.assertEqual(prompt_schema.model_config.get("extra"), "forbid")
+        valid_payload = {"ordered_labels": list(row["scoring"]["final_probe_targets"])}
+        validated = prompt_schema.model_validate(valid_payload)
+        self.assertEqual(validated.ordered_labels, valid_payload["ordered_labels"])
+        with self.assertRaises(self.namespace["pydantic"].ValidationError):
+            prompt_schema.model_validate({"ordered_labels": ["not_in_vocab"] * normalized["probe_count"]})
+        with self.assertRaises(self.namespace["pydantic"].ValidationError):
+            prompt_schema.model_validate({"ordered_labels": valid_payload["ordered_labels"][:-1]})
 
     def test_score_episode_uses_dynamic_denominator(self) -> None:
         result = self.namespace["score_episode"](("orbit", "anchor"), ("orbit", "orbit"))

@@ -78,7 +78,7 @@ Public rows also include a `scoring` block with `final_probe_targets`, `probe_an
 - `probe_count`: number of probes in the decision turn
 - `label_vocab`: allowed output labels for this episode
 - `suite_task_id`: the suite task identifier for the episode
-- `output_schema`: a strict JSON Schema object used to drive structured output on the final prompt. The notebook runtime rebuilds this schema locally and passes it to the model.
+- `output_schema`: a strict JSON Schema object retained in the dataset contract for validation and documentation. The notebook runtime rebuilds it locally, then derives a prompt-compatible Pydantic model from the same fields for the final `llm.prompt(..., schema=...)` call.
 
 ### `scoring` block (public split only)
 
@@ -137,8 +137,8 @@ Each public suite task appears in at least two structural formats so the runtime
 The notebook (`kaggle/notebook/cogflex_notebook_task.ipynb`) drives the benchmark evaluation. Key behaviors:
 
 - **Default dataset**: the notebook defaults to the 10-episode public test runtime dataset (`raptorengineer/cogflex-suite-runtime-test`) for faster smoke tests. To run the full 120-episode public runtime instead, set `COGFLEX_DATASET_ROOT=/kaggle/input/datasets/raptorengineer/cogflex-suite-runtime` and `COGFLEX_EXPECTED_PUBLIC_EPISODE_COUNT=120`.
-- **Schema-based final prompt**: the final decision turn is constructed with the `output_schema` from `response_spec`. The notebook rebuilds this schema locally via `build_strict_output_schema` and passes it as structured output to the model.
-- **Response normalization**: the benchmark expects `ordered_labels` format. The `_normalize_response_spec` function re-derives `output_schema` from `response_spec` fields at runtime and validates the response against it. Legacy comma-delimited text and `probe_1`-style mappings are supported as compatibility fallbacks.
+- **Schema-based final prompt**: the final decision turn is constructed from `response_spec`. The notebook rebuilds the stored `output_schema` via `build_strict_output_schema`, derives a prompt-compatible Pydantic model via `build_prompt_schema_model`, and passes that model as structured output to the LLM adapter.
+- **Response normalization**: the benchmark expects `ordered_labels` format. The `_normalize_response_spec` function re-derives both `output_schema` and the runtime-only prompt schema from `response_spec` fields, while legacy comma-delimited text and `probe_1`-style mappings remain supported as compatibility fallbacks.
 - **Episode scoring**: `score_episode(targets, predictions, probe_metadata)` returns per-episode numerator/denominator counts and diagnostic breakdowns: `incongruent_numerator/denominator`, `congruent_numerator/denominator`, `first_probe_numerator/denominator`, `obsolete_rule_error_numerator/denominator`.
 - **Suite summary**: `summarize_suite_benchmark(runs, rows, *, include_debug=False)` aggregates episode results. The default compact summary returns exactly these keys:
   - `score`: composite `(macro_accuracy + incongruent_accuracy + first_probe_accuracy + (1 − obsolete_rule_error_rate)) / 4`
