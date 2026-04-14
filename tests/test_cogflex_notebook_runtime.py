@@ -432,6 +432,134 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
         self.assertEqual(result["first_probe_numerator"], 0)
         self.assertEqual(result["first_probe_denominator"], 1)
 
+    def test_score_episode_uses_late_switch_block_start_for_first_probe_accuracy(self) -> None:
+        result = self.namespace["score_episode"](
+            ("left", "left", "left", "left", "right"),
+            ("left", "left", "left", "right", "right"),
+            probe_metadata=(
+                {
+                    "probe_index": 1,
+                    "target_label": "left",
+                    "obsolete_rule_label": None,
+                    "congruency": "congruent",
+                    "requires_switch": False,
+                },
+                {
+                    "probe_index": 2,
+                    "target_label": "left",
+                    "obsolete_rule_label": None,
+                    "congruency": "congruent",
+                    "requires_switch": False,
+                },
+                {
+                    "probe_index": 3,
+                    "target_label": "left",
+                    "obsolete_rule_label": None,
+                    "congruency": "congruent",
+                    "requires_switch": False,
+                },
+                {
+                    "probe_index": 4,
+                    "target_label": "right",
+                    "obsolete_rule_label": "left",
+                    "congruency": "incongruent",
+                    "requires_switch": True,
+                },
+                {
+                    "probe_index": 5,
+                    "target_label": "right",
+                    "obsolete_rule_label": "left",
+                    "congruency": "incongruent",
+                    "requires_switch": True,
+                },
+            ),
+        )
+        self.assertEqual(result["first_probe_numerator"], 0)
+        self.assertEqual(result["first_probe_denominator"], 1)
+
+    def test_score_episode_counts_each_switch_block_start_for_first_probe_accuracy(self) -> None:
+        result = self.namespace["score_episode"](
+            ("left", "right", "right", "right", "right", "left"),
+            ("left", "right", "right", "right", "left", "left"),
+            probe_metadata=(
+                {
+                    "probe_index": 1,
+                    "target_label": "left",
+                    "obsolete_rule_label": None,
+                    "congruency": "congruent",
+                    "requires_switch": False,
+                },
+                {
+                    "probe_index": 2,
+                    "target_label": "right",
+                    "obsolete_rule_label": "left",
+                    "congruency": "incongruent",
+                    "requires_switch": True,
+                },
+                {
+                    "probe_index": 3,
+                    "target_label": "right",
+                    "obsolete_rule_label": "left",
+                    "congruency": "incongruent",
+                    "requires_switch": True,
+                },
+                {
+                    "probe_index": 4,
+                    "target_label": "right",
+                    "obsolete_rule_label": None,
+                    "congruency": "congruent",
+                    "requires_switch": False,
+                },
+                {
+                    "probe_index": 5,
+                    "target_label": "left",
+                    "obsolete_rule_label": "right",
+                    "congruency": "incongruent",
+                    "requires_switch": True,
+                },
+                {
+                    "probe_index": 6,
+                    "target_label": "left",
+                    "obsolete_rule_label": None,
+                    "congruency": "congruent",
+                    "requires_switch": False,
+                },
+            ),
+        )
+        self.assertEqual(result["first_probe_numerator"], 1)
+        self.assertEqual(result["first_probe_denominator"], 2)
+
+    def test_score_episode_skips_first_probe_accuracy_when_episode_never_switches(self) -> None:
+        result = self.namespace["score_episode"](
+            ("left", "right", "left"),
+            ("left", "right", "left"),
+            probe_metadata=(
+                {
+                    "probe_index": 1,
+                    "target_label": "left",
+                    "obsolete_rule_label": None,
+                    "congruency": "congruent",
+                    "requires_switch": False,
+                },
+                {
+                    "probe_index": 2,
+                    "target_label": "right",
+                    "obsolete_rule_label": None,
+                    "congruency": "congruent",
+                    "requires_switch": False,
+                },
+                {
+                    "probe_index": 3,
+                    "target_label": "left",
+                    "obsolete_rule_label": None,
+                    "congruency": "congruent",
+                    "requires_switch": False,
+                },
+            ),
+        )
+        self.assertEqual(result["first_probe_numerator"], 0)
+        self.assertEqual(result["first_probe_denominator"], 0)
+
     def test_run_flexible_task_scores_invalid_labels_as_zero_instead_of_raising(self) -> None:
         row = self.rows[0]
         llm = FakeLLM({"ordered_labels": ["not_in_vocab"] * len(row["scoring"]["final_probe_targets"])}, final_call_index=len(row["inference"]["turns"]))
