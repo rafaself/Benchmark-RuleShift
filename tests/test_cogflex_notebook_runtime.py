@@ -465,6 +465,16 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "expected a final decision turn"):
             self.namespace["_validate_row"](row)
 
+    def test_validate_row_rejects_legacy_turn_header_prefix(self) -> None:
+        row = json.loads(json.dumps(self.rows[0]))
+        row["inference"]["turns"][0] = row["inference"]["turns"][0].replace(
+            "CogFlex Suite Task. Episode ",
+            "CogFlex suite task. Episode ",
+            1,
+        )
+        with self.assertRaisesRegex(ValueError, "malformed header"):
+            self.namespace["_validate_row"](row)
+
     def test_validate_row_rejects_missing_public_scoring(self) -> None:
         row = json.loads(json.dumps(self.rows[0]))
         row.pop("scoring", None)
@@ -778,20 +788,13 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
         self.assertEqual(result["score_status"], "prompt_failure")
         self.assertIn("Final prompt failed: RuntimeError('prompt failed')", stderr.getvalue())
 
-    def test_normalize_ordered_labels_accepts_structured_and_legacy_shapes(self) -> None:
+    def test_normalize_ordered_labels_accepts_structured_shapes(self) -> None:
         response_spec = {"format": "ordered_labels", "probe_count": 3, "label_vocab": ["left", "right"]}
         normalized_structured = self.namespace["normalize_ordered_labels"](
             {"ordered_labels": ["left", "right", "left"]},
             response_spec,
         )
-        normalized_text = self.namespace["normalize_ordered_labels"]("left, right, left", response_spec)
-        normalized_dict = self.namespace["normalize_ordered_labels"](
-            {"probe_1": "left", "probe_2": "right", "probe_3": "left"},
-            response_spec,
-        )
         self.assertEqual(normalized_structured, ("left", "right", "left"))
-        self.assertEqual(normalized_text, ("left", "right", "left"))
-        self.assertEqual(normalized_dict, ("left", "right", "left"))
 
     def test_extract_handles_json_string_response(self) -> None:
         response_spec = {"format": "ordered_labels", "probe_count": 3, "label_vocab": ["left", "right"]}
@@ -815,17 +818,17 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
         result = self.namespace["normalize_ordered_labels"](fenced, response_spec)
         self.assertEqual(result, ("left", "right", "left"))
 
-    def test_extract_strips_numbered_list_prefixes(self) -> None:
+    def test_extract_rejects_plain_text_lists(self) -> None:
         response_spec = {"format": "ordered_labels", "probe_count": 3, "label_vocab": ["left", "right"]}
         result = self.namespace["normalize_ordered_labels"]("1. left\n2. right\n3. left", response_spec)
-        self.assertEqual(result, ("left", "right", "left"))
+        self.assertIsNone(result)
 
-    def test_extract_strips_surrounding_quotes_from_text(self) -> None:
+    def test_extract_rejects_plain_text_csv(self) -> None:
         response_spec = {"format": "ordered_labels", "probe_count": 3, "label_vocab": ["left", "right"]}
         result = self.namespace["normalize_ordered_labels"]('"left", "right", "left"', response_spec)
-        self.assertEqual(result, ("left", "right", "left"))
+        self.assertIsNone(result)
 
-    def test_extract_handles_pydantic_style_object(self) -> None:
+    def test_extract_handles_object_with_ordered_labels_attribute(self) -> None:
         response_spec = {"format": "ordered_labels", "probe_count": 2, "label_vocab": ["left", "right"]}
 
         class PydanticLike:
@@ -835,7 +838,7 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
         result = self.namespace["normalize_ordered_labels"](PydanticLike(), response_spec)
         self.assertEqual(result, ("left", "right"))
 
-    def test_extract_handles_text_attribute_wrapper(self) -> None:
+    def test_extract_rejects_text_attribute_wrapper(self) -> None:
         response_spec = {"format": "ordered_labels", "probe_count": 3, "label_vocab": ["left", "right"]}
 
         class TextWrapper:
@@ -843,21 +846,29 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
                 self.text = '{"ordered_labels": ["left", "right", "left"]}'
 
         result = self.namespace["normalize_ordered_labels"](TextWrapper(), response_spec)
-        self.assertEqual(result, ("left", "right", "left"))
+        self.assertIsNone(result)
 
-    def test_extract_handles_text_key_wrapper_dict(self) -> None:
+    def test_extract_rejects_text_key_wrapper_dict(self) -> None:
         response_spec = {"format": "ordered_labels", "probe_count": 3, "label_vocab": ["left", "right"]}
         result = self.namespace["normalize_ordered_labels"](
             {"text": '{"ordered_labels": ["left", "right", "left"]}'},
             response_spec,
         )
-        self.assertEqual(result, ("left", "right", "left"))
+        self.assertIsNone(result)
 
     def test_extract_handles_bare_code_fences(self) -> None:
         response_spec = {"format": "ordered_labels", "probe_count": 2, "label_vocab": ["left", "right"]}
         fenced = '```\n["left", "right"]\n```'
         result = self.namespace["normalize_ordered_labels"](fenced, response_spec)
         self.assertEqual(result, ("left", "right"))
+
+    def test_extract_rejects_probe_key_mappings(self) -> None:
+        response_spec = {"format": "ordered_labels", "probe_count": 3, "label_vocab": ["left", "right"]}
+        result = self.namespace["normalize_ordered_labels"](
+            {"probe_1": "left", "probe_2": "right", "probe_3": "left"},
+            response_spec,
+        )
+        self.assertIsNone(result)
 
     def test_run_flexible_task_marks_wrong_label_count_as_format_failure(self) -> None:
         row = self.rows[0]

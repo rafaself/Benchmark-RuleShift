@@ -60,7 +60,7 @@ PUBLIC_TEST_EPISODE_IDS: Final[tuple[str, ...]] = (
 )
 EXPECTED_PUBLIC_TEST_ROW_COUNT = len(PUBLIC_TEST_EPISODE_IDS)
 
-TURN_HEADER_PREFIX = "CogFlex suite task. Episode "
+TURN_HEADER_PREFIX = "CogFlex Suite Task. Episode "
 LINE_RE = re.compile(r"^(?P<index>\d+)\.\s+(?P<body>.+?)\s+->\s+(?P<label>[a-z0-9_:-]+|\?)$")
 POINT_RE = re.compile(r"^r1=(?P<r1>[+-]\d+),\s*r2=(?P<r2>[+-]\d+)$")
 RETRIEVAL_HEADER_RE = re.compile(r"Episode \d+")
