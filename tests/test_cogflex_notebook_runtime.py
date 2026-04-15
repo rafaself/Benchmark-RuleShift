@@ -214,6 +214,42 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
             self.bootstrap_namespace["DEFAULT_PRIVATE_DATASET_ROOT"],
         )
 
+    def test_bootstrap_exposes_runtime_config_and_compatibility_aliases(self) -> None:
+        config = self.bootstrap_namespace["CONFIG"]
+        self.assertTrue(self.bootstrap_namespace["is_dataclass"](config))
+        self.assertEqual(config.eval_split, self.bootstrap_namespace["EVAL_SPLIT"])
+        self.assertEqual(config.dataset_root, self.bootstrap_namespace["DATASET_ROOT"])
+        self.assertEqual(
+            config.private_dataset_root,
+            self.bootstrap_namespace["PRIVATE_DATASET_ROOT"],
+        )
+        self.assertEqual(config.rows_path, self.bootstrap_namespace["ROWS_PATH"])
+        self.assertEqual(
+            config.private_answer_key_path,
+            self.bootstrap_namespace["PRIVATE_ANSWER_KEY_PATH"],
+        )
+        self.assertEqual(
+            config.expected_public_episode_count,
+            self.bootstrap_namespace["EXPECTED_PUBLIC_EPISODE_COUNT"],
+        )
+
+    def test_bootstrap_rejects_unsupported_eval_split(self) -> None:
+        code_cells = _load_code_cells()
+        fake_kbench = types.ModuleType("kaggle_benchmarks")
+        fake_kbench.task = _BenchStub.task
+        fake_pd = types.ModuleType("pandas")
+        namespace: dict[str, object] = {}
+        with patch.dict(
+            sys.modules,
+            {"kaggle_benchmarks": fake_kbench, "pandas": fake_pd},
+        ), patch.dict(
+            os.environ,
+            {"COGFLEX_EVAL_SPLIT": "invalid-split"},
+            clear=False,
+        ):
+            with self.assertRaisesRegex(ValueError, "unsupported COGFLEX_EVAL_SPLIT"):
+                exec(code_cells["cell-bootstrap"], namespace)
+
     def test_notebook_selects_main_task_with_choose_cell(self) -> None:
         code_cells = _load_code_cells()
         self.assertIn("cell-choose", code_cells)
