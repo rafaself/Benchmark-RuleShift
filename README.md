@@ -3,6 +3,9 @@
 CogFlex is a Kaggle benchmark for rule-switching within `executive_functions/cognitive_flexibility`.
 The published benchmark task name is `cogflex_suite_flexible`.
 
+Scope note: this repository implements a held-out benchmark task for model evaluation.
+It does not include human baseline collection or human-relative score mapping.
+
 This repository contains:
 
 - the deterministic public dataset generator
@@ -58,7 +61,7 @@ Private leaderboard rows are inference-only and must be paired with a separate a
 Runtime note: the notebook scoring path only uses `format`, `probe_count`, `label_vocab`, and `suite_task_id`.
 `schema_version` and `output_schema` remain part of the dataset contract, but the notebook ignores them during response normalization and scoring.
 
-`analysis.difficulty_bin` is an empirical model-panel calibration bin derived from the tracked difficulty calibration files. It is not a human difficulty claim.
+`analysis.difficulty_bin` is an empirical model-panel calibration bin derived from the tracked difficulty calibration files. It is not a human difficulty claim or a human-relative percentile.
 
 ## Shipped Artifacts
 
@@ -86,6 +89,8 @@ The notebook at `kaggle/notebook/cogflex_notebook_task.ipynb` currently:
 - accepts ordered-label responses from JSON strings, lists or tuples, dicts containing `ordered_labels`, dataclasses exposing `ordered_labels`, or objects exposing `ordered_labels`
 - treats malformed responses, wrong label counts, and out-of-vocabulary labels as protocol failures
 
+The registered notebook task is a held-out benchmark task only. Its summary is model-relative and dataset-relative; no human baselines or human-relative normalization are included.
+
 The leaderboard-facing score is:
 
 ```text
@@ -98,6 +103,7 @@ score = average(
 ```
 
 `summarize_suite_benchmark(..., include_debug=True)` also emits additional diagnostics such as `micro_accuracy`, `congruent_accuracy`, `switch_cost`, `per_task_metrics`, `structure_family_accuracy`, and raw numerator and denominator counts.
+The debug summary also marks the task scope explicitly as held-out-only and declares that human baseline and human-relative mapping are absent.
 
 ## Verification
 
