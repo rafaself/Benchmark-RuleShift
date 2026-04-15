@@ -1003,12 +1003,13 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
         runs = FakeRuns(
             [
                 {"numerator": 5, "denominator": 5, "predictions": ["accept"] * 5, "scorable": True, "incongruent_numerator": 3, "incongruent_denominator": 3, "congruent_numerator": 2, "congruent_denominator": 2, "first_probe_numerator": 1, "first_probe_denominator": 1, "obsolete_rule_error_numerator": 0, "obsolete_rule_error_denominator": 5},
-                {"numerator": 0, "denominator": 6, "predictions": [""] * 6, "scorable": False, "incongruent_numerator": 0, "incongruent_denominator": 4, "congruent_numerator": 0, "congruent_denominator": 2, "first_probe_numerator": 0, "first_probe_denominator": 1, "obsolete_rule_error_numerator": 0, "obsolete_rule_error_denominator": 6},
+                {"numerator": 0, "denominator": 6, "predictions": [""] * 6, "scorable": False, "incongruent_numerator": 0, "incongruent_denominator": 4, "congruent_numerator": 0, "congruent_denominator": 2, "first_probe_numerator": 0, "first_probe_denominator": 1, "obsolete_rule_error_numerator": 6, "obsolete_rule_error_denominator": 6},
             ]
         )
         summary = namespace["summarize_suite_benchmark"](runs, rows)
         self.assertEqual(summary["scorable_episodes"], 1)
         self.assertAlmostEqual(summary["protocol_valid_rate"], 0.5)
+        self.assertAlmostEqual(summary["obsolete_rule_error_rate"], 0.0)
         expected_score = (
             summary["macro_accuracy"]
             + summary["incongruent_accuracy"]

@@ -147,7 +147,7 @@ The notebook (`kaggle/notebook/cogflex_notebook_task.ipynb`) drives the benchmar
   - `macro_accuracy`: aggregate label accuracy across all probes
   - `incongruent_accuracy`: accuracy on switch-required probes
   - `first_probe_accuracy`: accuracy on the first probe after each rule shift
-  - `obsolete_rule_error_rate`: rate of predictions matching the obsolete rule instead of the active one
+  - `obsolete_rule_error_rate`: rate of predictions matching the obsolete rule instead of the active one, computed only over protocol-valid (`scorable == True`) episodes
   - `include_debug=True` adds diagnostic fields including `switch_cost`, `congruent_accuracy`, `micro_accuracy`, `structure_family_accuracy`, `per_task_metrics`, per-slice breakdowns, and raw numerator/denominator counts.
 
 `score` is the single leaderboard-facing metric.
