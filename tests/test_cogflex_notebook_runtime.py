@@ -57,7 +57,6 @@ def _apply_runtime_overrides(
     eval_split: str,
     dataset_root: Path,
     private_dataset_root: Path,
-    private_answer_key_path: Path | None,
     expected_public_episode_count: int,
 ) -> None:
     """Apply explicit runtime globals used by the notebook bootstrap."""
@@ -73,7 +72,6 @@ def _apply_runtime_overrides(
             "DATASET_ROOT": dataset_root,
             "PRIVATE_DATASET_ROOT": private_dataset_root,
             "ROWS_PATH": rows_path,
-            "PRIVATE_ANSWER_KEY_PATH": private_answer_key_path,
             "EXPECTED_PUBLIC_EPISODE_COUNT": expected_public_episode_count,
         }
     )
@@ -102,7 +100,6 @@ def load_bootstrap_namespace() -> dict[str, object]:
             eval_split="public",
             dataset_root=dataset_root,
             private_dataset_root=namespace["DEFAULT_PRIVATE_DATASET_ROOT"],
-            private_answer_key_path=None,
             expected_public_episode_count=namespace["EPISODE_COUNT_BY_SPLIT"]["public"],
         )
     return namespace
@@ -127,7 +124,6 @@ def load_notebook_namespace() -> dict[str, object]:
             eval_split="public",
             dataset_root=ROOT / "kaggle/dataset/public",
             private_dataset_root=namespace["DEFAULT_PRIVATE_DATASET_ROOT"],
-            private_answer_key_path=None,
             expected_public_episode_count=namespace["EPISODE_COUNT_BY_SPLIT"]["public"],
         )
         exec(code_cells["cell-runtime-types"], namespace)
@@ -249,7 +245,6 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
             namespace["ROWS_PATH"],
             namespace["DEFAULT_PRIVATE_DATASET_ROOT"] / "private_leaderboard_rows.json",
         )
-        self.assertIsNone(namespace["PRIVATE_ANSWER_KEY_PATH"])
 
     def test_bootstrap_exposes_compatibility_aliases(self) -> None:
         self.assertEqual(self.bootstrap_namespace["EVAL_SPLIT"], "public")
@@ -261,7 +256,6 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
             self.bootstrap_namespace["PRIVATE_DATASET_ROOT"],
             self.bootstrap_namespace["DEFAULT_PRIVATE_DATASET_ROOT"],
         )
-        self.assertIsNone(self.bootstrap_namespace["PRIVATE_ANSWER_KEY_PATH"])
         self.assertEqual(self.bootstrap_namespace["EXPECTED_PUBLIC_EPISODE_COUNT"], 120)
 
     def test_notebook_selects_main_task_with_choose_cell(self) -> None:
@@ -340,7 +334,7 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
             bundle_dir = Path(tmpdir) / "bundle"
             bundle_paths = write_private_bundle(bundle_dir)
             private_rows = self.namespace["_load_rows"](bundle_paths["rows"])
-            self.namespace["PRIVATE_ANSWER_KEY_PATH"] = bundle_paths["answer_key"]
+            self.namespace["PRIVATE_DATASET_ROOT"] = bundle_dir
             attached_rows = self.namespace["_attach_private_scoring"](private_rows)
         self.assertIn("scoring", attached_rows[0])
         self.assertEqual(
@@ -352,8 +346,8 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
             len(attached_rows[0]["scoring"]["probe_annotations"]),
             attached_rows[0]["inference"]["response_spec"]["probe_count"],
         )
-        self.namespace["PRIVATE_ANSWER_KEY_PATH"] = None
         self.namespace["EVAL_SPLIT"] = "public"
+        self.namespace["PRIVATE_DATASET_ROOT"] = Path(".")
 
     def test_attach_private_scoring_uses_bundled_answer_key_by_default(self) -> None:
         self.namespace["EVAL_SPLIT"] = "private"
@@ -362,7 +356,6 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
             bundle_paths = write_private_bundle(bundle_dir)
             private_rows = self.namespace["_load_rows"](bundle_paths["rows"])
             self.namespace["PRIVATE_DATASET_ROOT"] = bundle_dir
-            self.namespace["PRIVATE_ANSWER_KEY_PATH"] = None
             attached_rows = self.namespace["attach_selected_scoring"](private_rows)
         self.assertIn("scoring", attached_rows[0])
         self.assertEqual(
@@ -374,13 +367,12 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
 
     def test_attach_private_scoring_requires_external_answer_key_when_bundle_key_is_missing(self) -> None:
         self.namespace["EVAL_SPLIT"] = "private"
-        self.namespace["PRIVATE_ANSWER_KEY_PATH"] = None
         with tempfile.TemporaryDirectory() as tmpdir:
             bundle_dir = Path(tmpdir) / "bundle"
             bundle_paths = write_private_bundle(bundle_dir)
             private_rows = self.namespace["_load_rows"](bundle_paths["rows"])
             self.namespace["PRIVATE_DATASET_ROOT"] = Path(tmpdir)
-            with self.assertRaisesRegex(RuntimeError, "Private split requires an external answer key"):
+            with self.assertRaisesRegex(RuntimeError, "Private split requires bundled private_answer_key\\.json"):
                 self.namespace["attach_selected_scoring"](private_rows)
         self.namespace["EVAL_SPLIT"] = "public"
         self.namespace["PRIVATE_DATASET_ROOT"] = Path(".")
@@ -395,12 +387,12 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
                 answer_key = json.loads(bundle_paths["answer_key"].read_text(encoding="utf-8"))
                 answer_key["episodes"].append(json.loads(json.dumps(answer_key["episodes"][0])))
                 bundle_paths["answer_key"].write_text(json.dumps(answer_key, indent=2) + "\n", encoding="utf-8")
-                self.namespace["PRIVATE_ANSWER_KEY_PATH"] = bundle_paths["answer_key"]
+                self.namespace["PRIVATE_DATASET_ROOT"] = bundle_dir
                 with self.assertRaisesRegex(RuntimeError, "duplicates episode_id"):
                     self.namespace["_attach_private_scoring"](private_rows)
         finally:
-            self.namespace["PRIVATE_ANSWER_KEY_PATH"] = None
             self.namespace["EVAL_SPLIT"] = "public"
+            self.namespace["PRIVATE_DATASET_ROOT"] = Path(".")
 
     def test_attach_private_scoring_rejects_missing_requires_switch(self) -> None:
         self.namespace["EVAL_SPLIT"] = "private"
@@ -413,12 +405,12 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
                 answer_key["episodes"][0]["probe_metadata"] = self._private_probe_metadata_fixture(answer_key["episodes"][0])
                 answer_key["episodes"][0]["probe_metadata"][0].pop("requires_switch")
                 bundle_paths["answer_key"].write_text(json.dumps(answer_key, indent=2) + "\n", encoding="utf-8")
-                self.namespace["PRIVATE_ANSWER_KEY_PATH"] = bundle_paths["answer_key"]
+                self.namespace["PRIVATE_DATASET_ROOT"] = bundle_dir
                 with self.assertRaisesRegex(ValueError, "probe_metadata\\.requires_switch is required"):
                     self.namespace["_attach_private_scoring"](private_rows)
         finally:
-            self.namespace["PRIVATE_ANSWER_KEY_PATH"] = None
             self.namespace["EVAL_SPLIT"] = "public"
+            self.namespace["PRIVATE_DATASET_ROOT"] = Path(".")
 
     def test_attach_private_scoring_rejects_missing_obsolete_rule_label(self) -> None:
         self.namespace["EVAL_SPLIT"] = "private"
@@ -431,12 +423,12 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
                 answer_key["episodes"][0]["probe_metadata"] = self._private_probe_metadata_fixture(answer_key["episodes"][0])
                 answer_key["episodes"][0]["probe_metadata"][0].pop("obsolete_rule_label")
                 bundle_paths["answer_key"].write_text(json.dumps(answer_key, indent=2) + "\n", encoding="utf-8")
-                self.namespace["PRIVATE_ANSWER_KEY_PATH"] = bundle_paths["answer_key"]
+                self.namespace["PRIVATE_DATASET_ROOT"] = bundle_dir
                 with self.assertRaisesRegex(ValueError, "probe_metadata\\.obsolete_rule_label is required"):
                     self.namespace["_attach_private_scoring"](private_rows)
         finally:
-            self.namespace["PRIVATE_ANSWER_KEY_PATH"] = None
             self.namespace["EVAL_SPLIT"] = "public"
+            self.namespace["PRIVATE_DATASET_ROOT"] = Path(".")
 
     def test_attach_private_scoring_rejects_probe_metadata_length_mismatch(self) -> None:
         self.namespace["EVAL_SPLIT"] = "private"
@@ -449,12 +441,12 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
                 answer_key["episodes"][0]["probe_metadata"] = self._private_probe_metadata_fixture(answer_key["episodes"][0])
                 answer_key["episodes"][0]["probe_metadata"] = answer_key["episodes"][0]["probe_metadata"][:-1]
                 bundle_paths["answer_key"].write_text(json.dumps(answer_key, indent=2) + "\n", encoding="utf-8")
-                self.namespace["PRIVATE_ANSWER_KEY_PATH"] = bundle_paths["answer_key"]
+                self.namespace["PRIVATE_DATASET_ROOT"] = bundle_dir
                 with self.assertRaisesRegex(ValueError, "probe_metadata must align with final_probe_targets"):
                     self.namespace["_attach_private_scoring"](private_rows)
         finally:
-            self.namespace["PRIVATE_ANSWER_KEY_PATH"] = None
             self.namespace["EVAL_SPLIT"] = "public"
+            self.namespace["PRIVATE_DATASET_ROOT"] = Path(".")
 
     def test_attach_private_scoring_rejects_answer_key_episode_set_mismatch(self) -> None:
         self.namespace["EVAL_SPLIT"] = "private"
@@ -466,12 +458,12 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
                 answer_key = json.loads(bundle_paths["answer_key"].read_text(encoding="utf-8"))
                 answer_key["episodes"] = answer_key["episodes"][:-1]
                 bundle_paths["answer_key"].write_text(json.dumps(answer_key, indent=2) + "\n", encoding="utf-8")
-                self.namespace["PRIVATE_ANSWER_KEY_PATH"] = bundle_paths["answer_key"]
+                self.namespace["PRIVATE_DATASET_ROOT"] = bundle_dir
                 with self.assertRaisesRegex(RuntimeError, "private answer key episode set mismatch"):
                     self.namespace["_attach_private_scoring"](private_rows)
         finally:
-            self.namespace["PRIVATE_ANSWER_KEY_PATH"] = None
             self.namespace["EVAL_SPLIT"] = "public"
+            self.namespace["PRIVATE_DATASET_ROOT"] = Path(".")
 
     def test_validate_row_rejects_missing_decision_turn(self) -> None:
         row = json.loads(json.dumps(self.rows[0]))
