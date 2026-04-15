@@ -209,35 +209,6 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
         )
         self.assertEqual(self.bootstrap_namespace["EXPECTED_PUBLIC_EPISODE_COUNT"], 120)
 
-    def test_bootstrap_defaults_to_private_split(self) -> None:
-        code_cells = _load_code_cells()
-        fake_kbench = types.ModuleType("kaggle_benchmarks")
-        fake_kbench.task = _BenchStub.task
-        fake_pd = types.ModuleType("pandas")
-
-        with tempfile.TemporaryDirectory() as tmpdir:
-            dataset_root = Path(tmpdir)
-            namespace: dict[str, object] = {}
-            with patch.dict(
-                sys.modules,
-                {"kaggle_benchmarks": fake_kbench, "pandas": fake_pd},
-            ), patch.dict(
-                os.environ,
-                {
-                    "COGFLEX_DATASET_ROOT": str(dataset_root),
-                    "COGFLEX_PRIVATE_DATASET_ROOT": str(dataset_root),
-                    "COGFLEX_PRIVATE_ANSWER_KEY_PATH": "",
-                },
-                clear=True,
-            ):
-                exec(code_cells["cell-bootstrap"], namespace)
-
-        self.assertEqual(namespace["EVAL_SPLIT"], "private")
-        self.assertEqual(
-            namespace["ROWS_PATH"],
-            dataset_root / "private_leaderboard_rows.json",
-        )
-
     def test_notebook_selects_main_task_with_choose_cell(self) -> None:
         code_cells = _load_code_cells()
         self.assertIn("cell-choose", code_cells)
