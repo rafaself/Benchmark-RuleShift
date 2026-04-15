@@ -6,6 +6,8 @@ __pycache__/
 .ipynb_checkpoints/
 .claude/
 .codex
+scripts/private_local/
 kaggle/dataset/audit_key.json
 kaggle/dataset/private/
+kaggle/dataset/private_local/
 .release_ok

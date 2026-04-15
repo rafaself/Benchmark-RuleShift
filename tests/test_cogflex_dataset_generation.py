@@ -1,6 +1,7 @@
 import json
 import unittest
 from collections import Counter
+from itertools import product
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
@@ -32,6 +33,7 @@ from scripts.build_cogflex_dataset import (
 )
 from scripts.verify_cogflex import verify_public_surface_constraints
 from scripts.build_private_cogflex_dataset import build_private_bundle
+from scripts.private_cogflex_bundle import PRIVATE_VARIANTS_PER_FAMILY_TASK
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -279,11 +281,42 @@ class CogflexDatasetGenerationTests(unittest.TestCase):
             for key in ("rows", "answer_key", "predictions", "quality", "manifest", "metadata"):
                 self.assertTrue(bundle_paths[key].exists(), key)
             rows = json.loads(bundle_paths["rows"].read_text(encoding="utf-8"))
-            self.assertEqual(len(rows), len(REQUIRED_PRIVATE_STRUCTURE_FAMILY_IDS) * len(SUITE_TASKS))
+            self.assertEqual(len(rows), len(REQUIRED_PRIVATE_STRUCTURE_FAMILY_IDS) * len(SUITE_TASKS) * PRIVATE_VARIANTS_PER_FAMILY_TASK)
             structure_counts = Counter(row["analysis"]["structure_family_id"] for row in rows)
             self.assertEqual(
                 structure_counts,
-                Counter({structure_family_id: len(SUITE_TASKS) for structure_family_id in REQUIRED_PRIVATE_STRUCTURE_FAMILY_IDS}),
+                Counter(
+                    {
+                        structure_family_id: len(SUITE_TASKS) * PRIVATE_VARIANTS_PER_FAMILY_TASK
+                        for structure_family_id in REQUIRED_PRIVATE_STRUCTURE_FAMILY_IDS
+                    }
+                ),
+            )
+            task_counts = Counter(row["analysis"]["suite_task_id"] for row in rows)
+            self.assertEqual(
+                task_counts,
+                Counter(
+                    {
+                        suite_task_id: len(REQUIRED_PRIVATE_STRUCTURE_FAMILY_IDS) * PRIVATE_VARIANTS_PER_FAMILY_TASK
+                        for suite_task_id in SUITE_TASKS
+                    }
+                ),
+            )
+            family_task_counts = Counter(
+                (row["analysis"]["structure_family_id"], row["analysis"]["suite_task_id"])
+                for row in rows
+            )
+            self.assertEqual(
+                family_task_counts,
+                Counter(
+                    {
+                        (structure_family_id, suite_task_id): PRIVATE_VARIANTS_PER_FAMILY_TASK
+                        for structure_family_id, suite_task_id in product(
+                            REQUIRED_PRIVATE_STRUCTURE_FAMILY_IDS,
+                            SUITE_TASKS,
+                        )
+                    }
+                ),
             )
 
     def test_makefile_and_kernel_metadata_point_to_cogflex_assets(self) -> None:

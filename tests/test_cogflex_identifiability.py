@@ -16,6 +16,7 @@ from scripts.build_cogflex_dataset import (
     serialize_case,
 )
 from scripts.private_cogflex_bundle import (
+    PRIVATE_VARIANTS_PER_FAMILY_TASK,
     PRIVATE_RULES,
     build_identifiable_private_episode,
 )
@@ -248,15 +249,20 @@ class GeneratedEpisodeIdentifiabilityTests(unittest.TestCase):
         episode_number = 1
         for family_index, structure_family_id in enumerate(REQUIRED_PRIVATE_STRUCTURE_FAMILY_IDS):
             for task_index, suite_task_id in enumerate(SUITE_TASKS):
-                episode_id = f"p{episode_number:04d}"
-                row, _answer, report = build_identifiable_private_episode(
-                    episode_id,
-                    suite_task_id,
-                    structure_family_id,
-                    variant=family_index * 10 + task_index,
-                )
-                self.assertTrue(report["is_identifiable"])
-                episode_number += 1
+                for variant_index in range(PRIVATE_VARIANTS_PER_FAMILY_TASK):
+                    episode_id = f"p{episode_number:04d}"
+                    row, _answer, report = build_identifiable_private_episode(
+                        episode_id,
+                        suite_task_id,
+                        structure_family_id,
+                        variant=(
+                            family_index * len(SUITE_TASKS) * PRIVATE_VARIANTS_PER_FAMILY_TASK
+                            + task_index * PRIVATE_VARIANTS_PER_FAMILY_TASK
+                            + variant_index
+                        ),
+                    )
+                    self.assertTrue(report["is_identifiable"])
+                    episode_number += 1
 
     def test_public_identifiability_specs_cover_every_suite_task(self) -> None:
         from scripts.build_cogflex_dataset import SUITE_TASKS

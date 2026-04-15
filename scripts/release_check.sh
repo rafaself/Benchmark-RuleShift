@@ -17,7 +17,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SENTINEL="$ROOT_DIR/.release_ok"
 PYTHON="${PYTHON:-python3}"
-DEFAULT_PRIVATE_BUNDLE_DIR="$ROOT_DIR/kaggle/dataset/private"
+DEFAULT_PRIVATE_BUNDLE_DIR="$ROOT_DIR/kaggle/dataset/private_local"
 PRIVATE_BUNDLE_DIR="${COGFLEX_PRIVATE_BUNDLE_DIR:-$DEFAULT_PRIVATE_BUNDLE_DIR}"
 
 # Remove stale sentinel immediately and on any error exit.

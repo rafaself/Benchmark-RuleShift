@@ -9,7 +9,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from scripts.private_cogflex_bundle import public_fixture, write_private_bundle
+from scripts.private_cogflex_bundle import PRIVATE_VARIANTS_PER_FAMILY_TASK, public_fixture, write_private_bundle
+from scripts.build_cogflex_dataset import REQUIRED_PRIVATE_STRUCTURE_FAMILY_IDS, SUITE_TASKS
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -272,7 +273,10 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
             bundle_dir = Path(tmpdir) / "bundle"
             bundle_paths = write_private_bundle(bundle_dir)
             loaded_rows = self.namespace["_load_rows"](bundle_paths["rows"])
-        self.assertEqual(len(loaded_rows), 24)
+        self.assertEqual(
+            len(loaded_rows),
+            len(REQUIRED_PRIVATE_STRUCTURE_FAMILY_IDS) * len(SUITE_TASKS) * PRIVATE_VARIANTS_PER_FAMILY_TASK,
+        )
         self.assertNotIn("scoring", loaded_rows[0])
         self.namespace["EVAL_SPLIT"] = "public"
 

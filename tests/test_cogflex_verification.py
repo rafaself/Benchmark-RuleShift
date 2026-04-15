@@ -7,6 +7,7 @@ import unittest
 from pathlib import Path
 
 from scripts.private_cogflex_bundle import (
+    PRIVATE_VARIANTS_PER_FAMILY_TASK,
     private_row_summary as _private_row_summary,
     public_fixture,
     write_private_bundle,
@@ -23,6 +24,7 @@ from scripts.build_cogflex_dataset import (
     PUBLIC_QUALITY_REPORT_PATH,
     PUBLIC_ROWS_PATH,
     REQUIRED_PRIVATE_STRUCTURE_FAMILY_IDS,
+    SUITE_TASKS,
     compute_sha256,
     empirical_difficulty_entries_from_predictions,
     public_generator_reference,
@@ -165,7 +167,10 @@ class CogflexVerificationTests(unittest.TestCase):
             manifest = json.loads(bundle_paths["manifest"].read_text(encoding="utf-8"))
         self.assertEqual(audit_payload["split"], "private")
         self.assertEqual(audit_payload["verification_result"], "passed")
-        self.assertEqual(audit_payload["summary"], {"row_count": 24})
+        self.assertEqual(
+            audit_payload["summary"],
+            {"row_count": len(REQUIRED_PRIVATE_STRUCTURE_FAMILY_IDS) * len(SUITE_TASKS) * PRIVATE_VARIANTS_PER_FAMILY_TASK},
+        )
         self.assertEqual(
             audit_payload["artifact_digests"],
             {
@@ -203,7 +208,10 @@ class CogflexVerificationTests(unittest.TestCase):
             quality = json.loads(bundle_paths["quality"].read_text(encoding="utf-8"))
         self.assertEqual(
             quality["structure_family_counts"],
-            {structure_family_id: 4 for structure_family_id in sorted(REQUIRED_PRIVATE_STRUCTURE_FAMILY_IDS)},
+            {
+                structure_family_id: len(SUITE_TASKS) * PRIVATE_VARIANTS_PER_FAMILY_TASK
+                for structure_family_id in sorted(REQUIRED_PRIVATE_STRUCTURE_FAMILY_IDS)
+            },
         )
 
     def test_verify_public_difficulty_calibration_rejects_mismatch(self) -> None:
@@ -461,17 +469,17 @@ class CogflexVerificationTests(unittest.TestCase):
             quality = build_private_quality_report(rows, answer_key, predictions, public_rows=public_fixture()[0])
 
             hard_summary = quality["attack_suite"]["difficulty_bin"]["hard"]["models"][0]
-            self.assertAlmostEqual(hard_summary["micro_accuracy"], 0.764706)
+            self.assertAlmostEqual(hard_summary["micro_accuracy"], 0.776978)
             self.assertEqual(
                 hard_summary["per_task_accuracy"],
                 {
-                    "explicit_rule_update": 0.785714,
-                    "latent_rule_update": 0.666667,
+                    "explicit_rule_update": 0.786667,
+                    "latent_rule_update": 0.765625,
                     "context_binding": 0.0,
                     "trial_cued_switch": 0.0,
                 },
             )
-            self.assertAlmostEqual(hard_summary["macro_accuracy"], 0.72619)
+            self.assertAlmostEqual(hard_summary["macro_accuracy"], 0.776146)
 
     def test_verify_private_bundle_rejects_semantic_isolation_mismatch(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

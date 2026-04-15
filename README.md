@@ -8,7 +8,7 @@ Kaggle-oriented benchmark for rule-switching within cognitive flexibility within
 
 This benchmark targets rule-switching specifically. It does not claim broad coverage of all cognitive flexibility constructs.
 
-This repository publishes the public CogFlex contract, the deterministic public split generator, the Kaggle notebook runtime, validators for externally managed private bundles, and a local synthetic private-bundle builder for testing and deployment workflows.
+This repository publishes the public CogFlex contract, the deterministic public split generator, the Kaggle notebook runtime, validators for externally managed private bundles, and wrapper entrypoints for local private-bundle workflows that live under ignored `scripts/private_local/`.
 
 ## Repository Layout
 
@@ -178,7 +178,7 @@ python3 -m scripts.verify_cogflex --split public --emit-audit-report /tmp/cogfle
 ## Private Bundle Contract
 
 `scripts/verify_cogflex.py --split private` validates an external private bundle directory exposed through `--private-bundle-dir` or `COGFLEX_PRIVATE_BUNDLE_DIR`.
-For local workflows, `python -m scripts.build_private_cogflex_dataset` materializes the synthetic private bundle into `kaggle/dataset/private`.
+For local workflows, `python -m scripts.build_private_cogflex_dataset` materializes the synthetic private bundle into ignored `kaggle/dataset/private_local`.
 
 Required files inside that directory:
 
@@ -318,7 +318,7 @@ python3 -m scripts.verify_cogflex --split public --emit-audit-report /tmp/cogfle
 COGFLEX_PRIVATE_BUNDLE_DIR=/abs/path/to/private-bundle python3 -m scripts.verify_cogflex --split private --emit-audit-report /tmp/cogflex-private-audit.json
 ```
 
-Deploy the local private bundle from `kaggle/dataset/private`:
+Deploy the local private bundle from `kaggle/dataset/private_local`:
 
 ```bash
 make deploy-private-dataset
