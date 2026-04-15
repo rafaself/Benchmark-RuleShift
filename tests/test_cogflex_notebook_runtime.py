@@ -209,6 +209,10 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
             Path("/kaggle/input/datasets/raptorengineer/cogflex-suite-runtime-private"),
         )
         self.assertEqual(self.bootstrap_namespace["EXPECTED_PUBLIC_EPISODE_COUNT"], 120)
+        self.assertEqual(
+            self.bootstrap_namespace["PRIVATE_DATASET_ROOT"],
+            self.bootstrap_namespace["DEFAULT_PRIVATE_DATASET_ROOT"],
+        )
 
     def test_notebook_selects_main_task_with_choose_cell(self) -> None:
         code_cells = _load_code_cells()
@@ -301,16 +305,35 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
         self.namespace["PRIVATE_ANSWER_KEY_PATH"] = None
         self.namespace["EVAL_SPLIT"] = "public"
 
-    def test_attach_private_scoring_requires_external_answer_key(self) -> None:
+    def test_attach_private_scoring_uses_bundled_answer_key_by_default(self) -> None:
+        self.namespace["EVAL_SPLIT"] = "private"
+        with tempfile.TemporaryDirectory() as tmpdir:
+            bundle_dir = Path(tmpdir) / "bundle"
+            bundle_paths = write_private_bundle(bundle_dir)
+            private_rows = self.namespace["_load_rows"](bundle_paths["rows"])
+            self.namespace["PRIVATE_DATASET_ROOT"] = bundle_dir
+            self.namespace["PRIVATE_ANSWER_KEY_PATH"] = None
+            attached_rows = self.namespace["attach_selected_scoring"](private_rows)
+        self.assertIn("scoring", attached_rows[0])
+        self.assertEqual(
+            len(attached_rows[0]["scoring"]["final_probe_targets"]),
+            attached_rows[0]["inference"]["response_spec"]["probe_count"],
+        )
+        self.namespace["EVAL_SPLIT"] = "public"
+        self.namespace["PRIVATE_DATASET_ROOT"] = Path(".")
+
+    def test_attach_private_scoring_requires_external_answer_key_when_bundle_key_is_missing(self) -> None:
         self.namespace["EVAL_SPLIT"] = "private"
         self.namespace["PRIVATE_ANSWER_KEY_PATH"] = None
         with tempfile.TemporaryDirectory() as tmpdir:
             bundle_dir = Path(tmpdir) / "bundle"
             bundle_paths = write_private_bundle(bundle_dir)
             private_rows = self.namespace["_load_rows"](bundle_paths["rows"])
-        with self.assertRaisesRegex(RuntimeError, "Private split requires an external answer key"):
-            self.namespace["attach_selected_scoring"](private_rows)
+            self.namespace["PRIVATE_DATASET_ROOT"] = Path(tmpdir)
+            with self.assertRaisesRegex(RuntimeError, "Private split requires an external answer key"):
+                self.namespace["attach_selected_scoring"](private_rows)
         self.namespace["EVAL_SPLIT"] = "public"
+        self.namespace["PRIVATE_DATASET_ROOT"] = Path(".")
 
     def test_attach_private_scoring_rejects_duplicate_episode_ids_in_answer_key(self) -> None:
         self.namespace["EVAL_SPLIT"] = "private"
