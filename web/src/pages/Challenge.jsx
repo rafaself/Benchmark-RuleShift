@@ -22,14 +22,12 @@ export function Challenge() {
   if (!currentEpisode) return null;
 
   return (
-    <div className="animate-fade-in w-full h-full flex flex-col items-center">
-      <ChallengeSession
-        key={episodeId}
-        activeEpisodes={activeEpisodes}
-        currentEpisode={currentEpisode}
-        episodeIndex={episodeIndex}
-      />
-    </div>
+    <ChallengeSession
+      key={episodeId}
+      activeEpisodes={activeEpisodes}
+      currentEpisode={currentEpisode}
+      episodeIndex={episodeIndex}
+    />
   );
 }
 
@@ -157,7 +155,7 @@ function ChallengeSession({ activeEpisodes, currentEpisode, episodeIndex }) {
   if (!currentEpisode) return null;
 
   return (
-    <div className="w-full h-full flex flex-col items-center">
+    <div className="w-full min-h-screen bg-black">
       <div className="fixed top-0 left-0 w-full h-2 bg-gray-900 z-[60]">
         <div 
           className="h-full bg-indigo-500 transition-all duration-300"
@@ -189,7 +187,7 @@ function ChallengeSession({ activeEpisodes, currentEpisode, episodeIndex }) {
         </button>
       </div>
 
-      <div className="pt-28 flex flex-col items-center w-full pb-12">
+      <div className="pt-28 flex flex-col items-center w-full pb-12 animate-fade-in">
         {stage === STAGES.STUDY && <RenderStudy turns={turns} turnIndex={turnIndex} onNext={handleNextTurn} />}
         {stage === STAGES.SHIFT && (
           <RenderShift 

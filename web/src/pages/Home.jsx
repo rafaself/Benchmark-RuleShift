@@ -44,7 +44,7 @@ export function Home() {
         </p>
       </div>
 
-      <div className="flex flex-col gap-20 w-full max-w-4xl">
+      <div className="flex flex-col gap-20 w-full max-w-4xl mt-20">
         <div className="space-y-10">
           <div className="flex items-center gap-6">
             <h3 className="text-white text-xs font-black uppercase tracking-[0.4em] whitespace-nowrap">Protocol Specification</h3>
@@ -172,7 +172,6 @@ export function Home() {
           </div>
         </div>
       )}
-      </div>
     </div>
   );
 }
