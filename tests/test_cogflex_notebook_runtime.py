@@ -34,6 +34,25 @@ class FakeLLM:
         return self.final_response if len(self.calls) == self.final_call_index else "ack"
 
 
+class _FakeResultsFrame:
+    def __init__(self, results: list[dict[str, object]]) -> None:
+        self.result = results
+
+    def reset_index(self, drop: bool = False) -> "_FakeResultsFrame":
+        return self
+
+    def __len__(self) -> int:
+        return len(self.result)
+
+
+class FakeRuns:
+    def __init__(self, results: list[dict[str, object]]) -> None:
+        self._results = results
+
+    def as_dataframe(self) -> _FakeResultsFrame:
+        return _FakeResultsFrame(self._results)
+
+
 def _load_code_cells() -> dict[str, str]:
     notebook = json.loads(NOTEBOOK_PATH.read_text(encoding="utf-8"))
     return {
@@ -62,6 +81,7 @@ def load_notebook_namespace() -> dict[str, object]:
         exec(code_cells["cell-runtime-score"], namespace)
         runtime_load_prefix = code_cells["cell-runtime-load"].split("leaderboard_rows = load_selected_rows()", 1)[0]
         exec(runtime_load_prefix, namespace)
+        exec(code_cells["cell-task"], namespace)
     return namespace
 
 
@@ -69,8 +89,11 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
     def setUp(self) -> None:
         self.namespace = load_notebook_namespace()
 
+    def _public_rows(self) -> list[dict[str, object]]:
+        return self.namespace["_load_rows"](PUBLIC_ROWS_PATH)
+
     def test_run_flexible_task_ignores_schema_metadata_in_response_spec(self) -> None:
-        row = self.namespace["_load_rows"](PUBLIC_ROWS_PATH)[0]
+        row = self._public_rows()[0]
         response_spec_with_metadata = json.loads(json.dumps(row["inference"]["response_spec"]))
         response_spec_without_metadata = {
             key: value
@@ -136,3 +159,156 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
             self.namespace["EVAL_SPLIT"] = "public"
             self.namespace["PRIVATE_DATASET_ROOT"] = self.namespace["DEFAULT_PRIVATE_DATASET_ROOT"]
             self.namespace["PRIVATE_SCORING_DATASET_ROOT"] = self.namespace["DEFAULT_PRIVATE_SCORING_DATASET_ROOT"]
+
+    def test_load_selected_rows_enforces_public_row_count(self) -> None:
+        rows = self._public_rows()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            rows_path = Path(tmpdir) / "public-rows.json"
+            rows_path.write_text(json.dumps(rows[:-1], indent=2) + "\n", encoding="utf-8")
+            self.namespace["EVAL_SPLIT"] = "public"
+            self.namespace["ROWS_PATH"] = rows_path
+
+            with self.assertRaisesRegex(RuntimeError, "public split row count mismatch: expected 120, found 119"):
+                self.namespace["load_selected_rows"]()
+
+            rows_path.write_text(json.dumps(rows, indent=2) + "\n", encoding="utf-8")
+            loaded_rows = self.namespace["load_selected_rows"]()
+
+        self.assertEqual(len(loaded_rows), 120)
+
+    def test_load_selected_rows_enforces_private_row_count(self) -> None:
+        self.namespace["EVAL_SPLIT"] = "private"
+        try:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                bundle_dir = Path(tmpdir) / "bundle"
+                bundle_paths = write_private_bundle(bundle_dir)
+                private_rows = self.namespace["_load_rows"](bundle_paths["rows"])
+                rows_path = Path(tmpdir) / "private-rows.json"
+                rows_path.write_text(json.dumps(private_rows[:-1], indent=2) + "\n", encoding="utf-8")
+                self.namespace["ROWS_PATH"] = rows_path
+
+                with self.assertRaisesRegex(RuntimeError, "private split row count mismatch: expected 96, found 95"):
+                    self.namespace["load_selected_rows"]()
+
+                rows_path.write_text(json.dumps(private_rows, indent=2) + "\n", encoding="utf-8")
+                loaded_rows = self.namespace["load_selected_rows"]()
+        finally:
+            self.namespace["EVAL_SPLIT"] = "public"
+            self.namespace["ROWS_PATH"] = PUBLIC_ROWS_PATH
+
+        self.assertEqual(len(loaded_rows), 96)
+
+    def test_summarize_suite_benchmark_compact_summary_matches_debug_score(self) -> None:
+        rows = self._public_rows()
+        selected_rows = [rows[0], next(row for row in rows if row["analysis"]["suite_task_id"] != rows[0]["analysis"]["suite_task_id"])]
+        results = [
+            {
+                "numerator": 5,
+                "denominator": 5,
+                "incongruent_numerator": 2,
+                "incongruent_denominator": 2,
+                "congruent_numerator": 3,
+                "congruent_denominator": 3,
+                "first_probe_numerator": 1,
+                "first_probe_denominator": 1,
+                "shift_window_numerator": 2,
+                "shift_window_denominator": 2,
+                "obsolete_rule_error_numerator": 0,
+                "obsolete_rule_error_denominator": 5,
+                "requires_switch_numerator": 2,
+                "requires_switch_denominator": 2,
+                "scorable": True,
+            },
+            {
+                "numerator": 3,
+                "denominator": 5,
+                "incongruent_numerator": 1,
+                "incongruent_denominator": 2,
+                "congruent_numerator": 2,
+                "congruent_denominator": 3,
+                "first_probe_numerator": 0,
+                "first_probe_denominator": 1,
+                "shift_window_numerator": 1,
+                "shift_window_denominator": 2,
+                "obsolete_rule_error_numerator": 1,
+                "obsolete_rule_error_denominator": 5,
+                "requires_switch_numerator": 1,
+                "requires_switch_denominator": 2,
+                "scorable": True,
+            },
+        ]
+
+        compact_summary = self.namespace["summarize_suite_benchmark"](FakeRuns(results), selected_rows)
+        debug_summary = self.namespace["summarize_suite_benchmark"](FakeRuns(results), selected_rows, include_debug=True)
+
+        self.assertEqual(compact_summary["score"], debug_summary["score"])
+        self.assertEqual(compact_summary["macro_accuracy"], debug_summary["macro_accuracy"])
+        self.assertNotIn("per_task_accuracy", compact_summary)
+        self.assertNotIn("per_task_metrics", compact_summary)
+        self.assertNotIn("structure_family_accuracy", compact_summary)
+        self.assertNotIn("difficulty_bin_accuracy", compact_summary)
+        self.assertIn("per_task_accuracy", debug_summary)
+
+    def test_registered_task_prints_compact_summary_only(self) -> None:
+        rows = self._public_rows()
+        selected_rows = [rows[0], next(row for row in rows if row["analysis"]["suite_task_id"] != rows[0]["analysis"]["suite_task_id"])]
+        results = [
+            {
+                "numerator": 5,
+                "denominator": 5,
+                "incongruent_numerator": 2,
+                "incongruent_denominator": 2,
+                "congruent_numerator": 3,
+                "congruent_denominator": 3,
+                "first_probe_numerator": 1,
+                "first_probe_denominator": 1,
+                "shift_window_numerator": 2,
+                "shift_window_denominator": 2,
+                "obsolete_rule_error_numerator": 0,
+                "obsolete_rule_error_denominator": 5,
+                "requires_switch_numerator": 2,
+                "requires_switch_denominator": 2,
+                "scorable": True,
+            },
+            {
+                "numerator": 3,
+                "denominator": 5,
+                "incongruent_numerator": 1,
+                "incongruent_denominator": 2,
+                "congruent_numerator": 2,
+                "congruent_denominator": 3,
+                "first_probe_numerator": 0,
+                "first_probe_denominator": 1,
+                "shift_window_numerator": 1,
+                "shift_window_denominator": 2,
+                "obsolete_rule_error_numerator": 1,
+                "obsolete_rule_error_denominator": 5,
+                "requires_switch_numerator": 1,
+                "requires_switch_denominator": 2,
+                "scorable": True,
+            },
+        ]
+
+        self.namespace["scored_rows"] = selected_rows
+        self.namespace["df"] = selected_rows
+        self.namespace["run_flexible_task"].evaluate = lambda llm, evaluation_data: FakeRuns(results)
+
+        with patch("builtins.print") as mock_print:
+            returned_score = self.namespace["cogflex_suite_flexible"](object())
+
+        self.assertEqual(mock_print.call_count, 1)
+        printed_summary = json.loads(mock_print.call_args.args[0])
+        self.assertEqual(returned_score, printed_summary["score"])
+        self.assertEqual(
+            set(printed_summary),
+            {
+                "score",
+                "protocol_valid_rate",
+                "scorable_episodes",
+                "episodes",
+                "macro_accuracy",
+                "incongruent_accuracy",
+                "first_probe_accuracy",
+                "obsolete_rule_error_rate",
+            },
+        )
