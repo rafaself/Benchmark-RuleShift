@@ -1,0 +1,7 @@
+export const STAGES = {
+  START: 'START',
+  STUDY: 'STUDY',
+  SHIFT: 'SHIFT',
+  DECISION: 'DECISION',
+  RESULTS: 'RESULTS',
+};
