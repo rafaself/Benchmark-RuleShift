@@ -93,7 +93,28 @@ During development, the generator writes local private release surfaces into git
 - `kaggle/dataset/private`: local private leaderboard rows working surface
 - `kaggle/dataset/private-scoring`: local private scoring working surface
 
-Those local surfaces can be deployed to private Kaggle datasets, but they should be versioned in a separate private repository rather than this public one.
+`kaggle/dataset/private` is the model-visible private leaderboard payload.
+It only contains `private_leaderboard_rows.json` plus `dataset-metadata.json`.
+
+`kaggle/dataset/private-scoring` is the scoring-only payload.
+It contains the private answer key, calibration predictions, release manifest, quality report, and `dataset-metadata.json`.
+
+Those local surfaces can be deployed to private Kaggle datasets, but the preferred setup is to version them in a separate private repository with the same split layout:
+
+```text
+<private-repo>/
+  kaggle/
+    dataset/
+      private/
+      private-scoring/
+```
+
+All private tooling resolves paths in this order:
+
+1. explicit CLI flags such as `--private-rows-dir` and `--private-scoring-dir`
+2. `COGFLEX_PRIVATE_ROWS_DIR` and `COGFLEX_PRIVATE_SCORING_DIR`
+3. `COGFLEX_PRIVATE_REPO_ROOT`
+4. the local gitignored directories inside this public repo
 
 Suite tasks:
 
@@ -183,6 +204,14 @@ make verify-private
 or:
 
 ```bash
+COGFLEX_PRIVATE_REPO_ROOT=/abs/path/to/private-repo \
+python3 -m scripts.verify_cogflex --split private \
+  --emit-audit-report /tmp/cogflex-private-audit.json
+```
+
+or:
+
+```bash
 python3 -m scripts.verify_cogflex --split private \
   --private-rows-dir /abs/path/to/private \
   --private-scoring-dir /abs/path/to/private-scoring \
@@ -209,6 +238,13 @@ Rebuild the local gitignored split private release surfaces:
 python3 -m scripts.build_private_cogflex_dataset
 ```
 
+Rebuild into a separate private repo root:
+
+```bash
+COGFLEX_PRIVATE_REPO_ROOT=/abs/path/to/private-repo \
+python3 -m scripts.build_private_cogflex_dataset
+```
+
 Deploy artifacts:
 
 ```bash
@@ -218,4 +254,5 @@ make deploy-private-dataset
 make deploy-notebook
 ```
 
-`make deploy-private-dataset` publishes both private Kaggle datasets from the local split private release surfaces and refuses to run unless `./scripts/release_check.sh` has already passed for the current repository state.
+`make deploy-private-dataset` publishes both private Kaggle datasets from the resolved split private release surfaces and refuses to run unless `./scripts/release_check.sh` has already passed for the current repository state.
+It honors the same private path resolution order as the Python tooling, including `COGFLEX_PRIVATE_REPO_ROOT`.

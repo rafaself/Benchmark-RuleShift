@@ -41,6 +41,7 @@ ROOT = Path(__file__).resolve().parents[1]
 KERNEL_METADATA_PATH = ROOT / "kaggle/notebook/kernel-metadata.json"
 MAKEFILE_PATH = ROOT / "Makefile"
 README_PATH = ROOT / "README.md"
+GITIGNORE_PATH = ROOT / ".gitignore"
 
 
 class CogflexDatasetGenerationTests(unittest.TestCase):
@@ -365,3 +366,10 @@ class CogflexDatasetGenerationTests(unittest.TestCase):
         self.assertIn(PUBLIC_DIFFICULTY_CALIBRATION_PATH.name, readme)
         self.assertIn("generator_isolation_summary", readme)
         self.assertIn("operator_class", readme)
+        self.assertIn("COGFLEX_PRIVATE_REPO_ROOT", readme)
+        self.assertIn("kaggle/dataset/private-scoring", readme)
+
+    def test_gitignore_blocks_private_release_surfaces(self) -> None:
+        gitignore = GITIGNORE_PATH.read_text(encoding="utf-8")
+        self.assertIn("kaggle/dataset/private/", gitignore)
+        self.assertIn("kaggle/dataset/private-scoring/", gitignore)

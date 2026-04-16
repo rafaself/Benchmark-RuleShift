@@ -53,6 +53,7 @@ from scripts.build_cogflex_dataset import (  # noqa: E402
     parse_turn_items,
     shift_diagnostic_window_size,
 )
+from scripts.private_release_paths import resolve_private_release_dirs  # noqa: E402
 
 EXPECTED_PUBLIC_ROW_COUNT: Final[int] = len(SUITE_TASKS) * PUBLIC_EPISODES_PER_TASK
 PRIVATE_NEAR_DUPLICATE_OVERLAP_THRESHOLD: Final[float] = 0.9
@@ -60,8 +61,6 @@ PRIVATE_PANEL_MODEL_COUNT: Final[int] = 3
 AUDIT_REPORT_VERSION: Final[int] = 1
 AUDIT_VERIFIER_VERSION: Final[str] = "audit"
 REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[1]
-DEFAULT_PRIVATE_ROWS_DIR: Final[Path] = REPO_ROOT / "kaggle/dataset/private"
-DEFAULT_PRIVATE_SCORING_DIR: Final[Path] = REPO_ROOT / "kaggle/dataset/private-scoring"
 ATTACK_SUITE_DIMENSIONS: Final[tuple[str, ...]] = (
     "difficulty_bin",
     "shift_mode",
@@ -1366,11 +1365,10 @@ def resolve_private_bundle_dirs(
         rows_dir = Path(explicit_bundle_path).expanduser().resolve()
         scoring_dir = rows_dir
     elif explicit_rows_path or explicit_scoring_path:
-        rows_dir = Path(explicit_rows_path).expanduser().resolve() if explicit_rows_path else DEFAULT_PRIVATE_ROWS_DIR
-        scoring_dir = (
-            Path(explicit_scoring_path).expanduser().resolve()
-            if explicit_scoring_path
-            else DEFAULT_PRIVATE_SCORING_DIR
+        rows_dir, scoring_dir = resolve_private_release_dirs(
+            REPO_ROOT,
+            rows_dir=None if explicit_rows_path is None else Path(explicit_rows_path),
+            scoring_dir=None if explicit_scoring_path is None else Path(explicit_scoring_path),
         )
     else:
         env_raw = os.environ.get(PRIVATE_BUNDLE_ENV_VAR)
@@ -1378,8 +1376,7 @@ def resolve_private_bundle_dirs(
             rows_dir = Path(env_raw).expanduser().resolve()
             scoring_dir = rows_dir
         else:
-            rows_dir = DEFAULT_PRIVATE_ROWS_DIR
-            scoring_dir = DEFAULT_PRIVATE_SCORING_DIR
+            rows_dir, scoring_dir = resolve_private_release_dirs(REPO_ROOT)
     for label, directory in (("rows", rows_dir), ("scoring", scoring_dir)):
         if not directory.exists() or not directory.is_dir():
             raise RuntimeError(f"private {label} directory does not exist: {directory}")

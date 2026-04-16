@@ -9,17 +9,20 @@
 #   ./scripts/release_check.sh
 #   make release-check
 #
-# Override the split private release directories:
+# Override the split private release directories directly:
 #   COGFLEX_PRIVATE_ROWS_DIR=/abs/path/to/private ./scripts/release_check.sh
 #   COGFLEX_PRIVATE_SCORING_DIR=/abs/path/to/private-scoring ./scripts/release_check.sh
+# Or point to a separate private repo that contains both surfaces:
+#   COGFLEX_PRIVATE_REPO_ROOT=/abs/path/to/private-repo ./scripts/release_check.sh
 
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SENTINEL="$ROOT_DIR/.release_ok"
 PYTHON="${PYTHON:-python3}"
-DEFAULT_PRIVATE_ROWS_DIR="$ROOT_DIR/kaggle/dataset/private"
-DEFAULT_PRIVATE_SCORING_DIR="$ROOT_DIR/kaggle/dataset/private-scoring"
+DEFAULT_PRIVATE_BASE_DIR="${COGFLEX_PRIVATE_REPO_ROOT:-$ROOT_DIR}"
+DEFAULT_PRIVATE_ROWS_DIR="$DEFAULT_PRIVATE_BASE_DIR/kaggle/dataset/private"
+DEFAULT_PRIVATE_SCORING_DIR="$DEFAULT_PRIVATE_BASE_DIR/kaggle/dataset/private-scoring"
 PRIVATE_ROWS_DIR="${COGFLEX_PRIVATE_ROWS_DIR:-$DEFAULT_PRIVATE_ROWS_DIR}"
 PRIVATE_SCORING_DIR="${COGFLEX_PRIVATE_SCORING_DIR:-$DEFAULT_PRIVATE_SCORING_DIR}"
 

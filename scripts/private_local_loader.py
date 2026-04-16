@@ -6,7 +6,6 @@ from types import ModuleType
 
 ROOT = Path(__file__).resolve().parents[1]
 PRIVATE_LOCAL_SCRIPTS_DIR = ROOT / "scripts" / "private_local"
-PRIVATE_LOCAL_DATASET_DIR = ROOT / "kaggle" / "dataset" / "private_local"
 
 
 def private_local_script_path(filename: str) -> Path:
