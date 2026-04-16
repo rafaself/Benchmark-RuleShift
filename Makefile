@@ -3,9 +3,9 @@ VENV_BIN := .venv/bin
 PYTHON ?= $(if $(wildcard $(VENV_BIN)/python),$(VENV_BIN)/python,python3)
 JUPYTER ?= $(if $(wildcard $(VENV_BIN)/jupyter),$(VENV_BIN)/jupyter,jupyter)
 
-.PHONY: notelab test build-private verify-public verify-private \
+.PHONY: notelab test build-private build-test verify-public verify-private \
         release-check web \
-        deploy-dataset deploy-private-dataset deploy-notebook deploy-web deploy-all
+        deploy-dataset deploy-test-dataset deploy-private-dataset deploy-notebook deploy-web deploy-all
 
 notelab:
 	$(JUPYTER) lab --no-browser kaggle/notebook/cogflex_notebook_task.ipynb
@@ -18,6 +18,9 @@ test:
 
 build-private:
 	$(PYTHON) -m scripts.build_private_cogflex_dataset
+
+build-test:
+	$(PYTHON) -m scripts.build_test_cogflex_dataset
 
 verify-public:
 	$(PYTHON) -m scripts.verify_cogflex --split public
@@ -34,6 +37,9 @@ release-check:
 deploy-dataset:
 	./scripts/deploy_dataset.sh
 
+deploy-test-dataset:
+	./scripts/deploy_test_dataset.sh
+
 deploy-private-dataset:
 	./scripts/deploy_private_dataset.sh
 
@@ -43,4 +49,4 @@ deploy-notebook:
 deploy-web:
 	./scripts/deploy_web.sh
 
-deploy-all: deploy-dataset deploy-private-dataset deploy-notebook
+deploy-all: deploy-dataset deploy-test-dataset deploy-private-dataset deploy-notebook

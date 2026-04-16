@@ -19,7 +19,12 @@ from scripts.build_cogflex_dataset import (
     REQUIRED_PRIVATE_STRUCTURE_FAMILY_IDS,
     SUITE_TASKS,
     TASK_NAME,
+    TEST_DATASET_ID,
+    TEST_EPISODE_COUNT,
+    TEST_QUALITY_REPORT_PATH,
+    TEST_ROWS_PATH,
     build_public_artifacts,
+    build_test_artifacts,
     dataset_metadata,
     empirical_difficulty_entries_from_scores,
     load_public_difficulty_calibration,
@@ -43,6 +48,9 @@ class CogflexDatasetGenerationTests(unittest.TestCase):
         cls.generated_rows, cls.generated_answers, cls.generated_report = build_public_artifacts()
         cls.tracked_rows = json.loads(PUBLIC_ROWS_PATH.read_text(encoding="utf-8"))
         cls.tracked_report = json.loads(PUBLIC_QUALITY_REPORT_PATH.read_text(encoding="utf-8"))
+        cls.generated_test_rows, cls.generated_test_answers, cls.generated_test_report = build_test_artifacts()
+        cls.tracked_test_rows = json.loads(TEST_ROWS_PATH.read_text(encoding="utf-8"))
+        cls.tracked_test_report = json.loads(TEST_QUALITY_REPORT_PATH.read_text(encoding="utf-8"))
 
     def test_public_generator_is_deterministic(self) -> None:
         rows_again, answers_again, report_again = build_public_artifacts()
@@ -50,9 +58,20 @@ class CogflexDatasetGenerationTests(unittest.TestCase):
         self.assertEqual(self.generated_answers, answers_again)
         self.assertEqual(self.generated_report, report_again)
 
+    def test_test_generator_is_deterministic(self) -> None:
+        rows_again, answers_again, report_again = build_test_artifacts()
+        self.assertEqual(self.generated_test_rows, rows_again)
+        self.assertEqual(self.generated_test_answers, answers_again)
+        self.assertEqual(self.generated_test_report, report_again)
+
     def test_tracked_public_artifacts_still_have_expected_shape(self) -> None:
         self.assertEqual(len(self.tracked_rows), len(SUITE_TASKS) * PUBLIC_EPISODES_PER_TASK)
         self.assertEqual(self.tracked_report["task_name"], TASK_NAME)
+
+    def test_tracked_test_artifacts_still_have_expected_shape(self) -> None:
+        self.assertEqual(len(self.tracked_test_rows), TEST_EPISODE_COUNT)
+        self.assertEqual(self.tracked_test_report["task_name"], TASK_NAME)
+        self.assertEqual(self.tracked_test_report["row_count"], TEST_EPISODE_COUNT)
 
     def test_public_row_uses_flexible_contract(self) -> None:
         row = self.generated_rows[0]
@@ -94,6 +113,14 @@ class CogflexDatasetGenerationTests(unittest.TestCase):
         self.assertEqual(task_counts, Counter({suite_task_id: PUBLIC_EPISODES_PER_TASK for suite_task_id in SUITE_TASKS}))
         difficulty_counts = Counter(row["analysis"]["difficulty_bin"] for row in self.generated_rows)
         self.assertEqual(difficulty_counts, Counter({"hard": 10, "medium": 10}))
+
+    def test_test_split_has_expected_minimal_shape(self) -> None:
+        self.assertEqual(len(self.generated_test_rows), TEST_EPISODE_COUNT)
+        row = self.generated_test_rows[0]
+        self.assertEqual(row["analysis"]["suite_task_id"], "explicit_rule_update")
+        self.assertEqual(row["analysis"]["difficulty_bin"], "test")
+        self.assertEqual(row["analysis"]["structure_family_id"], "two_step_focus")
+        self.assertIn("scoring", row)
 
     def test_public_split_uses_tracked_difficulty_calibration_snapshot(self) -> None:
         _payload, entries_by_episode = load_public_difficulty_calibration()
@@ -287,6 +314,8 @@ class CogflexDatasetGenerationTests(unittest.TestCase):
         self.assertIn("PYTHON ?= $(if $(wildcard $(VENV_BIN)/python),$(VENV_BIN)/python,python3)", makefile)
         self.assertIn("JUPYTER ?= $(if $(wildcard $(VENV_BIN)/jupyter),$(VENV_BIN)/jupyter,jupyter)", makefile)
         self.assertIn("$(JUPYTER) lab --no-browser kaggle/notebook/cogflex_notebook_task.ipynb", makefile)
+        self.assertIn("build-test:", makefile)
+        self.assertIn("$(PYTHON) -m scripts.build_test_cogflex_dataset", makefile)
         self.assertIn("$(PYTHON) -m scripts.verify_cogflex --split public", makefile)
         self.assertIn("$(PYTHON) -m scripts.verify_cogflex --split private", makefile)
         self.assertIn("cogflex_notebook_task.ipynb", makefile)
@@ -297,6 +326,7 @@ class CogflexDatasetGenerationTests(unittest.TestCase):
             metadata["dataset_sources"],
             [
                 PUBLIC_DATASET_ID,
+                TEST_DATASET_ID,
                 PRIVATE_DATASET_ID,
                 PRIVATE_SCORING_DATASET_ID,
             ],
@@ -314,6 +344,8 @@ class CogflexDatasetGenerationTests(unittest.TestCase):
         self.assertIn("operator_class", readme)
         self.assertIn("COGFLEX_PRIVATE_REPO_ROOT", readme)
         self.assertIn("kaggle/dataset/private-scoring", readme)
+        self.assertIn("kaggle/dataset/test", readme)
+        self.assertIn("make build-test", readme)
 
     def test_gitignore_blocks_private_release_surfaces(self) -> None:
         gitignore = GITIGNORE_PATH.read_text(encoding="utf-8")

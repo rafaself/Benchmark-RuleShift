@@ -16,8 +16,12 @@ PUBLIC_ROWS_PATH = ROOT / "kaggle/dataset/public/public_leaderboard_rows.json"
 PUBLIC_METADATA_PATH = ROOT / "kaggle/dataset/public/dataset-metadata.json"
 PUBLIC_QUALITY_REPORT_PATH = ROOT / "kaggle/dataset/public/public_quality_report.json"
 PUBLIC_DIFFICULTY_CALIBRATION_PATH = ROOT / "kaggle/dataset/public/public_difficulty_calibration.json"
+TEST_ROWS_PATH = ROOT / "kaggle/dataset/test/test_leaderboard_rows.json"
+TEST_METADATA_PATH = ROOT / "kaggle/dataset/test/dataset-metadata.json"
+TEST_QUALITY_REPORT_PATH = ROOT / "kaggle/dataset/test/test_quality_report.json"
 
 PUBLIC_DATASET_ID = "raptorengineer/cogflex-suite-runtime"
+TEST_DATASET_ID = "raptorengineer/cogflex-suite-runtime-test"
 PRIVATE_ROWS_DATASET_ID = "raptorengineer/cogflex-suite-runtime-private"
 PRIVATE_SCORING_DATASET_ID = "raptorengineer/cogflex-suite-runtime-private-scoring"
 PRIVATE_DATASET_ID = PRIVATE_ROWS_DATASET_ID
@@ -27,6 +31,7 @@ FACULTY_ID = "executive_functions/cognitive_flexibility"
 
 PUBLIC_ROWS_FILENAME = "public_leaderboard_rows.json"
 PUBLIC_DIFFICULTY_CALIBRATION_FILENAME = "public_difficulty_calibration.json"
+TEST_ROWS_FILENAME = "test_leaderboard_rows.json"
 PRIVATE_ROWS_FILENAME = "private_leaderboard_rows.json"
 PRIVATE_ANSWER_KEY_FILENAME = "private_answer_key.json"
 PRIVATE_CALIBRATION_PREDICTIONS_FILENAME = "private_calibration_predictions.json"
@@ -36,6 +41,7 @@ PRIVATE_BUNDLE_ENV_VAR = "COGFLEX_PRIVATE_BUNDLE_DIR"
 
 PUBLIC_BUNDLE_VERSION = "cogflex_public"
 PUBLIC_DIFFICULTY_CALIBRATION_VERSION = "cogflex_public_difficulty"
+TEST_BUNDLE_VERSION = "cogflex_test"
 PRIVATE_BUNDLE_VERSION = "cogflex_private_bundle"
 PRIVATE_QUALITY_REPORT_VERSION = "cogflex_private_quality"
 PRIVATE_ANSWER_KEY_VERSION = "cogflex_private_answer_key"
@@ -43,6 +49,7 @@ PRIVATE_CALIBRATION_PREDICTIONS_VERSION = "cogflex_private_predictions"
 
 PUBLIC_EPISODES_PER_TASK = 5
 EXPECTED_PUBLIC_ROW_COUNT = PUBLIC_EPISODES_PER_TASK * 4
+TEST_EPISODE_COUNT = 1
 
 TURN_HEADER_PREFIX = "CogFlex Suite Task. Episode "
 LINE_RE = re.compile(r"^(?P<index>\d+)\.\s+(?P<body>.+?)\s+->\s+(?P<label>[a-z0-9_:-]+|\?)$")
@@ -2378,6 +2385,38 @@ def build_public_artifacts() -> tuple[list[dict[str, object]], list[dict[str, ob
     _payload, calibration_entries = load_public_difficulty_calibration()
     apply_empirical_difficulty_to_payloads(rows, answers, calibration_entries)
     report = build_public_quality_report(rows)
+    return rows, answers, report
+
+
+def build_test_artifacts() -> tuple[list[dict[str, object]], list[dict[str, object]], dict[str, object]]:
+    """Build a minimal test split used to smoke-test runtime execution.
+
+    Returns:
+        The test rows, matching answers, and a compact test quality report.
+
+    """
+    row, answer, _report = build_identifiable_public_episode(
+        "explicit_rule_update",
+        "0001",
+        structure=PUBLIC_STRUCTURES["two_step_focus"],
+        variant=0,
+    )
+    row["analysis"]["difficulty_bin"] = "test"
+    answer["analysis"]["difficulty_bin"] = "test"
+    rows = [row]
+    answers = [answer]
+    report = {
+        "version": TEST_BUNDLE_VERSION,
+        "task_name": TASK_NAME,
+        "row_count": len(rows),
+        "task_counts": {"explicit_rule_update": 1},
+        "difficulty_bin_counts": {"test": 1},
+        "structure_family_counts": {"two_step_focus": 1},
+        "turn_count_distribution": {str(len(row["inference"]["turns"])): 1},
+        "probe_count_distribution": {str(int(row["inference"]["response_spec"]["probe_count"])): 1},
+        "label_vocab_size_distribution": {str(len(row["inference"]["response_spec"]["label_vocab"])): 1},
+        "suite_task_structure_counts": {"explicit_rule_update": {"two_step_focus": 1}},
+    }
     return rows, answers, report
 
 

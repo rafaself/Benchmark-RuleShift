@@ -1,0 +1,28 @@
+{
+  "version": "cogflex_test",
+  "task_name": "cogflex_suite_flexible",
+  "row_count": 1,
+  "task_counts": {
+    "explicit_rule_update": 1
+  },
+  "difficulty_bin_counts": {
+    "test": 1
+  },
+  "structure_family_counts": {
+    "two_step_focus": 1
+  },
+  "turn_count_distribution": {
+    "3": 1
+  },
+  "probe_count_distribution": {
+    "5": 1
+  },
+  "label_vocab_size_distribution": {
+    "2": 1
+  },
+  "suite_task_structure_counts": {
+    "explicit_rule_update": {
+      "two_step_focus": 1
+    }
+  }
+}

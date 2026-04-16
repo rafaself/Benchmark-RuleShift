@@ -82,6 +82,7 @@ Runtime note: the notebook scoring path only uses `format`, `probe_count`, `labe
 ## Shipped Artifacts
 
 - `kaggle/dataset/public`: 20 public rows, 5 per suite task
+- `kaggle/dataset/test`: 1 minimal smoke-test row for fast runtime checks
 - `kaggle/dataset/public/public_difficulty_calibration.json`: tracked public difficulty calibration snapshot
 - `kaggle/notebook/cogflex_notebook_task.ipynb`: Kaggle runtime notebook
 
@@ -125,10 +126,13 @@ Suite tasks:
 
 The notebook at `kaggle/notebook/cogflex_notebook_task.ipynb` currently:
 
-- hard-codes `EVAL_SPLIT = "private"`
+- defaults to `EVAL_SPLIT = "public"`
+- supports `EVAL_SPLIT` values `public`, `test`, and `private`
 - uses `/kaggle/input/datasets/raptorengineer/cogflex-suite-runtime` as the public dataset root
+- uses `/kaggle/input/datasets/raptorengineer/cogflex-suite-runtime-test` as the test dataset root
 - uses `/kaggle/input/datasets/raptorengineer/cogflex-suite-runtime-private` as the private rows root
 - uses `/kaggle/input/datasets/raptorengineer/cogflex-suite-runtime-private-scoring` as the private scoring root
+- loads `test_leaderboard_rows.json` from the test dataset root when the split is `test`
 - loads `private_leaderboard_rows.json` from the private rows root and `private_answer_key.json` from the private scoring root when the split is `private`
 - appends a JSON-only ordered-label instruction to the final decision turn
 - keeps the single final decision turn contract while reserving an early shift-diagnostic probe window inside that probe set
@@ -230,6 +234,12 @@ Rebuild tracked public artifacts:
 python3 -m scripts.build_cogflex_dataset
 ```
 
+Rebuild the minimal test dataset:
+
+```bash
+make build-test
+```
+
 Rebuild the local gitignored split private release surfaces:
 
 ```bash
@@ -247,11 +257,13 @@ Deploy artifacts:
 
 ```bash
 make deploy-dataset
+make deploy-test-dataset
 make deploy-private-dataset
 make deploy-notebook
 make deploy-web
 ```
 
+`make deploy-test-dataset` publishes the minimal Kaggle smoke-test dataset from `kaggle/dataset/test`.
 `make deploy-private-dataset` publishes both private Kaggle datasets from the resolved split private release surfaces and refuses to run unless `./scripts/release_check.sh` has already passed for the current repository state.
 It honors the same private path resolution order as the Python tooling, including `COGFLEX_PRIVATE_REPO_ROOT`.
 `make deploy-web` triggers the Cloudflare Pages deploy hook configured in `.env` via `CLOUDFLARE_PAGES_DEPLOY_HOOK_URL`.

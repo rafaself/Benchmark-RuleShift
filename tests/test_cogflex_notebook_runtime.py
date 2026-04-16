@@ -12,6 +12,7 @@ from scripts.private_cogflex_bundle import write_private_bundle
 ROOT = Path(__file__).resolve().parents[1]
 NOTEBOOK_PATH = ROOT / "kaggle/notebook/cogflex_notebook_task.ipynb"
 PUBLIC_ROWS_PATH = ROOT / "kaggle/dataset/public/public_leaderboard_rows.json"
+TEST_ROWS_PATH = ROOT / "kaggle/dataset/test/test_leaderboard_rows.json"
 
 
 class _BenchStub:
@@ -164,6 +165,13 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
     def _public_rows(self) -> list[dict[str, object]]:
         return self.namespace["_load_rows"](PUBLIC_ROWS_PATH)
 
+    def _test_rows(self) -> list[dict[str, object]]:
+        self.namespace["EVAL_SPLIT"] = "test"
+        try:
+            return self.namespace["_load_rows"](TEST_ROWS_PATH)
+        finally:
+            self.namespace["EVAL_SPLIT"] = "public"
+
     def test_run_flexible_task_ignores_schema_metadata_in_response_spec(self) -> None:
         row = self._public_rows()[0]
         response_spec_with_metadata = json.loads(json.dumps(row["inference"]["response_spec"]))
@@ -270,6 +278,24 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
 
         self.assertEqual(len(loaded_rows), 96)
 
+    def test_load_selected_rows_enforces_test_row_count(self) -> None:
+        rows = self._test_rows()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            rows_path = Path(tmpdir) / "test-rows.json"
+            rows_path.write_text(json.dumps(rows * 2, indent=2) + "\n", encoding="utf-8")
+            self.namespace["EVAL_SPLIT"] = "test"
+            self.namespace["ROWS_PATH"] = rows_path
+
+            with self.assertRaisesRegex(RuntimeError, "test split row count mismatch: expected 1, found 2"):
+                self.namespace["load_selected_rows"]()
+
+            rows_path.write_text(json.dumps(rows, indent=2) + "\n", encoding="utf-8")
+            loaded_rows = self.namespace["load_selected_rows"]()
+
+        self.namespace["EVAL_SPLIT"] = "public"
+        self.namespace["ROWS_PATH"] = PUBLIC_ROWS_PATH
+        self.assertEqual(len(loaded_rows), 1)
+
     def test_summarize_suite_benchmark_compact_summary_matches_debug_score(self) -> None:
         rows = self._public_rows()
         selected_rows = [rows[0], next(row for row in rows if row["analysis"]["suite_task_id"] != rows[0]["analysis"]["suite_task_id"])]
@@ -318,6 +344,46 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
                 "obsolete_rule_error_rate",
             },
         )
+
+    def test_registered_task_uses_tabular_evaluation_for_test_split(self) -> None:
+        selected_rows = self._test_rows()
+        results = [
+            {
+                "numerator": 5,
+                "denominator": 5,
+                "incongruent_numerator": 2,
+                "incongruent_denominator": 2,
+                "congruent_numerator": 3,
+                "congruent_denominator": 3,
+                "first_probe_numerator": 1,
+                "first_probe_denominator": 1,
+                "shift_window_numerator": 2,
+                "shift_window_denominator": 2,
+                "obsolete_rule_error_numerator": 0,
+                "obsolete_rule_error_denominator": 5,
+                "requires_switch_numerator": 2,
+                "requires_switch_denominator": 2,
+                "scorable": True,
+            }
+        ]
+
+        self.namespace["EVAL_SPLIT"] = "test"
+        self.namespace["scored_rows"] = selected_rows
+        self.namespace["df"] = selected_rows
+        runner = RecordingTaskRunner(results)
+        self.namespace["run_flexible_task"] = runner
+
+        try:
+            with patch("builtins.print") as mock_print:
+                returned_score = self.namespace["cogflex_suite_flexible"](object())
+        finally:
+            self.namespace["EVAL_SPLIT"] = "public"
+
+        self.assertEqual(len(runner.evaluate_calls), 1)
+        self.assertEqual(runner.evaluate_calls[0]["evaluation_data"], selected_rows)
+        self.assertEqual(runner.call_args, [])
+        printed_summary = json.loads(mock_print.call_args.args[0])
+        self.assertEqual(returned_score, printed_summary["score"])
 
     def test_registered_task_runs_private_split_in_memory_without_tabular_evaluation(self) -> None:
         results = [
