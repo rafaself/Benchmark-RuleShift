@@ -1,47 +1,41 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { Check, Zap, Star, Timer } from 'lucide-react';
 import data from '../data.json';
 import { Card } from '../components/Card';
 import { MetricCard } from '../components/MetricCard';
-import { shuffleArray, parseItem } from '../utils/logic';
-import { STAGES } from '../constants/stages';
+import { getProbeCount, getTotalProbeCount, shuffleArray, parseItem } from '../utils/logic';
 
 export function Results() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [results, setResults] = useState([]);
-  const [activeEpisodes, setActiveEpisodes] = useState([]);
-
   const sessionId = searchParams.get('id');
-
-  useEffect(() => {
+  const sessionPayload = (() => {
     if (sessionId) {
       const history = JSON.parse(localStorage.getItem('cogflex_history') || '[]');
       const session = history.find(s => s.id.toString() === sessionId);
-      
-      // If we found the session and it has the required data, load it
       if (session && session.results && session.episodes) {
-        setResults(session.results);
-        setActiveEpisodes(session.episodes);
-        return;
+        return { results: session.results, episodes: session.episodes };
       }
     }
 
-    // Fallback to last active session if no ID or data missing
     const savedData = sessionStorage.getItem('cogflex_last_session');
-    if (!savedData) {
+    return savedData ? JSON.parse(savedData) : null;
+  })();
+
+  useEffect(() => {
+    if (!sessionPayload) {
       navigate('/');
-      return;
     }
-    const { results: res, episodes: eps } = JSON.parse(savedData);
-    setResults(res);
-    setActiveEpisodes(eps);
-  }, [navigate, sessionId]);
+  }, [navigate, sessionPayload]);
+
+  const results = sessionPayload?.results || [];
+  const activeEpisodes = sessionPayload?.episodes || [];
 
   const totalCorrect = results.filter(r => r.isCorrect).length;
   const avgTime = results.reduce((acc, r) => acc + r.responseTime, 0) / (results.length || 1);
-  const totalProbes = activeEpisodes.length * 5;
+  const totalProbes = getTotalProbeCount(activeEpisodes);
+  const successRate = totalProbes > 0 ? (totalCorrect / totalProbes) * 100 : 0;
 
   const handleNewSession = () => {
     const shuffled = shuffleArray(data);
@@ -63,11 +57,11 @@ export function Results() {
 
       <div className="text-center mb-16">
         <h1 className="text-7xl font-black mb-4 tracking-tighter bg-gradient-to-b from-white to-zinc-500 bg-clip-text text-transparent">Assessment Report</h1>
-        <p className="text-zinc-500 font-mono uppercase tracking-[0.2em] text-sm">Cognitive Flexibility Baseline Analysis</p>
+        <p className="text-zinc-500 font-mono uppercase tracking-[0.2em] text-sm">Public Sample Performance Analysis</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full mb-20">
-        <MetricCard title="Success Rate" icon={<Check size={48} />} value={`${((totalCorrect / totalProbes) * 100).toFixed(0)}%`} sub={`${totalCorrect} / ${totalProbes} Correct`} progress={(totalCorrect / totalProbes) * 100} color="bg-green-500" />
+        <MetricCard title="Success Rate" icon={<Check size={48} />} value={`${successRate.toFixed(0)}%`} sub={`${totalCorrect} / ${totalProbes} Correct`} progress={successRate} color="bg-green-500" />
         <MetricCard title="Neural Latency" icon={<Zap size={48} />} value={`${(avgTime / 1000).toFixed(2)}s`} sub="Average Response Speed" progress={50} color="bg-blue-500" />
         <MetricCard title="Flexibility Index" icon={<Star size={48} />} value={Math.round((totalCorrect * 1000) / (avgTime / 100 || 1))} sub="Precision-Velocity Ratio" progress={65} color="bg-indigo-500" />
       </div>
@@ -76,6 +70,7 @@ export function Results() {
         {activeEpisodes.map((episode, epIdx) => {
           const epResults = results.filter(r => r.episodeId === episode.episode_id);
           const epCorrect = epResults.filter(r => r.isCorrect).length;
+          const probeCount = getProbeCount(episode);
           return (
             <div key={episode.episode_id} className="group bg-zinc-950 rounded-[3rem] border border-zinc-800 overflow-hidden hover:border-zinc-600 transition-all">
               <div className="bg-zinc-900/80 px-12 py-10 flex flex-col md:flex-row justify-between items-center gap-6 border-b border-zinc-800">
@@ -87,9 +82,9 @@ export function Results() {
                   <h3 className="text-4xl font-black text-white uppercase">{episode.analysis.suite_task_id.replace(/_/g, ' ')}</h3>
                 </div>
                 <div className="flex items-center gap-8 bg-black/40 px-8 py-6 rounded-3xl border border-white/5">
-                  <div className="text-center"><div className="text-4xl font-black text-white">{epCorrect}/5</div><div className="text-[10px] text-zinc-500 uppercase">Accuracy</div></div>
+                  <div className="text-center"><div className="text-4xl font-black text-white">{epCorrect}/{probeCount}</div><div className="text-[10px] text-zinc-500 uppercase">Accuracy</div></div>
                   <div className="w-px h-10 bg-zinc-800"></div>
-                  <div className="text-center"><div className="text-4xl font-black text-white">{(epResults.reduce((acc, r) => acc + r.responseTime, 0) / 5000).toFixed(2)}s</div><div className="text-[10px] text-zinc-500 uppercase">Avg Speed</div></div>
+                  <div className="text-center"><div className="text-4xl font-black text-white">{(epResults.reduce((acc, r) => acc + r.responseTime, 0) / ((epResults.length || 1) * 1000)).toFixed(2)}s</div><div className="text-[10px] text-zinc-500 uppercase">Avg Speed</div></div>
                 </div>
               </div>
               <div className="p-12 space-y-16">

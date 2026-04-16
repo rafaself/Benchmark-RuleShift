@@ -23,3 +23,15 @@ export function getPossibleLabels(turns) {
   const labelMatch = lastTurnText?.match(/Use only labels from: (.*)\./);
   return labelMatch ? labelMatch[1].split(', ') : ['accept', 'reject'];
 }
+
+export function getProbeCount(episode) {
+  return episode?.inference?.response_spec?.probe_count ?? 0;
+}
+
+export function getTotalProbeCount(episodes) {
+  return episodes.reduce((total, episode) => total + getProbeCount(episode), 0);
+}
+
+export function getProbeOffset(episodes, episodeIndex) {
+  return episodes.slice(0, Math.max(episodeIndex, 0)).reduce((total, episode) => total + getProbeCount(episode), 0);
+}

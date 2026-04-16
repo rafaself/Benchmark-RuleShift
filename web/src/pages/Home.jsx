@@ -2,18 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Activity, Zap, History, Brain, Target, Timer } from 'lucide-react';
 import data from '../data.json';
-import { STAGES } from '../constants/stages';
-import { shuffleArray } from '../utils/logic';
+import { getTotalProbeCount, shuffleArray } from '../utils/logic';
 
 export function Home() {
   const navigate = useNavigate();
-  const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState(() => JSON.parse(localStorage.getItem('cogflex_history') || '[]'));
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('cogflex_history');
-    if (saved) setHistory(JSON.parse(saved));
-    
     // Proactive cleanup: returning to Home kills any incomplete session memory
     sessionStorage.removeItem('cogflex_active_episodes');
     sessionStorage.removeItem('cogflex_current_results');
@@ -37,14 +33,14 @@ export function Home() {
       <div className="text-center mb-20">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-[0.3em] mb-8 animate-fade-in">
           <Activity size={12} />
-          Human Performance Benchmark
+          Human-Playable Public Samples
         </div>
         <h1 className="text-8xl font-black mb-6 tracking-tighter bg-gradient-to-b from-white to-zinc-500 bg-clip-text text-transparent leading-[1.1] py-2">
           CogFlex
         </h1>
         <p className="text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed font-medium">
-          Measure your cognitive flexibility against frontier AI models. 
-          Adapt to rule shifts in real-time and establish the human baseline.
+          Play benchmark-format CogFlex episodes copied from the current public split.
+          Inspect how humans handle the same symbolic rule-switching format used by the public benchmark.
         </p>
       </div>
 
@@ -57,10 +53,10 @@ export function Home() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { icon: <Brain size={20} />, title: "Inference", desc: "Study 4 examples to deduce the current classification logic." },
+              { icon: <Brain size={20} />, title: "Inference", desc: "Study the labeled evidence turns to infer the active rule or routing pattern." },
               { icon: <Zap size={20} />, title: "Adaptation", desc: "Alert: Rules shift without warning. Stay agile." },
-              { icon: <Target size={20} />, title: "Precision", desc: "Classify 5 probes per challenge with maximum accuracy." },
-              { icon: <Timer size={20} />, title: "Latency", desc: "Response speed is recorded to calculate efficiency." }
+              { icon: <Target size={20} />, title: "Precision", desc: "Classify every probe shown in each public-split sample with maximum accuracy." },
+              { icon: <Timer size={20} />, title: "Latency", desc: "Response speed is recorded for qualitative human-performance inspection." }
             ].map((step, i) => (
               <div key={i} className="bg-zinc-900/40 border border-zinc-800/50 p-6 rounded-[2rem] hover:border-zinc-700 transition-all duration-300 group">
                 <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-indigo-500/5 mb-4 group-hover:bg-indigo-500/15 transition-all duration-500">
@@ -100,34 +96,40 @@ export function Home() {
           {history.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {history.map(session => (
-                <button 
-                  key={session.id} 
-                  onClick={() => navigate(`/results?id=${session.id}`)}
-                  className="bg-zinc-900/30 border border-zinc-800/50 p-5 rounded-2xl flex items-center justify-between group hover:bg-zinc-900/60 transition-all cursor-pointer text-left w-full"
-                >
-                  <div className="flex items-center gap-5">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-black text-sm border-2 ${
-                      (session.totalCorrect / (session.episodesCount * 5)) > 0.8 
-                      ? 'bg-green-500/10 border-green-500/20 text-green-500' 
-                      : 'bg-zinc-800/50 border-zinc-700/50 text-zinc-500'
-                    }`}>
-                      {Math.round((session.totalCorrect / (session.episodesCount * 5)) * 100)}%
-                    </div>
-                    <div>
-                      <div className="text-zinc-100 font-black text-sm tracking-tight capitalize">
-                        {new Date(session.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} • {new Date(session.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                (() => {
+                  const totalProbes = session.totalProbes ?? getTotalProbeCount(session.episodes || []);
+                  const accuracy = totalProbes > 0 ? session.totalCorrect / totalProbes : 0;
+                  return (
+                    <button 
+                      key={session.id} 
+                      onClick={() => navigate(`/results?id=${session.id}`)}
+                      className="bg-zinc-900/30 border border-zinc-800/50 p-5 rounded-2xl flex items-center justify-between group hover:bg-zinc-900/60 transition-all cursor-pointer text-left w-full"
+                    >
+                      <div className="flex items-center gap-5">
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-black text-sm border-2 ${
+                          accuracy > 0.8 
+                          ? 'bg-green-500/10 border-green-500/20 text-green-500' 
+                          : 'bg-zinc-800/50 border-zinc-700/50 text-zinc-500'
+                        }`}>
+                          {Math.round(accuracy * 100)}%
+                        </div>
+                        <div>
+                          <div className="text-zinc-100 font-black text-sm tracking-tight capitalize">
+                            {new Date(session.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} • {new Date(session.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                          <div className="text-zinc-500 text-[10px] uppercase font-black tracking-[0.15em] mt-1 flex items-center gap-2">
+                            <span className="text-zinc-400">{session.totalCorrect}/{totalProbes} Hits</span>
+                            <span className="w-1 h-1 rounded-full bg-zinc-700"></span>
+                            <span>{(session.avgTime / 1000).toFixed(2)}s Latency</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-zinc-500 text-[10px] uppercase font-black tracking-[0.15em] mt-1 flex items-center gap-2">
-                        <span className="text-zinc-400">{session.totalCorrect}/{session.episodesCount * 5} Hits</span>
-                        <span className="w-1 h-1 rounded-full bg-zinc-700"></span>
-                        <span>{(session.avgTime / 1000).toFixed(2)}s Latency</span>
+                      <div className="text-zinc-800 group-hover:text-zinc-600 transition-colors">
+                        <History size={18} />
                       </div>
-                    </div>
-                  </div>
-                  <div className="text-zinc-800 group-hover:text-zinc-600 transition-colors">
-                    <History size={18} />
-                  </div>
-                </button>
+                    </button>
+                  );
+                })()
               ))}
             </div>
           ) : (

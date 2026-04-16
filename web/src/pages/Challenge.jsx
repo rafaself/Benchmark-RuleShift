@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { STAGES } from '../constants/stages';
-import { getPossibleLabels } from '../utils/logic';
+import { getPossibleLabels, getProbeCount, getProbeOffset, getTotalProbeCount } from '../utils/logic';
 import { RenderStudy } from '../components/challenge/RenderStudy';
 import { RenderShift } from '../components/challenge/RenderShift';
 import { RenderDecision } from '../components/challenge/RenderDecision';
@@ -9,72 +9,56 @@ import { RenderDecision } from '../components/challenge/RenderDecision';
 export function Challenge() {
   const { episodeId } = useParams();
   const navigate = useNavigate();
-
-  const [activeEpisodes, setActiveEpisodes] = useState([]);
-  const [results, setResults] = useState([]);
-  const [startTime, setStartTime] = useState(Date.now());
-
-  // Local state for challenge progress
-  const [stage, setStage] = useState(STAGES.STUDY);
-  const [turnIndex, setTurnIndex] = useState(0);
-  const [probeIndex, setProbeIndex] = useState(0);
+  const activeEpisodes = JSON.parse(sessionStorage.getItem('cogflex_active_episodes') || '[]');
+  const episodeIndex = activeEpisodes.findIndex(e => e.episode_id === episodeId);
+  const currentEpisode = episodeIndex >= 0 ? activeEpisodes[episodeIndex] : null;
 
   useEffect(() => {
-    const savedEpisodes = sessionStorage.getItem('cogflex_active_episodes');
-    const savedResults = sessionStorage.getItem('cogflex_current_results');
-    
-    if (!savedEpisodes) {
+    if (!activeEpisodes.length || !currentEpisode) {
       navigate('/');
-      return;
     }
+  }, [activeEpisodes, currentEpisode, navigate]);
 
-    const episodes = JSON.parse(savedEpisodes);
-    setActiveEpisodes(episodes);
-    
-    // Validate episode existence
-    const index = episodes.findIndex(e => e.episode_id === episodeId);
-    if (index === -1) {
-      navigate('/');
-      return;
-    }
+  if (!currentEpisode) return null;
 
-    if (savedResults) setResults(JSON.parse(savedResults));
+  return (
+    <ChallengeSession
+      key={episodeId}
+      activeEpisodes={activeEpisodes}
+      currentEpisode={currentEpisode}
+      episodeIndex={episodeIndex}
+    />
+  );
+}
 
-    // Load progress for this specific episode from sessionStorage
-    const savedProgress = sessionStorage.getItem(`cogflex_progress_${episodeId}`);
-    if (savedProgress) {
-      const { stage: s, turn: t, probe: p } = JSON.parse(savedProgress);
-      setStage(s);
-      setTurnIndex(t);
-      setProbeIndex(p);
-    } else {
-      setStage(STAGES.STUDY);
-      setTurnIndex(0);
-      setProbeIndex(0);
-    }
-  }, [episodeId, navigate]);
+function ChallengeSession({ activeEpisodes, currentEpisode, episodeIndex }) {
+  const navigate = useNavigate();
+  const episodeId = currentEpisode.episode_id;
+  const savedProgress = JSON.parse(sessionStorage.getItem(`cogflex_progress_${episodeId}`) || 'null');
+  const [results, setResults] = useState(() => JSON.parse(sessionStorage.getItem('cogflex_current_results') || '[]'));
+  const [startTime, setStartTime] = useState(0);
+  const [stage, setStage] = useState(savedProgress?.stage ?? STAGES.STUDY);
+  const [turnIndex, setTurnIndex] = useState(savedProgress?.turn ?? 0);
+  const [probeIndex, setProbeIndex] = useState(savedProgress?.probe ?? 0);
 
-  // Sync results to sessionStorage
   useEffect(() => {
     if (results.length > 0) {
       sessionStorage.setItem('cogflex_current_results', JSON.stringify(results));
     }
   }, [results]);
 
-  // Sync progress to sessionStorage whenever it changes
   useEffect(() => {
-    if (episodeId && activeEpisodes.length > 0) {
-      sessionStorage.setItem(`cogflex_progress_${episodeId}`, JSON.stringify({
-        stage,
-        turn: turnIndex,
-        probe: probeIndex
-      }));
-    }
-  }, [episodeId, stage, turnIndex, probeIndex, activeEpisodes]);
+    sessionStorage.setItem(`cogflex_progress_${episodeId}`, JSON.stringify({
+      stage,
+      turn: turnIndex,
+      probe: probeIndex
+    }));
+  }, [episodeId, stage, turnIndex, probeIndex]);
 
-  const episodeIndex = activeEpisodes.findIndex(e => e.episode_id === episodeId);
-  const currentEpisode = activeEpisodes[episodeIndex];
-  const turns = currentEpisode?.inference?.turns || [];
+  const turns = currentEpisode.inference.turns || [];
+  const currentProbeCount = getProbeCount(currentEpisode);
+  const totalProbeCount = getTotalProbeCount(activeEpisodes);
+  const completedProbeOffset = getProbeOffset(activeEpisodes, episodeIndex);
 
   const handleNextTurn = () => {
     if (turnIndex < turns.length - 2) {
@@ -109,7 +93,7 @@ export function Challenge() {
     const updatedResults = [...results, newResult];
     setResults(updatedResults);
 
-    if (probeIndex < 4) {
+    if (probeIndex < currentProbeCount - 1) {
       setProbeIndex(prev => prev + 1);
       setStartTime(Date.now());
     } else {
@@ -126,6 +110,7 @@ export function Challenge() {
           date: new Date().toISOString(),
           totalCorrect: updatedResults.filter(r => r.isCorrect).length,
           avgTime: updatedResults.reduce((acc, r) => acc + r.responseTime, 0) / updatedResults.length,
+          totalProbes: totalProbeCount,
           episodesCount: activeEpisodes.length,
           results: updatedResults,
           episodes: activeEpisodes
@@ -165,7 +150,9 @@ export function Challenge() {
       <div className="fixed top-0 left-0 w-full h-2 bg-gray-900 z-[60]">
         <div 
           className="h-full bg-indigo-500 transition-all duration-300"
-          style={{ width: `${((episodeIndex * 5 + (stage === STAGES.DECISION ? probeIndex : 0)) / (activeEpisodes.length * 5)) * 100}%` }}
+          style={{ width: `${((
+            completedProbeOffset + (stage === STAGES.DECISION ? probeIndex : 0)
+          ) / (totalProbeCount || 1)) * 100}%` }}
         ></div>
       </div>
 
