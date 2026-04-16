@@ -41,9 +41,9 @@ Public rows also include `scoring` with:
 
 - `final_probe_targets`
 - `probe_annotations`
-- optional `probe_metadata`
+- required `probe_metadata`
 
-When `probe_metadata` is present, the notebook now consumes these benchmark-facing fields:
+`probe_metadata` carries these benchmark-facing fields:
 
 - `target_label`
 - `obsolete_rule_label`
@@ -60,6 +60,7 @@ The decision turn still has one final scored response. Within that response, the
 Those leading diagnostic probes are generated to require a rule switch and to disagree with the obsolete or default rule.
 
 Private leaderboard rows are inference-only and must be paired with a separate answer key.
+That answer key is also expected to include `probe_metadata` for every episode.
 
 `response_spec` uses this shape:
 
@@ -105,6 +106,7 @@ The notebook at `kaggle/notebook/cogflex_notebook_task.ipynb` currently:
 - keeps the single final decision turn contract while reserving an early shift-diagnostic probe window inside that probe set
 - accepts ordered-label responses from JSON strings, lists or tuples, dicts containing `ordered_labels`, dataclasses exposing `ordered_labels`, or objects exposing `ordered_labels`
 - treats malformed responses, wrong label counts, and out-of-vocabulary labels as protocol failures
+- rejects public rows or private answer-key episodes that omit `probe_metadata` or violate the shift-diagnostic metadata contract
 
 The registered notebook task is a held-out model evaluation of rule switching / rule induction within cognitive flexibility. Its summary is model-relative and dataset-relative; no human baselines or human-relative normalization are included.
 

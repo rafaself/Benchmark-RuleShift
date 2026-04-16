@@ -1000,13 +1000,14 @@ def verify_schema(rows: list[dict[str, object]], split: str) -> dict[str, object
                 raise RuntimeError(f"row {episode_id} has invalid probe_annotations length")
             if not all(a in ("congruent", "incongruent") for a in annotations):
                 raise RuntimeError(f"row {episode_id} has invalid probe_annotations values")
-            if "probe_metadata" in scoring:
-                _validate_probe_metadata_sequence(
-                    episode_id,
-                    scoring["probe_metadata"],
-                    targets=targets,
-                    annotations=annotations,
-                )
+            if "probe_metadata" not in scoring:
+                raise RuntimeError(f"row {episode_id} must include probe_metadata")
+            _validate_probe_metadata_sequence(
+                episode_id,
+                scoring["probe_metadata"],
+                targets=targets,
+                annotations=annotations,
+            )
         elif "scoring" in row:
             raise RuntimeError(f"row {episode_id} leaks scoring fields in the private split")
 
@@ -1402,7 +1403,7 @@ def verify_private_answer_key(
     dict[str, tuple[str, ...]],
     dict[str, dict[str, str]],
     dict[str, list[str]],
-    dict[str, list[dict[str, object]]] | None,
+    dict[str, list[dict[str, object]]],
 ]:
     """Verify the private answer key against the private rows.
 
@@ -1450,13 +1451,14 @@ def verify_private_answer_key(
         if not all(a in ("congruent", "incongruent") for a in annotations):
             raise RuntimeError(f"private answer key episode {episode_id} has invalid probe_annotations values")
         metadata = episode.get("probe_metadata")
-        if metadata is not None:
-            episode_probe_metadata[episode_id] = _validate_probe_metadata_sequence(
-                episode_id,
-                metadata,
-                targets=targets,
-                annotations=annotations,
-            )
+        if metadata is None:
+            raise RuntimeError(f"private answer key episode {episode_id} must include probe_metadata")
+        episode_probe_metadata[episode_id] = _validate_probe_metadata_sequence(
+            episode_id,
+            metadata,
+            targets=targets,
+            annotations=annotations,
+        )
         episode_generators[episode_id] = _normalize_generator_metadata(episode, episode_id=episode_id)
         episode_targets[episode_id] = targets
         episode_annotations[episode_id] = annotations
@@ -1467,7 +1469,7 @@ def verify_private_answer_key(
     return {
         "answer_key_episode_count": len(episode_targets),
         "answer_key_label_counts": dict(sorted(label_counts.items())),
-    }, episode_targets, episode_generators, episode_annotations, (episode_probe_metadata or None)
+    }, episode_targets, episode_generators, episode_annotations, episode_probe_metadata
 
 
 def verify_private_calibration_predictions(
@@ -1570,12 +1572,11 @@ def attach_private_scoring(private_rows: list[dict[str, object]], answer_key: di
                 "inference": dict(row["inference"]),
                 "scoring": {
                     "final_probe_targets": list(episode_targets[episode_id]),
+                    "probe_metadata": episode_probe_metadata[episode_id],
                     "probe_annotations": episode_annotations[episode_id],
                 },
             }
         )
-        if episode_probe_metadata is not None and episode_id in episode_probe_metadata:
-            attached[-1]["scoring"]["probe_metadata"] = episode_probe_metadata[episode_id]
     return attached
 
 

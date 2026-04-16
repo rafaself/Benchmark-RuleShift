@@ -1498,6 +1498,10 @@ def _renumber_items(items: list[dict[str, object]]) -> list[dict[str, object]]:
     return renumbered
 
 
+class ShiftDiagnosticSamplingError(RuntimeError):
+    """Raised when a probe set cannot satisfy the shift-diagnostic window."""
+
+
 def prioritize_shift_diagnostic_probes(
     probe_items: list[dict[str, object]],
     *,
@@ -1519,8 +1523,8 @@ def prioritize_shift_diagnostic_probes(
         Reordered decision-turn items with the diagnostic window first.
 
     Raises:
-        RuntimeError: If the probe set does not contain enough shift-diagnostic
-            candidates to fill the reserved window.
+        ShiftDiagnosticSamplingError: If the probe set does not contain enough
+            shift-diagnostic candidates to fill the reserved window.
 
     """
     diagnostic_size = shift_diagnostic_window_size(len(probe_items))
@@ -1538,7 +1542,7 @@ def prioritize_shift_diagnostic_probes(
         else:
             remaining_items.append(item)
     if len(diagnostic_items) != diagnostic_size:
-        raise RuntimeError(
+        raise ShiftDiagnosticSamplingError(
             f"expected {diagnostic_size} shift-diagnostic probes, found {len(diagnostic_items)}"
         )
     return _renumber_items([*diagnostic_items, *remaining_items])
@@ -1624,8 +1628,7 @@ def build_episode_payload(
     label_vocab: tuple[str, ...],
     turn_prompts: list[str],
     turn_items: list[list[dict[str, object]]],
-    probe_metadata: list[dict[str, object]] | None = None,
-    probe_annotations: list[str] | None = None,
+    probe_metadata: list[dict[str, object]],
 ) -> tuple[dict[str, object], dict[str, object]]:
     """Assemble the row and answer payloads for one episode.
 
@@ -1636,9 +1639,7 @@ def build_episode_payload(
         label_vocab: Allowed output labels for the decision turn.
         turn_prompts: Prompt text for each turn.
         turn_items: Serialized items for each turn.
-        probe_metadata: Optional rich per-probe scoring metadata.
-        probe_annotations: Optional legacy congruency annotations used by
-            older callers that have not been migrated to ``probe_metadata``.
+        probe_metadata: Rich per-probe scoring metadata.
 
     Returns:
         The public row payload and the answer payload.
@@ -1668,22 +1669,9 @@ def build_episode_payload(
     }
     inference = {"turns": turns, "turn_specs": specs, "response_spec": spec}
     targets = [str(item["label"]) for item in turn_items[-1]]
-    if probe_metadata is None and probe_annotations is not None:
-        probe_metadata = [
-            {
-                "probe_index": index,
-                "target_label": target,
-                "obsolete_rule_label": None,
-                "congruency": annotation,
-                "requires_switch": annotation == "incongruent",
-                "diagnostic_role": "standard",
-            }
-            for index, (target, annotation) in enumerate(zip(targets, probe_annotations), start=1)
-        ]
     scoring: dict[str, object] = {"final_probe_targets": targets}
-    if probe_metadata is not None:
-        scoring["probe_metadata"] = probe_metadata
-        scoring["probe_annotations"] = compute_probe_annotations(probe_metadata)
+    scoring["probe_metadata"] = probe_metadata
+    scoring["probe_annotations"] = compute_probe_annotations(probe_metadata)
     row = {
         "episode_id": episode_id,
         "inference": inference,
@@ -1696,9 +1684,8 @@ def build_episode_payload(
         "inference": inference,
         "final_probe_targets": targets,
     }
-    if probe_metadata is not None:
-        answer["probe_metadata"] = probe_metadata
-        answer["probe_annotations"] = compute_probe_annotations(probe_metadata)
+    answer["probe_metadata"] = probe_metadata
+    answer["probe_annotations"] = compute_probe_annotations(probe_metadata)
     return row, answer
 
 
@@ -2369,7 +2356,7 @@ def build_identifiable_public_episode(
     for attempt in range(retry_budget):
         try:
             row, answer = builder(episode_id, structure=structure, variant=variant, attempt=attempt)
-        except RuntimeError:
+        except ShiftDiagnosticSamplingError:
             continue
         report = identifiability_report_for_row(row, split="public", rule_catalogue=PUBLIC_RULES)
         if report["is_identifiable"]:
