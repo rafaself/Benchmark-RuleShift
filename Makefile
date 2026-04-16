@@ -5,7 +5,7 @@ JUPYTER ?= $(if $(wildcard $(VENV_BIN)/jupyter),$(VENV_BIN)/jupyter,jupyter)
 
 .PHONY: notelab test build-private verify-public verify-private \
         release-check web \
-        deploy-dataset deploy-private-dataset deploy-notebook deploy-all
+        deploy-dataset deploy-private-dataset deploy-notebook deploy-web deploy-all
 
 notelab:
 	$(JUPYTER) lab --no-browser kaggle/notebook/cogflex_notebook_task.ipynb
@@ -39,5 +39,8 @@ deploy-private-dataset:
 
 deploy-notebook:
 	./scripts/deploy_notebook.sh
+
+deploy-web:
+	./scripts/deploy_web.sh
 
 deploy-all: deploy-dataset deploy-private-dataset deploy-notebook

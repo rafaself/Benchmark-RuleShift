@@ -249,7 +249,9 @@ Deploy artifacts:
 make deploy-dataset
 make deploy-private-dataset
 make deploy-notebook
+make deploy-web
 ```
 
 `make deploy-private-dataset` publishes both private Kaggle datasets from the resolved split private release surfaces and refuses to run unless `./scripts/release_check.sh` has already passed for the current repository state.
 It honors the same private path resolution order as the Python tooling, including `COGFLEX_PRIVATE_REPO_ROOT`.
+`make deploy-web` triggers the Cloudflare Pages deploy hook configured in `.env` via `CLOUDFLARE_PAGES_DEPLOY_HOOK_URL`.
