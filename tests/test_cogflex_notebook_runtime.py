@@ -123,6 +123,7 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
                 bundle_paths["answer_key"].write_text(json.dumps(answer_key, indent=2) + "\n", encoding="utf-8")
 
                 self.namespace["PRIVATE_DATASET_ROOT"] = bundle_dir
+                self.namespace["PRIVATE_SCORING_DATASET_ROOT"] = bundle_dir
                 attached_rows = self.namespace["_attach_private_scoring"](private_rows)
                 self.assertIn("scoring", attached_rows[0])
 
@@ -134,3 +135,4 @@ class CogflexNotebookRuntimeTests(unittest.TestCase):
         finally:
             self.namespace["EVAL_SPLIT"] = "public"
             self.namespace["PRIVATE_DATASET_ROOT"] = self.namespace["DEFAULT_PRIVATE_DATASET_ROOT"]
+            self.namespace["PRIVATE_SCORING_DATASET_ROOT"] = self.namespace["DEFAULT_PRIVATE_SCORING_DATASET_ROOT"]

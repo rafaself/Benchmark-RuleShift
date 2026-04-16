@@ -2,11 +2,16 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from types import ModuleType
 
-from scripts.private_local_loader import PRIVATE_LOCAL_DATASET_DIR, load_private_local_module
+from scripts.private_local_loader import load_private_local_module
 
 _PRIVATE_MODULE: ModuleType | None = None
+ROOT = Path(__file__).resolve().parents[1]
+PRIVATE_ROWS_DATASET_DIR = ROOT / "kaggle/dataset/private"
+PRIVATE_SCORING_DATASET_DIR = ROOT / "kaggle/dataset/private-scoring"
+PRIVATE_DATASET_DIR = PRIVATE_ROWS_DATASET_DIR
 
 
 def _module() -> ModuleType:
@@ -17,10 +22,6 @@ def _module() -> ModuleType:
             "scripts.private_local.build_private_cogflex_dataset",
         )
     return _PRIVATE_MODULE
-
-
-PRIVATE_DATASET_DIR = PRIVATE_LOCAL_DATASET_DIR
-
 
 def build_private_bundle(*args: object, **kwargs: object):
     return _module().build_private_bundle(*args, **kwargs)

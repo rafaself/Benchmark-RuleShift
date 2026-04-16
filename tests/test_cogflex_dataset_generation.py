@@ -9,6 +9,7 @@ from unittest.mock import patch
 from scripts.build_cogflex_dataset import (
     NOTEBOOK_ID,
     PRIVATE_DATASET_ID,
+    PRIVATE_SCORING_DATASET_ID,
     PUBLIC_DATASET_ID,
     PUBLIC_DIFFICULTY_CALIBRATION_PATH,
     PUBLIC_TEST_DATASET_ID,
@@ -273,12 +274,26 @@ class CogflexDatasetGenerationTests(unittest.TestCase):
 
     def test_build_private_bundle_materializes_required_files(self) -> None:
         with TemporaryDirectory() as tmpdir:
-            bundle_paths = build_private_bundle(Path(tmpdir))
+            rows_dir = Path(tmpdir) / "private"
+            scoring_dir = Path(tmpdir) / "private-scoring"
+            bundle_paths = build_private_bundle(rows_dir, scoring_dir)
             self.assertEqual(
-                json.loads(bundle_paths["metadata"].read_text(encoding="utf-8")),
+                json.loads(bundle_paths["rows_metadata"].read_text(encoding="utf-8")),
                 dataset_metadata(PRIVATE_DATASET_ID, "CogFlex Suite Runtime Private"),
             )
-            for key in ("rows", "answer_key", "predictions", "quality", "manifest", "metadata"):
+            self.assertEqual(
+                json.loads(bundle_paths["scoring_metadata"].read_text(encoding="utf-8")),
+                dataset_metadata(PRIVATE_SCORING_DATASET_ID, "CogFlex Suite Runtime Private Scoring"),
+            )
+            for key in (
+                "rows",
+                "answer_key",
+                "predictions",
+                "quality",
+                "manifest",
+                "rows_metadata",
+                "scoring_metadata",
+            ):
                 self.assertTrue(bundle_paths[key].exists(), key)
             rows = json.loads(bundle_paths["rows"].read_text(encoding="utf-8"))
             self.assertEqual(len(rows), len(REQUIRED_PRIVATE_STRUCTURE_FAMILY_IDS) * len(SUITE_TASKS) * PRIVATE_VARIANTS_PER_FAMILY_TASK)
@@ -321,12 +336,11 @@ class CogflexDatasetGenerationTests(unittest.TestCase):
 
     def test_makefile_and_kernel_metadata_point_to_cogflex_assets(self) -> None:
         makefile = MAKEFILE_PATH.read_text(encoding="utf-8")
-        self.assertIn("PYTHON ?= python3", makefile)
-        self.assertIn("JUPYTER ?= jupyter", makefile)
+        self.assertIn("PYTHON ?= $(if $(wildcard $(VENV_BIN)/python),$(VENV_BIN)/python,python3)", makefile)
+        self.assertIn("JUPYTER ?= $(if $(wildcard $(VENV_BIN)/jupyter),$(VENV_BIN)/jupyter,jupyter)", makefile)
         self.assertIn("$(JUPYTER) lab --no-browser kaggle/notebook/cogflex_notebook_task.ipynb", makefile)
         self.assertIn("$(PYTHON) -m scripts.verify_cogflex --split public", makefile)
         self.assertIn("$(PYTHON) -m scripts.verify_cogflex --split private", makefile)
-        self.assertIn("COGFLEX_PRIVATE_BUNDLE_DIR is required for verify-private", makefile)
         self.assertIn("cogflex_notebook_task.ipynb", makefile)
         metadata = json.loads(KERNEL_METADATA_PATH.read_text(encoding="utf-8"))
         self.assertEqual(metadata["id"], NOTEBOOK_ID)
@@ -337,12 +351,13 @@ class CogflexDatasetGenerationTests(unittest.TestCase):
                 PUBLIC_TEST_DATASET_ID,
                 PUBLIC_DATASET_ID,
                 PRIVATE_DATASET_ID,
+                PRIVATE_SCORING_DATASET_ID,
             ],
         )
 
     def test_readme_references_flexible_contract(self) -> None:
         readme = README_PATH.read_text(encoding="utf-8")
-        self.assertIn("cognitive flexibility within executive functions", readme)
+        self.assertIn("rule-switching within `executive_functions/cognitive_flexibility`", readme)
         self.assertIn(TASK_NAME, readme)
         self.assertIn("turn_specs", readme)
         self.assertIn("response_spec", readme)

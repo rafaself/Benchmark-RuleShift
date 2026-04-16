@@ -23,7 +23,9 @@ PUBLIC_TEST_DIFFICULTY_CALIBRATION_PATH = ROOT / "kaggle/dataset/public-test/pub
 
 PUBLIC_DATASET_ID = "raptorengineer/cogflex-suite-runtime"
 PUBLIC_TEST_DATASET_ID = "raptorengineer/cogflex-suite-runtime-test"
-PRIVATE_DATASET_ID = "raptorengineer/cogflex-suite-runtime-private"
+PRIVATE_ROWS_DATASET_ID = "raptorengineer/cogflex-suite-runtime-private"
+PRIVATE_SCORING_DATASET_ID = "raptorengineer/cogflex-suite-runtime-private-scoring"
+PRIVATE_DATASET_ID = PRIVATE_ROWS_DATASET_ID
 NOTEBOOK_ID = "raptorengineer/cogflex-suite-notebook"
 TASK_NAME = "cogflex_suite_flexible"
 FACULTY_ID = "executive_functions/cognitive_flexibility"

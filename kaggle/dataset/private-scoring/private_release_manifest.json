@@ -1,0 +1,11 @@
+{
+  "version": "cogflex_private_bundle",
+  "split": "private",
+  "row_count": 96,
+  "sha256": {
+    "private_leaderboard_rows.json": "b7f5ae1000fbda7f88a7d95a130e6cb6c95faa55e214c250d7d1f9d5e9c65f2c",
+    "private_answer_key.json": "e9c87c042ea9fcb870bd970282c64cdf7802ad06cd5fc9707c34e9fbf7ad2b21",
+    "private_calibration_predictions.json": "274e309bc0e543024ecd5fef0c4203b19c09be92ea28e21bac1a8e0ae382e608",
+    "private_quality_report.json": "ed56f07f52cde5b572afa5b93353b37ef849fa6234aa9f9338193dcda1b22fd8"
+  }
+}

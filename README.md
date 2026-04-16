@@ -84,8 +84,12 @@ Runtime note: the notebook scoring path only uses `format`, `probe_count`, `labe
 
 - `kaggle/dataset/public`: 120 public rows, 30 per suite task
 - `kaggle/dataset/public-test`: deterministic 10-row public subset
+- `kaggle/dataset/public/public_difficulty_calibration.json`: tracked public difficulty calibration snapshot
+- `kaggle/dataset/private`: private leaderboard rows deployed as the evaluator input surface
+- `kaggle/dataset/private-scoring`: private answer key, calibration predictions, quality report, and manifest deployed as the evaluator scoring surface
 - `kaggle/notebook/cogflex_notebook_task.ipynb`: Kaggle runtime notebook
-- private production benchmark data is not committed to this repository
+
+This repository is intended to stay private. The private benchmark rows and private answer key remain committed here and are published only to private Kaggle assets.
 
 Suite tasks:
 
@@ -100,8 +104,9 @@ The notebook at `kaggle/notebook/cogflex_notebook_task.ipynb` currently:
 
 - hard-codes `EVAL_SPLIT = "private"`
 - uses `/kaggle/input/datasets/raptorengineer/cogflex-suite-runtime` as the public dataset root
-- uses `/kaggle/input/datasets/raptorengineer/cogflex-suite-runtime-private` as the private dataset root
-- loads `private_leaderboard_rows.json` and the bundled `private_answer_key.json` when the split is `private`
+- uses `/kaggle/input/datasets/raptorengineer/cogflex-suite-runtime-private` as the private rows root
+- uses `/kaggle/input/datasets/raptorengineer/cogflex-suite-runtime-private-scoring` as the private scoring root
+- loads `private_leaderboard_rows.json` from the private rows root and `private_answer_key.json` from the private scoring root when the split is `private`
 - appends a JSON-only ordered-label instruction to the final decision turn
 - keeps the single final decision turn contract while reserving an early shift-diagnostic probe window inside that probe set
 - accepts ordered-label responses from JSON strings, lists or tuples, dicts containing `ordered_labels`, dataclasses exposing `ordered_labels`, or objects exposing `ordered_labels`
@@ -147,13 +152,20 @@ or:
 python3 -m scripts.verify_cogflex --split public --emit-audit-report /tmp/cogflex-public-audit.json
 ```
 
-Private bundle verification checks:
+Private release verification checks:
 
-- required files are present: `private_leaderboard_rows.json`, `private_answer_key.json`, `private_calibration_predictions.json`, `private_release_manifest.json`, `private_quality_report.json`
+- required files are present across the split private release surfaces:
+  `kaggle/dataset/private/private_leaderboard_rows.json`
+  `kaggle/dataset/private-scoring/private_answer_key.json`
+  `kaggle/dataset/private-scoring/private_calibration_predictions.json`
+  `kaggle/dataset/private-scoring/private_release_manifest.json`
+  `kaggle/dataset/private-scoring/private_quality_report.json`
 - answer-key consistency
 - manifest digests
 - calibration prediction consistency and empirical difficulty bins
 - quality report schema and reproducibility
+- quality report `generator_isolation_summary` consistency
+- generator metadata `operator_class` coverage and non-overlap checks
 - isolation from the public split and public generator reference
 - required private structure family coverage
 - identifiability
@@ -161,14 +173,15 @@ Private bundle verification checks:
 Run it with:
 
 ```bash
-COGFLEX_PRIVATE_BUNDLE_DIR=/abs/path/to/private-bundle make verify-private
+make verify-private
 ```
 
 or:
 
 ```bash
 python3 -m scripts.verify_cogflex --split private \
-  --private-bundle-dir /abs/path/to/private-bundle \
+  --private-rows-dir /abs/path/to/private \
+  --private-scoring-dir /abs/path/to/private-scoring \
   --emit-audit-report /tmp/cogflex-private-audit.json
 ```
 
@@ -186,7 +199,7 @@ Rebuild tracked public artifacts:
 python3 -m scripts.build_cogflex_dataset
 ```
 
-Build the local synthetic private bundle:
+Rebuild the tracked split private release surfaces:
 
 ```bash
 python3 -m scripts.build_private_cogflex_dataset
@@ -200,3 +213,5 @@ make deploy-test-dataset
 make deploy-private-dataset
 make deploy-notebook
 ```
+
+`make deploy-private-dataset` publishes both private Kaggle datasets from the checked-in split release surfaces and refuses to run unless `./scripts/release_check.sh` has already passed for the current repository state.

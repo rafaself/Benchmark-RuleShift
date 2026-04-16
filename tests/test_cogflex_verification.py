@@ -6,6 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from scripts.build_private_cogflex_dataset import build_private_bundle
 from scripts.private_cogflex_bundle import (
     PRIVATE_VARIANTS_PER_FAMILY_TASK,
     private_row_summary as _private_row_summary,
@@ -156,6 +157,20 @@ class CogflexVerificationTests(unittest.TestCase):
             bundle_dir = Path(tmpdir) / "bundle"
             write_private_bundle(bundle_dir)
             verify_private_bundle(bundle_dir)
+
+    def test_verify_private_bundle_accepts_split_release_surfaces(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir, contextlib.redirect_stdout(io.StringIO()):
+            rows_dir = Path(tmpdir) / "private"
+            scoring_dir = Path(tmpdir) / "private-scoring"
+            build_private_bundle(rows_dir, scoring_dir)
+            verify_private_bundle(rows_dir, scoring_dir)
+
+    def test_checked_in_private_release_surfaces_pass_verifier(self) -> None:
+        with contextlib.redirect_stdout(io.StringIO()):
+            verify_private_bundle(
+                Path(__file__).resolve().parents[1] / "kaggle/dataset/private",
+                Path(__file__).resolve().parents[1] / "kaggle/dataset/private-scoring",
+            )
 
     def test_verify_private_bundle_emits_safe_audit_report(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir, contextlib.redirect_stdout(io.StringIO()):

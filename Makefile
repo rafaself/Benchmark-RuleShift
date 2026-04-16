@@ -20,13 +20,7 @@ verify-public:
 	$(PYTHON) -m scripts.verify_cogflex --split public
 
 verify-private:
-	@if [ -z "$(COGFLEX_PRIVATE_BUNDLE_DIR)" ]; then \
-		echo "COGFLEX_PRIVATE_BUNDLE_DIR is required for verify-private" >&2; \
-		echo "Example: COGFLEX_PRIVATE_BUNDLE_DIR=/abs/path/to/private-bundle make verify-private" >&2; \
-		exit 1; \
-	fi
-	$(PYTHON) -m scripts.verify_cogflex --split private \
-		--private-bundle-dir "$(COGFLEX_PRIVATE_BUNDLE_DIR)"
+	$(PYTHON) -m scripts.verify_cogflex --split private
 
 # ── Release check (optional) ────────────────────────────────────────────────
 # Rebuild all artifacts, verify both splits, run the test suite.

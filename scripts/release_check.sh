@@ -9,16 +9,19 @@
 #   ./scripts/release_check.sh
 #   make release-check
 #
-# Override the private bundle output directory:
-#   COGFLEX_PRIVATE_BUNDLE_DIR=/abs/path ./scripts/release_check.sh
+# Override the split private release directories:
+#   COGFLEX_PRIVATE_ROWS_DIR=/abs/path/to/private ./scripts/release_check.sh
+#   COGFLEX_PRIVATE_SCORING_DIR=/abs/path/to/private-scoring ./scripts/release_check.sh
 
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SENTINEL="$ROOT_DIR/.release_ok"
 PYTHON="${PYTHON:-python3}"
-DEFAULT_PRIVATE_BUNDLE_DIR="$ROOT_DIR/kaggle/dataset/private_local"
-PRIVATE_BUNDLE_DIR="${COGFLEX_PRIVATE_BUNDLE_DIR:-$DEFAULT_PRIVATE_BUNDLE_DIR}"
+DEFAULT_PRIVATE_ROWS_DIR="$ROOT_DIR/kaggle/dataset/private"
+DEFAULT_PRIVATE_SCORING_DIR="$ROOT_DIR/kaggle/dataset/private-scoring"
+PRIVATE_ROWS_DIR="${COGFLEX_PRIVATE_ROWS_DIR:-$DEFAULT_PRIVATE_ROWS_DIR}"
+PRIVATE_SCORING_DIR="${COGFLEX_PRIVATE_SCORING_DIR:-$DEFAULT_PRIVATE_SCORING_DIR}"
 
 # Remove stale sentinel immediately and on any error exit.
 # Cancelled on the happy path before the final exit.
@@ -36,13 +39,13 @@ echo "=== [2/4] Verify public split ==="
 
 echo ""
 echo "=== [3/4] Build synthetic private bundle ==="
-COGFLEX_PRIVATE_BUNDLE_DIR="$PRIVATE_BUNDLE_DIR" \
-  "$PYTHON" -m scripts.build_private_cogflex_dataset
+"$PYTHON" -m scripts.build_private_cogflex_dataset
 
 echo ""
 echo "=== [4/4] Verify private bundle ==="
 "$PYTHON" -m scripts.verify_cogflex --split private \
-  --private-bundle-dir "$PRIVATE_BUNDLE_DIR"
+  --private-rows-dir "$PRIVATE_ROWS_DIR" \
+  --private-scoring-dir "$PRIVATE_SCORING_DIR"
 
 echo ""
 echo "=== [+] Run test suite ==="

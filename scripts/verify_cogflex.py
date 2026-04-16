@@ -60,6 +60,8 @@ PRIVATE_PANEL_MODEL_COUNT: Final[int] = 3
 AUDIT_REPORT_VERSION: Final[int] = 1
 AUDIT_VERIFIER_VERSION: Final[str] = "audit"
 REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[1]
+DEFAULT_PRIVATE_ROWS_DIR: Final[Path] = REPO_ROOT / "kaggle/dataset/private"
+DEFAULT_PRIVATE_SCORING_DIR: Final[Path] = REPO_ROOT / "kaggle/dataset/private-scoring"
 ATTACK_SUITE_DIMENSIONS: Final[tuple[str, ...]] = (
     "difficulty_bin",
     "shift_mode",
@@ -1318,29 +1320,70 @@ def private_bundle_paths(bundle_dir: Path) -> dict[str, Path]:
     }
 
 
-def resolve_private_bundle_dir(explicit_path: str | None) -> Path:
-    """Resolve the private bundle directory from CLI input or environment.
+def private_release_paths(rows_dir: Path, scoring_dir: Path | None = None) -> dict[str, Path]:
+    """Build the expected file paths for split private release surfaces.
 
     Args:
-        explicit_path: Optional CLI-provided bundle directory.
+        rows_dir: Directory containing the private leaderboard rows surface.
+        scoring_dir: Optional directory containing private scoring artifacts.
 
     Returns:
-        The resolved private bundle directory path.
-
-    Raises:
-        RuntimeError: If no usable bundle directory is configured.
+        A mapping from logical artifact names to file paths.
 
     """
-    if explicit_path:
-        bundle_dir = Path(explicit_path).expanduser().resolve()
+    scoring_root = rows_dir if scoring_dir is None else scoring_dir
+    return {
+        "rows": rows_dir / PRIVATE_ROWS_FILENAME,
+        "answer_key": scoring_root / PRIVATE_ANSWER_KEY_FILENAME,
+        "predictions": scoring_root / PRIVATE_CALIBRATION_PREDICTIONS_FILENAME,
+        "manifest": scoring_root / PRIVATE_RELEASE_MANIFEST_FILENAME,
+        "quality": scoring_root / PRIVATE_QUALITY_REPORT_FILENAME,
+    }
+
+
+def resolve_private_bundle_dirs(
+    explicit_bundle_path: str | None,
+    explicit_rows_path: str | None,
+    explicit_scoring_path: str | None,
+) -> tuple[Path, Path]:
+    """Resolve the private rows/scoring directories from CLI input or defaults.
+
+    Args:
+        explicit_bundle_path: Optional CLI-provided legacy single-bundle directory.
+        explicit_rows_path: Optional CLI-provided private rows directory.
+        explicit_scoring_path: Optional CLI-provided private scoring directory.
+
+    Returns:
+        The resolved private rows and scoring directory paths.
+
+    Raises:
+        RuntimeError: If no usable private directories are configured.
+
+    """
+    if explicit_bundle_path and (explicit_rows_path or explicit_scoring_path):
+        raise RuntimeError("use either --private-bundle-dir or the split --private-rows-dir/--private-scoring-dir flags")
+    if explicit_bundle_path:
+        rows_dir = Path(explicit_bundle_path).expanduser().resolve()
+        scoring_dir = rows_dir
+    elif explicit_rows_path or explicit_scoring_path:
+        rows_dir = Path(explicit_rows_path).expanduser().resolve() if explicit_rows_path else DEFAULT_PRIVATE_ROWS_DIR
+        scoring_dir = (
+            Path(explicit_scoring_path).expanduser().resolve()
+            if explicit_scoring_path
+            else DEFAULT_PRIVATE_SCORING_DIR
+        )
     else:
         env_raw = os.environ.get(PRIVATE_BUNDLE_ENV_VAR)
-        if not env_raw:
-            raise RuntimeError(f"private verification requires --private-bundle-dir or {PRIVATE_BUNDLE_ENV_VAR}")
-        bundle_dir = Path(env_raw).expanduser().resolve()
-    if not bundle_dir.exists() or not bundle_dir.is_dir():
-        raise RuntimeError(f"private bundle directory does not exist: {bundle_dir}")
-    return bundle_dir
+        if env_raw:
+            rows_dir = Path(env_raw).expanduser().resolve()
+            scoring_dir = rows_dir
+        else:
+            rows_dir = DEFAULT_PRIVATE_ROWS_DIR
+            scoring_dir = DEFAULT_PRIVATE_SCORING_DIR
+    for label, directory in (("rows", rows_dir), ("scoring", scoring_dir)):
+        if not directory.exists() or not directory.is_dir():
+            raise RuntimeError(f"private {label} directory does not exist: {directory}")
+    return rows_dir, scoring_dir
 
 
 def load_private_answer_key(path: Path) -> dict[str, object]:
@@ -1745,11 +1788,17 @@ def verify_quality_report(path: Path) -> dict[str, object]:
     return payload
 
 
-def verify_private_bundle(bundle_dir: Path, *, emit_audit_report: Path | None = None) -> None:
-    """Verify all artifacts inside a private bundle directory.
+def verify_private_bundle(
+    rows_dir: Path,
+    scoring_dir: Path | None = None,
+    *,
+    emit_audit_report: Path | None = None,
+) -> None:
+    """Verify the private release surfaces or a legacy single-bundle directory.
 
     Args:
-        bundle_dir: Directory containing the private bundle artifacts.
+        rows_dir: Directory containing private leaderboard rows.
+        scoring_dir: Optional directory containing private scoring artifacts.
         emit_audit_report: Optional output path for an audit report.
 
     Returns:
@@ -1759,7 +1808,8 @@ def verify_private_bundle(bundle_dir: Path, *, emit_audit_report: Path | None = 
         RuntimeError: If any private bundle artifact fails verification.
 
     """
-    bundle_paths = private_bundle_paths(bundle_dir)
+    resolved_scoring_dir = rows_dir if scoring_dir is None else scoring_dir
+    bundle_paths = private_release_paths(rows_dir, resolved_scoring_dir)
     missing = [name for name, path in bundle_paths.items() if not path.exists()]
     if missing:
         raise RuntimeError(f"private bundle missing required files: {missing}")
@@ -1826,7 +1876,8 @@ def verify_private_bundle(bundle_dir: Path, *, emit_audit_report: Path | None = 
         json.dumps(
             {
                 "split": "private",
-                "bundle_dir": str(bundle_dir),
+                "rows_dir": str(rows_dir),
+                "scoring_dir": str(resolved_scoring_dir),
                 **schema_summary,
                 **answer_summary,
                 **identifiability_summary,
@@ -1849,16 +1900,20 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--split", choices=("public", "private"), required=True)
     parser.add_argument("--private-bundle-dir")
+    parser.add_argument("--private-rows-dir")
+    parser.add_argument("--private-scoring-dir")
     parser.add_argument("--emit-audit-report")
     args = parser.parse_args()
     audit_report_path = Path(args.emit_audit_report).expanduser() if args.emit_audit_report else None
     if args.split == "public":
         verify_public_split(emit_audit_report=audit_report_path)
         return
-    verify_private_bundle(
-        resolve_private_bundle_dir(args.private_bundle_dir),
-        emit_audit_report=audit_report_path,
+    private_rows_dir, private_scoring_dir = resolve_private_bundle_dirs(
+        args.private_bundle_dir,
+        args.private_rows_dir,
+        args.private_scoring_dir,
     )
+    verify_private_bundle(private_rows_dir, private_scoring_dir, emit_audit_report=audit_report_path)
 
 
 if __name__ == "__main__":
