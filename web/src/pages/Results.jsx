@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { Check, Zap, Star, Timer } from 'lucide-react';
 import data from '../data.json';
 import { Card } from '../components/Card';
@@ -9,10 +9,26 @@ import { STAGES } from '../constants/stages';
 
 export function Results() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [results, setResults] = useState([]);
   const [activeEpisodes, setActiveEpisodes] = useState([]);
 
+  const sessionId = searchParams.get('id');
+
   useEffect(() => {
+    if (sessionId) {
+      const history = JSON.parse(localStorage.getItem('cogflex_history') || '[]');
+      const session = history.find(s => s.id.toString() === sessionId);
+      
+      // If we found the session and it has the required data, load it
+      if (session && session.results && session.episodes) {
+        setResults(session.results);
+        setActiveEpisodes(session.episodes);
+        return;
+      }
+    }
+
+    // Fallback to last active session if no ID or data missing
     const savedData = sessionStorage.getItem('cogflex_last_session');
     if (!savedData) {
       navigate('/');
@@ -21,7 +37,7 @@ export function Results() {
     const { results: res, episodes: eps } = JSON.parse(savedData);
     setResults(res);
     setActiveEpisodes(eps);
-  }, [navigate]);
+  }, [navigate, sessionId]);
 
   const totalCorrect = results.filter(r => r.isCorrect).length;
   const avgTime = results.reduce((acc, r) => acc + r.responseTime, 0) / (results.length || 1);
@@ -31,7 +47,7 @@ export function Results() {
     const shuffled = shuffleArray(data);
     sessionStorage.setItem('cogflex_active_episodes', JSON.stringify(shuffled));
     sessionStorage.removeItem('cogflex_current_results');
-    navigate(`/challenge/${shuffled[0].episode_id}?stage=${STAGES.STUDY}&turn=0`);
+    navigate(`/challenge/${shuffled[0].episode_id}`);
   };
 
   return (

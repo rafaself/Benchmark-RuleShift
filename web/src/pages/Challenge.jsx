@@ -126,7 +126,9 @@ export function Challenge() {
           date: new Date().toISOString(),
           totalCorrect: updatedResults.filter(r => r.isCorrect).length,
           avgTime: updatedResults.reduce((acc, r) => acc + r.responseTime, 0) / updatedResults.length,
-          episodesCount: activeEpisodes.length
+          episodesCount: activeEpisodes.length,
+          results: updatedResults,
+          episodes: activeEpisodes
         };
         localStorage.setItem('cogflex_history', JSON.stringify([sessionReport, ...savedHistory].slice(0, 10)));
         

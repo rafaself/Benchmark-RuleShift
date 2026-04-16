@@ -100,7 +100,11 @@ export function Home() {
           {history.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {history.map(session => (
-                <div key={session.id} className="bg-zinc-900/30 border border-zinc-800/50 p-5 rounded-2xl flex items-center justify-between group hover:bg-zinc-900/60 transition-all">
+                <button 
+                  key={session.id} 
+                  onClick={() => navigate(`/results?id=${session.id}`)}
+                  className="bg-zinc-900/30 border border-zinc-800/50 p-5 rounded-2xl flex items-center justify-between group hover:bg-zinc-900/60 transition-all cursor-pointer text-left w-full"
+                >
                   <div className="flex items-center gap-5">
                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-black text-sm border-2 ${
                       (session.totalCorrect / (session.episodesCount * 5)) > 0.8 
@@ -123,7 +127,7 @@ export function Home() {
                   <div className="text-zinc-800 group-hover:text-zinc-600 transition-colors">
                     <History size={18} />
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           ) : (
