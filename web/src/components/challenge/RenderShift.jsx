@@ -1,7 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AlertTriangle, Zap } from 'lucide-react';
 
 export function RenderShift({ onStart, isExplicitShift }) {
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter' && !e.repeat) {
+        e.preventDefault();
+        onStart();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onStart]);
+
   return (
     <div className="flex flex-col items-center py-20 animate-fade-in">
       <div className={`relative flex flex-col items-center text-center p-12 rounded-[3rem] border-4 mb-12 shadow-2xl transition-all duration-500 ${isExplicitShift ? 'bg-red-950/40 border-red-500 animate-pulse' : 'bg-indigo-950/40 border-indigo-500'}`}>

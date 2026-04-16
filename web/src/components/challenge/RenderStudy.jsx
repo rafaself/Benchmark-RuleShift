@@ -1,8 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card } from '../Card';
 import { parseItem } from '../../utils/logic';
 
 export function RenderStudy({ turns, turnIndex, onNext }) {
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter' && !e.repeat) {
+        e.preventDefault();
+        onNext();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onNext]);
+
   const turnText = turns[turnIndex];
   if (!turnText) return null;
   const examples = turnText.split('Examples:\n')[1]?.split('\n').filter(l => l.includes('->')).map(l => parseItem(l.replace(/^\d+\.\s+/, ''))) || [];
