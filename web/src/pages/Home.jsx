@@ -36,7 +36,7 @@ export function Home() {
           Human-Playable Public Samples
         </div>
         <h1 className="text-8xl font-black mb-6 tracking-tighter bg-gradient-to-b from-white to-zinc-500 bg-clip-text text-transparent leading-[1.1] py-2">
-          CogFlex
+          CogFlex <span className="text-indigo-500">Human</span>
         </h1>
         <p className="text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed font-medium">
           Play benchmark-format CogFlex episodes copied from the current public split.
