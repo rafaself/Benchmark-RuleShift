@@ -165,13 +165,6 @@ class CogflexVerificationTests(unittest.TestCase):
             build_private_bundle(rows_dir, scoring_dir)
             verify_private_bundle(rows_dir, scoring_dir)
 
-    def test_checked_in_private_release_surfaces_pass_verifier(self) -> None:
-        with contextlib.redirect_stdout(io.StringIO()):
-            verify_private_bundle(
-                Path(__file__).resolve().parents[1] / "kaggle/dataset/private",
-                Path(__file__).resolve().parents[1] / "kaggle/dataset/private-scoring",
-            )
-
     def test_verify_private_bundle_emits_safe_audit_report(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir, contextlib.redirect_stdout(io.StringIO()):
             bundle_dir = Path(tmpdir) / "bundle"

@@ -85,11 +85,15 @@ Runtime note: the notebook scoring path only uses `format`, `probe_count`, `labe
 - `kaggle/dataset/public`: 120 public rows, 30 per suite task
 - `kaggle/dataset/public-test`: deterministic 10-row public subset
 - `kaggle/dataset/public/public_difficulty_calibration.json`: tracked public difficulty calibration snapshot
-- `kaggle/dataset/private`: private leaderboard rows deployed as the evaluator input surface
-- `kaggle/dataset/private-scoring`: private answer key, calibration predictions, quality report, and manifest deployed as the evaluator scoring surface
 - `kaggle/notebook/cogflex_notebook_task.ipynb`: Kaggle runtime notebook
 
-This repository is intended to stay private. The private benchmark rows and private answer key remain committed here and are published only to private Kaggle assets.
+This repository is public. The private benchmark rows and private scoring artifacts must not be committed here.
+During development, the generator writes local private release surfaces into gitignored directories:
+
+- `kaggle/dataset/private`: local private leaderboard rows working surface
+- `kaggle/dataset/private-scoring`: local private scoring working surface
+
+Those local surfaces can be deployed to private Kaggle datasets, but they should be versioned in a separate private repository rather than this public one.
 
 Suite tasks:
 
@@ -154,7 +158,7 @@ python3 -m scripts.verify_cogflex --split public --emit-audit-report /tmp/cogfle
 
 Private release verification checks:
 
-- required files are present across the split private release surfaces:
+- required files are present across the split local private release surfaces:
   `kaggle/dataset/private/private_leaderboard_rows.json`
   `kaggle/dataset/private-scoring/private_answer_key.json`
   `kaggle/dataset/private-scoring/private_calibration_predictions.json`
@@ -199,7 +203,7 @@ Rebuild tracked public artifacts:
 python3 -m scripts.build_cogflex_dataset
 ```
 
-Rebuild the tracked split private release surfaces:
+Rebuild the local gitignored split private release surfaces:
 
 ```bash
 python3 -m scripts.build_private_cogflex_dataset
@@ -214,4 +218,4 @@ make deploy-private-dataset
 make deploy-notebook
 ```
 
-`make deploy-private-dataset` publishes both private Kaggle datasets from the checked-in split release surfaces and refuses to run unless `./scripts/release_check.sh` has already passed for the current repository state.
+`make deploy-private-dataset` publishes both private Kaggle datasets from the local split private release surfaces and refuses to run unless `./scripts/release_check.sh` has already passed for the current repository state.

@@ -9,5 +9,6 @@ __pycache__/
 notes/private/
 scripts/private_local/
 kaggle/dataset/audit_key.json
-kaggle/dataset/private_local/
+kaggle/dataset/private/
+kaggle/dataset/private-scoring/
 .release_ok
