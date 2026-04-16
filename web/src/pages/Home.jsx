@@ -74,8 +74,8 @@ export function Home() {
             onClick={handleStart}
             className="w-full bg-white text-black hover:bg-zinc-200 py-6 rounded-[2rem] font-black text-2xl transition-all shadow-[0_0_40px_rgba(255,255,255,0.05)] active:scale-[0.98] cursor-pointer flex items-center justify-center gap-4 group"
           >
-            INITIATE CHALLENGE
-            <Zap size={24} className="fill-black group-hover:animate-pulse" />
+            <Plus size={24} className="group-hover:rotate-90 transition-transform duration-300" />
+            START CHALLENGE
           </button>
         </div>
 
